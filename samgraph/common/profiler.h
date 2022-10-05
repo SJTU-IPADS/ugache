@@ -214,8 +214,6 @@ class Profiler {
   void ReportNodeAccess();
   void ReportNodeAccessSimple();
 
-  void ReportPreSampleSimilarity();
-
   static Profiler &Get();
 
  private:

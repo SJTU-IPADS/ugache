@@ -33,15 +33,12 @@ message(DEBUG "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 message(DEBUG "CMAKE_CUDA_FLAGS: ${CMAKE_CUDA_FLAGS}")
 include_directories(
   ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
-  # ../3rdparty/cub
-  ../3rdparty/parallel-hashmap
   ../3rdparty/CLI11/include
-  $ENV{CONDA_PREFIX}/lib/python3.8/site-packages/torch/include
-  $ENV{CONDA_PREFIX}/lib/python3.8/site-packages/torch/include/torch/csrc/api/include
-  $ENV{CONDA_PREFIX}/include/python3.8)
+  $ENV{GUROBI_HOME}/include
+  )
 link_directories(
+  $ENV{GUROBI_HOME}/lib
   $ENV{CONDA_PREFIX}/lib
-  $ENV{CONDA_PREFIX}/lib/python3.8/site-packages/torch/lib
   /usr/local/cuda/lib64
 )
 
@@ -55,16 +52,13 @@ add_library(samgraph_lib
   ${SAMGRAPH_SRC}
 )
 target_link_libraries(samgraph_lib
+  gurobi95
+  gurobi_c++
+  tbb
   nvToolsExt)
 
 
 add_executable(
-  samgraph_cpp_no_train_link_torch
-  torch/adapter.cc
-  main.cc
-)
-
-add_executable(
   samgraph_cpp_no_train
   main.cc
 )
@@ -72,35 +66,20 @@ target_link_libraries(
   samgraph_cpp_no_train
   samgraph_lib
 )
-target_link_libraries(
-  samgraph_cpp_no_train_link_torch
-  samgraph_lib
-  cusparse
-  c10
-  c10_cuda
-  cudart
-  torch
-  torch_cpu
-  torch_python
-  torch_global_deps
-  torch_cuda
-  python3.8
-)
 
-
-# for unit test
-
-message(STATUS "Build with unittest")
-add_subdirectory(../3rdparty/googletest googletest)
-include(GoogleTest)
-enable_testing()
-include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-include_directories(${PROJECT_SOURCE_DIR})
-file(GLOB_RECURSE TEST_SRC_FILES 
-  ${PROJECT_SOURCE_DIR}/unittest/*.cc
-  ${PROJECT_SOURCE_DIR}/unittest/*.cu
-)
-add_executable(runUnitTests ${TEST_SRC_FILES})
-target_link_libraries(runUnitTests gtest gtest_main)
-target_link_libraries(runUnitTests samgraph_lib)
-gtest_discover_tests(runUnitTests)
+# # for unit test
+# 
+# message(STATUS "Build with unittest")
+# add_subdirectory(../3rdparty/googletest googletest)
+# include(GoogleTest)
+# enable_testing()
+# include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+# include_directories(${PROJECT_SOURCE_DIR})
+# file(GLOB_RECURSE TEST_SRC_FILES 
+#   ${PROJECT_SOURCE_DIR}/unittest/*.cc
+#   ${PROJECT_SOURCE_DIR}/unittest/*.cu
+# )
+# add_executable(runUnitTests ${TEST_SRC_FILES})
+# target_link_libraries(runUnitTests gtest gtest_main)
+# target_link_libraries(runUnitTests samgraph_lib)
+# gtest_discover_tests(runUnitTests)

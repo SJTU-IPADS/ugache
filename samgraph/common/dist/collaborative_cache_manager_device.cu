@@ -23,7 +23,6 @@
 #include "../constant.h"
 #include "../device.h"
 #include "../cpu/mmap_cpu_device.h"
-#include "../function.h"
 #include "../logging.h"
 #include "../run_config.h"
 #include "../profiler.h"

@@ -21,7 +21,6 @@
 
 #include "../logging.h"
 #include "../workspace_pool.h"
-#include "cuda_common.h"
 #include "../run_config.h"
 
 namespace samgraph {
@@ -47,33 +46,6 @@ void *GPUDevice::AllocDataSpace(Context ctx, size_t nbytes, size_t alignment) {
     CUDA_CALL(cudaMalloc(&ret, nbytes));
     if (nbytes >= 10 * 1024 * 1024 && RunConfig::worker_id == 0) {
       LOG(WARNING) << "GPU[" << ctx.device_id << "] alloc cuda memory " << ToReadableSize(nbytes);
-    }
-  } else if (ctx.device_type == kGPU_UM) {
-    LOG(INFO) << "alloc unified memory " << ToReadableSize(nbytes);
-    CUDA_CALL(cudaMallocManaged(&ret, nbytes));
-    std::stringstream ss;
-    for (auto ctx : RunConfig::unified_memory_ctxes) {
-      ss << ctx << " ";
-    }
-    LOG(INFO) << "use " << ss.str() << "store graph!";
-
-    for (size_t i = 0, off = 0; i < RunConfig::unified_memory_ctxes.size(); i++) {
-      size_t cur_nbytes;
-      if (i + 1 == RunConfig::unified_memory_ctxes.size()) {
-        cur_nbytes = nbytes - off;
-      } else {
-        cur_nbytes = RunConfig::unified_memory_percentages[i] * nbytes;
-      }
-
-      if (cur_nbytes != 0) {
-        LOG(INFO) << "unified_memory in: " << RunConfig::unified_memory_ctxes[i] << " "
-                  << ToReadableSize(cur_nbytes);
-        CUDA_CALL(cudaMemAdvise(ret + off, cur_nbytes,
-          cudaMemAdviseSetPreferredLocation, RunConfig::unified_memory_ctxes[i].GetCudaDeviceId()));
-        CUDA_CALL(cudaMemAdvise(ret, nbytes, 
-          cudaMemAdviseSetAccessedBy, RunConfig::unified_memory_ctxes[i].GetCudaDeviceId()));
-      }
-      off += cur_nbytes;
     }
   } else {
       LOG(FATAL) << "device_type is not supported";

@@ -34,7 +34,6 @@
 #include "engine.h"
 #include "logging.h"
 #include "run_config.h"
-#include "cuda/pre_sampler.h"
 
 namespace samgraph {
 namespace common {
@@ -898,21 +897,6 @@ void Profiler::ReportNodeAccessSimple() {
     similarity_sum += _epoch_similarity[e];
   }
   printf("test_result:node_access:epoch_similarity=%lf\n", similarity_sum / (_epoch_similarity.size() - 1));
-}
-
-
-void Profiler::ReportPreSampleSimilarity() {
-  auto cache_node_tensor = cuda::PreSampler::Get()->GetRankNode();
-  auto pre_sample_freq_tensor = cuda::PreSampler::Get()->GetFreq();
-  const IdType* cache_nodes = static_cast<const IdType*>(cache_node_tensor->Data());
-  const IdType* pre_sample_freq = static_cast<const IdType*>(pre_sample_freq_tensor->Data());
-  std::ofstream ofs0(Constant::kNodeAccessPreSampleSimFile + GetTimeString() +
-                         Constant::kNodeAccessFileSuffix,
-                     std::ofstream::out | std::ofstream::trunc);
-  for (IdType rank = 0; rank < Engine::Get()->GetGraphDataset()->num_node; rank++) {
-    ofs0 << cache_nodes[rank] << " " << pre_sample_freq[rank] << " " << _node_access[cache_nodes[rank]] << "\n";
-  }
-  ofs0.close();
 }
 
 }  // namespace common

@@ -46,8 +46,6 @@ size_t samgraph_num_class();
 
 size_t samgraph_feat_dim();
 
-uint64_t samgraph_get_next_batch();
-
 void samgraph_sample_once();
 
 size_t samgraph_get_graph_num_src(uint64_t key, int graph_id);

@@ -29,7 +29,6 @@
 
 #include "common.h"
 #include "constant.h"
-#include "graph_pool.h"
 #include "run_config.h"
 
 namespace samgraph {
@@ -40,7 +39,6 @@ class Engine {
   virtual void Init() = 0;
   virtual void Start() = 0;
   virtual void Shutdown() = 0;
-  virtual void RunSampleOnce() = 0;
 
   std::vector<size_t> GetFanout() { return _fanout; }
   size_t NumEpoch() { return _num_epoch; }
@@ -60,16 +58,12 @@ class Engine {
   bool IsShutdown() { return _should_shutdown; }
 
   Context GetSamplerCtx() { 
-    if (RunConfig::run_arch == RunArch::kArch9) {
-      LOG(WARNING) << WARNING_PREFIX << "arch9: get sampler ctx " << _sampler_ctx;
-    }
     return _sampler_ctx; 
   }
   Context GetTrainerCtx() { return _trainer_ctx; }
 
   const Dataset* GetGraphDataset() { return _dataset; }
 
-  virtual GraphPool* GetGraphPool() { return _graph_pool; }
   std::shared_ptr<GraphBatch> GetGraphBatch() { return _graph_batch; };
   void SetGraphBatch(std::shared_ptr<GraphBatch> batch) {
     _graph_batch = batch;
@@ -112,7 +106,6 @@ class Engine {
   // Number of steps per epoch in the view of the current worker
   size_t _num_local_step;
   // Ready graph batch pool
-  GraphPool* _graph_pool;
   // Current graph batch
   std::shared_ptr<GraphBatch> _graph_batch;
   // Current graph batch

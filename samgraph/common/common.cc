@@ -429,12 +429,7 @@ TensorPtr Tensor::CopyTo(TensorPtr source, Context ctx, StreamHandle stream, std
   tensor->_ctx = ctx;
   tensor->_data = Device::Get(ctx)->AllocWorkspace(ctx, nbytes, scale);
   tensor->_name = name;
-  if (RunConfig::run_arch == kArch9 && ctx.device_type == DeviceType::kGPU_UM) {
-    for (auto um_ctx : RunConfig::unified_memory_ctxes) {
-        Device::Get(um_ctx)->CopyDataFromTo(source->_data, 0, tensor->_data, 0, nbytes, source->_ctx, um_ctx);
-    }
-    Device::Get(ctx)->StreamSync(ctx, stream);
-  } else {
+  {
     if ((source->Ctx().device_type == kGPU || source->Ctx().device_type == kGPU_UM) && ctx.device_type != kGPU) {
       Device::Get(source->Ctx())->CopyDataFromTo(source->_data, 0, tensor->_data, 0, nbytes, source->_ctx, tensor->_ctx, stream);
       Device::Get(source->Ctx())->StreamSync(source->Ctx(), stream);
@@ -462,50 +457,13 @@ TensorPtr Tensor::CopyLine(TensorPtr source, size_t line_idx, Context ctx, Strea
   tensor->_ctx = ctx;
   tensor->_data = Device::Get(ctx)->AllocWorkspace(ctx, nbytes, scale);
   tensor->_name = source->_name;
-  if (RunConfig::run_arch == kArch9 && ctx.device_type == DeviceType::kGPU_UM) {
-    for (auto um_ctx : RunConfig::unified_memory_ctxes) {
-        Device::Get(um_ctx)->CopyDataFromTo(source->_data, nbytes * line_idx, tensor->_data, 0, nbytes, source->_ctx, um_ctx);
-    }
-    Device::Get(ctx)->StreamSync(ctx, stream);
-  } else {
+  {
     Context work_ctx = ctx;
     if ((source->Ctx().device_type == kGPU || source->Ctx().device_type == kGPU_UM) && ctx.device_type != kGPU) {
       work_ctx = source->Ctx();
     }
     Device::Get(work_ctx)->CopyDataFromTo(source->_data, nbytes * line_idx, tensor->_data, 0, nbytes, source->_ctx, tensor->_ctx, stream);
     Device::Get(work_ctx)->StreamSync(work_ctx, stream);
-  }
-
-  return tensor;
-}
-
-TensorPtr Tensor::UMCopyTo(TensorPtr source, std::vector<Context> ctxes, std::vector<StreamHandle> streams) {
-  return UMCopyTo(source, ctxes, streams, source->_name);
-}
-TensorPtr Tensor::UMCopyTo(TensorPtr source, std::vector<Context> ctxes, std::vector<StreamHandle> streams, std::string name) {
-  CHECK(source && source->Defined());
-  std::vector<size_t> shape = source->Shape();
-  auto dtype = source->_dtype;
-  CHECK_GT(shape.size(), 0);
-
-  TensorPtr tensor = std::make_shared<Tensor>();
-  size_t nbytes = GetTensorBytes(dtype, shape.begin(), shape.end());
-
-  Context ctx = ctxes[0];
-  if (ctx.device_type == DeviceType::kGPU) {
-    ctx.device_type = DeviceType::kGPU_UM;
-  }
-  CHECK(ctx.device_type == DeviceType::kGPU_UM);
- 
-  tensor->_dtype = source->_dtype;
-  tensor->_shape = shape;
-  tensor->_nbytes = source->_nbytes;
-  tensor->_ctx = ctx;
-  tensor->_data =
-      Device::Get(ctx)->AllocWorkspace(ctx, nbytes, Constant::kAllocNoScale);
-  tensor->_name = name;
-  for (auto um_ctx : ctxes) {
-      Device::Get(um_ctx)->CopyDataFromTo(source->_data, 0, tensor->_data, 0, nbytes, source->_ctx, um_ctx);
   }
 
   return tensor;
@@ -585,33 +543,6 @@ size_t GetTensorBytes(DataType dtype,
   return std::accumulate(shape_start, shape_end, 1ul,
                          std::multiplies<size_t>()) *
          GetDataTypeBytes(dtype);
-}
-
-size_t PredictNumNodes(size_t batch_size, const std::vector<size_t> &fanout,
-                       size_t num_fanout_to_comp) {
-  CHECK_LE(num_fanout_to_comp, fanout.size());
-  size_t count = batch_size;
-  if (RunConfig::unsupervised_sample) {
-    if (RunConfig::RunConfig::negative_sample_reuse_src) {
-      count *= 2 + RunConfig::negative_sample_K;
-    } else {
-      count *= 2 * (1 + RunConfig::negative_sample_K);
-    }
-  }
-  for (int i = num_fanout_to_comp - 1; i >= 0; i--) {
-    count += (count * fanout[i]);
-  }
-
-  return count;
-}
-
-size_t PredictNumRandomWalkEdges(size_t batch_size,
-                                 const std::vector<size_t> &fanout,
-                                 size_t num_fanout_to_comp,
-                                 size_t num_random_walk,
-                                 size_t random_walk_length) {
-  size_t num_nodes = PredictNumNodes(batch_size, fanout, num_fanout_to_comp);
-  return num_nodes * num_random_walk * random_walk_length;
 }
 
 std::string GetEnv(std::string key) {

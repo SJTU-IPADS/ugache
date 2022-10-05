@@ -4,6 +4,7 @@
 #include "common/constant.h"
 #include "common/logging.h"
 #include <CLI/CLI.hpp>
+#include <iostream>
 CLI::App _app;
 namespace {
 using namespace samgraph;
@@ -179,15 +180,15 @@ int main(int argc, char** argv) {
   size_t num_epoch = std::stoi(configs["num_epoch"]);
   samgraph::common::samgraph_config_from_map(configs);
   samgraph::common::samgraph_init();
-  for (size_t i = 0; i < num_epoch; i++) {
-    for (size_t b = 0; b < samgraph::common::samgraph_steps_per_epoch(); b++) {
-      samgraph::common::samgraph_sample_once();
-      samgraph::common::samgraph_get_next_batch();
-      // samgraph::common::samgraph_report_step(i, b);
-    }
-    // samgraph::common::samgraph_report_epoch(i);
-  }
-  samgraph::common::samgraph_report_step_average(num_epoch-1, samgraph::common::samgraph_steps_per_epoch()-1);
+  // for (size_t i = 0; i < num_epoch; i++) {
+  //   for (size_t b = 0; b < samgraph::common::samgraph_steps_per_epoch(); b++) {
+  //     samgraph::common::samgraph_sample_once();
+  //     samgraph::common::samgraph_get_next_batch();
+  //     // samgraph::common::samgraph_report_step(i, b);
+  //   }
+  //   // samgraph::common::samgraph_report_epoch(i);
+  // }
+  // samgraph::common::samgraph_report_step_average(num_epoch-1, samgraph::common::samgraph_steps_per_epoch()-1);
   samgraph::common::samgraph_report_epoch_average(num_epoch-1);
   samgraph::common::samgraph_report_init();
   samgraph::common::samgraph_report_node_access();

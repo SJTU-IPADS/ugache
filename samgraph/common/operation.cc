@@ -38,7 +38,6 @@
 #include "profiler.h"
 #include "run_config.h"
 #include "timer.h"
-#include "cuda/cuda_engine.h"
 
 namespace samgraph {
 namespace common {
@@ -80,27 +79,12 @@ void samgraph_config_from_map(std::unordered_map<std::string, std::string>& conf
   CHECK(configs.count("dropout"));
 
   RC::raw_configs = configs;
-  RC::dataset_path = configs["dataset_path"];
   RC::run_arch = static_cast<RunArch>(std::stoi(configs["_arch"]));
-  RC::sample_type = static_cast<SampleType>(std::stoi(configs["_sample_type"]));
-  RC::batch_size = std::stoull(configs["batch_size"]);
-  RC::num_epoch = std::stoull(configs["num_epoch"]);
   RC::cache_policy =
       static_cast<CachePolicy>(std::stoi(configs["_cache_policy"]));
   RC::cache_percentage = std::stod(configs["cache_percentage"]);
 
-  RC::max_sampling_jobs = std::stoull(configs["max_sampling_jobs"]);
-  RC::max_copying_jobs = std::stoull(configs["max_copying_jobs"]);
   RC::omp_thread_num = std::stoi(configs["omp_thread_num"]);
-  RC::hiddem_dim = std::stoi(configs["num_hidden"]);
-  RC::lr = std::stod(configs["lr"]);
-  RC::dropout = std::stod(configs["dropout"]);
-  RC::num_layer = std::stoull(configs["num_layer"]);
-
-  if (configs["unsupervised"] == "True") {
-    RC::unsupervised_sample = true;
-  }
-  RC::step_max_boundary = std::stoull(configs["max_num_step"]);
 
   RC::rolling = static_cast<RollingPolicy>(std::stoi(configs["rolling"]));
 
@@ -123,7 +107,6 @@ void samgraph_config_from_map(std::unordered_map<std::string, std::string>& conf
       if (!configs.count("have_switcher")) {
         configs["have_switcher"] = "0";
       }
-      RC::have_switcher = std::stoi(configs["have_switcher"]);
       break;
     case kArch6:
       CHECK(configs.count("num_worker"));
@@ -152,142 +135,7 @@ void samgraph_config_from_map(std::unordered_map<std::string, std::string>& conf
       CHECK(false);
   }
 
-  if (RC::sample_type == kRandomWalk) {
-    // configure random walk
-    CHECK(configs.count("random_walk_length"));
-    CHECK(configs.count("random_walk_restart_prob"));
-    CHECK(configs.count("num_random_walk"));
-    CHECK(configs.count("num_neighbor"));
-
-    RC::random_walk_length = std::stoull(configs["random_walk_length"]);
-    RC::random_walk_restart_prob =
-        std::stod(configs["random_walk_restart_prob"]);
-    RC::num_random_walk = std::stoull(configs["num_random_walk"]);
-    RC::num_neighbor = std::stoull(configs["num_neighbor"]);
-    RC::fanout = std::vector<size_t>(RC::num_layer, RC::num_neighbor);
-  } else if (RC::sample_type == kSaint) {
-    // configure random walk
-    CHECK(configs.count("random_walk_length"));
-    CHECK(configs.count("random_walk_restart_prob"));
-    CHECK(configs.count("num_random_walk"));
-    CHECK(RC::num_layer == 1);
-
-    RC::random_walk_length = std::stoull(configs["random_walk_length"]);
-    RC::random_walk_restart_prob = std::stod(configs["random_walk_restart_prob"]);
-    RC::num_random_walk = std::stoull(configs["num_random_walk"]);
-    RC::fanout = std::vector<size_t>(1, RC::random_walk_length);
-  } else {
-    // configure khop
-    CHECK(configs.count("num_fanout"));
-    CHECK(configs.count("fanout"));
-
-    size_t num_fanout = std::stoull(configs["num_fanout"]);
-    std::stringstream ss(configs["fanout"]);
-    for (size_t i = 0; i < num_fanout; i++) {
-      size_t fanout;
-      ss >> fanout;
-      RC::fanout.push_back(fanout);
-    }
-  }
-
-  if (configs.count("barriered_epoch") > 0) {
-    RunConfig::barriered_epoch = std::stoi(configs["barriered_epoch"]);
-    LOG(DEBUG) << "barriered_epoch=" << RunConfig::barriered_epoch;
-  } else {
-    RunConfig::barriered_epoch = 0;
-  }
-
-  if (configs.count("presample_epoch") > 0) {
-    RunConfig::presample_epoch = std::stoi(configs["presample_epoch"]);
-    LOG(DEBUG) << "presample_epoch=" << RunConfig::presample_epoch;
-  } else {
-    RunConfig::presample_epoch = 0;
-  }
-
-  if(configs.count("unified_memory") > 0 && configs["unified_memory"] == "True") {
-    RunConfig::unified_memory = true;
-    LOG(DEBUG) << "unified_memory=True";
-  }
-  if(configs.count("unified_memory_percentage") > 0) {
-    std::stringstream ss(configs["unified_memory_percentage"]);
-    double percent;
-    RunConfig::unified_memory_percentages.clear();
-    while (ss >> percent) {
-      RunConfig::unified_memory_percentages.push_back(percent);
-    }
-    CHECK(std::abs(std::accumulate(RunConfig::unified_memory_percentages.begin(), RunConfig::unified_memory_percentages.end(), 0.0) - 1) < 1e-8);
-  }
-  if(configs.count("um_policy") > 0) {
-    if(configs["um_policy"] == "default") {
-      RunConfig::unified_memory_policy = UMPolicy::kDefault;
-    } else if(configs["um_policy"] == "degree") {
-      RunConfig::unified_memory_policy = UMPolicy::kDegree;
-    } else if(configs["um_policy"] == "trainset") {
-      RunConfig::unified_memory_policy = UMPolicy::kTrainset;
-    } else if(configs["um_policy"] == "random") {
-      RunConfig::unified_memory_policy = UMPolicy::kRandom;
-    } else if(configs["um_policy"] == "presample") {
-      RunConfig::unified_memory_policy = UMPolicy::kPreSample;
-    } else {
-      LOG(FATAL) << "bad um_policy";
-    }
-    LOG(INFO) << "unified_memory_policy" << " " << configs["um_policy"];
-  }
-  if(RunConfig::unified_memory == true) {
-    RunConfig::unified_memory_ctxes.clear();
-    if (configs.count("unified_memory_ctx") > 0) {
-      std::stringstream ss(configs["unified_memory_ctx"]);
-      std::regex cuda_reg("cuda:([0-9]+)");
-      std::string ctx;
-      while(ss >> ctx) {
-        std::smatch device_id;
-        if (std::regex_match(ctx, device_id, cuda_reg)) {
-          RunConfig::unified_memory_ctxes.push_back(GPU(std::stoi(device_id[1])));
-        } else if (ctx == "cpu") {
-          RunConfig::unified_memory_ctxes.push_back(CPU());
-        }
-      }
-    } else {
-      RunConfig::unified_memory_ctxes.push_back(RunConfig::sampler_ctx);
-      RunConfig::unified_memory_ctxes.push_back(CPU());
-    }
-    LOG(INFO) << "unified_memory_ctxes : "
-              << std::accumulate(RunConfig::unified_memory_ctxes.begin(), RunConfig::unified_memory_ctxes.end(), 
-                  std::string{""},
-                [](std::string init, const Context& first) {
-                  std::stringstream ss;
-                  ss << first << " ";
-                  return init + ss.str();
-                });
-    LOG(INFO) << "unified_memory_percentages : "
-              << std::accumulate(RunConfig::unified_memory_percentages.begin(), RunConfig::unified_memory_percentages.end(),
-                  std::string{""},
-                [](std::string init, double percent) {
-                  return init + std::to_string(percent) + " ";
-                });
-    CHECK(RunConfig::unified_memory_ctxes.size() == RunConfig::unified_memory_percentages.size());
-  }
-  // check unified memory based on run arch
-  if (RC::run_arch == RunArch::kArch9) {
-    if (!RC::unified_memory) {
-      LOG(FATAL) << "Arch9 should use unified memory for sampling";
-    }
-    if (RC::unified_memory_ctxes.size() != RC::num_sample_worker) {
-      LOG(FATAL) << "UM sampler worker conflicts";
-    }
-    for (auto ctx : RC::unified_memory_ctxes) {
-      if (ctx.device_type != DeviceType::kGPU && ctx.device_type != DeviceType::kGPU_UM) {
-        LOG(FATAL) << "UM sampler ctx should be GPU, but find " << ctx; 
-      }
-    }
-  } else if (RC::run_arch == RunArch::kArch3) {
-    if (RunConfig::unified_memory) {
-      CHECK(RunConfig::unified_memory_ctxes[0] == RunConfig::sampler_ctx);
-    }
-  }
-
   RC::LoadConfigFromEnv();
-  LOG(INFO) << "Use " << RunConfig::sample_type << " sampling algorithm";
 
   RC::is_configured = true;
 }
@@ -308,62 +156,6 @@ void samgraph_start() {
 
   Engine::Get()->Start();
   LOG(INFO) << "SamGraph has been started successfully";
-}
-
-size_t samgraph_num_epoch() {
-  CHECK(Engine::Get()->IsInitialized() && !Engine::Get()->IsShutdown());
-  return Engine::Get()->NumEpoch();
-}
-
-size_t samgraph_steps_per_epoch() {
-  CHECK(Engine::Get()->IsInitialized() && !Engine::Get()->IsShutdown());
-  return Engine::Get()->NumStep();
-}
-
-size_t samgraph_num_class() {
-  // CHECK(Engine::Get()->IsInitialized() && !Engine::Get()->IsShutdown());
-  return Engine::Get()->GetGraphDataset()->num_class;
-}
-
-size_t samgraph_feat_dim() {
-  // CHECK(Engine::Get()->IsInitialized() && !Engine::Get()->IsShutdown());
-  return Engine::Get()->GetGraphDataset()->feat->Shape().at(1);
-}
-
-uint64_t samgraph_get_next_batch() {
-  CHECK(Engine::Get()->IsInitialized() && !Engine::Get()->IsShutdown());
-
-  // uint64_t key = Engine::Get()->GetBatchKey(epoch, step);
-  Engine::Get()->SetGraphBatch(nullptr);
-  auto graph = Engine::Get()->GetGraphPool()->GetGraphBatch();
-  uint64_t key = graph->key;
-
-  LOG(DEBUG) << "samgraph_get_next_batch encodeKey with key " << key;
-  Engine::Get()->SetGraphBatch(graph);
-
-  return key;
-}
-
-void samgraph_sample_once() { Engine::Get()->RunSampleOnce(); }
-
-size_t samgraph_get_graph_num_src(uint64_t key, int graph_id) {
-  auto batch = Engine::Get()->GetGraphBatch();
-  return RoundUp<size_t>(batch->graphs[graph_id]->num_src, 8);
-}
-
-size_t samgraph_get_graph_num_dst(uint64_t key, int graph_id) {
-  auto batch = Engine::Get()->GetGraphBatch();
-  return RoundUp<size_t>(batch->graphs[graph_id]->num_dst, 8);
-}
-
-size_t samgraph_get_graph_num_edge(uint64_t key, int graph_id) {
-  auto batch = Engine::Get()->GetGraphBatch();
-  return batch->graphs[graph_id]->num_edge;
-}
-
-size_t samgraph_get_unsupervised_graph_num_node(uint64_t key) {
-  auto batch = Engine::Get()->GetGraphBatch();
-  return RoundUp<size_t>(batch->unsupervised_graph->num_src, 8);
 }
 
 void samgraph_shutdown() {
@@ -484,8 +276,6 @@ void samgraph_dump_trace() {
   std::cerr.flush();
 }
 
-void samgraph_forward_barrier() { Engine::Get()->ForwardBarrier(); }
-
 void samgraph_data_init() {
   CHECK(RunConfig::is_configured);
   Engine::Create();
@@ -501,31 +291,11 @@ void samgraph_sample_init(int worker_id, const char*ctx) {
   LOG(INFO) << "SamGraph sample has been initialized successfully";
 }
 
-void samgraph_um_sample_init(int num_workers) {
-  CHECK(RunConfig::is_configured);
-  dist::DistEngine::Get()->UMSampleInit(num_workers);
-
-  LOG(INFO) << "SamGraph um sample has been initialized successfully";
-}
-
 void samgraph_train_init(int worker_id, const char*ctx) {
   CHECK(RunConfig::is_configured);
   dist::DistEngine::Get()->TrainInit(worker_id, Context(std::string(ctx)), dist::DistType::Extract);
 
   LOG(INFO) << "SamGraph train has been initialized successfully";
-}
-
-void samgraph_extract_start(int count) {
-  dist::DistEngine::Get()->StartExtract(count);
-  LOG(INFO) << "SamGraph extract background thread start successfully";
-}
-
-void samgraph_switch_init(int worker_id, const char*ctx, double cache_percentage) {
-  RunConfig::cache_percentage = cache_percentage;
-  CHECK(RunConfig::is_configured);
-  dist::DistEngine::Get()->TrainInit(worker_id, Context(std::string(ctx)), dist::DistType::Switch);
-
-  LOG(INFO) << "SamGraph switch has been initialized successfully";
 }
 
 void samgraph_train_barrier() {
@@ -574,16 +344,6 @@ void samgraph_print_memory_usage() {
     std::cout << "[SAM] cuda" << ctx.device_id << " workspace         : " << ToReadableSize(_target_device->WorkspaceSize(ctx)) << "\n";
     std::cout << "[SAM] cuda" << ctx.device_id << " workspace reserve : " << ToReadableSize(_target_device->FreeWorkspaceSize(ctx)) << "\n";
     std::cout << "[SAM] cuda" << ctx.device_id << " total             : " << ToReadableSize(_target_device->TotalSize(ctx)) << "\n";
-  } else if (dynamic_cast<cuda::GPUEngine*>(Engine::Get())) {
-    for (Context ctx : {cuda::GPUEngine::Get()->GetSamplerCtx(),
-                        cuda::GPUEngine::Get()->GetTrainerCtx()}) {
-      auto _target_device = Device::Get(ctx);
-      std::cout << "[CUDA] cuda" << ctx.device_id << ": usage: " << ToReadableSize(get_cuda_used(ctx)) << "\n";
-      std::cout << "[SAM] cuda" << ctx.device_id << " data alloc        : " << ToReadableSize(_target_device->DataSize(ctx)) << "\n";
-      std::cout << "[SAM] cuda" << ctx.device_id << " workspace         : " << ToReadableSize(_target_device->WorkspaceSize(ctx)) << "\n";
-      std::cout << "[SAM] cuda" << ctx.device_id << " workspace reserve : " << ToReadableSize(_target_device->FreeWorkspaceSize(ctx)) << "\n";
-      std::cout << "[SAM] cuda" << ctx.device_id << " total             : " << ToReadableSize(_target_device->TotalSize(ctx)) << "\n";
-    }
   }
   std::cout.flush();
 }

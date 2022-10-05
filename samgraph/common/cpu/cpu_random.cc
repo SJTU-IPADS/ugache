@@ -17,7 +17,7 @@
 
 #include <random>
 
-#include "cpu_function.h"
+#include "../common.h"
 
 namespace samgraph {
 namespace common {
