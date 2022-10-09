@@ -61,7 +61,7 @@ enum DataType {
   kI64 = 6,
 };
 
-enum DeviceType { kCPU = 0, kMMAP = 1, kGPU = 2, kGPU_UM = 3, kGPU_Ext = 4};
+enum DeviceType { kCPU = 0, kMMAP = 1, kGPU = 2, kGPU_UM = 3};
 
 
 // cache by degree: cache the nodes with large degree
@@ -135,12 +135,25 @@ struct Context {
       return os;
     }
   }
+  friend Context Priority(Context c1, Context c2) {
+    return (c1.device_type >= c2.device_type) ? c1 : c2;
+  }
 };
 
 using StreamHandle = void*;
 
 class Tensor;
 using TensorPtr = std::shared_ptr<Tensor>;
+
+class ExternelGPUMemoryHandler {
+ public:
+  ExternelGPUMemoryHandler() {}
+  virtual ~ExternelGPUMemoryHandler() {}
+  virtual void* ptr() = 0;
+  template<typename T> T* ptr() {return static_cast<T*>(ptr());}
+};
+
+using MemHandle = std::shared_ptr<ExternelGPUMemoryHandler>;
 
 size_t GetDataTypeBytes(DataType dtype);
 class Tensor {
@@ -186,6 +199,8 @@ class Tensor {
                             std::vector<size_t> shape, Context ctx,
                             std::string name);
   // static TensorPtr CopyTo(TensorPtr source, Context ctx, StreamHandle stream = nullptr, double scale = Constant::kAllocScale);
+  static TensorPtr CopyToExternal(TensorPtr source, std::function<MemHandle(size_t)> & allocator, Context ctx, StreamHandle stream = nullptr, double scale = Constant::kAllocScale);
+  static TensorPtr CopyLineToExternel(TensorPtr source, size_t line_idx, std::function<MemHandle(size_t)> & allocator, Context ctx, StreamHandle stream = nullptr, double scale = Constant::kAllocScale);
   // static TensorPtr CopyTo(TensorPtr source, Context ctx, StreamHandle stream, std::string name, double scale = Constant::kAllocScale);
   // static TensorPtr CopyLine(TensorPtr source, size_t line_idx, Context ctx, StreamHandle stream = nullptr, double scale = Constant::kAllocScale);
   // static TensorPtr UMCopyTo(TensorPtr source, std::vector<Context> ctxes, std::vector<StreamHandle> streams = {});
@@ -203,6 +218,8 @@ class Tensor {
   std::vector<size_t> _shape;
 
   std::string _name;
+
+  MemHandle _external_mem_hanlder;
 };
 
 
