@@ -45,8 +45,9 @@ struct RunConfig {
 
   // For multi-gpu sampling and training
   static size_t               worker_id;
-  static size_t               num_worker;
   static size_t               num_device;
+  static bool                 cross_process;
+  static std::vector<int>     device_id_list;
 
   // Environment variables
   static bool                 option_profile_cuda;

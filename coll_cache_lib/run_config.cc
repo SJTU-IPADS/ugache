@@ -32,12 +32,11 @@ double               RunConfig::cache_percentage               = 0.0f;
 
 bool                 RunConfig::is_configured                  = false;
 
-size_t               RunConfig::num_sample_worker;
-size_t               RunConfig::num_train_worker;
-
 // For arch7
-size_t               RunConfig::worker_id                      = false;
-size_t               RunConfig::num_worker                     = false;
+size_t               RunConfig::worker_id                      = 0;
+size_t               RunConfig::num_device                     = 1;
+bool                 RunConfig::cross_process                  = false;
+std::vector<int>     RunConfig::device_id_list                   = {0};
 
 bool                 RunConfig::option_profile_cuda            = false;
 bool                 RunConfig::option_log_node_access         = false;

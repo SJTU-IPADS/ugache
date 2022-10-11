@@ -84,6 +84,8 @@ const std::string Constant::kCollCacheBuilderShmName = std::string("coll_cache_s
 const std::string Constant::kCollCachePlacementShmName = std::string("coll_cache_block_placement_") + std::string(std::getenv("USER"));
 const std::string Constant::kCollCacheAccessShmName = std::string("coll_cache_block_access_from_") + std::string(std::getenv("USER"));
 const std::string Constant::kCollCacheNIdToBlockShmName = std::string("coll_cache_block_nid_to_block_") + std::string(std::getenv("USER"));
+const std::string Constant::kCollCacheHashTableOffsetPtrShmName = std::string("coll_cache_hash_table_offset_ptr_") + std::string(std::getenv("USER"));
+const std::string Constant::kCollCacheDeviceCacheDataPtrShmName = std::string("coll_cache_device_cache_data_ptr_") + std::string(std::getenv("USER"));
 
 }  // namespace common
 }  // namespace coll_cache_lib
