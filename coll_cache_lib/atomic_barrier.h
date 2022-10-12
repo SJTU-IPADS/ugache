@@ -9,6 +9,7 @@ struct AtomicBarrier {
   std::atomic_int counter{0};
   std::atomic_bool flag{false};
   int worker = 0;
+  AtomicBarrier(int num_syncher) : worker(num_syncher) {}
   void Wait() {
     int local_f = flag.load();
     int local_counter = counter.fetch_add(1);

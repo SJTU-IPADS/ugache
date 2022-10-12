@@ -356,7 +356,7 @@ __global__ void decide_source_location_advised(const IdType* nid_to_block_id, co
 }
 
 void PreDecideSrc(int num_bits, int local_id, int cpu_location_id, int * placement_to_src) {
-  auto g = std::default_random_engine(std::chrono::system_clock::now().time_since_epoch().count());
+  auto g = std::mt19937(std::chrono::system_clock::now().time_since_epoch().count());
   auto count_bits_fn = [](int a) {
     int count = 0;
     while (a) {
@@ -1327,9 +1327,8 @@ DevicePointerExchanger::DevicePointerExchanger(bool cross_process,
                                                std::string shm_name) {
   int fd = cpu::MmapCPUDevice::CreateShm(4096, shm_name);
   _buffer = cpu::MmapCPUDevice::MapFd(MMAP(MMAP_RW_DEVICE), 4096, fd);
-  _barrier = new ((char *)_buffer + 2048) AtomicBarrier;
+  _barrier = new ((char *)_buffer + 2048) AtomicBarrier(world_size);
   // even for single process, we require concurrent initialization of each gpu.
-  _barrier->worker = world_size;
   _cross_process = cross_process;
 }
 } // namespace coll_cache_lib

@@ -270,7 +270,7 @@ TensorPtr Tensor::FromBlob(void *data, DataType dtype,
   return tensor;
 }
 
-TensorPtr Tensor::CopyToExternal(TensorPtr source, std::function<MemHandle(size_t)> & allocator, Context ctx, StreamHandle stream, double scale) {
+TensorPtr Tensor::CopyToExternal(TensorPtr source, const std::function<MemHandle(size_t)> & allocator, Context ctx, StreamHandle stream, double scale) {
   CHECK(source && source->Defined());
   std::vector<size_t> shape = source->Shape();
   CHECK_GT(shape.size(), 0);

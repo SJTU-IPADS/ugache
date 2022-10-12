@@ -174,7 +174,7 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(Context ctx) {
   cudaDeviceProp prop;
   CUDA_CALL(cudaGetDeviceProperties(&prop, ctx.device_id));
   // fixme
-  auto desc = AutoBuild(RunConfig::num_worker, total_gpu, prop.name);
+  auto desc = AutoBuild(RunConfig::num_device, total_gpu, prop.name);
   desc.SMPercentToNum(prop.multiProcessorCount);
   return desc;
 }

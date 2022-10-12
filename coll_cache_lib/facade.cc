@@ -1,6 +1,7 @@
 #include "facade.h"
 #include "coll_cache/ndarray.h"
 #include "coll_cache/optimal_solver_class.h"
+#include "cpu/mmap_cpu_device.h"
 #include <thread>
 
 namespace coll_cache_lib {
@@ -10,13 +11,23 @@ void CollCache::build(std::function<std::function<MemHandle(size_t)>(int)> alloc
                       StreamHandle stream) {
   // size_t num_thread = RunConfig::cross_process ? 1 : RunConfig::num_device;
   std::vector<std::thread> builder_threads(RunConfig::num_device);
+  CUDA_CALL(cudaHostRegister(cpu_data, RoundUp<size_t>(_nid_to_block->Shape()[0] * dim * GetDataTypeBytes(dtype), 1 << 21), cudaHostRegisterDefault | cudaHostRegisterReadOnly));
+  this->_cache_ctx_list.resize(RunConfig::num_device);
+  this->_session_list.resize(RunConfig::num_device);
   for (size_t i = 0; i < RunConfig::num_device; i++) {
-    builder_threads[i] = std::thread([&](){
+    builder_threads[i] = std::thread([&, i](){
       if (RunConfig::cross_process && i != RunConfig::worker_id) return;
+      StreamHandle build_stream = stream;
+      if (!RunConfig::cross_process) {
+        CUDA_CALL(cudaStreamCreate((cudaStream_t*)(&build_stream)));
+      }
       int device_id = RunConfig::device_id_list[i];
+      LOG(ERROR) << "worker " << RunConfig::worker_id << " thread " << i << " initing device " << device_id;
       auto cache_ctx = std::make_shared<CacheContext>();
       Context gpu_ctx = GPU(device_id);
-      cache_ctx->build(allocator_builder(device_id), i, this->shared_from_this(), cpu_data, dtype, dim, gpu_ctx, cache_percentage);
+      cache_ctx->build(allocator_builder(device_id), i, this->shared_from_this(), cpu_data, dtype, dim, gpu_ctx, cache_percentage, build_stream);
+      Device::Get(gpu_ctx)->StreamSync(gpu_ctx, build_stream);
+      Device::Get(gpu_ctx)->FreeStream(gpu_ctx, build_stream);
       this->_cache_ctx_list[i] = cache_ctx;
       this->_session_list[i] = std::make_shared<ExtractSession>(cache_ctx);
     });
@@ -121,5 +132,9 @@ void CollCache::solve(IdType *ranking_nodes_list_ptr,
     }
   }
   // time_presample = tp.Passed();
+}
+CollCache::CollCache() {
+  int fd = cpu::MmapCPUDevice::CreateShm(sizeof(AtomicBarrier), Constant::kCollCacheBuilderShmName);
+  _barrier = new (cpu::MmapCPUDevice::MapFd(MMAP(MMAP_RW_DEVICE), sizeof(AtomicBarrier), fd))AtomicBarrier(RunConfig::num_device);
 }
 } // namespace coll_cache_lib

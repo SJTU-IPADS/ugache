@@ -199,7 +199,7 @@ class Tensor {
                             std::vector<size_t> shape, Context ctx,
                             std::string name);
   // static TensorPtr CopyTo(TensorPtr source, Context ctx, StreamHandle stream = nullptr, double scale = Constant::kAllocScale);
-  static TensorPtr CopyToExternal(TensorPtr source, std::function<MemHandle(size_t)> & allocator, Context ctx, StreamHandle stream = nullptr, double scale = Constant::kAllocScale);
+  static TensorPtr CopyToExternal(TensorPtr source, const std::function<MemHandle(size_t)> & allocator, Context ctx, StreamHandle stream = nullptr, double scale = Constant::kAllocScale);
   static TensorPtr CopyLineToExternel(TensorPtr source, size_t line_idx, std::function<MemHandle(size_t)> & allocator, Context ctx, StreamHandle stream = nullptr, double scale = Constant::kAllocScale);
   // static TensorPtr CopyTo(TensorPtr source, Context ctx, StreamHandle stream, std::string name, double scale = Constant::kAllocScale);
   // static TensorPtr CopyLine(TensorPtr source, size_t line_idx, Context ctx, StreamHandle stream = nullptr, double scale = Constant::kAllocScale);

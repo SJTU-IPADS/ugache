@@ -48,10 +48,10 @@ class GPUDevice final : public Device {
   void StreamSync(Context ctx, StreamHandle stream) override;
   void SyncStreamFromTo(Context ctx, StreamHandle event_src,
                         StreamHandle event_dst) override;
-  size_t TotalSize(Context ctx) override;
-  size_t DataSize(Context ctx) override;
-  size_t WorkspaceSize(Context ctx) override;
-  size_t FreeWorkspaceSize(Context ctx) override;
+  // size_t TotalSize(Context ctx) override;
+  // size_t DataSize(Context ctx) override;
+  // size_t WorkspaceSize(Context ctx) override;
+  // size_t FreeWorkspaceSize(Context ctx) override;
 
   static const std::shared_ptr<GPUDevice> &Global();
 

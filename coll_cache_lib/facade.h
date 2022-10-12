@@ -12,7 +12,7 @@ namespace coll_cache_lib {
 using namespace common;
 
 // global cache manager. one per process
-class CollCache : std::enable_shared_from_this<CollCache> {
+class CollCache : public std::enable_shared_from_this<CollCache> {
  private:
   TensorPtr _nid_to_block;
   TensorPtr _block_placement;
@@ -22,7 +22,8 @@ class CollCache : std::enable_shared_from_this<CollCache> {
   std::vector<std::shared_ptr<CacheContext>> _cache_ctx_list;
   std::vector<std::shared_ptr<ExtractSession>> _session_list;
  public:
-  CollCache* instance() {
+  CollCache();
+  CollCache *instance() {
     static CollCache instance;
     return &instance;
   }
