@@ -6,30 +6,35 @@
 
 namespace coll_cache_lib {
 
+// fixme : build function should not create thread internal. instead, provide function and let app call it from multiple threads/processes.
 void CollCache::build(std::function<std::function<MemHandle(size_t)>(int)> allocator_builder,
                       void *cpu_data, DataType dtype, size_t dim, double cache_percentage,
                       StreamHandle stream) {
   // size_t num_thread = RunConfig::cross_process ? 1 : RunConfig::num_device;
   std::vector<std::thread> builder_threads(RunConfig::num_device);
-  CUDA_CALL(cudaHostRegister(cpu_data, RoundUp<size_t>(_nid_to_block->Shape()[0] * dim * GetDataTypeBytes(dtype), 1 << 21), cudaHostRegisterDefault | cudaHostRegisterReadOnly));
+  {
+    // fixme: is this a per-process call, or per-thread call?
+    CUDA_CALL(cudaHostRegister(cpu_data, RoundUp<size_t>(_nid_to_block->Shape()[0] * dim * GetDataTypeBytes(dtype), 1 << 21), cudaHostRegisterDefault | cudaHostRegisterReadOnly));
+  }
   this->_cache_ctx_list.resize(RunConfig::num_device);
   this->_session_list.resize(RunConfig::num_device);
-  for (size_t i = 0; i < RunConfig::num_device; i++) {
-    builder_threads[i] = std::thread([&, i](){
-      if (RunConfig::cross_process && i != RunConfig::worker_id) return;
+  for (size_t replica_id = 0; replica_id < RunConfig::num_device; replica_id++) {
+    builder_threads[replica_id] = std::thread([&, replica_id](){
+      if (RunConfig::cross_process && replica_id != RunConfig::worker_id) return;
       StreamHandle build_stream = stream;
+      int device_id = RunConfig::device_id_list[replica_id];
+      CUDA_CALL(cudaSetDevice(device_id));
       if (!RunConfig::cross_process) {
         CUDA_CALL(cudaStreamCreate((cudaStream_t*)(&build_stream)));
       }
-      int device_id = RunConfig::device_id_list[i];
-      LOG(ERROR) << "worker " << RunConfig::worker_id << " thread " << i << " initing device " << device_id;
-      auto cache_ctx = std::make_shared<CacheContext>();
+      LOG(ERROR) << "worker " << RunConfig::worker_id << " thread " << replica_id << " initing device " << device_id;
+      auto cache_ctx = std::make_shared<CacheContext>(_replica_barrier);
       Context gpu_ctx = GPU(device_id);
-      cache_ctx->build(allocator_builder(device_id), i, this->shared_from_this(), cpu_data, dtype, dim, gpu_ctx, cache_percentage, build_stream);
+      cache_ctx->build(allocator_builder(replica_id), replica_id, this->shared_from_this(), cpu_data, dtype, dim, gpu_ctx, cache_percentage, build_stream);
       Device::Get(gpu_ctx)->StreamSync(gpu_ctx, build_stream);
       Device::Get(gpu_ctx)->FreeStream(gpu_ctx, build_stream);
-      this->_cache_ctx_list[i] = cache_ctx;
-      this->_session_list[i] = std::make_shared<ExtractSession>(cache_ctx);
+      this->_cache_ctx_list[replica_id] = cache_ctx;
+      this->_session_list[replica_id] = std::make_shared<ExtractSession>(cache_ctx);
     });
   }
 
@@ -43,6 +48,9 @@ void CollCache::lookup(int replica_id, const IdType *nodes,
                        StreamHandle stream) {
   _session_list[replica_id]->ExtractFeat(nodes, num_nodes, output, stream, 0);
 }
+
+// for master, the ptr must be valid; 
+// for slave, leave them empty
 void CollCache::solve(IdType *ranking_nodes_list_ptr,
                       IdType *ranking_nodes_freq_list_ptr, IdType num_node) {
   // currently we only allow single stream
@@ -114,10 +122,10 @@ void CollCache::solve(IdType *ranking_nodes_list_ptr,
     _block_placement = solver->block_placement;
     delete solver;
   }
-  _barrier->Wait();
+  _process_barrier->Wait();
   if (RunConfig::worker_id != 0) {
     _nid_to_block = Tensor::OpenShm(Constant::kCollCacheNIdToBlockShmName, kI32,
-                                    {num_node}, "nid_to_block");
+                                    {}, "nid_to_block");
     _block_placement = Tensor::OpenShm(Constant::kCollCachePlacementShmName,
                                        kU8, {}, "coll_cache_block_placement");
     if (RunConfig::cache_policy == kCollCacheAsymmLink ||
@@ -133,8 +141,10 @@ void CollCache::solve(IdType *ranking_nodes_list_ptr,
   }
   // time_presample = tp.Passed();
 }
-CollCache::CollCache() {
-  int fd = cpu::MmapCPUDevice::CreateShm(sizeof(AtomicBarrier), Constant::kCollCacheBuilderShmName);
-  _barrier = new (cpu::MmapCPUDevice::MapFd(MMAP(MMAP_RW_DEVICE), sizeof(AtomicBarrier), fd))AtomicBarrier(RunConfig::num_device);
-}
+// CollCache::CollCache(BarHandle process_barrier, BarHandle replica_barrier) {
+//   _barrier = barrier;
+//   // int fd = cpu::MmapCPUDevice::CreateShm(sizeof(AtomicBarrier), Constant::kCollCacheBuilderShmName);
+//   // int num_process = RunConfig::cross_process ? RunConfig::num_device : 1;
+//   // _process_barrier = new (cpu::MmapCPUDevice::MapFd(MMAP(MMAP_RW_DEVICE), sizeof(AtomicBarrier), fd))AtomicBarrier(num_process, RunConfig::worker_id == 0);
+// }
 } // namespace coll_cache_lib

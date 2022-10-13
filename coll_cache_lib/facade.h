@@ -17,16 +17,18 @@ class CollCache : public std::enable_shared_from_this<CollCache> {
   TensorPtr _nid_to_block;
   TensorPtr _block_placement;
   TensorPtr _block_access_advise;
-  AtomicBarrier *_barrier;
+  // AtomicBarrier *_process_barrier;
+  BarHandle _process_barrier;
+  BarHandle _replica_barrier;
   friend class CacheContext;
   std::vector<std::shared_ptr<CacheContext>> _cache_ctx_list;
   std::vector<std::shared_ptr<ExtractSession>> _session_list;
  public:
-  CollCache();
-  CollCache *instance() {
-    static CollCache instance;
-    return &instance;
-  }
+  CollCache(BarHandle process_barrier, BarHandle replica_barrier) : _process_barrier(process_barrier), _replica_barrier(replica_barrier) {}
+  // CollCache *instance() {
+  //   static CollCache instance;
+  //   return &instance;
+  // }
 
   void solve(IdType *ranking_nodes_list_ptr,
              IdType *ranking_nodes_freq_list_ptr, IdType num_node);

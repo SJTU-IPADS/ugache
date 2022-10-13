@@ -600,8 +600,9 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
 void OptimalAsymmLinkSolver::PreDecideSrc(int num_bits,
                                           int cpu_location_id,
                                           uint8_t *placement_to_src) {
-  auto g = std::default_random_engine(
-      std::chrono::system_clock::now().time_since_epoch().count());
+  auto g = std::mt19937(RunConfig::seed);
+  // auto g = std::default_random_engine(
+  //     std::chrono::system_clock::now().time_since_epoch().count());
   for (int placement = 0; placement < (1 << num_bits); placement++) {
     if (placement == 0) {
       placement_to_src[placement] = cpu_location_id;

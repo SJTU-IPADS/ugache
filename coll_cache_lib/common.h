@@ -155,6 +155,14 @@ class ExternelGPUMemoryHandler {
 
 using MemHandle = std::shared_ptr<ExternelGPUMemoryHandler>;
 
+class ExternalBarrierHandler {
+ public:
+  ExternalBarrierHandler() {}
+  virtual ~ExternalBarrierHandler() {}
+  virtual void Wait() = 0;
+};
+using BarHandle = std::shared_ptr<ExternalBarrierHandler>;
+
 size_t GetDataTypeBytes(DataType dtype);
 class Tensor {
  public:

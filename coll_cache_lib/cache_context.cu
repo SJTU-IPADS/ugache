@@ -5,7 +5,7 @@
 #include "logging.h"
 #include "coll_cache/ndarray.h"
 #include "coll_cache/optimal_solver_class.h"
-#include "atomic_barrier.h"
+// #include "atomic_barrier.h"
 #include <cuda_runtime.h>
 
 #include <cub/cub.cuh>
@@ -356,7 +356,8 @@ __global__ void decide_source_location_advised(const IdType* nid_to_block_id, co
 }
 
 void PreDecideSrc(int num_bits, int local_id, int cpu_location_id, int * placement_to_src) {
-  auto g = std::mt19937(std::chrono::system_clock::now().time_since_epoch().count());
+  // auto g = std::mt19937(std::chrono::system_clock::now().time_since_epoch().count());
+  auto g = std::mt19937(RunConfig::seed);
   auto count_bits_fn = [](int a) {
     int count = 0;
     while (a) {
@@ -982,6 +983,8 @@ void CollCacheManager::CheckCudaEqual(const void * a, const void* b, const size_
 #endif
 
 void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream) {
+  auto hash_table_offset_list = DevicePointerExchanger(false, _barrier, Constant::kCollCacheHashTableOffsetPtrShmName);
+  auto device_cache_data_list = DevicePointerExchanger(false, _barrier, Constant::kCollCacheDeviceCacheDataPtrShmName);
   _trainer_ctx = gpu_ctx;
   _dtype = dtype;
   _dim = dim;
@@ -1100,9 +1103,6 @@ void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCac
 
   LOG(INFO) << "CollCacheManager: waiting for remotes, here is " << _local_location_id;
 
-  auto hash_table_offset_list = DevicePointerExchanger(false, RunConfig::num_device, Constant::kCollCacheHashTableOffsetPtrShmName);
-  auto device_cache_data_list = DevicePointerExchanger(false, RunConfig::num_device, Constant::kCollCacheDeviceCacheDataPtrShmName);
-
   // wait until all device's hashtable is ready
   hash_table_offset_list.signin(_local_location_id, _hash_table_offset);
   if (num_cached_nodes > 0) {
@@ -1156,6 +1156,8 @@ void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCac
 }
 
 void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream) {
+  auto hash_table_offset_list = DevicePointerExchanger(false, _barrier, Constant::kCollCacheHashTableOffsetPtrShmName);
+  auto device_cache_data_list = DevicePointerExchanger(false, _barrier, Constant::kCollCacheDeviceCacheDataPtrShmName);
   _trainer_ctx = gpu_ctx;
   _dtype = dtype;
   _dim = dim;
@@ -1261,9 +1263,6 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
 
   LOG(INFO) << "CollCacheManager: waiting for remotes, here is " << _local_location_id;
 
-  auto hash_table_offset_list = DevicePointerExchanger(false, RunConfig::num_device, Constant::kCollCacheHashTableOffsetPtrShmName);
-  auto device_cache_data_list = DevicePointerExchanger(false, RunConfig::num_device, Constant::kCollCacheDeviceCacheDataPtrShmName);
-
   // wait until all device's hashtable is ready
   hash_table_offset_list.signin(_local_location_id, _hash_table_offset);
   if (num_cached_nodes > 0) {
@@ -1323,11 +1322,12 @@ void CacheContext::build(std::function<MemHandle(size_t)> gpu_mem_allocator,
   }
 }
 DevicePointerExchanger::DevicePointerExchanger(bool cross_process,
-                                               int world_size,
+                                               BarHandle barrier,
                                                std::string shm_name) {
   int fd = cpu::MmapCPUDevice::CreateShm(4096, shm_name);
   _buffer = cpu::MmapCPUDevice::MapFd(MMAP(MMAP_RW_DEVICE), 4096, fd);
-  _barrier = new ((char *)_buffer + 2048) AtomicBarrier(world_size);
+  // _barrier = new ((char *)_buffer + 2048) AtomicBarrier(world_size, is_master);
+  _barrier = barrier;
   // even for single process, we require concurrent initialization of each gpu.
   _cross_process = cross_process;
 }

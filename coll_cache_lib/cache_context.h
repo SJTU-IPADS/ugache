@@ -8,7 +8,7 @@
 // #include "coll_cache/optimal_solver_class.h"
 // #include "facade.h"
 // #include "timer.h"
-#include "atomic_barrier.h"
+// #include "atomic_barrier.h"
 #include <cuda_runtime.h>
 
 
@@ -74,8 +74,9 @@ struct DevicePointerExchanger {
   void* _buffer;
   bool _cross_process = false;
   // fixme: barrier must be created before fork. switch to sxn's implementation
-  AtomicBarrier* _barrier;
-  DevicePointerExchanger(bool cross_process, int world_size,
+  // AtomicBarrier* _barrier;
+  BarHandle _barrier;
+  DevicePointerExchanger(bool cross_process, BarHandle barrier,
                          std::string shm_name);
   void signin(int local_id, void* ptr_to_share) {
     if (_cross_process) {
@@ -98,7 +99,7 @@ struct DevicePointerExchanger {
 class CollCache;
 class CacheContext {
  private:
-
+  BarHandle _barrier;
   using HashTableEntryLocation = int;
   using HashTableEntryOffset = IdType;
 
@@ -133,6 +134,7 @@ class CacheContext {
   void build_without_advise(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream = nullptr);
   void build_with_advise(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream = nullptr);
  public:
+  CacheContext(BarHandle barrier) : _barrier(barrier) {}
   void build(std::function<MemHandle(size_t)> gpu_mem_allocator,
              int location_id, std::shared_ptr<CollCache> coll_cache_ptr,
              void *cpu_data, DataType dtype, size_t dim, Context gpu_ctx,
