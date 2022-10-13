@@ -15,9 +15,9 @@ void CollCache::build(std::function<std::function<MemHandle(size_t)>(int)> alloc
   {
     // fixme: is this a per-process call, or per-thread call?
     CUDA_CALL(cudaHostRegister(cpu_data, RoundUp<size_t>(_nid_to_block->Shape()[0] * dim * GetDataTypeBytes(dtype), 1 << 21), cudaHostRegisterDefault | cudaHostRegisterReadOnly));
+    this->_cache_ctx_list.resize(RunConfig::num_device);
+    this->_session_list.resize(RunConfig::num_device);
   }
-  this->_cache_ctx_list.resize(RunConfig::num_device);
-  this->_session_list.resize(RunConfig::num_device);
   for (size_t replica_id = 0; replica_id < RunConfig::num_device; replica_id++) {
     builder_threads[replica_id] = std::thread([&, replica_id](){
       if (RunConfig::cross_process && replica_id != RunConfig::worker_id) return;
@@ -51,10 +51,9 @@ void CollCache::lookup(int replica_id, const IdType *nodes,
 
 // for master, the ptr must be valid; 
 // for slave, leave them empty
-void CollCache::solve(IdType *ranking_nodes_list_ptr,
+
+void CollCache::solve_impl_master(IdType *ranking_nodes_list_ptr,
                       IdType *ranking_nodes_freq_list_ptr, IdType num_node) {
-  // currently we only allow single stream
-  if (RunConfig::worker_id == 0) {
     std::vector<int> trainer_to_stream(RunConfig::num_device, 0);
     std::vector<int> trainer_cache_percent(
         RunConfig::num_device, std::round(RunConfig::cache_percentage * 100));
@@ -121,9 +120,8 @@ void CollCache::solve(IdType *ranking_nodes_list_ptr,
     LOG(ERROR) << "solver solved";
     _block_placement = solver->block_placement;
     delete solver;
-  }
-  _process_barrier->Wait();
-  if (RunConfig::worker_id != 0) {
+}
+void CollCache::solve_impl_slave() {
     _nid_to_block = Tensor::OpenShm(Constant::kCollCacheNIdToBlockShmName, kI32,
                                     {}, "nid_to_block");
     _block_placement = Tensor::OpenShm(Constant::kCollCachePlacementShmName,
@@ -138,6 +136,17 @@ void CollCache::solve(IdType *ranking_nodes_list_ptr,
            num_blocks},
           "block_access_advise");
     }
+}
+
+void CollCache::solve(IdType *ranking_nodes_list_ptr,
+                      IdType *ranking_nodes_freq_list_ptr, IdType num_node) {
+  // currently we only allow single stream
+  if (RunConfig::worker_id == 0) {
+    solve_impl_master(ranking_nodes_list_ptr, ranking_nodes_freq_list_ptr, num_node);
+  }
+  _process_barrier->Wait();
+  if (RunConfig::worker_id != 0) {
+    solve_impl_slave();
   }
   // time_presample = tp.Passed();
 }
@@ -147,4 +156,35 @@ void CollCache::solve(IdType *ranking_nodes_list_ptr,
 //   // int num_process = RunConfig::cross_process ? RunConfig::num_device : 1;
 //   // _process_barrier = new (cpu::MmapCPUDevice::MapFd(MMAP(MMAP_RW_DEVICE), sizeof(AtomicBarrier), fd))AtomicBarrier(num_process, RunConfig::worker_id == 0);
 // }
+void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
+                         IdType *ranking_nodes_freq_list_ptr, IdType num_node,
+                         std::function<MemHandle(size_t)> gpu_mem_allocator,
+                         void *cpu_data, DataType dtype, size_t dim,
+                         double cache_percentage, StreamHandle stream) {
+  if (replica_id == 0) {
+    solve_impl_master(ranking_nodes_list_ptr, ranking_nodes_freq_list_ptr, num_node);
+  }
+  this->_replica_barrier->Wait();
+  if (replica_id != 0 && RunConfig::cross_process) {
+    solve_impl_slave();
+  }
+
+  if (RunConfig::cross_process || replica_id == 0) {
+    CUDA_CALL(cudaHostRegister(cpu_data, RoundUp<size_t>(_nid_to_block->Shape()[0] * dim * GetDataTypeBytes(dtype), 1 << 21), cudaHostRegisterDefault | cudaHostRegisterReadOnly));
+    this->_cache_ctx_list.resize(RunConfig::num_device);
+    this->_session_list.resize(RunConfig::num_device);
+  }
+
+  if (RunConfig::cross_process && replica_id != RunConfig::worker_id) return;
+  int device_id = RunConfig::device_id_list[replica_id];
+  LOG(ERROR) << "worker " << RunConfig::worker_id << " thread " << replica_id << " initing device " << device_id;
+  auto cache_ctx = std::make_shared<CacheContext>(_replica_barrier);
+  Context gpu_ctx = GPU(device_id);
+  cache_ctx->build(gpu_mem_allocator, replica_id, this->shared_from_this(), cpu_data, dtype, dim, gpu_ctx, cache_percentage, stream);
+  Device::Get(gpu_ctx)->StreamSync(gpu_ctx, stream);
+  Device::Get(gpu_ctx)->FreeStream(gpu_ctx, stream);
+  this->_cache_ctx_list[replica_id] = cache_ctx;
+  this->_session_list[replica_id] = std::make_shared<ExtractSession>(cache_ctx);
+  this->_replica_barrier->Wait();
+}
 } // namespace coll_cache_lib

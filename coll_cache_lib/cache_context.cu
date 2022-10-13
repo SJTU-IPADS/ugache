@@ -1201,7 +1201,7 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
   // 1. Build a mapping from node id to target device
   {
     TensorPtr node_to_block_gpu = Tensor::CopyToExternal(coll_cache_ptr->_nid_to_block, _gpu_mem_allocator, gpu_ctx, stream);   // large
-    TensorPtr block_access_advise_gpu = Tensor::CopyLineToExternel(coll_cache_ptr->_block_access_advise, RunConfig::worker_id, _gpu_mem_allocator, gpu_ctx, stream); // small
+    TensorPtr block_access_advise_gpu = Tensor::CopyLineToExternel(coll_cache_ptr->_block_access_advise, location_id, _gpu_mem_allocator, gpu_ctx, stream); // small
 
     SAM_CUDA_PREPARE_1D(num_total_nodes);
     if (RunConfig::option_empty_feat == 0) {

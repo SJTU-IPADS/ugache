@@ -23,6 +23,9 @@ class CollCache : public std::enable_shared_from_this<CollCache> {
   friend class CacheContext;
   std::vector<std::shared_ptr<CacheContext>> _cache_ctx_list;
   std::vector<std::shared_ptr<ExtractSession>> _session_list;
+  void solve_impl_master(IdType *ranking_nodes_list_ptr,
+             IdType *ranking_nodes_freq_list_ptr, IdType num_node);
+  void solve_impl_slave();
  public:
   CollCache(BarHandle process_barrier, BarHandle replica_barrier) : _process_barrier(process_barrier), _replica_barrier(replica_barrier) {}
   // CollCache *instance() {
@@ -38,6 +41,12 @@ class CollCache : public std::enable_shared_from_this<CollCache> {
              double cache_percentage, StreamHandle stream = nullptr);
   void lookup(int replica_id, const IdType *nodes, const size_t num_nodes,
               void *output, StreamHandle stream);
+
+  void build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
+                IdType *ranking_nodes_freq_list_ptr, IdType num_node,
+                std::function<MemHandle(size_t)> gpu_mem_allocator,
+                void *cpu_data, DataType dtype, size_t dim,
+                double cache_percentage, StreamHandle stream = nullptr);
 };
 
 
