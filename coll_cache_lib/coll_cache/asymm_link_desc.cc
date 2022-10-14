@@ -148,6 +148,16 @@ void AsymmLinkDesc::BuildAsymmHardWire(int num_trainer) {
 
 AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
                                        std::string gpu_model) {
+  if (gpu_model.find("A100") != std::string::npos) {
+    RunConfig::coll_cache_hyperparam_T_remote = 438 / (double)213;
+    RunConfig::coll_cache_hyperparam_T_cpu    = 438 / (double)11.8;
+  } else if (gpu_model.find("V100") != std::string::npos) {
+    RunConfig::coll_cache_hyperparam_T_remote = 330 / (double)38;
+    RunConfig::coll_cache_hyperparam_T_cpu    = 330 / (double)11;
+  } else {
+    CHECK(false) << "No bandwidth data for " << gpu_model;
+  }
+
   AsymmLinkDesc desc;
   std::string topo_name;
   if (total_gpu <= 4) {

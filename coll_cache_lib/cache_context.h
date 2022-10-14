@@ -73,8 +73,7 @@ struct DstVal {
 struct DevicePointerExchanger {
   void* _buffer;
   bool _cross_process = false;
-  // fixme: barrier must be created before fork. switch to sxn's implementation
-  // AtomicBarrier* _barrier;
+  // no way to ensure barrier is globally initialized then used, so let application pass-in a barrier
   BarHandle _barrier;
   DevicePointerExchanger(bool cross_process, BarHandle barrier,
                          std::string shm_name);

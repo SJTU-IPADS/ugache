@@ -57,10 +57,8 @@ void CollCache::solve_impl_master(IdType *ranking_nodes_list_ptr,
     std::vector<int> trainer_to_stream(RunConfig::num_device, 0);
     std::vector<int> trainer_cache_percent(
         RunConfig::num_device, std::round(RunConfig::cache_percentage * 100));
-    // simply assume we use gpu 0 for now
-    Context gpu_ctx = GPU();
-    RunConfig::coll_cache_link_desc =
-        coll_cache::AsymmLinkDesc::AutoBuild(gpu_ctx);
+    // replica 0 is master
+    Context gpu_ctx = GPU(RunConfig::device_id_list[0]);
 
     auto ranking_nodes_list = Tensor::FromBlob(
         ranking_nodes_list_ptr, coll_cache::get_data_type<IdType>(),
@@ -161,22 +159,26 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
                          std::function<MemHandle(size_t)> gpu_mem_allocator,
                          void *cpu_data, DataType dtype, size_t dim,
                          double cache_percentage, StreamHandle stream) {
-  if (replica_id == 0) {
-    solve_impl_master(ranking_nodes_list_ptr, ranking_nodes_freq_list_ptr, num_node);
-  }
-  this->_replica_barrier->Wait();
-  if (replica_id != 0 && RunConfig::cross_process) {
-    solve_impl_slave();
-  }
-
+  int device_id = RunConfig::device_id_list[replica_id];
   if (RunConfig::cross_process || replica_id == 0) {
-    CUDA_CALL(cudaHostRegister(cpu_data, RoundUp<size_t>(_nid_to_block->Shape()[0] * dim * GetDataTypeBytes(dtype), 1 << 21), cudaHostRegisterDefault | cudaHostRegisterReadOnly));
+    // one-time call for each process
+    RunConfig::coll_cache_link_desc = coll_cache::AsymmLinkDesc::AutoBuild(GPU(device_id));
+    CUDA_CALL(cudaHostRegister(cpu_data, RoundUp<size_t>(num_node * dim * GetDataTypeBytes(dtype), 1 << 21), cudaHostRegisterDefault | cudaHostRegisterReadOnly));
     this->_cache_ctx_list.resize(RunConfig::num_device);
     this->_session_list.resize(RunConfig::num_device);
   }
+  if (replica_id == 0) {
+    solve_impl_master(ranking_nodes_list_ptr, ranking_nodes_freq_list_ptr, num_node);
+    LOG(ERROR) << replica_id << " solved master";
+  }
+  this->_replica_barrier->Wait();
+  if (replica_id != 0 && RunConfig::cross_process) {
+    // one-time call for none-master process
+    solve_impl_slave();
+  }
+  LOG(ERROR) << replica_id << " solved";
 
-  if (RunConfig::cross_process && replica_id != RunConfig::worker_id) return;
-  int device_id = RunConfig::device_id_list[replica_id];
+  // if (RunConfig::cross_process) return;
   LOG(ERROR) << "worker " << RunConfig::worker_id << " thread " << replica_id << " initing device " << device_id;
   auto cache_ctx = std::make_shared<CacheContext>(_replica_barrier);
   Context gpu_ctx = GPU(device_id);
