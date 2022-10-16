@@ -3,7 +3,7 @@
 // #include "cpu/cpu_device.h"
 // #include "cpu/mmap_cpu_device.h"
 #include "run_config.h"
-#include "logging.h"
+// #include "logging.h"
 // #include "coll_cache/ndarray.h"
 // #include "coll_cache/optimal_solver_class.h"
 // #include "facade.h"
@@ -77,23 +77,8 @@ struct DevicePointerExchanger {
   BarHandle _barrier;
   DevicePointerExchanger(bool cross_process, BarHandle barrier,
                          std::string shm_name);
-  void signin(int local_id, void* ptr_to_share) {
-    if (_cross_process) {
-      CUDA_CALL(cudaIpcGetMemHandle(&((cudaIpcMemHandle_t*)_buffer)[local_id], ptr_to_share));
-    } else {
-      static_cast<void**>(_buffer)[local_id] = ptr_to_share;
-    }
-    _barrier->Wait();
-  }
-  void* extract(int location_id) {
-    void* ret = nullptr;
-    if (_cross_process) {
-      CUDA_CALL(cudaIpcOpenMemHandle(&ret, ((cudaIpcMemHandle_t*)_buffer)[location_id], cudaIpcMemLazyEnablePeerAccess));
-    } else {
-      ret = static_cast<void**>(_buffer)[location_id];
-    }
-    return ret;
-  }
+  void signin(int local_id, void* ptr_to_share);
+  void* extract(int location_id);
 };
 class CollCache;
 class CacheContext {

@@ -1,4 +1,5 @@
 #include "asymm_link_desc.h"
+#include "../logging.h"
 #include "../run_config.h"
 #include <iostream>
 #include <cuda_runtime.h>

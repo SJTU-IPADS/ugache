@@ -1,6 +1,6 @@
 #pragma once
 #include "common.h"
-#include "logging.h"
+// #include "logging.h"
 #include "cache_context.h"
 #include <cuda_runtime.h>
 
@@ -49,7 +49,4 @@ class CollCache : public std::enable_shared_from_this<CollCache> {
                 double cache_percentage, StreamHandle stream = nullptr);
 };
 
-
-
-
-};
+};  // namespace coll_cache_lib

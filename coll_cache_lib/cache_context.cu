@@ -511,8 +511,8 @@ void ExtractSession::CombineConcurrent(const SrcKey * src_index, const DstVal * 
   IdType total_num_node = 0;
   for (int i = 0; i < NUM_LINK; i++) {
     CHECK(RunConfig::coll_cache_link_desc.link_src[_cache_ctx->_local_location_id][i].size() == 1);
-    const int dev_id = RunConfig::coll_cache_link_desc.link_src[_cache_ctx->_local_location_id][i][0];
-    const int num_sm = RunConfig::coll_cache_link_desc.link_sm[_cache_ctx->_local_location_id][i];
+    int dev_id = RunConfig::coll_cache_link_desc.link_src[_cache_ctx->_local_location_id][i][0];
+    int num_sm = RunConfig::coll_cache_link_desc.link_sm[_cache_ctx->_local_location_id][i];
     param.full_src_array[i] = DataIter<SrcOffIter>(SrcOffIter(dst_index + group_offset[dev_id]), _cache_ctx->_device_cache_data[dev_id], _cache_ctx->_dim);
     param.dst_index_array[i] = DataIter<DstOffIter>(DstOffIter(dst_index + group_offset[dev_id]), output, _cache_ctx->_dim);
     param.num_node_array[i] = group_offset[dev_id + 1] - group_offset[dev_id];
@@ -1331,4 +1331,24 @@ DevicePointerExchanger::DevicePointerExchanger(bool cross_process,
   // even for single process, we require concurrent initialization of each gpu.
   _cross_process = cross_process;
 }
+
+void DevicePointerExchanger::signin(int local_id, void *ptr_to_share) {
+  if (_cross_process) {
+    CUDA_CALL(cudaIpcGetMemHandle(&((cudaIpcMemHandle_t *)_buffer)[local_id], ptr_to_share));
+  } else {
+    static_cast<void **>(_buffer)[local_id] = ptr_to_share;
+  }
+  _barrier->Wait();
+}
+void *DevicePointerExchanger::extract(int location_id) {
+  void *ret = nullptr;
+  if (_cross_process) {
+    CUDA_CALL(cudaIpcOpenMemHandle(&ret, ((cudaIpcMemHandle_t *)_buffer)[location_id],
+                                   cudaIpcMemLazyEnablePeerAccess));
+  } else {
+    ret = static_cast<void **>(_buffer)[location_id];
+  }
+  return ret;
+}
+
 } // namespace coll_cache_lib

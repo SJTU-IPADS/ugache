@@ -35,7 +35,7 @@
 #include <sstream>  // stringstream
 #include <string>   // string
 
-// #include "constant.h"
+#include "constant.h"
 #include "run_config.h"
 #include "device.h"
 #include "cpu/mmap_cpu_device.h"
@@ -312,6 +312,39 @@ TensorPtr Tensor::CopyLineToExternel(TensorPtr source, size_t line_idx, std::fun
   Device::Get(working_ctx)->StreamSync(working_ctx, stream);
 
   return tensor;
+}
+
+template<typename T> 
+T* Tensor::Ptr(){ 
+  CHECK(_data == nullptr || (sizeof(T) == GetDataTypeBytes(_dtype))); 
+  return static_cast<T*>(_data);
+}
+template<> float* Tensor::Ptr<float>();
+template<> size_t* Tensor::Ptr<size_t>();
+template<> IdType* Tensor::Ptr<IdType>();
+template<> Id64Type* Tensor::Ptr<Id64Type>();
+
+std::ostream& operator<<(std::ostream& os, const Context& ctx) {
+  switch (ctx.device_type)
+  {
+  case DeviceType::kMMAP:
+    os << "mmap:" << ctx.device_id;
+    return os;
+  case DeviceType::kCPU:
+    os << "cpu:" << ctx.device_id;    
+    return os;
+  case DeviceType::kGPU:
+    os << "gpu:" << ctx.device_id;
+    return os;
+  case DeviceType::kGPU_UM:
+    os << "gpu_um:" << ctx.device_id;
+    return os;
+  default:
+    LOG(FATAL) << "not support device type "
+               << static_cast<int>(ctx.device_type) << ":" << ctx.device_id;
+    // os << "not supprt:" << static_cast<int>(ctx.device_type) << ":" << ctx.device_id;
+    return os;
+  }
 }
 
 std::string ToReadableSize(size_t nbytes) {

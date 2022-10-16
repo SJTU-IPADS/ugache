@@ -45,7 +45,7 @@
 #include <string>
 #include <vector>
 
-#include "logging.h"
+// #include "logging.h"
 #include "constant.h"
 
 namespace coll_cache_lib {
@@ -113,28 +113,7 @@ struct Context {
     return this->device_type == rhs.device_type &&
            this->device_id == rhs.device_id;
   }
-  friend std::ostream& operator<<(std::ostream& os, const Context& ctx) {
-    switch (ctx.device_type)
-    {
-    case DeviceType::kMMAP:
-      os << "mmap:" << ctx.device_id;
-      return os;
-    case DeviceType::kCPU:
-      os << "cpu:" << ctx.device_id;    
-      return os;
-    case DeviceType::kGPU:
-      os << "gpu:" << ctx.device_id;
-      return os;
-    case DeviceType::kGPU_UM:
-      os << "gpu_um:" << ctx.device_id;
-      return os;
-    default:
-      LOG(FATAL) << "not support device type "
-                 << static_cast<int>(ctx.device_type) << ":" << ctx.device_id;
-      // os << "not supprt:" << static_cast<int>(ctx.device_type) << ":" << ctx.device_id;
-      return os;
-    }
-  }
+  friend std::ostream& operator<<(std::ostream& os, const Context& ctx);
   friend Context Priority(Context c1, Context c2) {
     return (c1.device_type >= c2.device_type) ? c1 : c2;
   }
@@ -174,10 +153,7 @@ class Tensor {
   DataType Type() const { return _dtype; }
   const std::vector<size_t>& Shape() const { return _shape; }
   const void* Data() const { return _data; }
-  template<typename T> T* Ptr(){ 
-    CHECK(_data == nullptr || (sizeof(T) == GetDataTypeBytes(_dtype))); 
-    return static_cast<T*>(_data);
-  }
+  template<typename T> T* Ptr();
   template<typename T> const T* CPtr() const { return const_cast<Tensor*>(this)->Ptr<T>(); }
   void* MutableData() { return _data; }
   void ReplaceData(void* data);
