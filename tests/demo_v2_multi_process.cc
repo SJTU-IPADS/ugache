@@ -85,6 +85,7 @@ class DemoMemHandle : public ExternelGPUMemoryHandler {
   void* ptr() override {return dev_ptr;}
   ~DemoMemHandle() { CUDA_CALL(cudaFree(dev_ptr)); }
 };
+// Atomic Barrier should be placed at mmap shared memory, cannot be recycled by ~shared_ptr, so we have to warp it.
 class DemoBarrier : public ExternalBarrierHandler {
  public:
   AtomicBarrier* barrier;

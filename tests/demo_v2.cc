@@ -83,12 +83,6 @@ class DemoMemHandle : public ExternelGPUMemoryHandler {
   void* ptr() override {return dev_ptr;}
   ~DemoMemHandle() { CUDA_CALL(cudaFree(dev_ptr)); }
 };
-class DemoBarrier : public ExternalBarrierHandler {
- public:
-  AtomicBarrier barrier;
-  DemoBarrier(int worker) : barrier(worker) {}
-  void Wait() override { barrier.Wait(); }
-};
 
 int main(int argc, char** argv) {
   size_t num_keys = 1000000;
@@ -105,7 +99,7 @@ int main(int argc, char** argv) {
   }
 
   // BarHandle _process_barrier = std::make_shared<DemoBarrier>(1);
-  BarHandle _replica_barrier = std::make_shared<DemoBarrier>(RunConfig::num_device);
+  BarHandle _replica_barrier = std::make_shared<AtomicBarrier>(RunConfig::num_device);
 
   auto cache_manager = std::make_shared<CollCache>(nullptr, _replica_barrier);
   IdType* ranking_nodes_list_ptr = new IdType[num_keys];
