@@ -319,10 +319,13 @@ T* Tensor::Ptr(){
   CHECK(_data == nullptr || (sizeof(T) == GetDataTypeBytes(_dtype))); 
   return static_cast<T*>(_data);
 }
-template<> float* Tensor::Ptr<float>();
-template<> size_t* Tensor::Ptr<size_t>();
-template<> IdType* Tensor::Ptr<IdType>();
-template<> Id64Type* Tensor::Ptr<Id64Type>();
+template float* Tensor::Ptr<float>();
+template double* Tensor::Ptr<double>();
+template size_t* Tensor::Ptr<size_t>();
+template IdType* Tensor::Ptr<IdType>();
+template Id64Type* Tensor::Ptr<Id64Type>();
+template char* Tensor::Ptr<char>();
+template uint8_t* Tensor::Ptr<uint8_t>();
 
 std::ostream& operator<<(std::ostream& os, const Context& ctx) {
   switch (ctx.device_type)
