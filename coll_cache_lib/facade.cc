@@ -184,7 +184,6 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
   Context gpu_ctx = GPU(device_id);
   cache_ctx->build(gpu_mem_allocator, replica_id, this->shared_from_this(), cpu_data, dtype, dim, gpu_ctx, cache_percentage, stream);
   Device::Get(gpu_ctx)->StreamSync(gpu_ctx, stream);
-  Device::Get(gpu_ctx)->FreeStream(gpu_ctx, stream);
   this->_cache_ctx_list[replica_id] = cache_ctx;
   this->_session_list[replica_id] = std::make_shared<ExtractSession>(cache_ctx);
   this->_replica_barrier->Wait();

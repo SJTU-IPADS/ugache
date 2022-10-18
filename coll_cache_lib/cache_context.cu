@@ -1056,7 +1056,7 @@ void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCac
   LOG(INFO) << "CollCacheManager: grouping node of same location";
   // auto loc_list  = (HashTableEntryLocation*)trainer_gpu_device->AllocDataSpace(trainer_ctx, sizeof(HashTableEntryLocation) * num_total_nodes);
   auto node_list_buffer_handle = _gpu_mem_allocator(num_total_nodes * sizeof(IdType));
-  IdType* node_list_buffer = (IdType*)node_list_buffer_handle->ptr();
+  IdType* node_list_buffer = node_list_buffer_handle->ptr<IdType>();
   // IdType * group_offset;
   size_t num_cached_nodes;
   size_t num_cpu_nodes;
