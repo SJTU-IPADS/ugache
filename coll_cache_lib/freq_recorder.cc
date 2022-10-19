@@ -43,6 +43,7 @@ FreqRecorder::FreqRecorder(size_t num_nodes) {
     *nid_ptr = i;
     *(nid_ptr + 1) = 0;
   }
+  _cpu_device_holder = cpu::CPUDevice::Global();
   // Profiler::Get().LogInit(kLogInitL3PresampleInit, t_init.Passed());
 }
 

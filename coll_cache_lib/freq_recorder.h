@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <memory>
+#include "cpu/cpu_device.h"
 #include "common.h"
 // #include "constant.h"
 namespace coll_cache_lib {
@@ -38,6 +40,7 @@ class FreqRecorder {
  private:
   Id64Type * freq_table;
   size_t _num_nodes;
+  std::shared_ptr<cpu::CPUDevice> _cpu_device_holder = nullptr;
 };
 
 }
