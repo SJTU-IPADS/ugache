@@ -983,8 +983,8 @@ void CollCacheManager::CheckCudaEqual(const void * a, const void* b, const size_
 #endif
 
 void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream) {
-  auto hash_table_offset_list = DevicePointerExchanger(false, _barrier, Constant::kCollCacheHashTableOffsetPtrShmName);
-  auto device_cache_data_list = DevicePointerExchanger(false, _barrier, Constant::kCollCacheDeviceCacheDataPtrShmName);
+  auto hash_table_offset_list = DevicePointerExchanger(_barrier, Constant::kCollCacheHashTableOffsetPtrShmName);
+  auto device_cache_data_list = DevicePointerExchanger(_barrier, Constant::kCollCacheDeviceCacheDataPtrShmName);
   _trainer_ctx = gpu_ctx;
   _dtype = dtype;
   _dim = dim;
@@ -1119,6 +1119,7 @@ void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCac
     size_t num_remote_nodes;
     cuda::CubSelectIndexByEq<IdType>(gpu_ctx, (const IdType *)_hash_table_location, num_total_nodes, remote_node_list, num_remote_nodes, i, _gpu_mem_allocator, stream);
     if (num_remote_nodes == 0) continue;
+    CUDA_CALL(cudaDeviceEnablePeerAccess(i, 0));
     _device_cache_data[i] = device_cache_data_list.extract(i);
     auto remote_hash_table_offset = (const HashTableEntryOffset * )hash_table_offset_list.extract(i);
 
@@ -1127,7 +1128,7 @@ void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCac
         _hash_table_location, _hash_table_offset, 
         remote_hash_table_offset, remote_node_list, num_remote_nodes, i);
     gpu_device->StreamSync(gpu_ctx, stream);
-    CUDA_CALL(cudaIpcCloseMemHandle((void*)remote_hash_table_offset))
+    // CUDA_CALL(cudaIpcCloseMemHandle((void*)remote_hash_table_offset))
   }
 
   // 4. Free index
@@ -1156,8 +1157,8 @@ void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCac
 }
 
 void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream) {
-  auto hash_table_offset_list = DevicePointerExchanger(false, _barrier, Constant::kCollCacheHashTableOffsetPtrShmName);
-  auto device_cache_data_list = DevicePointerExchanger(false, _barrier, Constant::kCollCacheDeviceCacheDataPtrShmName);
+  auto hash_table_offset_list = DevicePointerExchanger(_barrier, Constant::kCollCacheHashTableOffsetPtrShmName);
+  auto device_cache_data_list = DevicePointerExchanger(_barrier, Constant::kCollCacheDeviceCacheDataPtrShmName);
   _trainer_ctx = gpu_ctx;
   _dtype = dtype;
   _dim = dim;
@@ -1279,6 +1280,7 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
       size_t num_remote_nodes;
       cuda::CubSelectIndexByEq<IdType>(gpu_ctx, (const IdType *)_hash_table_location, num_total_nodes, remote_node_list, num_remote_nodes, dev_id, _gpu_mem_allocator, stream);
       if (num_remote_nodes == 0) continue;
+      CUDA_CALL(cudaDeviceEnablePeerAccess(dev_id, 0));
       _device_cache_data[dev_id] = device_cache_data_list.extract(dev_id);
       auto remote_hash_table_offset = (const HashTableEntryOffset * )hash_table_offset_list.extract(dev_id);
 
@@ -1287,7 +1289,7 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
           _hash_table_location, _hash_table_offset, 
           remote_hash_table_offset, remote_node_list, num_remote_nodes, dev_id);
       gpu_device->StreamSync(gpu_ctx, stream);
-      CUDA_CALL(cudaIpcCloseMemHandle((void*)remote_hash_table_offset))
+      // CUDA_CALL(cudaIpcCloseMemHandle((void*)remote_hash_table_offset))
     }
   }
   // 4. Free index
@@ -1321,19 +1323,18 @@ void CacheContext::build(std::function<MemHandle(size_t)> gpu_mem_allocator,
                                 gpu_ctx, cache_percentage, stream);
   }
 }
-DevicePointerExchanger::DevicePointerExchanger(bool cross_process,
-                                               BarHandle barrier,
+DevicePointerExchanger::DevicePointerExchanger(BarHandle barrier,
                                                std::string shm_name) {
   int fd = cpu::MmapCPUDevice::CreateShm(4096, shm_name);
   _buffer = cpu::MmapCPUDevice::MapFd(MMAP(MMAP_RW_DEVICE), 4096, fd);
   // _barrier = new ((char *)_buffer + 2048) AtomicBarrier(world_size, is_master);
   _barrier = barrier;
   // even for single process, we require concurrent initialization of each gpu.
-  _cross_process = cross_process;
+  // _cross_process = cross_process;
 }
 
 void DevicePointerExchanger::signin(int local_id, void *ptr_to_share) {
-  if (_cross_process) {
+  if (RunConfig::cross_process) {
     CUDA_CALL(cudaIpcGetMemHandle(&((cudaIpcMemHandle_t *)_buffer)[local_id], ptr_to_share));
   } else {
     static_cast<void **>(_buffer)[local_id] = ptr_to_share;
@@ -1342,7 +1343,7 @@ void DevicePointerExchanger::signin(int local_id, void *ptr_to_share) {
 }
 void *DevicePointerExchanger::extract(int location_id) {
   void *ret = nullptr;
-  if (_cross_process) {
+  if (RunConfig::cross_process) {
     CUDA_CALL(cudaIpcOpenMemHandle(&ret, ((cudaIpcMemHandle_t *)_buffer)[location_id],
                                    cudaIpcMemLazyEnablePeerAccess));
   } else {

@@ -117,6 +117,7 @@ void CollCache::solve_impl_master(IdType *ranking_nodes_list_ptr,
                   RunConfig::coll_cache_hyperparam_T_cpu);
     LOG(ERROR) << "solver solved";
     _block_placement = solver->block_placement;
+    _block_access_advise = solver->block_access_from;
     delete solver;
 }
 void CollCache::solve_impl_slave() {

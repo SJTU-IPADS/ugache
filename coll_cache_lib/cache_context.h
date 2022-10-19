@@ -72,10 +72,10 @@ struct DstVal {
 
 struct DevicePointerExchanger {
   void* _buffer;
-  bool _cross_process = false;
+  // bool _cross_process = false;
   // no way to ensure barrier is globally initialized then used, so let application pass-in a barrier
   BarHandle _barrier;
-  DevicePointerExchanger(bool cross_process, BarHandle barrier,
+  DevicePointerExchanger(BarHandle barrier,
                          std::string shm_name);
   void signin(int local_id, void* ptr_to_share);
   void* extract(int location_id);
