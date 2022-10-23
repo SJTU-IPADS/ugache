@@ -1119,7 +1119,12 @@ void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCac
     size_t num_remote_nodes;
     cuda::CubSelectIndexByEq<IdType>(gpu_ctx, (const IdType *)_hash_table_location, num_total_nodes, remote_node_list, num_remote_nodes, i, _gpu_mem_allocator, stream);
     if (num_remote_nodes == 0) continue;
-    CUDA_CALL(cudaDeviceEnablePeerAccess(i, 0));
+    {
+      auto cuda_err = cudaDeviceEnablePeerAccess(i, 0);
+      if (cuda_err != cudaErrorPeerAccessAlreadyEnabled) {
+        CUDA_CALL(cuda_err);
+      }
+    }
     _device_cache_data[i] = device_cache_data_list.extract(i);
     auto remote_hash_table_offset = (const HashTableEntryOffset * )hash_table_offset_list.extract(i);
 
@@ -1280,7 +1285,12 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
       size_t num_remote_nodes;
       cuda::CubSelectIndexByEq<IdType>(gpu_ctx, (const IdType *)_hash_table_location, num_total_nodes, remote_node_list, num_remote_nodes, dev_id, _gpu_mem_allocator, stream);
       if (num_remote_nodes == 0) continue;
-      CUDA_CALL(cudaDeviceEnablePeerAccess(dev_id, 0));
+      {
+        auto cuda_err = cudaDeviceEnablePeerAccess(dev_id, 0);
+        if (cuda_err != cudaErrorPeerAccessAlreadyEnabled) {
+          CUDA_CALL(cuda_err);
+        }
+      }
       _device_cache_data[dev_id] = device_cache_data_list.extract(dev_id);
       auto remote_hash_table_offset = (const HashTableEntryOffset * )hash_table_offset_list.extract(dev_id);
 
