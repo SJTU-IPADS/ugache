@@ -15,8 +15,7 @@
  *
  */
 
-#ifndef SAMGRAPH_GPU_DEVICE_H
-#define SAMGRAPH_GPU_DEVICE_H
+#pragma once
 
 #include <cuda_runtime.h>
 #include <array>
@@ -67,5 +66,3 @@ class GPUDevice final : public Device {
 }  // namespace cuda
 }  // namespace common
 }  // namespace coll_cache_lib
-
-#endif  // SAMGRAPH_GPU_DEVICE_H

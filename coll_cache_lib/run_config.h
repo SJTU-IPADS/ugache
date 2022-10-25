@@ -15,8 +15,7 @@
  *
  */
 
-#ifndef SAMGRAPH_RUN_CONFIG_H
-#define SAMGRAPH_RUN_CONFIG_H
+#pragma once
 
 #include <string>
 #include <unordered_map>
@@ -90,5 +89,3 @@ struct RunConfig {
 
 }  // namespace common
 }  // namespace coll_cache_lib
-
-#endif  // SAMGRAPH_RUN_CONFIG_H

@@ -15,8 +15,7 @@
  *
  */
 
-#ifndef SAMGRAPH_CONSTANT_H
-#define SAMGRAPH_CONSTANT_H
+#pragma once
 
 #include <cstdint>
 #include <limits>
@@ -122,5 +121,3 @@ class Constant {
 
 }  // namespace common
 }  // namespace coll_cache_lib
-
-#endif  // SAMGRAPH_CONSTANT_H

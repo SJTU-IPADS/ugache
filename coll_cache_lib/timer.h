@@ -15,8 +15,7 @@
  *
  */
 
-#ifndef SAMGRAPH_COMMON_TIMER_H
-#define SAMGRAPH_COMMON_TIMER_H
+#pragma once
 
 #include <chrono>
 
@@ -66,5 +65,3 @@ class Timer {
 
 }  // namespace common
 }  // namespace samgraph
-
-#endif  // SAMGRAPH_COMMON_TIMER_H

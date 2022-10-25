@@ -15,8 +15,7 @@
  *
  */
 
-#ifndef SAMGRAPH_LOGGING_H
-#define SAMGRAPH_LOGGING_H
+#pragma once
 
 #include <sstream>
 #include <string>
@@ -125,5 +124,3 @@ bool LogTimeFromEnv();
 
 }  // namespace common
 }  // namespace coll_cache_lib
-
-#endif  // SAMGRAPH_LOGGING_H

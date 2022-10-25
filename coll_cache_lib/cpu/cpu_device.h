@@ -15,8 +15,7 @@
  *
  */
 
-#ifndef SAMGRAPH_CPU_DEVICE_H
-#define SAMGRAPH_CPU_DEVICE_H
+#pragma once
 
 #include "../device.h"
 
@@ -46,5 +45,3 @@ class CPUDevice final : public Device {
 }  // namespace cpu
 }  // namespace common
 }  // namespace coll_cache_lib
-
-#endif  // SAMGRAPH_CPU_DEVICE_H

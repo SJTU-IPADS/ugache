@@ -15,8 +15,7 @@
  *
  */
 
-#ifndef SAMGRAPH_DEVICE_H
-#define SAMGRAPH_DEVICE_H
+#pragma once
 
 #include <cstdint>
 #include <array>
@@ -66,5 +65,3 @@ class Device {
 };
 }  // namespace common
 }  // namespace coll_cache_lib
-
-#endif  // SAMGRAPH_DEVICE_H

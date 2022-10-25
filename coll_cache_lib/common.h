@@ -15,24 +15,7 @@
  *
  */
 
-#ifndef SAMGRAPH_COMMON_H
-#define SAMGRAPH_COMMON_H
-
-#define SAMGRAPH_COLL_CACHE_ENABLE
-// #define SAMGRAPH_COLL_CACHE_VALIDATE
-
-#ifdef SAMGRAPH_COLL_CACHE_VALIDATE
-
-#define SAMGRAPH_COLL_CACHE_ENABLE
-#define SAMGRAPH_LEGACY_CACHE_ENABLE
-
-#else
-
-#ifndef SAMGRAPH_COLL_CACHE_ENABLE
-#define SAMGRAPH_LEGACY_CACHE_ENABLE
-#endif
-
-#endif
+#pragma once
 
 #include <atomic>
 #include <cstdint>
@@ -270,5 +253,3 @@ std::ostream& operator<<(std::ostream&, const CachePolicy);
 
 }  // namespace common
 }  // namespace coll_cache_lib
-
-#endif  // SAMGRAPH_COMMON_H
