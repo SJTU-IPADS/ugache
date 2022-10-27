@@ -110,11 +110,12 @@ protected:
       const uint32_t insert_order = _registered_node.fetch_add(1);
       uint64_t old_val = _current_block_is_for_num_le_than.load();
       uint32_t covered_num = old_val & 0xffffffff;
-      if (insert_order == covered_num) {
-        while (_done_node.load() < covered_num) {}
+      if ((insert_order % solver->max_size_per_block) == 0) {
+        while (_done_node.load() < insert_order) {}
+        old_val = _current_block_is_for_num_le_than.load();
         // alloc a new block
         uint32_t selected_block = solver->alloc_block();
-        uint64_t new_val = (((uint64_t) selected_block) << 32) | (covered_num + solver->max_size_per_block);
+        uint64_t new_val = (((uint64_t) selected_block) << 32) | (insert_order + solver->max_size_per_block);
         CHECK(_current_block_is_for_num_le_than.compare_exchange_strong(old_val, new_val));
         _done_node.fetch_add(1);
         return selected_block;
