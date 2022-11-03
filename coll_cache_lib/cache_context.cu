@@ -467,7 +467,8 @@ void ExtractSession::SplitGroup(const SrcKey * src_index, const size_t len, IdTy
   const dim3 block(Constant::kCudaBlockSize);
 
   Timer t0;
-  group_offset = (IdType*)Device::Get(cpu_ctx)->AllocWorkspace(cpu_ctx, sizeof(IdType) * (_cache_ctx->_num_location + 1));
+  group_offset = this->_group_offset;
+  // group_offset = (IdType*)Device::Get(cpu_ctx)->AllocWorkspace(cpu_ctx, sizeof(IdType) * (_cache_ctx->_num_location + 1));
   std::memset(group_offset, 0, sizeof(IdType) * (_cache_ctx->_num_location + 1));
   group_offset[_cache_ctx->_num_location] = len;
   LOG(DEBUG) << "CollCache: SplitGroup: legacy finding offset...";
@@ -745,7 +746,7 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       // Profiler::Get().LogEpochAdd(task_key, kLogEpochFeatureBytes,GetTensorBytes(_dtype, {num_nodes, _dim}));
       // Profiler::Get().LogEpochAdd(task_key, kLogEpochMissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
     }
-    cpu_device->FreeWorkspace(CPU(CPU_CUDA_HOST_MALLOC_DEVICE), group_offset);
+    // cpu_device->FreeWorkspace(CPU(CPU_CUDA_HOST_MALLOC_DEVICE), group_offset);
   } else {
     // CHECK(false) << "Multi source extraction is not supported now";
     auto trainer_gpu_device = Device::Get(_cache_ctx->_trainer_ctx);
@@ -1362,4 +1363,8 @@ void *DevicePointerExchanger::extract(int location_id) {
   return ret;
 }
 
+ExtractSession::ExtractSession(std::shared_ptr<CacheContext> cache_ctx) : _cache_ctx(cache_ctx) {
+  auto cpu_ctx = CPU(CPU_CUDA_HOST_MALLOC_DEVICE);
+  _group_offset = (IdType*)Device::Get(cpu_ctx)->AllocWorkspace(cpu_ctx, sizeof(IdType) * (_cache_ctx->_num_location + 1));
+}
 } // namespace coll_cache_lib

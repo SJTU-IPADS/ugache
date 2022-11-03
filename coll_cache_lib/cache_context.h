@@ -131,8 +131,9 @@ class CacheContext {
 class ExtractSession {
   std::shared_ptr<CacheContext> _cache_ctx;
   MemHandle output_src_index_handle, output_dst_index_handle;
+  IdType * _group_offset = nullptr;
  public:
-  ExtractSession(std::shared_ptr<CacheContext> cache_ctx) : _cache_ctx(cache_ctx) {}
+  ExtractSession(std::shared_ptr<CacheContext> cache_ctx);
  private:
 
   void SplitGroup(const SrcKey * src_index, const size_t len, IdType * & group_offset, StreamHandle stream);
