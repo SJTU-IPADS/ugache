@@ -72,9 +72,19 @@ struct RunConfig {
   static double               coll_cache_hyperparam_T_cpu;
   static uint64_t             seed;
 
+  static uint64_t             num_global_step_per_epoch;
+  static uint64_t             num_epoch;
+  static uint64_t             num_total_item;
+
   static coll_cache::AsymmLinkDesc coll_cache_link_desc;
 
   static RollingPolicy        rolling;
+
+  static inline uint64_t GetBatchKey(uint64_t epoch, uint64_t step) {
+    return epoch * num_global_step_per_epoch + step;
+  }
+  static inline uint64_t GetEpochFromKey(uint64_t key) { return key / num_global_step_per_epoch; };
+  static inline uint64_t GetStepFromKey(uint64_t key) { return key % num_global_step_per_epoch; }
 
   static inline bool UseGPUCache() {
     return cache_percentage > 0;

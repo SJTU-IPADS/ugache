@@ -26,6 +26,8 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
   set(COMMON_FLAGS " -O3 -g ")
 endif()
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set(CMAKE_CXX_STANDARD 14)
 # no-as-needed is necessary because gurobi95 is not directly used by coll_cache
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS}  ${COMMON_FLAGS} -fPIC -Wall -fopenmp -march=native -D_GLIBCXX_USE_CXX11_ABI=0 -DUNIT_TEST -DPSTL_USE_PARALLEL_POLICIES=0 -Wl,--no-as-needed")

@@ -732,19 +732,21 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     output_src_index_handle = nullptr;
     output_dst_index_handle = nullptr;
     if (task_key != 0xffffffffffffffff) {
-      // size_t num_miss = group_offset[_cpu_location_id+1]- group_offset[_cpu_location_id];
-      // size_t num_local = group_offset[_local_location_id+1] - group_offset[_local_location_id];
-      // size_t num_remote = num_nodes - num_miss - num_local;
-      // // size_t num_hit = group_offset[1];
-      // Profiler::Get().LogStep(task_key, kLogL1FeatureBytes, GetTensorBytes(_dtype, {num_nodes, _dim}));
-      // Profiler::Get().LogStep(task_key, kLogL1MissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
-      // Profiler::Get().LogStep(task_key, kLogL1RemoteBytes, GetTensorBytes(_dtype, {num_remote, _dim}));
-      // Profiler::Get().LogStep(task_key, kLogL3CacheGetIndexTime, get_index_time);
-      // Profiler::Get().LogStep(task_key, kLogL3CacheCombineMissTime,combine_times[0]);
-      // Profiler::Get().LogStep(task_key, kLogL3CacheCombineRemoteTime,combine_times[1]);
-      // Profiler::Get().LogStep(task_key, kLogL3CacheCombineCacheTime,combine_times[2]);
-      // Profiler::Get().LogEpochAdd(task_key, kLogEpochFeatureBytes,GetTensorBytes(_dtype, {num_nodes, _dim}));
-      // Profiler::Get().LogEpochAdd(task_key, kLogEpochMissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
+      size_t num_miss = group_offset[_cache_ctx->_cpu_location_id+1]- group_offset[_cache_ctx->_cpu_location_id];
+      size_t num_local = group_offset[_cache_ctx->_local_location_id+1] - group_offset[_cache_ctx->_local_location_id];
+      size_t num_remote = num_nodes - num_miss - num_local;
+      // size_t num_hit = group_offset[1];
+      auto _dtype = _cache_ctx->_dtype;
+      auto _dim = _cache_ctx->_dim;
+      _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL1FeatureBytes, GetTensorBytes(_dtype, {num_nodes, _dim}));
+      _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL1MissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
+      _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL1RemoteBytes, GetTensorBytes(_dtype, {num_remote, _dim}));
+      _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheGetIndexTime, get_index_time);
+      _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheCombineMissTime,combine_times[0]);
+      _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheCombineRemoteTime,combine_times[1]);
+      _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheCombineCacheTime,combine_times[2]);
+      // _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochFeatureBytes,GetTensorBytes(_dtype, {num_nodes, _dim}));
+      // _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochMissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
     }
     // cpu_device->FreeWorkspace(CPU(CPU_CUDA_HOST_MALLOC_DEVICE), group_offset);
   } else {
@@ -798,22 +800,24 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
 
     output_src_index_handle = nullptr;
     output_dst_index_handle = nullptr;
-    // if (task_key != 0xffffffffffffffff) {
-    //   size_t num_miss = group_offset[_cpu_location_id+1]- group_offset[_cpu_location_id];
-    //   size_t num_local = group_offset[_local_location_id+1] - group_offset[_local_location_id];
-    //   size_t num_remote = num_nodes - num_miss - num_local;
-    //   // size_t num_hit = group_offset[1];
-    //   Profiler::Get().LogStep(task_key, kLogL1FeatureBytes, GetTensorBytes(_dtype, {num_nodes, _dim}));
-    //   Profiler::Get().LogStep(task_key, kLogL1MissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
-    //   Profiler::Get().LogStep(task_key, kLogL1RemoteBytes, GetTensorBytes(_dtype, {num_remote, _dim}));
-    //   Profiler::Get().LogStep(task_key, kLogL3CacheGetIndexTime, get_index_time);
-    //   Profiler::Get().LogStep(task_key, kLogL3CacheCombineMissTime,combine_times[0]);
-    //   Profiler::Get().LogStep(task_key, kLogL3CacheCombineRemoteTime,combine_times[1]);
-    //   Profiler::Get().LogStep(task_key, kLogL3CacheCombineCacheTime,combine_times[2]);
-    //   Profiler::Get().LogEpochAdd(task_key, kLogEpochFeatureBytes,GetTensorBytes(_dtype, {num_nodes, _dim}));
-    //   Profiler::Get().LogEpochAdd(task_key, kLogEpochMissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
-    // }
-    cpu_device->FreeWorkspace(CPU(CPU_CUDA_HOST_MALLOC_DEVICE), group_offset);
+    if (task_key != 0xffffffffffffffff) {
+      size_t num_miss = group_offset[_cache_ctx->_cpu_location_id+1]- group_offset[_cache_ctx->_cpu_location_id];
+      size_t num_local = group_offset[_cache_ctx->_local_location_id+1] - group_offset[_cache_ctx->_local_location_id];
+      size_t num_remote = num_nodes - num_miss - num_local;
+      // size_t num_hit = group_offset[1];
+      auto _dtype = _cache_ctx->_dtype;
+      auto _dim = _cache_ctx->_dim;
+      _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL1FeatureBytes, GetTensorBytes(_dtype, {num_nodes, _dim}));
+      _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL1MissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
+      _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL1RemoteBytes, GetTensorBytes(_dtype, {num_remote, _dim}));
+      _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheGetIndexTime, get_index_time);
+      _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheCombineMissTime,combine_times[0]);
+      _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheCombineRemoteTime,combine_times[1]);
+      _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheCombineCacheTime,combine_times[2]);
+      // _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochFeatureBytes,GetTensorBytes(_dtype, {num_nodes, _dim}));
+      // _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochMissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
+    }
+    // cpu_device->FreeWorkspace(CPU(CPU_CUDA_HOST_MALLOC_DEVICE), group_offset);
   }
 }
 

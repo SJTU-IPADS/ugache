@@ -2,6 +2,9 @@
 #include "coll_cache/ndarray.h"
 #include "coll_cache/optimal_solver_class.h"
 #include "cpu/mmap_cpu_device.h"
+#include "profiler.h"
+#include "run_config.h"
+#include "timer.h"
 #include <thread>
 
 namespace coll_cache_lib {
@@ -45,8 +48,10 @@ void CollCache::build(std::function<std::function<MemHandle(size_t)>(int)> alloc
 
 void CollCache::lookup(int replica_id, const IdType *nodes,
                        const size_t num_nodes, void *output,
-                       StreamHandle stream) {
-  _session_list[replica_id]->ExtractFeat(nodes, num_nodes, output, stream, 0);
+                       StreamHandle stream, uint64_t step_key) {
+  Timer t;
+  _session_list[replica_id]->ExtractFeat(nodes, num_nodes, output, stream, step_key);
+  _profiler->LogStep(step_key, common::kLogL2CacheCopyTime, t.Passed());
 }
 
 // for master, the ptr must be valid; 
@@ -58,7 +63,7 @@ void CollCache::solve_impl_master(IdType *ranking_nodes_list_ptr,
     std::vector<int> trainer_cache_percent(
         RunConfig::num_device, std::round(RunConfig::cache_percentage * 100));
     // replica 0 is master
-    Context gpu_ctx = GPU(RunConfig::device_id_list[0]);
+    // Context gpu_ctx = GPU(RunConfig::device_id_list[0]);
 
     auto ranking_nodes_list = Tensor::FromBlob(
         ranking_nodes_list_ptr, coll_cache::get_data_type<IdType>(),
@@ -189,4 +194,10 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
   this->_session_list[replica_id] = std::make_shared<ExtractSession>(cache_ctx);
   this->_replica_barrier->Wait();
 }
-} // namespace coll_cache_lib
+void CollCache::report_avg() {
+  _profiler->ReportStepAverage(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1);
+}
+void CollCache::report(uint64_t key) {
+  _profiler->ReportStep(RunConfig::GetEpochFromKey(key), RunConfig::GetStepFromKey(key));
+}
+}  // namespace coll_cache_lib

@@ -62,6 +62,10 @@ double               RunConfig::coll_cache_hyperparam_T_cpu    = 438 / (double)1
 
 size_t               RunConfig::seed  = 1;
 
+uint64_t             RunConfig::num_global_step_per_epoch = 0;
+uint64_t             RunConfig::num_epoch = 0;
+uint64_t             RunConfig::num_total_item = 0;
+
 coll_cache::AsymmLinkDesc RunConfig::coll_cache_link_desc;
 
 RollingPolicy        RunConfig::rolling = AutoRolling;

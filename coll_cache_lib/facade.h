@@ -2,6 +2,7 @@
 #include "common.h"
 // #include "logging.h"
 #include "cache_context.h"
+#include "profiler.h"
 #include <cuda_runtime.h>
 
 namespace coll_cache_lib {
@@ -27,7 +28,7 @@ class CollCache : public std::enable_shared_from_this<CollCache> {
              IdType *ranking_nodes_freq_list_ptr, IdType num_node);
   void solve_impl_slave();
  public:
-  CollCache(BarHandle process_barrier, BarHandle replica_barrier) : _process_barrier(process_barrier), _replica_barrier(replica_barrier) {}
+  CollCache(BarHandle process_barrier, BarHandle replica_barrier) : _process_barrier(process_barrier), _replica_barrier(replica_barrier), _profiler(std::make_shared<Profiler>()) {}
   // CollCache *instance() {
   //   static CollCache instance;
   //   return &instance;
@@ -40,13 +41,16 @@ class CollCache : public std::enable_shared_from_this<CollCache> {
              void *cpu_data, DataType dtype, size_t dim,
              double cache_percentage, StreamHandle stream = nullptr);
   void lookup(int replica_id, const IdType *nodes, const size_t num_nodes,
-              void *output, StreamHandle stream);
+              void *output, StreamHandle stream, uint64_t step_key);
 
   void build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
                 IdType *ranking_nodes_freq_list_ptr, IdType num_node,
                 std::function<MemHandle(size_t)> gpu_mem_allocator,
                 void *cpu_data, DataType dtype, size_t dim,
                 double cache_percentage, StreamHandle stream = nullptr);
+  void report_avg();
+  void report(uint64_t key);
+  std::shared_ptr<Profiler> _profiler;
 };
 
 };  // namespace coll_cache_lib
