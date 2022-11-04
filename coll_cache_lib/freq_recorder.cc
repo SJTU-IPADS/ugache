@@ -79,6 +79,7 @@ void FreqRecorder::Record(const IdType* input, size_t num_inputs){
   Timer t2;
   #pragma omp parallel for num_threads(RunConfig::omp_thread_num)
   for (size_t i = 0; i < num_inputs; i++) {
+    CHECK(input[i] < _num_nodes);
     auto freq_ptr = reinterpret_cast<IdType*>(&freq_table[input[i]]);
     *(freq_ptr+1) += 1;
   }
