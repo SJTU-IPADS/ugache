@@ -19,6 +19,7 @@
 #include "run_config.h"
 // #include "constant.h"
 #include "device.h"
+#include "cpu/mmap_cpu_device.h"
 #include "freq_recorder.h"
 #include "logging.h"
 #include <cstring>
@@ -32,11 +33,14 @@
 namespace coll_cache_lib {
 namespace common {
 
-FreqRecorder::FreqRecorder(size_t num_nodes) {
+FreqRecorder::FreqRecorder(size_t num_nodes, int local_id) {
   Timer t_init;
   _num_nodes = num_nodes;
   CHECK(num_nodes < std::numeric_limits<IdType>::max() / 2);
-  freq_table = static_cast<Id64Type*>(Device::Get(CPU())->AllocDataSpace(CPU(), sizeof(Id64Type)*_num_nodes));
+  size_t nbytes = _num_nodes * std::stoi(GetEnvStrong("COLL_NUM_REPLICA")) * sizeof(Id64Type);
+  int fd = cpu::MmapCPUDevice::CreateShm(nbytes, Constant::kCollCacheFreqRecorderShmName);
+  global_freq_table_ptr = (Id64Type*)cpu::MmapCPUDevice::MapFd(MMAP(MMAP_RW_DEVICE), nbytes, fd);
+  freq_table = global_freq_table_ptr + local_id * num_nodes;
 #pragma omp parallel for num_threads(RunConfig::omp_thread_num)
   for (size_t i = 0; i < _num_nodes; i++) {
     auto nid_ptr = reinterpret_cast<IdType*>(&freq_table[i]);
@@ -48,7 +52,7 @@ FreqRecorder::FreqRecorder(size_t num_nodes) {
 }
 
 FreqRecorder::~FreqRecorder() {
-  Device::Get(CPU())->FreeDataSpace(CPU(), freq_table);
+  // Device::Get(CPU())->FreeDataSpace(CPU(), freq_table);
 }
 
 void FreqRecorder::Record(const Id64Type* input, size_t num_inputs){
@@ -148,5 +152,14 @@ void FreqRecorder::Combine(FreqRecorder *other) {
   }
 }
 
+void FreqRecorder::Combine(int other_local_id) {
+  Id64Type* other_freq_table = global_freq_table_ptr + other_local_id * _num_nodes;
+  #pragma omp parallel for num_threads(RunConfig::omp_thread_num)
+  for (size_t i = 0; i < _num_nodes; i++) {
+    auto local_nid_ptr = reinterpret_cast<IdType*>(&freq_table[i]);
+    auto other_nid_ptr = reinterpret_cast<IdType*>(&other_freq_table[i]);
+    *(local_nid_ptr + 1) += *(other_nid_ptr + 1);
+  }
+}
 }
 }

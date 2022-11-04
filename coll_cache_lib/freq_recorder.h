@@ -26,7 +26,7 @@ namespace common {
 
 class FreqRecorder {
  public:
-  FreqRecorder(size_t num_nodes);
+  FreqRecorder(size_t num_nodes, int local_id);
   ~FreqRecorder();
   void Record(const IdType* inputs, size_t num_input);
   void Record(const Id64Type* inputs, size_t num_input);
@@ -37,8 +37,10 @@ class FreqRecorder {
   void GetRankNode(TensorPtr &);
   void GetRankNode(IdType *);
   void Combine(FreqRecorder* other);
+  void Combine(int other_local_id);
  private:
   Id64Type * freq_table;
+  Id64Type * global_freq_table_ptr;
   size_t _num_nodes;
   std::shared_ptr<cpu::CPUDevice> _cpu_device_holder = nullptr;
 };

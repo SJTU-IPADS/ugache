@@ -117,6 +117,7 @@ class Constant {
   static const std::string kCollCacheNIdToBlockShmName;
   static const std::string kCollCacheHashTableOffsetPtrShmName;
   static const std::string kCollCacheDeviceCacheDataPtrShmName;
+  static const std::string kCollCacheFreqRecorderShmName;
 };
 
 }  // namespace common
