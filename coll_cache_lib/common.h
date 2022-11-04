@@ -125,6 +125,14 @@ class ExternalBarrierHandler {
 };
 using BarHandle = std::shared_ptr<ExternalBarrierHandler>;
 
+class AnonymousBarrier : public ExternalBarrierHandler {
+ public:
+  void* _barrier_buffer;
+  AnonymousBarrier(int worker);
+  void Wait() override;
+  static std::shared_ptr<AnonymousBarrier> _global_instance;
+};
+
 size_t GetDataTypeBytes(DataType dtype);
 class Tensor {
  public:
@@ -215,6 +223,7 @@ std::string ToReadableSize(size_t nbytes);
 std::string ToPercentage(double percentage);
 
 std::string GetEnv(std::string key);
+std::string GetEnvStrong(std::string key);
 bool IsEnvSet(std::string key);
 std::string GetTimeString();
 bool FileExist(const std::string& filepath);

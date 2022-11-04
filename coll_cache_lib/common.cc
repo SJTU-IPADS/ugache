@@ -35,6 +35,7 @@
 #include <sstream>  // stringstream
 #include <string>   // string
 
+#include "atomic_barrier.h"
 #include "constant.h"
 #include "run_config.h"
 #include "device.h"
@@ -435,6 +436,12 @@ std::string GetEnv(std::string key) {
   }
 }
 
+std::string GetEnvStrong(std::string key) {
+  const char *env_var_val = getenv(key.c_str());
+  CHECK(env_var_val != nullptr) << "Env " << key << " is required before loading coll cache lib";
+  return std::string(env_var_val);
+}
+
 bool IsEnvSet(std::string key) {
   std::string val = GetEnv(key);
   if (val == "ON" || val == "1") {
@@ -514,5 +521,13 @@ std::ostream& operator<<(std::ostream& os, const CachePolicy policy) {
   return os;
 }
 
+AnonymousBarrier::AnonymousBarrier(int worker) {
+  auto mmap_ctx = MMAP(MMAP_RW_DEVICE);
+  auto dev = Device::Get(mmap_ctx);
+  this->_barrier_buffer = dev->AllocDataSpace(mmap_ctx, sizeof(AtomicBarrier));
+  new (this->_barrier_buffer) AtomicBarrier(worker);
+}
+void AnonymousBarrier::Wait() { (reinterpret_cast<AtomicBarrier*>(this->_barrier_buffer))->Wait(); }
+std::shared_ptr<AnonymousBarrier> AnonymousBarrier::_global_instance = std::make_shared<AnonymousBarrier>(std::stoi(GetEnvStrong("COLL_NUM_REPLICA")));
 }  // namespace common
 }  // namespace coll_cache_lib
