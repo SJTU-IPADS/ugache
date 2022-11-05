@@ -529,5 +529,10 @@ AnonymousBarrier::AnonymousBarrier(int worker) {
 }
 void AnonymousBarrier::Wait() { (reinterpret_cast<AtomicBarrier*>(this->_barrier_buffer))->Wait(); }
 std::shared_ptr<AnonymousBarrier> AnonymousBarrier::_global_instance = std::make_shared<AnonymousBarrier>(std::stoi(GetEnvStrong("COLL_NUM_REPLICA")));
+EagerGPUMemoryHandler::EagerGPUMemoryHandler() {}
+EagerGPUMemoryHandler::~EagerGPUMemoryHandler() {
+  CUDA_CALL(cudaSetDevice(dev_id_));
+  CUDA_CALL(cudaFree(ptr_));
+}
 }  // namespace common
 }  // namespace coll_cache_lib

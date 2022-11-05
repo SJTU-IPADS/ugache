@@ -1012,8 +1012,8 @@ void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCac
 
   _device_cache_data.resize(_num_location, nullptr);
   _device_cache_data[_cpu_location_id] = cpu_data;
-  _hash_table_location_handle = _gpu_mem_allocator(sizeof(HashTableEntryLocation) * num_total_nodes);
-  _hash_table_offset_handle   = _gpu_mem_allocator(sizeof(HashTableEntryOffset)   * num_total_nodes);
+  _hash_table_location_handle = _eager_gpu_mem_allocator(sizeof(HashTableEntryLocation) * num_total_nodes);
+  _hash_table_offset_handle   = _eager_gpu_mem_allocator(sizeof(HashTableEntryOffset)   * num_total_nodes);
 
   _hash_table_location = _hash_table_location_handle->ptr<HashTableEntryLocation>();
   _hash_table_offset   = _hash_table_offset_handle->ptr<HashTableEntryOffset>();
@@ -1024,13 +1024,13 @@ void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCac
   auto cu_stream = static_cast<cudaStream_t>(stream);
   // 1. Build a mapping from node id to target device
   {
-    TensorPtr node_to_block_gpu = Tensor::CopyToExternal(coll_cache_ptr->_nid_to_block, _gpu_mem_allocator, gpu_ctx, stream);   // large
-    TensorPtr block_placement_gpu = Tensor::CopyToExternal(coll_cache_ptr->_block_placement, _gpu_mem_allocator, gpu_ctx, stream); // small
+    TensorPtr node_to_block_gpu = Tensor::CopyToExternal(coll_cache_ptr->_nid_to_block, _eager_gpu_mem_allocator, gpu_ctx, stream);   // large
+    TensorPtr block_placement_gpu = Tensor::CopyToExternal(coll_cache_ptr->_block_placement, _eager_gpu_mem_allocator, gpu_ctx, stream); // small
     // build a map from placement combinations to source decision
     size_t placement_to_src_nbytes = sizeof(int) * (1 << RunConfig::num_device);
     int * placement_to_src_cpu = (int*) cpu_device->AllocWorkspace(CPU(), placement_to_src_nbytes);
     PreDecideSrc(RunConfig::num_device, _local_location_id, _cpu_location_id, placement_to_src_cpu);
-    MemHandle placement_to_src_gpu_handle = _gpu_mem_allocator(placement_to_src_nbytes);
+    MemHandle placement_to_src_gpu_handle = _eager_gpu_mem_allocator(placement_to_src_nbytes);
     int * placement_to_src_gpu = placement_to_src_gpu_handle->ptr<int>();
     gpu_device->CopyDataFromTo(placement_to_src_cpu, 0, placement_to_src_gpu, 0, placement_to_src_nbytes, CPU(), gpu_ctx, stream);
 
@@ -1061,7 +1061,7 @@ void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCac
    */
   LOG(INFO) << "CollCacheManager: grouping node of same location";
   // auto loc_list  = (HashTableEntryLocation*)trainer_gpu_device->AllocDataSpace(trainer_ctx, sizeof(HashTableEntryLocation) * num_total_nodes);
-  auto node_list_buffer_handle = _gpu_mem_allocator(num_total_nodes * sizeof(IdType));
+  auto node_list_buffer_handle = _eager_gpu_mem_allocator(num_total_nodes * sizeof(IdType));
   IdType* node_list_buffer = node_list_buffer_handle->ptr<IdType>();
   // IdType * group_offset;
   size_t num_cached_nodes;
@@ -1069,8 +1069,8 @@ void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCac
   {
     IdType* cache_node_list = node_list_buffer;
     // now we want to select nodes with hash_table_location==local id
-    cuda::CubSelectIndexByEq<IdType>(gpu_ctx, (const IdType *)_hash_table_location, num_total_nodes, cache_node_list, num_cached_nodes, _local_location_id, _gpu_mem_allocator, stream);
-    cuda::CubCountByEq<IdType>(gpu_ctx, (const IdType *)_hash_table_location, num_total_nodes, num_cpu_nodes, _cpu_location_id, _gpu_mem_allocator, stream);
+    cuda::CubSelectIndexByEq<IdType>(gpu_ctx, (const IdType *)_hash_table_location, num_total_nodes, cache_node_list, num_cached_nodes, _local_location_id, _eager_gpu_mem_allocator, stream);
+    cuda::CubCountByEq<IdType>(gpu_ctx, (const IdType *)_hash_table_location, num_total_nodes, num_cpu_nodes, _cpu_location_id, _eager_gpu_mem_allocator, stream);
     // cuda::CubSortPair<int, IdType>(
     //     (const int*)cm._hash_table_location, loc_list, 
     //     (const IdType*)cm._hash_table_offset, node_list,
@@ -1084,7 +1084,7 @@ void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCac
     CHECK_NE(num_cached_nodes, 0);
     // num_cpu_nodes = group_offset[cm._cpu_location_id + 1] - group_offset[cm._cpu_location_id];
     _cache_nbytes = GetTensorBytes(_dtype, {num_cached_nodes, _dim});
-    _device_cache_data_local_handle = _gpu_mem_allocator(_cache_nbytes);
+    _device_cache_data_local_handle = _eager_gpu_mem_allocator(_cache_nbytes);
     _device_cache_data[_local_location_id] = _device_cache_data_local_handle->ptr();
     // LOG(INFO) << "CollCacheManager: combine local data : [" << group_offset[local_location_id] << "," << group_offset[local_location_id+1] << ")";
     if (RunConfig::option_empty_feat == 0) {
@@ -1123,7 +1123,7 @@ void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCac
     // reuse cache node list as buffer
     IdType * remote_node_list = node_list_buffer;
     size_t num_remote_nodes;
-    cuda::CubSelectIndexByEq<IdType>(gpu_ctx, (const IdType *)_hash_table_location, num_total_nodes, remote_node_list, num_remote_nodes, i, _gpu_mem_allocator, stream);
+    cuda::CubSelectIndexByEq<IdType>(gpu_ctx, (const IdType *)_hash_table_location, num_total_nodes, remote_node_list, num_remote_nodes, i, _eager_gpu_mem_allocator, stream);
     if (num_remote_nodes == 0) continue;
     if (!RunConfig::cross_process) {
       auto cuda_err = cudaDeviceEnablePeerAccess(i, 0);
@@ -1201,8 +1201,8 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
 
   _device_cache_data.resize(_num_location, nullptr);
   _device_cache_data[_cpu_location_id] = cpu_data;
-  _hash_table_location_handle = _gpu_mem_allocator(sizeof(HashTableEntryLocation) * num_total_nodes);
-  _hash_table_offset_handle   = _gpu_mem_allocator(sizeof(HashTableEntryOffset)   * num_total_nodes);
+  _hash_table_location_handle = _eager_gpu_mem_allocator(sizeof(HashTableEntryLocation) * num_total_nodes);
+  _hash_table_offset_handle   = _eager_gpu_mem_allocator(sizeof(HashTableEntryOffset)   * num_total_nodes);
 
   _hash_table_location = _hash_table_location_handle->ptr<HashTableEntryLocation>();
   _hash_table_offset   = _hash_table_offset_handle->ptr<HashTableEntryOffset>();
@@ -1213,8 +1213,8 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
   auto cu_stream = static_cast<cudaStream_t>(stream);
   // 1. Build a mapping from node id to target device
   {
-    TensorPtr node_to_block_gpu = Tensor::CopyToExternal(coll_cache_ptr->_nid_to_block, _gpu_mem_allocator, gpu_ctx, stream);   // large
-    TensorPtr block_access_advise_gpu = Tensor::CopyLineToExternel(coll_cache_ptr->_block_access_advise, location_id, _gpu_mem_allocator, gpu_ctx, stream); // small
+    TensorPtr node_to_block_gpu = Tensor::CopyToExternal(coll_cache_ptr->_nid_to_block, _eager_gpu_mem_allocator, gpu_ctx, stream);   // large
+    TensorPtr block_access_advise_gpu = Tensor::CopyLineToExternel(coll_cache_ptr->_block_access_advise, location_id, _eager_gpu_mem_allocator, gpu_ctx, stream); // small
 
     SAM_CUDA_PREPARE_1D(num_total_nodes);
     if (RunConfig::option_empty_feat == 0) {
@@ -1240,7 +1240,7 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
    */
   LOG(INFO) << "CollCacheManager: grouping node of same location";
   // auto loc_list  = (HashTableEntryLocation*)trainer_gpu_device->AllocDataSpace(trainer_ctx, sizeof(HashTableEntryLocation) * num_total_nodes);
-  auto node_list_buffer_handle = _gpu_mem_allocator(num_total_nodes * sizeof(IdType));
+  auto node_list_buffer_handle = _eager_gpu_mem_allocator(num_total_nodes * sizeof(IdType));
   IdType* node_list_buffer = (IdType*)node_list_buffer_handle->ptr();
   // IdType * group_offset;
   size_t num_cached_nodes;
@@ -1248,11 +1248,11 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
   {
     IdType* cache_node_list = node_list_buffer;
     // now we want to select nodes with hash_table_location==local id
-    cuda::CubSelectIndexByEq<IdType>(gpu_ctx, (const IdType *)_hash_table_location, num_total_nodes, cache_node_list, num_cached_nodes, _local_location_id, _gpu_mem_allocator, stream);
-    cuda::CubCountByEq<IdType>(gpu_ctx, (const IdType *)_hash_table_location, num_total_nodes, num_cpu_nodes, _cpu_location_id, _gpu_mem_allocator, stream);
+    cuda::CubSelectIndexByEq<IdType>(gpu_ctx, (const IdType *)_hash_table_location, num_total_nodes, cache_node_list, num_cached_nodes, _local_location_id, _eager_gpu_mem_allocator, stream);
+    cuda::CubCountByEq<IdType>(gpu_ctx, (const IdType *)_hash_table_location, num_total_nodes, num_cpu_nodes, _cpu_location_id, _eager_gpu_mem_allocator, stream);
     // CHECK_NE(num_cached_nodes, 0);
     _cache_nbytes = GetTensorBytes(_dtype, {num_cached_nodes, _dim});
-    _device_cache_data_local_handle = _gpu_mem_allocator(_cache_nbytes);
+    _device_cache_data_local_handle = _eager_gpu_mem_allocator(_cache_nbytes);
     _device_cache_data[_local_location_id] = _device_cache_data_local_handle->ptr();
     if (num_cached_nodes > 0) {
       if (RunConfig::option_empty_feat == 0) {
@@ -1290,7 +1290,7 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
       LOG(ERROR) << "Device " << _local_location_id << " init p2p of link " << dev_id;
       IdType * remote_node_list = node_list_buffer;
       size_t num_remote_nodes;
-      cuda::CubSelectIndexByEq<IdType>(gpu_ctx, (const IdType *)_hash_table_location, num_total_nodes, remote_node_list, num_remote_nodes, dev_id, _gpu_mem_allocator, stream);
+      cuda::CubSelectIndexByEq<IdType>(gpu_ctx, (const IdType *)_hash_table_location, num_total_nodes, remote_node_list, num_remote_nodes, dev_id, _eager_gpu_mem_allocator, stream);
       if (num_remote_nodes == 0) continue;
       if (!RunConfig::cross_process) {
         auto cuda_err = cudaDeviceEnablePeerAccess(dev_id, 0);
@@ -1333,6 +1333,21 @@ void CacheContext::build(std::function<MemHandle(size_t)> gpu_mem_allocator,
                          StreamHandle stream) {
   _coll_cache = coll_cache_ptr;
   _gpu_mem_allocator = gpu_mem_allocator;
+
+  _eager_gpu_mem_allocator = [gpu_ctx](size_t nbytes)-> MemHandle{
+    std::shared_ptr<EagerGPUMemoryHandler> ret = std::make_shared<EagerGPUMemoryHandler>();
+    ret->dev_id_ = gpu_ctx.device_id;
+    ret->nbytes_ = nbytes;
+    CUDA_CALL(cudaSetDevice(gpu_ctx.device_id));
+    if (nbytes > 1<<21) {
+      nbytes = RoundUp(nbytes, (size_t)(1<<21));
+    }
+    CUDA_CALL(cudaMalloc(&ret->ptr_, nbytes));
+    return ret;
+  };
+  // _gpu_mem_allocator = _eager_gpu_mem_allocator;
+  // _eager_gpu_mem_allocator = _gpu_mem_allocator;
+
   if (_coll_cache->_block_access_advise) {
     return build_with_advise(location_id, coll_cache_ptr, cpu_data, dtype, dim,
                              gpu_ctx, cache_percentage, stream);

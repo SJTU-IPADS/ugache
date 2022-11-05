@@ -118,6 +118,17 @@ class ExternelGPUMemoryHandler {
 
 using MemHandle = std::shared_ptr<ExternelGPUMemoryHandler>;
 
+class EagerGPUMemoryHandler : public ExternelGPUMemoryHandler {
+ public:
+  void* ptr_;
+  int dev_id_;
+  size_t nbytes_;
+  EagerGPUMemoryHandler();
+  ~EagerGPUMemoryHandler();
+  void* ptr() override{ return ptr_; }
+  size_t nbytes() override { return nbytes_; }
+};
+
 class ExternalBarrierHandler {
  public:
   ExternalBarrierHandler() {}

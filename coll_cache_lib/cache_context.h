@@ -114,6 +114,7 @@ class CacheContext {
   std::vector<StreamHandle> _concurrent_stream_array;
 
   std::function<MemHandle(size_t)> _gpu_mem_allocator;
+  std::function<MemHandle(size_t)> _eager_gpu_mem_allocator;
   friend class ExtractSession;
 
   void build_without_advise(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream = nullptr);
