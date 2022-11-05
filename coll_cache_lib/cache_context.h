@@ -79,6 +79,7 @@ struct DevicePointerExchanger {
                          std::string shm_name);
   void signin(int local_id, void* ptr_to_share);
   void* extract(int location_id);
+  void close(void* ptr);
 };
 class CollCache;
 class CacheContext {

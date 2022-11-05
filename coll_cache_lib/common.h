@@ -112,6 +112,7 @@ class ExternelGPUMemoryHandler {
   ExternelGPUMemoryHandler() {}
   virtual ~ExternelGPUMemoryHandler() {}
   virtual void* ptr() = 0;
+  virtual size_t nbytes() { return 0; }
   template<typename T> T* ptr() {return static_cast<T*>(ptr());}
 };
 
