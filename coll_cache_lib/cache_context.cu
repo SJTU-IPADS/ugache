@@ -999,6 +999,7 @@ void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCac
   _cpu_location_id = RunConfig::num_device;
 
   LOG(INFO) << "Building Coll Cache... num gpu device is " << RunConfig::num_device;
+  CHECK(location_id == gpu_ctx.device_id);
   _local_location_id = location_id;
   size_t num_total_nodes = coll_cache_ptr->_nid_to_block->Shape()[0];
   size_t num_blocks = coll_cache_ptr->_block_placement->Shape()[0];
@@ -1181,6 +1182,7 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
 
   LOG(ERROR) << "Building Coll Cache with ... num gpu device is " << RunConfig::num_device;
 
+  CHECK(location_id == gpu_ctx.device_id);
   _local_location_id = location_id;
   size_t num_total_nodes = coll_cache_ptr-> _nid_to_block->Shape()[0];
   size_t num_blocks = coll_cache_ptr->_block_placement->Shape()[0];
