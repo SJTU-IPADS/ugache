@@ -730,8 +730,8 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     call_combine(_cache_ctx->_local_location_id);
     combine_times[2] = t1.Passed();
 
-    output_src_index_handle = nullptr;
-    output_dst_index_handle = nullptr;
+    // output_src_index_handle = nullptr;
+    // output_dst_index_handle = nullptr;
     if (task_key != 0xffffffffffffffff) {
       size_t num_miss = group_offset[_cache_ctx->_cpu_location_id+1]- group_offset[_cache_ctx->_cpu_location_id];
       size_t num_local = group_offset[_cache_ctx->_local_location_id+1] - group_offset[_cache_ctx->_local_location_id];
@@ -778,12 +778,15 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
                       _cache_ctx->_device_cache_data[location_id], output, stream);
     };
     Timer t_cpu;
+    _cache_ctx->_barrier->Wait();
     call_combine(_cache_ctx->_cpu_location_id);
+    _cache_ctx->_barrier->Wait();
     combine_times[0] = t_cpu.Passed();
 
     // DistEngine::Get()->GetTrainerBarrier()->Wait();
     {
       t1.Reset();
+      _cache_ctx->_barrier->Wait();
       for (auto & link : RunConfig::coll_cache_link_desc.link_src[_cache_ctx->_local_location_id]) {
         for (auto dev_id : link) {
           call_combine(dev_id);
@@ -792,6 +795,7 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
           // CombineOneGroup(src_index + offset, dst_index + offset, nodes + offset, link_num_node, cache_ctx->_device_cache_data[dev_id], output, stream);
         }
       }
+      _cache_ctx->_barrier->Wait();
       combine_times[1] = t1.Passed();
     }
 
@@ -799,8 +803,8 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     call_combine(_cache_ctx->_local_location_id);
     combine_times[2] = t1.Passed();
 
-    output_src_index_handle = nullptr;
-    output_dst_index_handle = nullptr;
+    // output_src_index_handle = nullptr;
+    // output_dst_index_handle = nullptr;
     if (task_key != 0xffffffffffffffff) {
       size_t num_miss = group_offset[_cache_ctx->_cpu_location_id+1]- group_offset[_cache_ctx->_cpu_location_id];
       size_t num_local = group_offset[_cache_ctx->_local_location_id+1] - group_offset[_cache_ctx->_local_location_id];
