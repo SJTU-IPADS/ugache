@@ -7,6 +7,7 @@
 #include "coll_cache/optimal_solver_class.h"
 // #include "atomic_barrier.h"
 #include <cuda_runtime.h>
+#include <cuda_runtime_api.h>
 
 #include <cub/cub.cuh>
 
@@ -14,6 +15,7 @@
 #include "timer.h"
 #include "cache_context.h"
 #include "cuda/cub_sort_wrapper.cuh"
+#include "cuda/mps_util.h"
 
 #define SWITCH_TYPE(type, Type, ...)      \
   switch(type) {                     \
@@ -668,7 +670,7 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     }
   } else 
 #endif
-  if (RunConfig::coll_cache_concurrent_link) {
+  if (RunConfig::concurrent_link_impl != kNoConcurrentLink) {
     // CHECK(false) << "Multi source extraction is not supported now";
     auto trainer_gpu_device = Device::Get(_cache_ctx->_trainer_ctx);
     auto cpu_device = Device::Get(CPU(CPU_CUDA_HOST_MALLOC_DEVICE));
@@ -682,53 +684,97 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     LOG(DEBUG) << "CollCache: ExtractFeat: coll, splitting group... ";
     SplitGroup(src_index, num_nodes, group_offset, stream);
     double get_index_time = t0.Passed();
-    
+
     // std::cout << "Split GrOup " <<t1.Passed() << "\n";
     double combine_times[3] = {0, 0, 0};
     // cpu first, then concurrent remote, then local
-    auto call_combine = [src_index, group_offset, dst_index, nodes, this, output, stream](int location_id){
-      CombineOneGroup(src_index + group_offset[location_id], 
-                      dst_index + group_offset[location_id], 
-                      nodes + group_offset[location_id], 
-                      group_offset[location_id+1] - group_offset[location_id], 
-                      _cache_ctx->_device_cache_data[location_id], output, stream);
-    };
-    Timer t1;
-    call_combine(_cache_ctx->_cpu_location_id);
-    combine_times[0] = t1.Passed();
+    if (RunConfig::concurrent_link_impl == common::kMPS) {
+      auto call_combine = [src_index, group_offset, dst_index, nodes, this, output](int location_id, StreamHandle stream){
+        CombineOneGroup(src_index + group_offset[location_id], 
+                        dst_index + group_offset[location_id], 
+                        nodes + group_offset[location_id], 
+                        group_offset[location_id+1] - group_offset[location_id], 
+                        _cache_ctx->_device_cache_data[location_id], output, stream, 0, true);
+      };
+      this->_extract_ctx[_cache_ctx->_cpu_location_id]->forward_one_step([&combine_times, call_combine, loc_id = _cache_ctx->_cpu_location_id](cudaStream_t cu_s){
+        Timer t_cpu;
+        call_combine(loc_id, reinterpret_cast<StreamHandle>(cu_s));
+        CUDA_CALL(cudaStreamSynchronize(cu_s));
+        combine_times[0] = t_cpu.Passed();
+      });
+      this->_extract_ctx[_cache_ctx->_local_location_id]->forward_one_step([&combine_times, call_combine, loc_id = _cache_ctx->_local_location_id](cudaStream_t cu_s){
+        Timer t_local;
+        call_combine(loc_id, reinterpret_cast<StreamHandle>(cu_s));
+        CUDA_CALL(cudaStreamSynchronize(cu_s));
+        combine_times[2] = t_local.Passed();
+      });
+      this->_extract_ctx[_cache_ctx->_local_location_id]->wait_one_step();
 
-    // DistEngine::Get()->GetTrainerBarrier()->Wait();
-
-    {
-      // impl1: single kernel, limited num block
-      t1.Reset();
-      switch(RunConfig::coll_cache_link_desc.link_src[_cache_ctx->_local_location_id].size()) {
-        case 1: CombineConcurrent<1>(src_index, dst_index, group_offset, output, stream); break;
-        case 2: CombineConcurrent<2>(src_index, dst_index, group_offset, output, stream); break;
-        case 3: CombineConcurrent<3>(src_index, dst_index, group_offset, output, stream); break;
-        case 4: CombineConcurrent<4>(src_index, dst_index, group_offset, output, stream); break;
-        default: CHECK(false);
+      auto & link_src = RunConfig::coll_cache_link_desc.link_src[_cache_ctx->_local_location_id];
+      auto num_link = link_src.size();
+      Timer t_remote;
+      for (int i = 0; i < num_link; i++) {
+        CHECK(link_src[i].size() == 1);
+        int dev_id = link_src[i][0];
+        this->_extract_ctx[dev_id]->forward_one_step([call_combine, loc_id = dev_id](cudaStream_t cu_s){
+          call_combine(loc_id, reinterpret_cast<StreamHandle>(cu_s));
+          CUDA_CALL(cudaStreamSynchronize(cu_s));
+        });
       }
-      combine_times[1] = t1.Passed();
-    }{
-      // impl2: launch multiple kernel concurrently. each kernel only use part of sm by limiting num block
-      // t1.Reset();
-      // for (int src_link_order = 0; src_link_order < _remote_device_list.size(); src_link_order ++) {
-      //   auto [dev_id, num_sm] = _remote_device_list[src_link_order];
-      //   IdType offset = group_offset[dev_id];
-      //   IdType link_num_node = group_offset[dev_id+1] - offset;
-      //   // std::cout << "Dev[" << _local_location_id << "],Link[" << src_link_order << "], dev_id=" << dev_id << ", sm=" << num_sm << "," << "link_num_node=" << link_num_node << "\n"; 
-      //   CombineOneGroup(src_index + offset, dst_index + offset, nodes + offset, link_num_node, _device_cache_data[dev_id], output, _concurrent_stream_array[src_link_order], num_sm, true);
-      // }
-      // for (int src_link_order = 0; src_link_order < _remote_device_list.size(); src_link_order ++) {
-      //   trainer_gpu_device->StreamSync(_trainer_ctx, _concurrent_stream_array[src_link_order]);
-      // }
-      // combine_times[1] = t1.Passed();
-    }
+      for (int i = 0; i < num_link; i++) {
+        int dev_id = link_src[i][0];
+        this->_extract_ctx[dev_id]->wait_one_step();
+      }
+      combine_times[1] = t_remote.Passed();
+      this->_extract_ctx[_cache_ctx->_cpu_location_id]->wait_one_step();
+    } else {
+      auto call_combine = [src_index, group_offset, dst_index, nodes, this, output](int location_id, StreamHandle stream){
+        CombineOneGroup(src_index + group_offset[location_id], 
+                        dst_index + group_offset[location_id], 
+                        nodes + group_offset[location_id], 
+                        group_offset[location_id+1] - group_offset[location_id], 
+                        _cache_ctx->_device_cache_data[location_id], output, stream);
+      };
+      Timer t1;
+      call_combine(_cache_ctx->_cpu_location_id, stream);
+      combine_times[0] = t1.Passed();
 
-    t1.Reset();
-    call_combine(_cache_ctx->_local_location_id);
-    combine_times[2] = t1.Passed();
+      // DistEngine::Get()->GetTrainerBarrier()->Wait();
+
+      {
+        // impl1: single kernel, limited num block
+        t1.Reset();
+        switch(RunConfig::coll_cache_link_desc.link_src[_cache_ctx->_local_location_id].size()) {
+          case 1: CombineConcurrent<1>(src_index, dst_index, group_offset, output, stream); break;
+          case 2: CombineConcurrent<2>(src_index, dst_index, group_offset, output, stream); break;
+          case 3: CombineConcurrent<3>(src_index, dst_index, group_offset, output, stream); break;
+          case 4: CombineConcurrent<4>(src_index, dst_index, group_offset, output, stream); break;
+          default: CHECK(false);
+        }
+        combine_times[1] = t1.Passed();
+      }{
+        // impl2: launch multiple kernel concurrently. each kernel only use part of sm by limiting num block
+        // t1.Reset();
+        // for (int src_link_order = 0; src_link_order < _remote_device_list.size(); src_link_order ++) {
+        //   auto [dev_id, num_sm] = _remote_device_list[src_link_order];
+        //   IdType offset = group_offset[dev_id];
+        //   IdType link_num_node = group_offset[dev_id+1] - offset;
+        //   // std::cout << "Dev[" << _local_location_id << "],Link[" << src_link_order << "], dev_id=" << dev_id << ", sm=" << num_sm << "," << "link_num_node=" << link_num_node << "\n"; 
+        //   CombineOneGroup(src_index + offset, dst_index + offset, nodes + offset, link_num_node, _device_cache_data[dev_id], output, _concurrent_stream_array[src_link_order], num_sm, true);
+        // }
+        // for (int src_link_order = 0; src_link_order < _remote_device_list.size(); src_link_order ++) {
+        //   trainer_gpu_device->StreamSync(_trainer_ctx, _concurrent_stream_array[src_link_order]);
+        // }
+        // combine_times[1] = t1.Passed();
+      }{
+        // impl3: use mps to launch multiple kernel concurrently. each kernel does not limit num block
+        //   it's compute power is limited at mps ctx building
+      }
+
+      t1.Reset();
+      call_combine(_cache_ctx->_local_location_id, stream);
+      combine_times[2] = t1.Passed();
+    }
 
     // output_src_index_handle = nullptr;
     // output_dst_index_handle = nullptr;
@@ -1008,7 +1054,7 @@ void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCac
   size_t num_total_nodes = coll_cache_ptr->_nid_to_block->Shape()[0];
   size_t num_blocks = coll_cache_ptr->_block_placement->Shape()[0];
 
-  CHECK(RunConfig::coll_cache_concurrent_link == false) << "Not sure old init method support concurrent link";
+  CHECK(RunConfig::concurrent_link_impl == common::kNoConcurrentLink) << "Not sure old init method support concurrent link";
 
   Timer t;
 
@@ -1155,14 +1201,6 @@ void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCac
 
   size_t num_remote_nodes = num_total_nodes - num_cached_nodes - num_cpu_nodes;
 
-  if (RunConfig::coll_cache_concurrent_link) {
-    _concurrent_stream_array.resize(RunConfig::num_device - 1);
-    for (auto & stream : _concurrent_stream_array) {
-      cudaStream_t & cu_s = reinterpret_cast<cudaStream_t &>(stream);
-      CUDA_CALL(cudaStreamCreate(&cu_s));
-    }
-  }
-
   LOG(ERROR) << "Collaborative GPU cache (policy: " << RunConfig::cache_policy << ") | "
             << "local "  << num_cached_nodes << " / " << num_total_nodes << " nodes ( "<< ToPercentage(num_cached_nodes / (double)num_total_nodes) << "~" << ToPercentage(cache_percentage) << ") | "
             << "remote " << num_remote_nodes << " / " << num_total_nodes << " nodes ( "<< ToPercentage(num_remote_nodes / (double)num_total_nodes) << ") | "
@@ -1192,13 +1230,6 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
   size_t num_blocks = coll_cache_ptr->_block_placement->Shape()[0];
 
   // RunConfig::coll_cache_link_desc = coll_cache::AsymmLinkDesc::AutoBuild(trainer_ctx);
-  if (RunConfig::coll_cache_concurrent_link) {
-    _concurrent_stream_array.resize(RunConfig::num_device - 1);
-    for (auto & stream : _concurrent_stream_array) {
-      cudaStream_t & cu_s = reinterpret_cast<cudaStream_t &>(stream);
-      CUDA_CALL(cudaStreamCreate(&cu_s));
-    }
-  }
 
   Timer t;
 
@@ -1399,5 +1430,64 @@ void DevicePointerExchanger::close(void *ptr) {
 ExtractSession::ExtractSession(std::shared_ptr<CacheContext> cache_ctx) : _cache_ctx(cache_ctx) {
   auto cpu_ctx = CPU(CPU_CUDA_HOST_MALLOC_DEVICE);
   _group_offset = (IdType*)Device::Get(cpu_ctx)->AllocWorkspace(cpu_ctx, sizeof(IdType) * (_cache_ctx->_num_location + 1));
+  if (RunConfig::concurrent_link_impl == common::kMPS) {
+    this->_extract_threads.resize(_cache_ctx->_num_location);
+    this->_extract_ctx.resize(_cache_ctx->_num_location);
+    auto gpu_ctx = cache_ctx->_trainer_ctx;
+    auto & link_desc = RunConfig::coll_cache_link_desc;
+    auto & link_src = link_desc.link_src[cache_ctx->_local_location_id];
+    int _local_location_id = cache_ctx->_local_location_id;
+
+    auto ctx_creation_lambda = [gpu_ctx, this](int num_sm, int src_location_id){
+      auto ext_ctx_ptr = std::make_shared<ExtractionThreadCtx>();
+      this->_extract_ctx[src_location_id] = ext_ctx_ptr;
+      ext_ctx_ptr->cu_ctx_ = cuda::create_ctx_with_sm_count(gpu_ctx.device_id, num_sm);
+      CUDA_CALL(cudaStreamCreate(&ext_ctx_ptr->stream_));
+      this->_extract_threads[src_location_id] = std::thread([ext_ctx_ptr](){
+        ext_ctx_ptr->thread_func();
+      });
+    };
+
+    // check_primary_ctx_active(gpu_ctx.device_id);
+    cuda::check_have_affinity_support(gpu_ctx.device_id);
+    int num_link = link_src.size();
+    for (int link_id = 0; link_id < num_link; link_id++) {
+      CHECK(link_src[link_id].size() == 1);
+      ctx_creation_lambda(link_desc.link_sm[_local_location_id][link_id], link_src[link_id][0]);
+    }
+    ctx_creation_lambda(link_desc.local_sm[_local_location_id], gpu_ctx.device_id);
+    ctx_creation_lambda(link_desc.cpu_sm[_local_location_id], _cache_ctx->_cpu_location_id);
+  } else if (RunConfig::concurrent_link_impl != common::kNoConcurrentLink) {
+    _concurrent_stream_array.resize(RunConfig::num_device - 1);
+    for (auto & stream : _concurrent_stream_array) {
+      cudaStream_t & cu_s = reinterpret_cast<cudaStream_t &>(stream);
+      CUDA_CALL(cudaStreamCreate(&cu_s));
+    }
+  }
 }
+
+void ExtractionThreadCtx::thread_func() {
+  CU_CALL(cuCtxSetCurrent(this->cu_ctx_));
+  while (true) {
+    std::unique_lock<std::mutex> lk(mu);
+    cv.wait(lk, [this]() { return todo_steps > done_steps; });
+    func_(stream_);
+    done_steps++;
+    // lk.unlock();
+    cv.notify_one();
+  }
+}
+void ExtractionThreadCtx::forward_one_step(std::function<void(cudaStream_t)> new_func) {
+  {
+    std::lock_guard<std::mutex> lk(mu);
+    func_ = new_func;
+    todo_steps++;
+  }
+  cv.notify_one();
+}
+void ExtractionThreadCtx::wait_one_step() {
+  std::unique_lock<std::mutex> lk(mu);
+  cv.wait(lk, [this]() { return todo_steps == done_steps; });
+}
+ExtractionThreadCtx::ExtractionThreadCtx() {}
 } // namespace coll_cache_lib

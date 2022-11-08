@@ -17,6 +17,7 @@
 
 #include "run_config.h"
 
+#include "common.h"
 #include "constant.h"
 #include "logging.h"
 #include <unordered_set>
@@ -52,6 +53,7 @@ int                  RunConfig::omp_thread_num                 = 40;
 std::string          RunConfig::shared_meta_path               = "/shared_meta_data";
 // clang-format on
 
+ConcurrentLinkImpl   RunConfig::concurrent_link_impl       = kNoConcurrentLink;
 bool                 RunConfig::coll_cache_concurrent_link = false;
 bool                 RunConfig::coll_cache_no_group    = false;
 size_t               RunConfig::coll_cache_num_slot    = 100;
@@ -103,6 +105,9 @@ void RunConfig::LoadConfigFromEnv() {
   } else {
     // auto enable coll cache concurrent link
     RunConfig::coll_cache_concurrent_link = coll_cache::AutoEnableConcurrentLink();
+  }
+  if (RunConfig::coll_cache_concurrent_link) {
+    RunConfig::concurrent_link_impl = kMPS;
   }
 }
 

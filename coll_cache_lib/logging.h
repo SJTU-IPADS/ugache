@@ -56,6 +56,15 @@ enum class LogLevel { TRACE, DEBUG, INFO, WARNING, ERROR, FATAL };
     CHECK(e == cudaSuccess || e == cudaErrorCudartUnloading) \
         << "[" << getpid() << "]CUDA: " << cudaGetErrorString(e);                \
   }
+#define CU_CALL(func)                                                            \
+  {                                                                              \
+    CUresult e = (func);                                                         \
+    if (e != CUDA_SUCCESS) {                                                     \
+      const char ** desc = nullptr;                                              \
+      cuGetErrorString(e, desc);                                                 \
+      CHECK(false) << "[" << getpid() << "]CU: " << desc;                        \
+    }                                                                            \
+  }
 
 /*!
  * \brief Protected CUSPARSE call.

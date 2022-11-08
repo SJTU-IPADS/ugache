@@ -9,7 +9,11 @@
 // #include "facade.h"
 // #include "timer.h"
 // #include "atomic_barrier.h"
+#include <mutex>
+#include <condition_variable>
+#include <thread>
 #include <cuda_runtime.h>
+#include <cuda.h>
 
 
 #define SAM_CUDA_PREPARE_1D(num_item) \
@@ -81,6 +85,20 @@ struct DevicePointerExchanger {
   void* extract(int location_id);
   void close(void* ptr);
 };
+
+struct ExtractionThreadCtx {
+  CUcontext cu_ctx_;
+  cudaStream_t stream_;
+  std::function<void(cudaStream_t)> func_;
+  std::mutex mu{};
+  std::condition_variable cv{};
+  volatile int todo_steps = 0, done_steps = 0;
+  ExtractionThreadCtx();
+  void thread_func();
+  void forward_one_step(std::function<void(cudaStream_t)> new_func);
+  void wait_one_step();
+};
+
 class CollCache;
 class CacheContext {
  private:
@@ -111,7 +129,6 @@ class CacheContext {
 
   // std::vector<int> _remote_device_list;
   // std::vector<int> _remote_sm_list;
-  std::vector<StreamHandle> _concurrent_stream_array;
 
   std::function<MemHandle(size_t)> _gpu_mem_allocator;
   std::function<MemHandle(size_t)> _eager_gpu_mem_allocator;
@@ -134,6 +151,9 @@ class ExtractSession {
   std::shared_ptr<CacheContext> _cache_ctx;
   MemHandle output_src_index_handle, output_dst_index_handle;
   IdType * _group_offset = nullptr;
+  std::vector<StreamHandle> _concurrent_stream_array;
+  std::vector<std::shared_ptr<ExtractionThreadCtx>> _extract_ctx;
+  std::vector<std::thread> _extract_threads;
  public:
   ExtractSession(std::shared_ptr<CacheContext> cache_ctx);
  private:

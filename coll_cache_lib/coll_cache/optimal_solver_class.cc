@@ -349,43 +349,38 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
 
   GRBEnv env = GRBEnv(true);
   env.set("LogFile", "cppsolver.log");
-  env.set(GRB_IntParam_ConcurrentMIP, 50);
-  // env.set(GRB_DoubleParam_Heuristics, 0.5);
-  // env.set(GRB_DoubleParam_NoRelHeurTime, 10);
-  env.set(GRB_IntParam_Presolve, 1);
-  env.set(GRB_IntParam_MIPFocus, 1);
-  // env.set(GRB_IntParam_Crossover, 0);
-  // env.set(GRB_IntParam_Presolve, -1);
-  // env.set(GRB_IntParam_Method, 2);
-  // env.set(GRB_IntParam_NodeMethod, 2);
-  // env.set(GRB_IntParam_Method, -1);
-  env.set(GRB_IntParam_Method, 3);
   env.set(GRB_IntParam_Threads, RunConfig::omp_thread_num*2);
   env.set(GRB_DoubleParam_BarConvTol, 1e-4);
   env.set(GRB_DoubleParam_OptimalityTol, 1e-2);
-  env.set(GRB_DoubleParam_MIPGap, 1e-2);
 
   env.set(GRB_DoubleParam_TimeLimit, 200);
 
-  // tuned
-  env.set(GRB_DoubleParam_MIPGap, 0.03);
-  env.set(GRB_IntParam_MIPFocus, 2);
-  env.set(GRB_IntParam_ConcurrentMIP, 36);
-  env.set(GRB_IntParam_Threads, 108);
-  env.set(GRB_IntParam_BranchDir, 1);
-  env.set(GRB_IntParam_AggFill, 100);
-  env.set(GRB_IntParam_NormAdjust, 3);
-  env.set(GRB_IntParam_Presolve, 2);
-  env.set(GRB_IntParam_SimplexPricing, 2);
-  env.set(GRB_IntParam_DegenMoves, 0);
-  env.set(GRB_IntParam_CutPasses, 5);
-  env.set(GRB_IntParam_PrePasses, 8);
-  env.set(GRB_DoubleParam_Heuristics, 0.001);
-  env.set(GRB_IntParam_ScaleFlag, 0);
-  env.set(GRB_IntParam_StrongCGCuts, 0);
-  env.set(GRB_IntParam_MIRCuts, 1);
-  env.set(GRB_IntParam_Cuts, 3);
+  // // old parameters for cpu, then concurrent remote, then local
+  // env.set(GRB_IntParam_Method, 3);
+  // env.set(GRB_DoubleParam_MIPGap, 0.03);
+  // env.set(GRB_IntParam_MIPFocus, 2);
+  // env.set(GRB_IntParam_ConcurrentMIP, 36);
+  // env.set(GRB_IntParam_BranchDir, 1);
+  // env.set(GRB_IntParam_AggFill, 100);
+  // env.set(GRB_IntParam_NormAdjust, 3);
+  // env.set(GRB_IntParam_Presolve, 2);
+  // env.set(GRB_IntParam_SimplexPricing, 2);
+  // env.set(GRB_IntParam_DegenMoves, 0);
+  // env.set(GRB_IntParam_CutPasses, 5);
+  // env.set(GRB_IntParam_PrePasses, 8);
+  // env.set(GRB_DoubleParam_Heuristics, 0.001);
+  // env.set(GRB_IntParam_ScaleFlag, 0);
+  // env.set(GRB_IntParam_StrongCGCuts, 0);
+  // env.set(GRB_IntParam_MIRCuts, 1);
+  // env.set(GRB_IntParam_Cuts, 3);
 
+  // new parameters for [           cpu          ]
+  //                    [local][cuncurrent remote]
+  env.set(GRB_DoubleParam_MIPGap, 0.03);
+  env.set(GRB_IntParam_Method, 2);
+  env.set(GRB_IntParam_DegenMoves, 0);
+  env.set(GRB_IntParam_Aggregate, 0);
+  env.set(GRB_IntParam_PrePasses, 1);
   env.start();
 
   GRBModel model = GRBModel(env);
@@ -399,13 +394,17 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
   TensorPtr c_list_tensor = Tensor::Empty(kI64, {num_block}, CPU(CPU_CLIB_MALLOC_DEVICE), "c_list");
   TensorPtr x_list_tensor = Tensor::Empty(kI64, {num_block, num_device}, CPU(CPU_CLIB_MALLOC_DEVICE), "x_list");
   TensorPtr a_list_tensor = Tensor::Empty(kI64, {num_block, num_device, num_link}, CPU(CPU_CLIB_MALLOC_DEVICE), "a_list");
+  TensorPtr max_remote_time_tensor = Tensor::Empty(kI64, {num_device}, CPU(CPU_CLIB_MALLOC_DEVICE), "c_list");
 
   TensorView<GRBVar> c_list(c_list_tensor);
   TensorView<GRBVar> x_list(x_list_tensor);
   TensorView<GRBVar> a_list(a_list_tensor);
+  TensorView<GRBVar> max_remote_time(max_remote_time_tensor);
 
   // std::vector<GRBLinExpr> time_list(num_device);
-  std::vector<GRBLinExpr> local_cpu_time_list(num_device);
+  // std::vector<GRBLinExpr> local_cpu_time_list(num_device);
+  std::vector<GRBLinExpr> cpu_time_list(num_device);
+  std::vector<GRBLinExpr> local_time_list(num_device);
   vec<vec<GRBLinExpr>>    remote_time_list(num_device, vec<GRBLinExpr>(num_link));
   std::vector<GRBLinExpr> local_weight_list(num_device);
   std::vector<double>     total_weight_list(num_device);
@@ -455,13 +454,15 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
   auto constraint_time = [&](GRBModel & model, uint32_t dst_dev) {
     uint32_t stream_id = device_to_stream[dst_dev];
     double sum_weight = 0;
-    GRBLinExpr &local_cpu_time = local_cpu_time_list[dst_dev];
+    // GRBLinExpr &local_cpu_time = local_cpu_time_list[dst_dev];
+    GRBLinExpr &cpu_time = cpu_time_list[dst_dev];
+    GRBLinExpr &local_time = local_time_list[dst_dev];
     FOR_LOOP(block_id, num_block) {
       double weight = block_density_array[block_id] * block_freq_array[block_id][stream_id].ref();
       if (weight == 0) continue;
       sum_weight += weight;
-      local_cpu_time += c_list[block_id].ref() * T_cpu * weight;
-      local_cpu_time += x_list[block_id][dst_dev].ref() * T_local * weight;
+      cpu_time += c_list[block_id].ref() * T_cpu * weight;
+      local_time += x_list[block_id][dst_dev].ref() * T_local * weight;
 
       local_weight_list[dst_dev] +=  weight * x_list[block_id][dst_dev].ref();
       cpu_weight_list[dst_dev]   +=  weight * c_list[block_id].ref();
@@ -473,8 +474,11 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
         if (weight == 0) continue;
         remote_time += a_list[block_id][dst_dev][src_link].ref() * link_time[dst_dev][src_link] * weight;
       }
-      model.addConstr(remote_time + local_cpu_time <= z);
+      model.addConstr(remote_time <= max_remote_time[dst_dev].ref());
+      // model.addConstr(remote_time + local_cpu_time <= z);
     }
+    model.addConstr(max_remote_time[dst_dev].ref() + local_time <= z);
+    model.addConstr(cpu_time + sum_weight * 0.02 * T_cpu <= z);
     total_weight_list[dst_dev] = sum_weight;
   };
 
@@ -491,6 +495,9 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
         a_list[block_id][dst_dev][src_link].ref() = model.addVar(0, 1, 0, var_type);
       }
     }
+  }
+  FOR_LOOP(dst_dev, num_device) {
+    max_remote_time[dst_dev].ref() = model.addVar(0.0, std::numeric_limits<double>::max(), 0.0, GRB_CONTINUOUS);
   }
 
   LOG(WARNING) << "Capacity...";

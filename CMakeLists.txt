@@ -64,6 +64,8 @@ target_link_libraries(coll_cache
   gurobi95
   gurobi_c++
   tbb
+  cuda
+  cudart
   nvToolsExt)
 
 
