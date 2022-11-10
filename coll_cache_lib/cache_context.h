@@ -87,7 +87,7 @@ struct DevicePointerExchanger {
 };
 
 struct ExtractionThreadCtx {
-  CUcontext cu_ctx_;
+  CUcontext cu_ctx_ = nullptr;
   cudaStream_t stream_;
   std::function<void(cudaStream_t)> func_;
   std::mutex mu{};

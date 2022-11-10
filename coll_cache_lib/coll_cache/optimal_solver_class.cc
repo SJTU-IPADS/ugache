@@ -350,12 +350,12 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
   GRBEnv env = GRBEnv(true);
   env.set("LogFile", "cppsolver.log");
   env.set(GRB_IntParam_Threads, RunConfig::omp_thread_num*2);
-  env.set(GRB_DoubleParam_BarConvTol, 1e-4);
-  env.set(GRB_DoubleParam_OptimalityTol, 1e-2);
 
   env.set(GRB_DoubleParam_TimeLimit, 200);
 
   // // old parameters for cpu, then concurrent remote, then local
+  // env.set(GRB_DoubleParam_BarConvTol, 1e-4);
+  // env.set(GRB_DoubleParam_OptimalityTol, 1e-2);
   // env.set(GRB_IntParam_Method, 3);
   // env.set(GRB_DoubleParam_MIPGap, 0.03);
   // env.set(GRB_IntParam_MIPFocus, 2);
@@ -381,6 +381,10 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
   env.set(GRB_IntParam_DegenMoves, 0);
   env.set(GRB_IntParam_Aggregate, 0);
   env.set(GRB_IntParam_PrePasses, 1);
+  env.set(GRB_IntParam_NormAdjust, 0);
+  env.set(GRB_IntParam_FlowCoverCuts, 2);
+  env.set(GRB_IntParam_GomoryPasses, 0);
+  env.set(GRB_IntParam_Aggregate, 0);
   env.start();
 
   GRBModel model = GRBModel(env);
@@ -478,7 +482,7 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
       // model.addConstr(remote_time + local_cpu_time <= z);
     }
     model.addConstr(max_remote_time[dst_dev].ref() + local_time <= z);
-    model.addConstr(cpu_time + sum_weight * 0.02 * T_cpu <= z);
+    model.addConstr(cpu_time + sum_weight * 0.03 * T_cpu <= z);
     total_weight_list[dst_dev] = sum_weight;
   };
 
