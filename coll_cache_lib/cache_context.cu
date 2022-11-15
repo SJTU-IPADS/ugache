@@ -402,6 +402,7 @@ void ExtractSession::GetMissCacheIndex(
     StreamHandle stream) {
   auto cu_stream = static_cast<cudaStream_t>(stream);
   auto device = Device::Get(_cache_ctx->_trainer_ctx);
+  if (num_nodes == 0) return;
   if (output_src_index_handle == nullptr || output_src_index_handle->nbytes() < num_nodes * sizeof(SrcKey)) {
     output_src_index_handle = _cache_ctx->_gpu_mem_allocator(num_nodes * sizeof(SrcKey));
     output_dst_index_handle = _cache_ctx->_gpu_mem_allocator(num_nodes * sizeof(DstVal));
@@ -474,6 +475,7 @@ void ExtractSession::SplitGroup(const SrcKey * src_index, const size_t len, IdTy
   // group_offset = (IdType*)Device::Get(cpu_ctx)->AllocWorkspace(cpu_ctx, sizeof(IdType) * (_cache_ctx->_num_location + 1));
   std::memset(group_offset, 0, sizeof(IdType) * (_cache_ctx->_num_location + 1));
   group_offset[_cache_ctx->_num_location] = len;
+  if (len == 0) return;
   LOG(DEBUG) << "CollCache: SplitGroup: legacy finding offset...";
   const LocationIter loc_iter(src_index);
   find_boundary<><<<grid, block, 0, cu_stream>>>(loc_iter, len, group_offset);
@@ -527,12 +529,12 @@ void ExtractSession::CombineConcurrent(const SrcKey * src_index, const DstVal * 
     }
     total_num_node += param.num_node_array[i];
   }
+  if (total_num_node == 0) return;
   link_mapping = Tensor::CopyToExternal(link_mapping, _cache_ctx->_gpu_mem_allocator, _cache_ctx->_trainer_ctx, stream);
   param.block_num_prefix_sum[NUM_LINK] = total_required_num_sm;
   param.link_mapping = link_mapping->CPtr<IdType>();
   param.dim = _cache_ctx->_dim;
 
-  if (total_num_node == 0) return;
   auto device = Device::Get(_cache_ctx->_trainer_ctx);
   auto cu_stream = static_cast<cudaStream_t>(stream);
 
@@ -717,7 +719,8 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       // │ cpu ├──────────┼...┼────────────┤
       // │     │remote 0/n│...│remote n-1/n│
       // └─────┴──────────┴...┴────────────┘
-      auto local_combine = [src_index, group_offset, dst_index, nodes, this, output](int link_id, StreamHandle stream){
+      auto local_combine = [src_index, group_offset, dst_index, nodes, this, output, num_nodes](int link_id, StreamHandle stream){
+        if (num_nodes == 0) return;
         auto & link_src = RunConfig::coll_cache_link_desc.link_src[_cache_ctx->_local_location_id];
         size_t loc_id = this->_cache_ctx->_local_location_id;
         size_t local_total_num = group_offset[loc_id+1] - group_offset[loc_id];
@@ -731,7 +734,8 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
                         _cache_ctx->_device_cache_data[loc_id], output, stream, 0, true);
       };
 
-      auto call_combine = [src_index, group_offset, dst_index, nodes, this, output](int location_id, StreamHandle stream){
+      auto call_combine = [src_index, group_offset, dst_index, nodes, this, output, num_nodes](int location_id, StreamHandle stream){
+        if (num_nodes == 0) return;
         CombineOneGroup(src_index + group_offset[location_id], 
                         dst_index + group_offset[location_id], 
                         nodes + group_offset[location_id], 
@@ -864,7 +868,8 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     double combine_times[3] = {0, 0, 0};
     // cpu first, then remote, then local 
 
-    auto call_combine = [src_index, group_offset, dst_index, nodes, this, output, stream](int location_id){
+    auto call_combine = [src_index, group_offset, dst_index, nodes, this, output, stream, num_nodes](int location_id){
+      if (num_nodes == 0) return;
       CombineOneGroup(src_index + group_offset[location_id], 
                       dst_index + group_offset[location_id], 
                       nodes + group_offset[location_id], 
