@@ -6,6 +6,7 @@
 #include "../coll_cache_lib/cuda/cuda_device.h"
 #include "../coll_cache_lib/cpu/mmap_cpu_device.h"
 #include "atomic_barrier.h"
+#include "run_config.h"
 #include <CLI/CLI.hpp>
 #include <iostream>
 #include <random>
@@ -27,6 +28,8 @@ std::unordered_map<std::string, CachePolicy> cache_policy_strs = {
   {"dynamic_cache"   ,  kDynamicCache},
   {"random"          ,  kCacheByRandom},
   {"rep"             ,  kRepCache},
+  {"clique_part"     ,  kCliquePart},
+  {"coll"            ,  kCollCacheAsymmLink},
 };
 
 std::unordered_map<std::string, std::string> configs;
@@ -51,6 +54,8 @@ void InitOptions(std::string app_name) {
           "dynamic_cache",
           "random",
           "rep",
+          "clique_part",
+          "coll",
       }));
   _app.add_option("--cache-percentage",           RunConfig::cache_percentage);
   _app.add_option("--num-device",                 RunConfig::num_device);
@@ -82,7 +87,9 @@ void Parse(int argc, char** argv) {
 class DemoMemHandle : public ExternelGPUMemoryHandler {
  public:
   void* dev_ptr = nullptr;
+  size_t nbytes_ = 0;
   void* ptr() override {return dev_ptr;}
+  size_t nbytes() override { return nbytes_; }
   ~DemoMemHandle() { CUDA_CALL(cudaFree(dev_ptr)); }
 };
 // Atomic Barrier should be placed at mmap shared memory, cannot be recycled by ~shared_ptr, so we have to warp it.
@@ -98,19 +105,23 @@ class DemoBarrier : public ExternalBarrierHandler {
 };
 
 int main(int argc, char** argv) {
-  size_t num_keys = 1000000;
-  size_t dim = 128;
-  size_t batch_size = 1000;
+  size_t num_keys = 10000000;
+  size_t dim = 256;
+  size_t batch_size = 8192*26;
+  RunConfig::cache_percentage = 0.125;
   InitOptions("");
   Parse(argc, argv);
-
-  RunConfig::cache_percentage = 0.5;
 
   RunConfig::device_id_list.resize(RunConfig::num_device);
   for (int i = 0; i < RunConfig::num_device; i++) {
     RunConfig::device_id_list[i] = i;
   }
   RunConfig::cross_process = true;
+  RunConfig::num_global_step_per_epoch = RunConfig::num_device * 100;
+  RunConfig::num_epoch = 10;
+  RunConfig::num_total_item = num_keys;
+  // RunConfig::cache_policy = coll_cache_lib::common::kCollCacheAsymmLink;
+  // RunConfig::cache_policy = coll_cache_lib::common::kCliquePart;
 
   BarHandle _replica_barrier = std::make_shared<DemoBarrier>(RunConfig::num_device);
 
@@ -130,7 +141,7 @@ int main(int argc, char** argv) {
   }
 
 
-  thread_local std::mt19937 gen(RunConfig::seed + replica_id);
+  thread_local std::mt19937 gen(0x45678f1 * replica_id);
 
   IdType* ranking_nodes_list_ptr = nullptr;
   IdType* ranking_nodes_freq_list_ptr = nullptr;
@@ -155,6 +166,7 @@ int main(int argc, char** argv) {
     CUDA_CALL(cudaMalloc(&ptr, nbytes));
     std::shared_ptr<DemoMemHandle> handle = std::make_shared<DemoMemHandle>();
     handle->dev_ptr = ptr;
+    handle->nbytes_ = nbytes;
     return handle;
   };
 
@@ -175,19 +187,22 @@ int main(int argc, char** argv) {
   auto output_handle = gpu_mem_allocator(batch_size * dim * GetDataTypeBytes(kF32));
   auto output = output_handle->ptr();
   // void * output = new float[batch_size * dim];
-  for (int iteration = 0; iteration < 10; iteration++) {
-    LOG(ERROR) << "replica " << replica_id << " round " << iteration << " begin";
+  for (int iteration = 0; iteration < 1000; iteration++) {
+    if (iteration % 100 == 0) LOG(ERROR) << "replica " << replica_id << " round " << iteration << " begin";
     _replica_barrier->Wait();
-    #pragma omp parallel for num_threads(RunConfig::omp_thread_num / RunConfig::num_device)
+    // #pragma omp parallel for num_threads(RunConfig::omp_thread_num / RunConfig::num_device)
     for (int i = 0; i < batch_size; i++) {
       key_list_cpu->Ptr<IdType>()[i] = dist_int(gen);
     }
     _replica_barrier->Wait();
-    LOG(ERROR) << "replica " << replica_id << " round " << iteration << " begin extract";
+    if (iteration % 100 == 0) LOG(ERROR) << "replica " << replica_id << " round " << iteration << " begin extract";
     auto key_list = Tensor::CopyToExternal(key_list_cpu, gpu_mem_allocator, GPU(dev_id), stream);
-    cache_manager->lookup(replica_id, key_list->Ptr<IdType>(), batch_size, output, stream);
-    LOG(ERROR) << "replica " << replica_id << " round " << iteration << " done";
+    cache_manager->lookup(replica_id, key_list->Ptr<IdType>(), batch_size, output, stream, replica_id + iteration * RunConfig::num_device);
+    if (iteration % 100 == 0) LOG(ERROR) << "replica " << replica_id << " round " << iteration << " done";
     _replica_barrier->Wait();
+  }
+  if (replica_id == 0) {
+    cache_manager->report_avg();
   }
 
   // samgraph::common::samgraph_config_from_map(configs);
