@@ -580,6 +580,28 @@ void Combine(const SrcDataIter_T src_data_iter, DstDataIter_T dst_data_iter,
 }
 }
 
+void ExtractSession::CombineNoGroup(const IdType * nodes, const size_t num_node, void* output, Context _trainer_ctx, DataType _dtype, IdType _dim, StreamHandle stream) {
+  if (num_node == 0) return;
+  auto device = Device::Get(_trainer_ctx);
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+
+  dim3 block(256, 1);
+  while (static_cast<size_t>(block.x) >= 2 * _dim) {
+    block.x /= 2;
+    block.y *= 2;
+  }
+  const dim3 grid(RoundUpDiv(num_node, static_cast<size_t>(block.y * 4)));
+
+  const DataIterMultiLocation<const IdType*> src_iter(nodes, _cache_ctx->_hash_table_location, _cache_ctx->_hash_table_offset, _cache_ctx->_device_cache_data, _dim);
+  DataIter<DirectOffIter> dst_iter(DirectOffIter(), output, _dim);
+
+  SWITCH_TYPE(_dtype, type, {
+      extract_data<type><<<grid, block, 0, cu_stream>>>(src_iter, dst_iter, num_node, _dim);
+  });
+
+  device->StreamSync(_trainer_ctx, stream);
+}
+
 void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
                   void* output, StreamHandle stream, uint64_t task_key) {
 #ifdef DEAD_CODE
@@ -647,30 +669,32 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       Profiler::Get().LogEpochAdd(task_key, kLogEpochMissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
     }
     cpu_device->FreeWorkspace(CPU(CPU_CUDA_HOST_MALLOC_DEVICE), group_offset);
-  } else if (RunConfig::coll_cache_no_group) {
+  } else 
+#endif
+  if (RunConfig::coll_cache_no_group) {
     // CHECK(false) << "Multi source extraction is not supported now";
-    auto trainer_gpu_device = Device::Get(_trainer_ctx);
+    auto trainer_gpu_device = Device::Get(_cache_ctx->_trainer_ctx);
     auto cpu_device = Device::Get(CPU(CPU_CUDA_HOST_MALLOC_DEVICE));
-    Timer t0;
-    double get_index_time = t0.Passed();
+    // Timer t0;
+    // double get_index_time = t0.Passed();
     Timer t1;
-    CombineNoGroup(nodes, num_nodes, output, _trainer_ctx, _dtype, _dim, stream);
+    CombineNoGroup(nodes, num_nodes, output, _cache_ctx->_trainer_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
     double combine_time = t1.Passed();
     if (task_key != 0xffffffffffffffff) {
       // size_t num_hit = group_offset[1];
-      Profiler::Get().LogStep(task_key, kLogL1FeatureBytes, GetTensorBytes(_dtype, {num_nodes, _dim}));
-      // Profiler::Get().LogStep(task_key, kLogL1MissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
-      // Profiler::Get().LogStep(task_key, kLogL1RemoteBytes, GetTensorBytes(_dtype, {num_remote, _dim}));
-      Profiler::Get().LogStep(task_key, kLogL3CacheGetIndexTime, get_index_time);
-      // Profiler::Get().LogStep(task_key, kLogL3CacheCombineMissTime,combine_times[0]);
-      // Profiler::Get().LogStep(task_key, kLogL3CacheCombineRemoteTime,combine_times[1]);
-      // Profiler::Get().LogStep(task_key, kLogL3CacheCombineCacheTime,combine_times[2]);
-      Profiler::Get().LogEpochAdd(task_key, kLogEpochFeatureBytes,GetTensorBytes(_dtype, {num_nodes, _dim}));
-      // Profiler::Get().LogEpochAdd(task_key, kLogEpochMissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
+      auto _dtype = _cache_ctx->_dtype;
+      auto _dim = _cache_ctx->_dim;
+      _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL1FeatureBytes, GetTensorBytes(_dtype, {num_nodes, _dim}));
+      // _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL1MissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
+      // _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL1RemoteBytes, GetTensorBytes(_dtype, {num_remote, _dim}));
+      // _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheGetIndexTime, get_index_time);
+      // _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheCombineMissTime,combine_times[0]);
+      // _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheCombineRemoteTime,combine_times[1]);
+      _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheCombineCacheTime,combine_time);
+      _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochFeatureBytes,GetTensorBytes(_dtype, {num_nodes, _dim}));
+      // _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochMissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
     }
-  } else 
-#endif
-  if (RunConfig::concurrent_link_impl != kNoConcurrentLink) {
+  } else if (RunConfig::concurrent_link_impl != kNoConcurrentLink) {
     // CHECK(false) << "Multi source extraction is not supported now";
     auto trainer_gpu_device = Device::Get(_cache_ctx->_trainer_ctx);
     auto cpu_device = Device::Get(CPU(CPU_CUDA_HOST_MALLOC_DEVICE));
