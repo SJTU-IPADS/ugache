@@ -553,6 +553,52 @@ void ExtractSession::CombineConcurrent(const SrcKey * src_index, const DstVal * 
   device->StreamSync(_cache_ctx->_trainer_ctx, stream);
 }
 
+template<int NUM_LINK>
+void ExtractSession::CombineFused(const SrcKey * src_index, const DstVal * dst_index, const IdType * group_offset, void* output, StreamHandle stream) {
+  dim3 block(1024, 1);
+  while (static_cast<size_t>(block.x) >= 2 * _cache_ctx->_dim) {
+    block.x /= 2;
+    block.y *= 2;
+  }
+
+  CHECK(NUM_LINK == RunConfig::coll_cache_link_desc.link_src[_cache_ctx->_local_location_id].size());
+  ExtractConcurrentParam<NUM_LINK, DataIter<SrcOffIter>, DataIter<DstOffIter>> param;
+  IdType total_required_num_block = 0;
+  TensorPtr link_mapping = Tensor::Empty(kI32, {RoundUpDiv(group_offset[this->_cache_ctx->_num_location] - group_offset[0], block.y * 4) * 2}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+  IdType total_num_node = 0;
+  for (int i = 0; i < NUM_LINK; i++) {
+    CHECK(RunConfig::coll_cache_link_desc.link_src[_cache_ctx->_local_location_id][i].size() == 1);
+    int dev_id = RunConfig::coll_cache_link_desc.link_src[_cache_ctx->_local_location_id][i][0];
+    param.full_src_array[i] = DataIter<SrcOffIter>(SrcOffIter(dst_index + group_offset[dev_id]), _cache_ctx->_device_cache_data[dev_id], _cache_ctx->_dim);
+    param.dst_index_array[i] = DataIter<DstOffIter>(DstOffIter(dst_index + group_offset[dev_id]), output, _cache_ctx->_dim);
+    param.num_node_array[i] = group_offset[dev_id + 1] - group_offset[dev_id];
+    int num_block = RoundUpDiv(static_cast<size_t>(param.num_node_array[i]), static_cast<size_t>(block.y * 4));
+    param.block_num_prefix_sum[i] = total_required_num_block;
+    total_required_num_block += num_block;
+    for (int block_id = param.block_num_prefix_sum[i]; block_id < total_required_num_block; block_id++) {
+      link_mapping->Ptr<IdType>()[block_id] = i;
+    }
+    total_num_node += param.num_node_array[i];
+  }
+  if (total_num_node == 0) return;
+  CHECK(link_mapping->Shape()[0] >= total_required_num_block);
+  link_mapping = Tensor::CopyToExternal(link_mapping, _cache_ctx->_gpu_mem_allocator, _cache_ctx->_trainer_ctx, stream);
+  param.block_num_prefix_sum[NUM_LINK] = total_required_num_block;
+  param.link_mapping = link_mapping->CPtr<IdType>();
+  param.dim = _cache_ctx->_dim;
+
+  auto device = Device::Get(_cache_ctx->_trainer_ctx);
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+
+  dim3 grid(total_required_num_block);
+
+  SWITCH_TYPE(_cache_ctx->_dtype, type, {
+    extract_data_concurrent<NUM_LINK, type><<<grid, block, 0, cu_stream>>>(param);
+  });
+
+  device->StreamSync(_cache_ctx->_trainer_ctx, stream);
+}
+
 namespace {
 template <typename SrcDataIter_T, typename DstDataIter_T>
 void Combine(const SrcDataIter_T src_data_iter, DstDataIter_T dst_data_iter,
@@ -796,12 +842,28 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       {
         // impl1: single kernel, limited num block
         t1.Reset();
-        switch(RunConfig::coll_cache_link_desc.link_src[_cache_ctx->_local_location_id].size()) {
-          case 1: CombineConcurrent<1>(src_index, dst_index, group_offset, output, stream); break;
-          case 2: CombineConcurrent<2>(src_index, dst_index, group_offset, output, stream); break;
-          case 3: CombineConcurrent<3>(src_index, dst_index, group_offset, output, stream); break;
-          case 4: CombineConcurrent<4>(src_index, dst_index, group_offset, output, stream); break;
-          default: CHECK(false);
+        if (RunConfig::concurrent_link_impl == kFused) {
+          switch(RunConfig::coll_cache_link_desc.link_src[_cache_ctx->_local_location_id].size()) {
+            case 1: CombineFused<1>(src_index, dst_index, group_offset, output, stream); break;
+            case 2: CombineFused<2>(src_index, dst_index, group_offset, output, stream); break;
+            case 3: CombineFused<3>(src_index, dst_index, group_offset, output, stream); break;
+            case 4: CombineFused<4>(src_index, dst_index, group_offset, output, stream); break;
+            case 5: CombineFused<5>(src_index, dst_index, group_offset, output, stream); break;
+            case 6: CombineFused<6>(src_index, dst_index, group_offset, output, stream); break;
+            case 7: CombineFused<7>(src_index, dst_index, group_offset, output, stream); break;
+            default: CHECK(false);
+          }
+        } else if (RunConfig::concurrent_link_impl == kFusedLimitNumBlock) {
+          switch(RunConfig::coll_cache_link_desc.link_src[_cache_ctx->_local_location_id].size()) {
+            case 1: CombineConcurrent<1>(src_index, dst_index, group_offset, output, stream); break;
+            case 2: CombineConcurrent<2>(src_index, dst_index, group_offset, output, stream); break;
+            case 3: CombineConcurrent<3>(src_index, dst_index, group_offset, output, stream); break;
+            case 4: CombineConcurrent<4>(src_index, dst_index, group_offset, output, stream); break;
+            case 5: CombineConcurrent<5>(src_index, dst_index, group_offset, output, stream); break;
+            case 6: CombineConcurrent<6>(src_index, dst_index, group_offset, output, stream); break;
+            case 7: CombineConcurrent<7>(src_index, dst_index, group_offset, output, stream); break;
+            default: CHECK(false);
+          }
         }
         combine_times[1] = t1.Passed();
       }{

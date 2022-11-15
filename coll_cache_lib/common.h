@@ -76,7 +76,8 @@ enum RollingPolicy {
 };
 enum ConcurrentLinkImpl {
   kNoConcurrentLink = 0,
-  kSingleKernelNumBlock,
+  kFusedLimitNumBlock,
+  kFused,
   kMultiKernelNumBlock,
   kMPS,
 };

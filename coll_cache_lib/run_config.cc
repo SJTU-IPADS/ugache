@@ -107,7 +107,13 @@ void RunConfig::LoadConfigFromEnv() {
     RunConfig::coll_cache_concurrent_link = coll_cache::AutoEnableConcurrentLink();
   }
   if (RunConfig::coll_cache_concurrent_link) {
-    RunConfig::concurrent_link_impl = kMPS;
+    if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "FUSED") {
+      RunConfig::concurrent_link_impl = kFused;
+    } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "FUSED_LIMIT_BLOCK") {
+      RunConfig::concurrent_link_impl = kFusedLimitNumBlock;
+    } else {
+      RunConfig::concurrent_link_impl = kMPS;
+    }
   }
 }
 
