@@ -12,6 +12,7 @@
 #include <random>
 #include <sys/mman.h>
 #include <thread>
+#include "./workspace_pool.h"
 CLI::App _app;
 namespace {
 using namespace coll_cache_lib;
@@ -168,6 +169,11 @@ int main(int argc, char** argv) {
     handle->dev_ptr = ptr;
     handle->nbytes_ = nbytes;
     return handle;
+  };
+  WorkspacePool* wpool = new WorkspacePool(gpu_mem_allocator);
+
+  gpu_mem_allocator = [wpool](size_t nbytes) {
+    return wpool->AllocWorkspace(nbytes);
   };
 
   std::uniform_int_distribution<IdType> dist_int(0, num_keys - 1);
