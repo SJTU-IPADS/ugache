@@ -9,6 +9,7 @@
 // #include "facade.h"
 // #include "timer.h"
 // #include "atomic_barrier.h"
+#include <atomic>
 #include <mutex>
 #include <condition_variable>
 #include <thread>
@@ -90,9 +91,7 @@ struct ExtractionThreadCtx {
   CUcontext cu_ctx_ = nullptr;
   cudaStream_t stream_;
   std::function<void(cudaStream_t)> func_;
-  std::mutex mu{};
-  std::condition_variable cv{};
-  volatile int todo_steps = 0, done_steps = 0;
+  std::atomic<int> todo_steps{0}, done_steps{0};
   ExtractionThreadCtx();
   void thread_func();
   void forward_one_step(std::function<void(cudaStream_t)> new_func);
@@ -132,6 +131,7 @@ class CacheContext {
 
   std::function<MemHandle(size_t)> _gpu_mem_allocator;
   std::function<MemHandle(size_t)> _eager_gpu_mem_allocator;
+  // std::function<void()> ctx_injector_;
   friend class ExtractSession;
 
   void build_without_advise(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream = nullptr);

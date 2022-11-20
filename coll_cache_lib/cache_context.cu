@@ -782,6 +782,7 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
                         nodes + group_offset[loc_id] + part_begin, 
                         part_end - part_begin, 
                         _cache_ctx->_device_cache_data[loc_id], output, stream, 0, true);
+        CUDA_CALL(cudaStreamSynchronize(reinterpret_cast<cudaStream_t>(stream)));
       };
 
       auto call_combine = [src_index, group_offset, dst_index, nodes, this, output, num_nodes](int location_id, StreamHandle stream){
@@ -791,12 +792,12 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
                         nodes + group_offset[location_id], 
                         group_offset[location_id+1] - group_offset[location_id], 
                         _cache_ctx->_device_cache_data[location_id], output, stream, 0, true);
+        CUDA_CALL(cudaStreamSynchronize(reinterpret_cast<cudaStream_t>(stream)));
       };
       // launch cpu extraction
       this->_extract_ctx[_cache_ctx->_cpu_location_id]->forward_one_step([&combine_times, call_combine, loc_id = _cache_ctx->_cpu_location_id](cudaStream_t cu_s){
         Timer t_cpu;
         call_combine(loc_id, reinterpret_cast<StreamHandle>(cu_s));
-        CUDA_CALL(cudaStreamSynchronize(cu_s));
         combine_times[0] = t_cpu.Passed();
       });
       // launch local extraction
@@ -807,7 +808,6 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
         CHECK(link_src[i].size() == 1);
         this->_extract_ctx[link_src[i][0]]->forward_one_step([local_combine, link_id = i](cudaStream_t cu_s){
           local_combine(link_id, cu_s);
-          CUDA_CALL(cudaStreamSynchronize(cu_s));
         });
       }
       for (int i = 0; i < num_link; i++) {
@@ -818,13 +818,16 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       Timer t_remote;
       for (int i = 0; i < num_link; i++) {
         CHECK(link_src[i].size() == 1);
-        this->_extract_ctx[link_src[i][0]]->forward_one_step([call_combine, loc_id = link_src[i][0]](cudaStream_t cu_s){
+        int loc_id = link_src[i][0];
+        if (group_offset[loc_id+1] - group_offset[loc_id] == 0) continue;
+        this->_extract_ctx[loc_id]->forward_one_step([call_combine, loc_id](cudaStream_t cu_s){
           call_combine(loc_id, reinterpret_cast<StreamHandle>(cu_s));
-          CUDA_CALL(cudaStreamSynchronize(cu_s));
         });
       }
       for (int i = 0; i < num_link; i++) {
-        this->_extract_ctx[link_src[i][0]]->wait_one_step();
+        int loc_id = link_src[i][0];
+        if (group_offset[loc_id+1] - group_offset[loc_id] == 0) continue;
+        this->_extract_ctx[loc_id]->wait_one_step();
       }
       combine_times[1] = t_remote.Passed();
       this->_extract_ctx[_cache_ctx->_cpu_location_id]->wait_one_step();
@@ -942,16 +945,18 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
                       group_offset[location_id+1] - group_offset[location_id], 
                       _cache_ctx->_device_cache_data[location_id], output, stream);
     };
+    _cache_ctx->_barrier->Wait();
     Timer t_cpu;
-    _cache_ctx->_barrier->Wait();
     call_combine(_cache_ctx->_cpu_location_id);
-    _cache_ctx->_barrier->Wait();
+    if (group_offset[_cache_ctx->_cpu_location_id+1] - group_offset[_cache_ctx->_cpu_location_id] != 0) {
+      _cache_ctx->_barrier->Wait();
+    }
     combine_times[0] = t_cpu.Passed();
 
     // DistEngine::Get()->GetTrainerBarrier()->Wait();
     {
       t1.Reset();
-      _cache_ctx->_barrier->Wait();
+      // _cache_ctx->_barrier->Wait();
       for (auto & link : RunConfig::coll_cache_link_desc.link_src[_cache_ctx->_local_location_id]) {
         for (auto dev_id : link) {
           call_combine(dev_id);
@@ -1549,6 +1554,7 @@ void DevicePointerExchanger::close(void *ptr) {
 ExtractSession::ExtractSession(std::shared_ptr<CacheContext> cache_ctx) : _cache_ctx(cache_ctx) {
   auto cpu_ctx = CPU(CPU_CUDA_HOST_MALLOC_DEVICE);
   _group_offset = (IdType*)Device::Get(cpu_ctx)->AllocWorkspace(cpu_ctx, sizeof(IdType) * (_cache_ctx->_num_location + 1));
+  // _cache_ctx->ctx_injector_ = [](){};
   if (RunConfig::concurrent_link_impl == common::kMPS) {
     this->_extract_threads.resize(_cache_ctx->_num_location);
     this->_extract_ctx.resize(_cache_ctx->_num_location);
@@ -1580,6 +1586,9 @@ ExtractSession::ExtractSession(std::shared_ptr<CacheContext> cache_ctx) : _cache
     }
     // ctx_creation_lambda(link_desc.local_sm[_local_location_id], gpu_ctx.device_id);
     ctx_creation_lambda(link_desc.cpu_sm[_local_location_id], _cache_ctx->_cpu_location_id);
+    // _cache_ctx->ctx_injector_ = [this, _local_location_id](){
+    //   CU_CALL(cuCtxSetCurrent(_extract_ctx[_local_location_id]->cu_ctx_));
+    // };
   } else if (RunConfig::concurrent_link_impl != common::kNoConcurrentLink) {
     _concurrent_stream_array.resize(RunConfig::num_device - 1);
     for (auto & stream : _concurrent_stream_array) {
@@ -1594,25 +1603,21 @@ void ExtractionThreadCtx::thread_func() {
     CU_CALL(cuCtxSetCurrent(this->cu_ctx_));
   }
   while (true) {
-    std::unique_lock<std::mutex> lk(mu);
-    cv.wait(lk, [this]() { return todo_steps > done_steps; });
+    int local_done_steps = done_steps.load();
+    while (todo_steps.load() == local_done_steps) {}
     func_(stream_);
-    done_steps++;
-    // lk.unlock();
-    cv.notify_one();
+    done_steps.fetch_add(1);
   }
 }
 void ExtractionThreadCtx::forward_one_step(std::function<void(cudaStream_t)> new_func) {
   {
-    std::lock_guard<std::mutex> lk(mu);
     func_ = new_func;
-    todo_steps++;
+    todo_steps.fetch_add(1);
   }
-  cv.notify_one();
 }
 void ExtractionThreadCtx::wait_one_step() {
-  std::unique_lock<std::mutex> lk(mu);
-  cv.wait(lk, [this]() { return todo_steps == done_steps; });
+  int local_todo_steps = todo_steps.load();
+  while(local_todo_steps > done_steps.load()) {}
 }
 ExtractionThreadCtx::ExtractionThreadCtx() {}
 } // namespace coll_cache_lib
