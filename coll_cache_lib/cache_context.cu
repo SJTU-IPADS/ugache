@@ -785,21 +785,21 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       // │ cpu ├──────────┼...┼────────────┤
       // │     │remote 0/n│...│remote n-1/n│
       // └─────┴──────────┴...┴────────────┘
-      auto local_combine = [src_index, group_offset, dst_index, nodes, this, output, num_nodes](int link_id, StreamHandle stream){
-        if (num_nodes == 0) return;
-        auto & link_src = RunConfig::coll_cache_link_desc.link_src[_cache_ctx->_local_location_id];
-        size_t loc_id = this->_cache_ctx->_local_location_id;
-        size_t local_total_num = group_offset[loc_id+1] - group_offset[loc_id];
-        size_t local_part_num = RoundUpDiv(local_total_num, link_src.size());
-        size_t part_begin = local_part_num * link_id;
-        size_t part_end = std::min((link_id + 1) * local_part_num, local_total_num);
-        CombineOneGroup(src_index + group_offset[loc_id] + part_begin, 
-                        dst_index + group_offset[loc_id] + part_begin, 
-                        nodes + group_offset[loc_id] + part_begin, 
-                        part_end - part_begin, 
-                        _cache_ctx->_device_cache_data[loc_id], output, stream, 0, true);
-        CUDA_CALL(cudaStreamSynchronize(reinterpret_cast<cudaStream_t>(stream)));
-      };
+      // auto local_combine = [src_index, group_offset, dst_index, nodes, this, output, num_nodes](int link_id, StreamHandle stream){
+      //   if (num_nodes == 0) return;
+      //   auto & link_src = RunConfig::coll_cache_link_desc.link_src[_cache_ctx->_local_location_id];
+      //   size_t loc_id = this->_cache_ctx->_local_location_id;
+      //   size_t local_total_num = group_offset[loc_id+1] - group_offset[loc_id];
+      //   size_t local_part_num = RoundUpDiv(local_total_num, link_src.size());
+      //   size_t part_begin = local_part_num * link_id;
+      //   size_t part_end = std::min((link_id + 1) * local_part_num, local_total_num);
+      //   CombineOneGroup(src_index + group_offset[loc_id] + part_begin, 
+      //                   dst_index + group_offset[loc_id] + part_begin, 
+      //                   nodes + group_offset[loc_id] + part_begin, 
+      //                   part_end - part_begin, 
+      //                   _cache_ctx->_device_cache_data[loc_id], output, stream, 0, true);
+      //   CUDA_CALL(cudaStreamSynchronize(reinterpret_cast<cudaStream_t>(stream)));
+      // };
 
       auto call_combine = [src_index, group_offset, dst_index, nodes, this, output, num_nodes](int location_id, StreamHandle stream){
         if (num_nodes == 0) return;
@@ -820,15 +820,10 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       auto & link_src = RunConfig::coll_cache_link_desc.link_src[_cache_ctx->_local_location_id];
       auto num_link = link_src.size();
       Timer t_local;
-      for (int i = 0; i < num_link; i++) {
-        CHECK(link_src[i].size() == 1);
-        this->_extract_ctx[link_src[i][0]]->forward_one_step([local_combine, link_id = i](cudaStream_t cu_s){
-          local_combine(link_id, cu_s);
-        });
-      }
-      for (int i = 0; i < num_link; i++) {
-        this->_extract_ctx[link_src[i][0]]->wait_one_step();
-      }
+      this->_extract_ctx[_cache_ctx->_local_location_id]->forward_one_step([call_combine, loc_id = _cache_ctx->_local_location_id](cudaStream_t cu_s){
+        call_combine(loc_id, reinterpret_cast<StreamHandle>(cu_s));
+      });
+      this->_extract_ctx[_cache_ctx->_local_location_id]->wait_one_step();
       combine_times[2] = t_local.Passed();
       // launch remote extraction
       Timer t_remote;
@@ -1600,7 +1595,7 @@ ExtractSession::ExtractSession(std::shared_ptr<CacheContext> cache_ctx) : _cache
       CHECK(link_src[link_id].size() == 1);
       ctx_creation_lambda(link_desc.link_sm[_local_location_id][link_id], link_src[link_id][0]);
     }
-    // ctx_creation_lambda(link_desc.local_sm[_local_location_id], gpu_ctx.device_id);
+    ctx_creation_lambda(link_desc.local_sm[_local_location_id], gpu_ctx.device_id);
     ctx_creation_lambda(link_desc.cpu_sm[_local_location_id], _cache_ctx->_cpu_location_id);
     // _cache_ctx->ctx_injector_ = [this, _local_location_id](){
     //   CU_CALL(cuCtxSetCurrent(_extract_ctx[_local_location_id]->cu_ctx_));
