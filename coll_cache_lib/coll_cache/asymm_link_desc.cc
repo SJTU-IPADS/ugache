@@ -58,11 +58,13 @@ void AsymmLinkDesc::BuildSymmHardWire(int num_trainer) {
   link_src = vec<vec<vec<int>>>(num_trainer, vec<vec<int>>(num_link));
   for (int dst_dev = 0; dst_dev < num_trainer; dst_dev++) {
     // each device has multiple link, each link contains only one remote device
+    std::cout << dst_dev << " : ";
     for (int src_link = 0; src_link < num_link; src_link++) {
+      // link_src[dst_dev][src_link] = {(src_link < dst_dev) ? src_link : (src_link + 1)};
       link_src[dst_dev][src_link] = {(dst_dev + src_link + 1) % num_trainer};
-      std::cout << dst_dev << " : link #" << src_link << " : ";
-      std::cout << link_src[dst_dev][src_link][0] << "\n";
+      std::cout << " {link #" << src_link << " : " << link_src[dst_dev][src_link][0] << "},";
     }
+    std::cout << "\n";
   }
   link_time = vec<vec<double>>(
       num_trainer,

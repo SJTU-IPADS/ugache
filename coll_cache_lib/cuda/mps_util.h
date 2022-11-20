@@ -34,7 +34,7 @@ inline void check_have_affinity_support(int dev_o) {
   CU_CALL(cuCtxPushCurrent(cctx)); \
 }
 inline CUcontext create_ctx_with_sm_count(int dev_o, int sm_count) {
-  LOG(ERROR) << "creating mps ctx at dev " << dev_o << " with sm=" << sm_count;
+  // LOG(ERROR) << "creating mps ctx at dev " << dev_o << " with sm=" << sm_count;
   CUdevice dev;
   CU_CALL(cuDeviceGet(&dev, dev_o));
   CUcontext sctx;
