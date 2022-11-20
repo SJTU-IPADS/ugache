@@ -1,5 +1,6 @@
 #include "common.h"
 #include "cpu/cpu_device.h"
+#include "cpu/cpu_utils.h"
 #include "cpu/mmap_cpu_device.h"
 #include "run_config.h"
 #include "logging.h"
@@ -9,6 +10,7 @@
 #include <cuda_runtime.h>
 #include <cuda_runtime_api.h>
 
+#include <algorithm>
 #include <cub/cub.cuh>
 
 #include "facade.h"
@@ -406,13 +408,13 @@ void ExtractSession::GetMissCacheIndex(
   if (output_src_index_handle == nullptr || output_src_index_handle->nbytes() < num_nodes * sizeof(SrcKey)) {
     output_src_index_handle = _cache_ctx->_gpu_mem_allocator(num_nodes * sizeof(SrcKey));
     output_dst_index_handle = _cache_ctx->_gpu_mem_allocator(num_nodes * sizeof(DstVal));
+    output_src_index_alter_handle = _cache_ctx->_gpu_mem_allocator(num_nodes * sizeof(SrcKey));
+    output_dst_index_alter_handle = _cache_ctx->_gpu_mem_allocator(num_nodes * sizeof(DstVal));
   }
 
   output_src_index = output_src_index_handle->ptr<SrcKey>();
   output_dst_index = output_dst_index_handle->ptr<DstVal>();
 
-  auto output_src_index_alter_handle = _cache_ctx->_gpu_mem_allocator(num_nodes * sizeof(SrcKey));
-  auto output_dst_index_alter_handle = _cache_ctx->_gpu_mem_allocator(num_nodes * sizeof(DstVal));
 
   SrcKey * output_src_index_alter = output_src_index_alter_handle->ptr<SrcKey>();
   DstVal * output_dst_index_alter = output_dst_index_alter_handle->ptr<DstVal>();
@@ -440,7 +442,9 @@ void ExtractSession::GetMissCacheIndex(
       nullptr, workspace_bytes, keys, vals, num_nodes, 0, sizeof(SrcKey) * 8,
       cu_stream));
 
-  auto workspace_handle = _cache_ctx->_gpu_mem_allocator(workspace_bytes);
+  if (workspace_handle == nullptr || workspace_handle->nbytes() < workspace_bytes) {
+    workspace_handle = _cache_ctx->_gpu_mem_allocator(workspace_bytes);
+  }
   void *workspace = workspace_handle->ptr();
 
   CUDA_CALL(cub::DeviceRadixSort::SortPairs(
@@ -454,8 +458,8 @@ void ExtractSession::GetMissCacheIndex(
   if (reinterpret_cast<SrcKey*>(keys.Current()) != output_src_index) {
     output_src_index = reinterpret_cast<SrcKey*>(keys.Current());
     output_dst_index = reinterpret_cast<DstVal*>(vals.Current());
-    output_src_index_handle = output_src_index_alter_handle;
-    output_dst_index_handle = output_dst_index_alter_handle;
+    // output_src_index_handle = output_src_index_alter_handle;
+    // output_dst_index_handle = output_dst_index_alter_handle;
   }
 
   // std::cout << "coll free workspace "<< t2.Passed() << "\n";

@@ -150,6 +150,8 @@ class CacheContext {
 class ExtractSession {
   std::shared_ptr<CacheContext> _cache_ctx;
   MemHandle output_src_index_handle, output_dst_index_handle;
+  MemHandle output_src_index_alter_handle, output_dst_index_alter_handle;
+  MemHandle workspace_handle;
   IdType * _group_offset = nullptr;
   std::vector<StreamHandle> _concurrent_stream_array;
   std::vector<std::shared_ptr<ExtractionThreadCtx>> _extract_ctx;
