@@ -116,6 +116,7 @@ struct ExtractConcurrentParam {
   IdType num_node_array[NUM_LINK];
   IdType block_num_prefix_sum[NUM_LINK + 1];
   const IdType* link_mapping;
+  const IdType* sub_block_mappling;
   size_t dim;
 };
 
@@ -125,7 +126,7 @@ __global__ void extract_data_concurrent(ExtractConcurrentParam<NUM_LINK, SrcData
   // block -> local block idx in this link
   // block -> num block of this link
   const IdType link_idx = packed_param.link_mapping[blockIdx.x];
-  const IdType local_block_idx_x = blockIdx.x - packed_param.block_num_prefix_sum[link_idx];
+  const IdType local_block_idx_x = packed_param.sub_block_mappling[blockIdx.x];
   const IdType local_grid_dim_x = packed_param.block_num_prefix_sum[link_idx + 1] - packed_param.block_num_prefix_sum[link_idx];
   size_t i = local_block_idx_x * blockDim.y + threadIdx.y;
   const size_t stride = blockDim.y * local_grid_dim_x;
@@ -569,6 +570,7 @@ void ExtractSession::CombineFused(const SrcKey * src_index, const DstVal * dst_i
   ExtractConcurrentParam<NUM_LINK, DataIter<SrcOffIter>, DataIter<DstOffIter>> param;
   IdType total_required_num_block = 0;
   TensorPtr link_mapping = Tensor::Empty(kI32, {RoundUpDiv(group_offset[this->_cache_ctx->_num_location] - group_offset[0], block.y * 4) * 2}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+  TensorPtr sub_block_mappling = Tensor::Empty(kI32, {RoundUpDiv(group_offset[this->_cache_ctx->_num_location] - group_offset[0], block.y * 4) * 2}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
   IdType total_num_node = 0;
   for (int i = 0; i < NUM_LINK; i++) {
     CHECK(RunConfig::coll_cache_link_desc.link_src[_cache_ctx->_local_location_id][i].size() == 1);
@@ -581,14 +583,28 @@ void ExtractSession::CombineFused(const SrcKey * src_index, const DstVal * dst_i
     total_required_num_block += num_block;
     for (int block_id = param.block_num_prefix_sum[i]; block_id < total_required_num_block; block_id++) {
       link_mapping->Ptr<IdType>()[block_id] = i;
+      sub_block_mappling->Ptr<IdType>()[block_id] = block_id - param.block_num_prefix_sum[i];
     }
     total_num_node += param.num_node_array[i];
   }
   if (total_num_node == 0) return;
   CHECK(link_mapping->Shape()[0] >= total_required_num_block);
+  std::vector<size_t> mapping(total_required_num_block);
+  cpu::ArrangeArray(mapping.data(), total_required_num_block);
+  std::random_shuffle(mapping.begin(), mapping.end());
+  TensorPtr new_link_mapping = Tensor::Empty(kI32, {total_required_num_block}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+  TensorPtr new_sub_block_mappling = Tensor::Empty(kI32, {total_required_num_block}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+  for (size_t i = 0; i < total_required_num_block; i++) {
+    new_link_mapping->Ptr<IdType>()[i] = link_mapping->Ptr<IdType>()[mapping[i]];
+    new_sub_block_mappling->Ptr<IdType>()[i] = sub_block_mappling->Ptr<IdType>()[mapping[i]];
+  }
+  link_mapping = new_link_mapping;
+  sub_block_mappling = new_sub_block_mappling;
   link_mapping = Tensor::CopyToExternal(link_mapping, _cache_ctx->_gpu_mem_allocator, _cache_ctx->_trainer_ctx, stream);
+  sub_block_mappling = Tensor::CopyToExternal(sub_block_mappling, _cache_ctx->_gpu_mem_allocator, _cache_ctx->_trainer_ctx, stream);
   param.block_num_prefix_sum[NUM_LINK] = total_required_num_block;
   param.link_mapping = link_mapping->CPtr<IdType>();
+  param.sub_block_mappling = sub_block_mappling->CPtr<IdType>();
   param.dim = _cache_ctx->_dim;
 
   auto device = Device::Get(_cache_ctx->_trainer_ctx);
@@ -1178,7 +1194,7 @@ void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCac
   size_t num_total_nodes = coll_cache_ptr->_nid_to_block->Shape()[0];
   size_t num_blocks = coll_cache_ptr->_block_placement->Shape()[0];
 
-  CHECK(RunConfig::concurrent_link_impl == common::kNoConcurrentLink) << "Not sure old init method support concurrent link";
+  // CHECK(RunConfig::concurrent_link_impl == common::kNoConcurrentLink) << "Not sure old init method support concurrent link";
 
   Timer t;
 
