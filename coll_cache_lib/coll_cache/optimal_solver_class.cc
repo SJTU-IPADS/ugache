@@ -376,7 +376,7 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
 
   // new parameters for [           cpu          ]
   //                    [local][cuncurrent remote]
-  env.set(GRB_DoubleParam_MIPGap, 0.03);
+  env.set(GRB_DoubleParam_MIPGap, 0.05);
   env.set(GRB_IntParam_Method, 2);
   env.set(GRB_IntParam_DegenMoves, 0);
   env.set(GRB_IntParam_Aggregate, 0);
@@ -482,7 +482,7 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
       // model.addConstr(remote_time + local_cpu_time <= z);
     }
     model.addConstr(max_remote_time[dst_dev].ref() + local_time <= z);
-    model.addConstr(cpu_time + sum_weight * 0.03 * T_cpu <= z);
+    model.addConstr(cpu_time + sum_weight * RunConfig::coll_cache_cpu_addup * T_cpu <= z);
     total_weight_list[dst_dev] = sum_weight;
   };
 

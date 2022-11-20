@@ -70,6 +70,7 @@ struct RunConfig {
   static double               coll_cache_hyperparam_T_local;
   static double               coll_cache_hyperparam_T_remote;
   static double               coll_cache_hyperparam_T_cpu;
+  static double               coll_cache_cpu_addup;
   static uint64_t             seed;
 
   static uint64_t             num_global_step_per_epoch;
