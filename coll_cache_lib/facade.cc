@@ -204,8 +204,10 @@ void CollCache::report_avg() {
   //   _profiler->ReportStepMax(epoch, RunConfig::num_global_step_per_epoch - 1);
   //   _profiler->ReportStepMin(epoch, RunConfig::num_global_step_per_epoch - 1);
   // }
+  std::cout.flush();
 }
 void CollCache::report(uint64_t key) {
   _profiler->ReportStep(RunConfig::GetEpochFromKey(key), RunConfig::GetStepFromKey(key));
+  std::cout.flush();
 }
 }  // namespace coll_cache_lib
