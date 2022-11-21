@@ -377,14 +377,14 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
   // new parameters for [           cpu          ]
   //                    [local][cuncurrent remote]
   env.set(GRB_DoubleParam_MIPGap, 0.05);
-  env.set(GRB_IntParam_Method, 2);
-  env.set(GRB_IntParam_DegenMoves, 0);
   env.set(GRB_IntParam_Aggregate, 0);
-  env.set(GRB_IntParam_PrePasses, 1);
-  env.set(GRB_IntParam_NormAdjust, 0);
-  env.set(GRB_IntParam_FlowCoverCuts, 2);
   env.set(GRB_IntParam_GomoryPasses, 0);
-  env.set(GRB_IntParam_Aggregate, 0);
+  /** todo: the following param seems hurt performance. needs investigation */
+  // env.set(GRB_IntParam_Method, 2);
+  // env.set(GRB_IntParam_DegenMoves, 0);
+  // env.set(GRB_IntParam_PrePasses, 5);
+  // env.set(GRB_IntParam_NormAdjust, 0);
+  // env.set(GRB_IntParam_FlowCoverCuts, 2);
   env.start();
 
   GRBModel model = GRBModel(env);
@@ -442,6 +442,18 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
         model.addConstr(expr >= a_list[block_id][dst_dev][src_link].ref());
       }
     }
+    /** try reduce num of constr. but seems results in longer solve time*/
+    // FOR_LOOP(src_dev, num_device) {
+    //   GRBLinExpr expr;
+    //   FOR_LOOP(dst_dev, num_device) {
+    //     FOR_LOOP(src_link, num_link) {
+    //       CHECK(link_src[dst_dev][src_link].size() == 1);
+    //       if (link_src[dst_dev][src_link][0] != src_dev) continue;
+    //       expr += a_list[block_id][dst_dev][src_link].ref();
+    //     }
+    //   }
+    //   model.addConstr(x_list[block_id][src_dev].ref() * num_device >= expr);
+    // }
   };
 
   // for each src,
