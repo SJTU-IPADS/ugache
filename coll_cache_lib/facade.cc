@@ -197,8 +197,17 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
 }
 void CollCache::report_avg() {
   _profiler->ReportStepAverage(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1);
+  // // _profiler->ReportStepMax(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1);
+  // // _profiler->ReportStepMin(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1);
+  // for (size_t epoch = 1; epoch < RunConfig::num_epoch; epoch ++) {
+  //   _profiler->ReportStepAverage(epoch, RunConfig::num_global_step_per_epoch - 1);
+  //   _profiler->ReportStepMax(epoch, RunConfig::num_global_step_per_epoch - 1);
+  //   _profiler->ReportStepMin(epoch, RunConfig::num_global_step_per_epoch - 1);
+  // }
+  std::cout.flush();
 }
 void CollCache::report(uint64_t key) {
   _profiler->ReportStep(RunConfig::GetEpochFromKey(key), RunConfig::GetStepFromKey(key));
+  std::cout.flush();
 }
 }  // namespace coll_cache_lib

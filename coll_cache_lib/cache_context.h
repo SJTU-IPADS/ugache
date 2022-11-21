@@ -9,7 +9,12 @@
 // #include "facade.h"
 // #include "timer.h"
 // #include "atomic_barrier.h"
+#include <atomic>
+#include <mutex>
+#include <condition_variable>
+#include <thread>
 #include <cuda_runtime.h>
+#include <cuda.h>
 
 
 #define SAM_CUDA_PREPARE_1D(num_item) \
@@ -81,6 +86,18 @@ struct DevicePointerExchanger {
   void* extract(int location_id);
   void close(void* ptr);
 };
+
+struct ExtractionThreadCtx {
+  CUcontext cu_ctx_ = nullptr;
+  cudaStream_t stream_;
+  std::function<void(cudaStream_t)> func_;
+  std::atomic<int> todo_steps{0}, done_steps{0};
+  ExtractionThreadCtx();
+  void thread_func();
+  void forward_one_step(std::function<void(cudaStream_t)> new_func);
+  void wait_one_step();
+};
+
 class CollCache;
 class CacheContext {
  private:
@@ -111,10 +128,10 @@ class CacheContext {
 
   // std::vector<int> _remote_device_list;
   // std::vector<int> _remote_sm_list;
-  std::vector<StreamHandle> _concurrent_stream_array;
 
   std::function<MemHandle(size_t)> _gpu_mem_allocator;
   std::function<MemHandle(size_t)> _eager_gpu_mem_allocator;
+  // std::function<void()> ctx_injector_;
   friend class ExtractSession;
 
   void build_without_advise(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream = nullptr);
@@ -133,7 +150,12 @@ class CacheContext {
 class ExtractSession {
   std::shared_ptr<CacheContext> _cache_ctx;
   MemHandle output_src_index_handle, output_dst_index_handle;
+  MemHandle output_src_index_alter_handle, output_dst_index_alter_handle;
+  MemHandle workspace_handle;
   IdType * _group_offset = nullptr;
+  std::vector<StreamHandle> _concurrent_stream_array;
+  std::vector<std::shared_ptr<ExtractionThreadCtx>> _extract_ctx;
+  std::vector<std::thread> _extract_threads;
  public:
   ExtractSession(std::shared_ptr<CacheContext> cache_ctx);
  private:
@@ -147,8 +169,11 @@ class ExtractSession {
 
   void CombineOneGroup(const SrcKey * src_index, const DstVal * dst_index, const IdType* nodes, const size_t num_node, const void* src_data, void* output, StreamHandle stream, IdType limit_block = 0, bool async = false);
 
+  void CombineNoGroup(const IdType* nodes, const size_t num_nodes, void* output, Context ctx, DataType _dtype, IdType _dim, StreamHandle stream);
   template<int NUM_LINK>
   void CombineConcurrent(const SrcKey * src_index, const DstVal * dst_index, const IdType * group_offset, void* output, StreamHandle stream);
+  template<int NUM_LINK>
+  void CombineFused(const SrcKey * src_index, const DstVal * dst_index, const IdType * group_offset, void* output, StreamHandle stream);
 
  public:
   void ExtractFeat(const IdType* nodes, const size_t num_nodes, void* output, StreamHandle stream, uint64_t task_key);

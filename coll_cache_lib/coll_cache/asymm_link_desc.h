@@ -26,6 +26,8 @@ struct AsymmLinkDesc {
   vec<vec<double>> link_time;
   vec<vec<double>> compute_percent;
   vec<vec<int>> link_sm;
+  vec<int> cpu_sm;
+  vec<int> local_sm;
   vec<double> aggregated_time;
   AsymmLinkDesc() {}
   void BuildSwitch(int num_trainer);

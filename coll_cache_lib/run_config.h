@@ -70,6 +70,7 @@ struct RunConfig {
   static double               coll_cache_hyperparam_T_local;
   static double               coll_cache_hyperparam_T_remote;
   static double               coll_cache_hyperparam_T_cpu;
+  static double               coll_cache_cpu_addup;
   static uint64_t             seed;
 
   static uint64_t             num_global_step_per_epoch;
@@ -79,6 +80,8 @@ struct RunConfig {
   static coll_cache::AsymmLinkDesc coll_cache_link_desc;
 
   static RollingPolicy        rolling;
+
+  static ConcurrentLinkImpl   concurrent_link_impl;
 
   static inline uint64_t GetBatchKey(uint64_t epoch, uint64_t step) {
     return epoch * num_global_step_per_epoch + step;

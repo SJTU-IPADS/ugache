@@ -217,7 +217,7 @@ class Profiler {
 
  private:
   template<typename ReduceOp>
-  void PrepareStepReduce(uint64_t epoch, uint64_t step, const double init, ReduceOp op);
+  void PrepareStepReduce(uint64_t epoch, uint64_t step, const double init, ReduceOp op, const double default_val = 0);
   void OutputStep(uint64_t key, std::string type);
   void OutputEpoch(uint64_t epoch, std::string type);
 

@@ -17,6 +17,7 @@
 
 #include "run_config.h"
 
+#include "common.h"
 #include "constant.h"
 #include "logging.h"
 #include <unordered_set>
@@ -52,6 +53,7 @@ int                  RunConfig::omp_thread_num                 = 40;
 std::string          RunConfig::shared_meta_path               = "/shared_meta_data";
 // clang-format on
 
+ConcurrentLinkImpl   RunConfig::concurrent_link_impl       = kNoConcurrentLink;
 bool                 RunConfig::coll_cache_concurrent_link = false;
 bool                 RunConfig::coll_cache_no_group    = false;
 size_t               RunConfig::coll_cache_num_slot    = 100;
@@ -59,6 +61,7 @@ double               RunConfig::coll_cache_coefficient = 1.1;
 double               RunConfig::coll_cache_hyperparam_T_local  = 1;
 double               RunConfig::coll_cache_hyperparam_T_remote = 438 / (double)213;  // performance on A100
 double               RunConfig::coll_cache_hyperparam_T_cpu    = 438 / (double)11.8; // performance on A100
+double               RunConfig::coll_cache_cpu_addup = 0.02;
 
 size_t               RunConfig::seed  = 1;
 
@@ -103,6 +106,18 @@ void RunConfig::LoadConfigFromEnv() {
   } else {
     // auto enable coll cache concurrent link
     RunConfig::coll_cache_concurrent_link = coll_cache::AutoEnableConcurrentLink();
+  }
+  if (RunConfig::coll_cache_concurrent_link) {
+    if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "FUSED") {
+      RunConfig::concurrent_link_impl = kFused;
+    } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "FUSED_LIMIT_BLOCK") {
+      RunConfig::concurrent_link_impl = kFusedLimitNumBlock;
+    } else {
+      RunConfig::concurrent_link_impl = kMPS;
+    }
+  }
+  if (GetEnv("COLL_CACHE_CPU_ADDUP") != "") {
+    RunConfig::coll_cache_cpu_addup = std::stod(GetEnv("COLL_CACHE_CPU_ADDUP"));
   }
 }
 

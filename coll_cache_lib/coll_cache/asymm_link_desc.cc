@@ -1,6 +1,8 @@
 #include "asymm_link_desc.h"
 #include "../logging.h"
 #include "../run_config.h"
+#include "common.h"
+#include <cmath>
 #include <iostream>
 #include <cuda_runtime.h>
 
@@ -56,11 +58,13 @@ void AsymmLinkDesc::BuildSymmHardWire(int num_trainer) {
   link_src = vec<vec<vec<int>>>(num_trainer, vec<vec<int>>(num_link));
   for (int dst_dev = 0; dst_dev < num_trainer; dst_dev++) {
     // each device has multiple link, each link contains only one remote device
+    std::cout << dst_dev << " : ";
     for (int src_link = 0; src_link < num_link; src_link++) {
+      // link_src[dst_dev][src_link] = {(src_link < dst_dev) ? src_link : (src_link + 1)};
       link_src[dst_dev][src_link] = {(dst_dev + src_link + 1) % num_trainer};
-      std::cout << dst_dev << " : link #" << src_link << " : ";
-      std::cout << link_src[dst_dev][src_link][0] << "\n";
+      std::cout << " {link #" << src_link << " : " << link_src[dst_dev][src_link][0] << "},";
     }
+    std::cout << "\n";
   }
   link_time = vec<vec<double>>(
       num_trainer,
@@ -149,17 +153,25 @@ void AsymmLinkDesc::BuildAsymmHardWire(int num_trainer) {
 
 AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
                                        std::string gpu_model) {
+  AsymmLinkDesc desc;
+  desc.cpu_sm.resize(num_trainer, 0);
   if (gpu_model.find("A100") != std::string::npos) {
-    RunConfig::coll_cache_hyperparam_T_remote = 438 / (double)213;
-    RunConfig::coll_cache_hyperparam_T_cpu    = 438 / (double)11.8;
+    RunConfig::coll_cache_hyperparam_T_remote = 370 / (double)34;
+    RunConfig::coll_cache_hyperparam_T_cpu    = 370 / (double)9;
+    if (RunConfig::concurrent_link_impl == kMPS) {
+      desc.cpu_sm.clear();
+      desc.cpu_sm.resize(num_trainer, 10);
+    }
   } else if (gpu_model.find("V100") != std::string::npos) {
     RunConfig::coll_cache_hyperparam_T_remote = 330 / (double)38;
     RunConfig::coll_cache_hyperparam_T_cpu    = 330 / (double)11;
+    if (RunConfig::concurrent_link_impl == kMPS) {
+      CHECK(false) << "not supported now";
+    }
   } else {
     CHECK(false) << "No bandwidth data for " << gpu_model;
   }
 
-  AsymmLinkDesc desc;
   std::string topo_name;
   if (total_gpu <= 4) {
     topo_name = "symm";
@@ -168,9 +180,8 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
     topo_name = "asymm";
     desc.BuildAsymmHardWire(num_trainer);
   } else if (gpu_model.find("A100") != std::string::npos) {
-    topo_name = "switch";
-    desc.BuildSwitch(num_trainer);
-    RunConfig::coll_cache_concurrent_link = false;
+    topo_name = "symm";
+    desc.BuildSymmHardWire(num_trainer);
   } else {
     CHECK(false) << "Unsupported configuration: " << total_gpu << " X " << gpu_model;
   }
@@ -186,7 +197,8 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(Context ctx) {
   CUDA_CALL(cudaGetDeviceProperties(&prop, ctx.device_id));
   // fixme
   auto desc = AutoBuild(RunConfig::num_device, total_gpu, prop.name);
-  desc.SMPercentToNum(prop.multiProcessorCount);
+  desc.local_sm.resize(desc.cpu_sm.size(), prop.multiProcessorCount - desc.cpu_sm[0]);
+  desc.SMPercentToNum(prop.multiProcessorCount - desc.cpu_sm[0]);
   return desc;
 }
 void AsymmLinkDesc::SMPercentToNum(int total_sm) {
@@ -194,7 +206,7 @@ void AsymmLinkDesc::SMPercentToNum(int total_sm) {
   FOR_LOOP(dev_id, compute_percent.size()) {
     link_sm[dev_id].resize(compute_percent[dev_id].size());
     FOR_LOOP(link, compute_percent[dev_id].size()) {
-      link_sm[dev_id][link] = total_sm * compute_percent[dev_id][link];
+      link_sm[dev_id][link] = std::round(total_sm * compute_percent[dev_id][link]);
     }
   }
 }
