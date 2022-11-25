@@ -6,13 +6,17 @@
 #include "../coll_cache_lib/cuda/cuda_device.h"
 #include "../coll_cache_lib/cpu/mmap_cpu_device.h"
 #include "atomic_barrier.h"
+#include "profiler.h"
 #include "run_config.h"
 #include <CLI/CLI.hpp>
+#include <algorithm>
 #include <iostream>
+#include <numeric>
 #include <random>
 #include <sys/mman.h>
 #include <thread>
 #include "./workspace_pool.h"
+#include "timer.h"
 CLI::App _app;
 namespace {
 using namespace coll_cache_lib;
@@ -37,6 +41,11 @@ std::unordered_map<std::string, std::string> configs;
 std::string env_profile_level = "3";
 std::string env_log_level = "warn";
 std::string env_empty_feat = "0";
+
+int enabled_gpus = 0;
+bool no_remote = false;
+bool no_local = false;
+size_t dim = 128;
 
 void InitOptions(std::string app_name) {
   configs = {
@@ -64,6 +73,10 @@ void InitOptions(std::string app_name) {
   _app.add_option("--profile-level",              env_profile_level);
   _app.add_option("--log-level",                  env_log_level);
   _app.add_option("--empty-feat",                 env_empty_feat);
+  _app.add_option("--enabled-gpus",               enabled_gpus);
+  _app.add_option("--dim",               dim);
+  _app.add_flag("--skip-local",                 no_local);
+  _app.add_flag("--skip-remote",                no_remote);
 }
 void Parse(int argc, char** argv) {
   try {
@@ -106,12 +119,16 @@ class DemoBarrier : public ExternalBarrierHandler {
 };
 
 int main(int argc, char** argv) {
-  size_t num_keys = 10000000;
-  size_t dim = 256;
-  size_t batch_size = 8192*26;
+  size_t num_keys = 100000000;
+  size_t batch_size = 8192*100;
   RunConfig::cache_percentage = 0.125;
   InitOptions("");
   Parse(argc, argv);
+
+  CHECK(!(no_local && no_remote)) << "at least one of local and remote should be enabled";
+  if (enabled_gpus == 0) {
+    enabled_gpus = RunConfig::num_device;
+  }
 
   RunConfig::device_id_list.resize(RunConfig::num_device);
   for (int i = 0; i < RunConfig::num_device; i++) {
@@ -154,7 +171,8 @@ int main(int argc, char** argv) {
     std::exponential_distribution<double> dist(1);
     #pragma omp parallel for num_threads(RunConfig::omp_thread_num)
     for (size_t i = 0; i < num_keys; i++) {
-      ranking_nodes_freq_list_ptr[i] = std::ceil(dist(gen));
+      ranking_nodes_freq_list_ptr[i] = 1;
+      // ranking_nodes_freq_list_ptr[i] = std::ceil(dist(gen));
     }
   }
 
@@ -193,22 +211,50 @@ int main(int argc, char** argv) {
   auto output_handle = gpu_mem_allocator(batch_size * dim * GetDataTypeBytes(kF32));
   auto output = output_handle->ptr();
   // void * output = new float[batch_size * dim];
+  double iter_time = 0;
+  std::vector<double> iter_time_list(1000, 0);
   for (int iteration = 0; iteration < 1000; iteration++) {
-    if (iteration % 100 == 0) LOG(ERROR) << "replica " << replica_id << " round " << iteration << " begin";
     _replica_barrier->Wait();
     // #pragma omp parallel for num_threads(RunConfig::omp_thread_num / RunConfig::num_device)
     for (int i = 0; i < batch_size; i++) {
-      key_list_cpu->Ptr<IdType>()[i] = dist_int(gen);
+      IdType k = dist_int(gen);
+      if (no_local) {
+        while(k % RunConfig::num_device == replica_id) { k = dist_int(gen); }
+      } else if (no_remote) {
+        while(k % RunConfig::num_device != replica_id) { k = dist_int(gen); }
+      }
+      key_list_cpu->Ptr<IdType>()[i] = k;
     }
     _replica_barrier->Wait();
-    if (iteration % 100 == 0) LOG(ERROR) << "replica " << replica_id << " round " << iteration << " begin extract";
     auto key_list = Tensor::CopyToExternal(key_list_cpu, gpu_mem_allocator, GPU(dev_id), stream);
-    cache_manager->lookup(replica_id, key_list->Ptr<IdType>(), batch_size, output, stream, replica_id + iteration * RunConfig::num_device);
-    if (iteration % 100 == 0) LOG(ERROR) << "replica " << replica_id << " round " << iteration << " done";
+    if (!(replica_id < enabled_gpus)) batch_size = 0;
     _replica_barrier->Wait();
+    Timer t;
+    cache_manager->lookup(replica_id, key_list->Ptr<IdType>(), batch_size, output, stream, replica_id + iteration * RunConfig::num_device);
+    _replica_barrier->Wait();
+    iter_time_list[iteration] = cache_manager->_profiler->GetLogStepValue((uint64_t)(replica_id + iteration * RunConfig::num_device), kLogL2CacheCopyTime);
+    iter_time += t.Passed();
+    if (iteration % 100 == 0 && replica_id == 0) {
+      LOG(ERROR) << "replica " << replica_id << " round " << iteration << " done, time is " << iter_time / 100;
+      iter_time = 0;
+    }
   }
+  for (int i = 0; i < RunConfig::num_device; i++) {
+    _replica_barrier->Wait();
+    if (i != replica_id) {
+      continue;
+    }
+    if (replica_id < enabled_gpus) {
+      cache_manager->report_avg();
+    }
+  }
+  int step = 50;
   if (replica_id == 0) {
-    cache_manager->report_avg();
+    for (int iteration = 0; iteration < 1000; iteration += step) {
+      std::cerr << "max " << *std::max_element(&iter_time_list[iteration], &iter_time_list[iteration+step]) << "\n";
+      std::cerr << "min " << *std::min_element(&iter_time_list[iteration], &iter_time_list[iteration+step]) << "\n";
+      std::cerr << "avg " << std::accumulate(&iter_time_list[iteration], &iter_time_list[iteration+step], 0.) / step << "\n";
+    }
   }
 
   // samgraph::common::samgraph_config_from_map(configs);
