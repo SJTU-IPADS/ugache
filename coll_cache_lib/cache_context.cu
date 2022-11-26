@@ -1761,6 +1761,7 @@ __global__ void refresh_hash_table_local(
   }
 }
 
+#ifdef DEAD_CODE
 template<typename T>
 void check_uniq(const T* array, size_t num) {
   std::set<T> uniq_set;
@@ -1795,6 +1796,7 @@ void check_covers(const T* large, size_t num_large, const T* small, size_t num_s
   }
   CHECK(uniq_set.size() == num_large);
 }
+#endif
 
 };
 
@@ -1806,7 +1808,7 @@ void RefreshSession::refresh_after_solve() {
   auto _local_location_id = _cache_ctx->_local_location_id;
   auto cu_stream = reinterpret_cast<cudaStream_t>(stream);
 
-
+#ifdef DEAD_CODE
   {
     auto hs_loc = Tensor::CopyBlob(_cache_ctx->_hash_table_location, kI32, {RunConfig::num_total_item}, gpu_ctx, CPU(), "", stream);
     size_t local_nodes = 0;
@@ -1815,6 +1817,7 @@ void RefreshSession::refresh_after_solve() {
     }
     CHECK(local_nodes == _cache_ctx->_cache_nodes) << local_nodes << "!=" << _cache_ctx->_cache_nodes;
   }
+#endif
 
   TensorPtr block_access_advise_cpu = Tensor::CopyLine(_cache_ctx->_coll_cache->_block_access_advise, _local_location_id, CPU(CPU_CLIB_MALLOC_DEVICE), stream); // small
   size_t num_blocks = _cache_ctx->_coll_cache->_block_placement->Shape()[0];
@@ -1827,6 +1830,7 @@ void RefreshSession::refresh_after_solve() {
   }
 
   TensorPtr node_list_of_src[9] = {nullptr};
+  #pragma omp parallel for
   for (auto & link : RunConfig::coll_cache_link_desc.link_src[_local_location_id]) {
     for (auto dev_id : link) {
       if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "making remote node list for " << dev_id;
@@ -1840,7 +1844,7 @@ void RefreshSession::refresh_after_solve() {
         next_idx++;
       }
       per_src_size[dev_id] = next_idx;
-      check_uniq(node_list_of_src[dev_id]->CPtr<IdType>(), next_idx);
+      // check_uniq(node_list_of_src[dev_id]->CPtr<IdType>(), next_idx);
     }
   }
 
@@ -1855,20 +1859,21 @@ void RefreshSession::refresh_after_solve() {
       num_new_local_node++;
     }
   }
-  check_uniq(new_local_node_list_cpu->Ptr<IdType>(), num_new_local_node);
+  // check_uniq(new_local_node_list_cpu->Ptr<IdType>(), num_new_local_node);
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "new local node = " << num_new_local_node;
 
   CHECK(num_new_local_node <= _cache_ctx->_cache_space_capacity) << "cache space can not hold refreshed new cache";
   TensorPtr new_local_node_list_gpu = Tensor::CopyToExternal(new_local_node_list_cpu, _cache_ctx->_gpu_mem_allocator, gpu_ctx, stream);
 
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "finding preserved node and new insert nodes";
-  // figure out preserved node id list, and newly inserted node id list
+  // figure out preserved node id list for later extract it's used offset, and newly inserted node id list for later insertion
   TensorPtr preserved_node_list_gpu = Tensor::EmptyExternal(kI32, {num_new_local_node}, _cache_ctx->_gpu_mem_allocator, gpu_ctx, "");
   TensorPtr new_insert_node_list_gpu = Tensor::EmptyExternal(kI32, {num_new_local_node}, _cache_ctx->_gpu_mem_allocator, gpu_ctx, "");
   size_t num_preserved_node, num_new_insert_node_;
   cuda::CubSelectBySideNe<IdType>(gpu_ctx, (const IdType *)new_local_node_list_gpu->CPtr<IdType>(), num_new_local_node, _cache_ctx->_hash_table_location, new_insert_node_list_gpu->Ptr<IdType>(), num_new_insert_node_, _local_location_id, _cache_ctx->_gpu_mem_allocator, stream);
   cuda::CubSelectBySideEq<IdType>(gpu_ctx, (const IdType *)new_local_node_list_gpu->CPtr<IdType>(), num_new_local_node, _cache_ctx->_hash_table_location, preserved_node_list_gpu->Ptr<IdType>(), num_preserved_node, _local_location_id, _cache_ctx->_gpu_mem_allocator, stream);
   CHECK(num_preserved_node + num_new_insert_node_ == num_new_local_node);
+  new_local_node_list_gpu = nullptr;
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "preserved node = " << num_preserved_node;
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "new insert node = " << num_new_insert_node_;
 
@@ -1878,9 +1883,12 @@ void RefreshSession::refresh_after_solve() {
   auto local_offset_vocab_inuse_mark = Tensor::EmptyExternal(kI32, {_cache_ctx->_cache_space_capacity}, _cache_ctx->_gpu_mem_allocator, gpu_ctx, "");
   // auto local_offset_vocab_inuse_mark = Tensor::EmptyExternal(kU8, {_cache_ctx->_cache_space_capacity}, _cache_ctx->_gpu_mem_allocator, gpu_ctx, "");
   cuda::ArrangeArray<IdType>(local_offset_vocab_inuse_mark->Ptr<IdType>(), _cache_ctx->_cache_space_capacity, 0, 0, stream);
+#ifdef DEAD_CODE
   TensorPtr inuse_offset = nullptr;
   TensorPtr preserved_node_offset_list_cpu = nullptr;
+#endif
   if (num_preserved_node > 0) {
+#ifdef DEAD_CODE
     {
       TensorPtr preserved_node_list_cpu = Tensor::CopyTo(preserved_node_list_gpu, CPU(), stream, "");
       check_uniq(preserved_node_list_cpu->CPtr<IdType>(), num_preserved_node);
@@ -1888,15 +1896,19 @@ void RefreshSession::refresh_after_solve() {
       check_uniq(new_insert_node_list_cpu->CPtr<IdType>(), num_new_insert_node_);
       check_no_intersec(preserved_node_list_cpu->CPtr<IdType>(), num_preserved_node, new_insert_node_list_cpu->CPtr<IdType>(), num_new_insert_node_);
     }
+#endif
     SAM_CUDA_PREPARE_1D(num_preserved_node);
     preserve_offset<Constant::kCudaBlockSize, Constant::kCudaTileSize><<<grid, block, 0, cu_stream>>>(preserved_node_offset_list_gpu->Ptr<IdType>(), preserved_node_list_gpu->Ptr<IdType>(), num_preserved_node, _cache_ctx->_hash_table_offset);
+#ifdef DEAD_CODE
     CUDA_CALL(cudaStreamSynchronize(cu_stream));
     {
       preserved_node_offset_list_cpu = Tensor::CopyTo(preserved_node_offset_list_gpu, CPU(), stream, "");
       check_uniq(preserved_node_offset_list_cpu->CPtr<IdType>(), num_preserved_node);
     }
+#endif
     mark_offset_inuse<Constant::kCudaBlockSize, Constant::kCudaTileSize, IdType><<<grid, block, 0, cu_stream>>>(preserved_node_offset_list_gpu->CPtr<IdType>(), num_preserved_node, local_offset_vocab_inuse_mark->Ptr<IdType>());
     CUDA_CALL(cudaStreamSynchronize(cu_stream));
+#ifdef DEAD_CODE
     {
       TensorPtr local_offset_vocab_inuse_mark_cpu = Tensor::CopyTo(local_offset_vocab_inuse_mark, CPU(), stream, "");
       size_t sum = 0;
@@ -1916,7 +1928,10 @@ void RefreshSession::refresh_after_solve() {
       inuse_offset = Tensor::CopyTo(inuse_offset, CPU(), stream, "");
       if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "num in use offset = " << num_inuse_offset;
     }
+#endif
   }
+  preserved_node_list_gpu = nullptr;
+  preserved_node_offset_list_gpu = nullptr;
   CHECK(num_preserved_node < _cache_ctx->_cache_space_capacity);
   auto nouse_offset = Tensor::EmptyExternal(common::kI32, {_cache_ctx->_cache_space_capacity - num_preserved_node}, _cache_ctx->_gpu_mem_allocator, gpu_ctx, "");
 
@@ -1924,11 +1939,14 @@ void RefreshSession::refresh_after_solve() {
   cuda::CubSelectIndexByEqSide<IdType, IdType>(gpu_ctx,
     local_offset_vocab_inuse_mark->CPtr<IdType>(), _cache_ctx->_cache_space_capacity, nouse_offset->Ptr<IdType>(), num_nouse_offset, 0, _cache_ctx->_gpu_mem_allocator, stream);
   CHECK(num_nouse_offset + num_preserved_node == _cache_ctx->_cache_space_capacity) << num_nouse_offset << "+" << num_preserved_node << "!=" << _cache_ctx->_cache_space_capacity;
+  local_offset_vocab_inuse_mark = nullptr;
+#ifdef DEAD_CODE
   {
     auto nouse_offset_cpu = Tensor::CopyTo(nouse_offset, CPU(), stream, "");
     check_no_intersec(inuse_offset->CPtr<IdType>(), num_preserved_node, nouse_offset_cpu->CPtr<IdType>(), num_nouse_offset);
     check_covers(inuse_offset->CPtr<IdType>(), num_preserved_node, preserved_node_offset_list_cpu->CPtr<IdType>(), num_preserved_node);
   }
+#endif
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "num no use offset = " << num_nouse_offset;
 
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "finding evicted nodes";
@@ -1947,10 +1965,12 @@ void RefreshSession::refresh_after_solve() {
   }
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "num evicted node = " << num_eviced_node;
 
+#ifdef DEAD_CODE
   {
     TensorPtr preserved_node_list_cpu = Tensor::CopyTo(preserved_node_list_gpu, CPU(), stream, "");
     check_no_intersec(preserved_node_list_cpu->CPtr<IdType>(), num_preserved_node, evicted_node_list_cpu->CPtr<IdType>(), num_eviced_node);
   }
+#endif
 
   CHECK(num_eviced_node + num_preserved_node == _cache_ctx->_cache_nodes);
   CHECK(num_eviced_node <= num_nouse_offset);
@@ -1958,6 +1978,7 @@ void RefreshSession::refresh_after_solve() {
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "evicting nodes";
   // evict it
 
+#ifdef DEAD_CODE
   {
     auto hs_loc = Tensor::CopyBlob(_cache_ctx->_hash_table_location, kI32, {RunConfig::num_total_item}, gpu_ctx, CPU(), "", stream);
     size_t local_nodes = 0;
@@ -1970,6 +1991,7 @@ void RefreshSession::refresh_after_solve() {
       CHECK(hs_loc->CPtr<IdType>()[evicted_node_list_cpu->CPtr<IdType>()[idx]] == _local_location_id);
     }
   }
+#endif
 
   if (num_eviced_node > 0) {
     TensorPtr evicted_node_list_gpu = Tensor::CopyToExternal(evicted_node_list_cpu, _cache_ctx->_gpu_mem_allocator, gpu_ctx, stream);
@@ -1982,6 +2004,7 @@ void RefreshSession::refresh_after_solve() {
         _cache_ctx->_hash_table_location, _cache_ctx->_hash_table_offset);
     CUDA_CALL(cudaStreamSynchronize(cu_stream));
   }
+#ifdef DEAD_CODE
   {
     auto hs_loc = Tensor::CopyBlob(_cache_ctx->_hash_table_location, kI32, {RunConfig::num_total_item}, gpu_ctx, CPU(), "", stream);
     size_t local_nodes = 0;
@@ -2009,6 +2032,7 @@ void RefreshSession::refresh_after_solve() {
     offset_list = Tensor::CopyTo(offset_list, CPU(), stream, "");
     check_covers(preserved_node_offset_list_cpu->CPtr<IdType>(), num_preserved_node, offset_list->CPtr<IdType>(), num_preserved_node);
   }
+#endif
 
   _cache_ctx->_coll_cache->_replica_barrier->Wait();
 
@@ -2032,7 +2056,7 @@ void RefreshSession::refresh_after_solve() {
   DataIter<FreeOffIter> dst_data_iter(FreeOffIter(nouse_offset->Ptr<IdType>()), _cache_ctx->_device_cache_data[_cache_ctx->_local_location_id], _cache_ctx->_dim);
   Combine(src_data_iter, dst_data_iter, num_new_insert_node, gpu_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
 
-  LOG(INFO) << "CollCacheManager: fix offset of local nodes in hash table";
+  LOG(INFO) << "CollCacheManager: fix location and offset of local nodes in hash table";
   if (num_new_insert_node > 0) {
     SAM_CUDA_PREPARE_1D(num_new_insert_node);
     refresh_hash_table_local<><<<grid, block, 0, cu_stream>>>(
@@ -2040,6 +2064,8 @@ void RefreshSession::refresh_after_solve() {
         new_insert_node_list_gpu->CPtr<IdType>(), num_new_insert_node, nouse_offset->CPtr<IdType>(), _local_location_id);
     CUDA_CALL(cudaStreamSynchronize(cu_stream));
   }
+  new_insert_node_list_gpu = nullptr;
+#ifdef DEAD_CODE
   if (num_new_insert_node > 0){
     auto new_insert_offset_list = Tensor::EmptyExternal(kI32, {num_new_insert_node}, _cache_ctx->_gpu_mem_allocator, gpu_ctx, "");
     SAM_CUDA_PREPARE_1D(num_new_insert_node);
@@ -2052,6 +2078,7 @@ void RefreshSession::refresh_after_solve() {
     check_covers(nouse_offset_cpu->CPtr<IdType>(), num_nouse_offset, new_insert_offset_list->CPtr<IdType>(), num_new_insert_node);
     check_no_intersec(new_insert_offset_list->CPtr<IdType>(), num_new_insert_node, inuse_offset->CPtr<IdType>(), num_preserved_node);
   }
+#endif
 
   _cache_ctx->_coll_cache->_replica_barrier->Wait();
 
@@ -2066,13 +2093,6 @@ void RefreshSession::refresh_after_solve() {
       init_hash_table_remote<><<<grid, block, 0, cu_stream>>>(
           _hash_table_location, _hash_table_offset, 
           _cache_ctx->_remote_hash_table_offset[dev_id], remote_node_list_tensor->CPtr<IdType>(), num_remote_nodes, dev_id);
-      if (cudaStreamSynchronize(cu_stream) != cudaSuccess) {
-        LOG(ERROR) << "on replica " << _local_location_id << ", num_remote_nodes=" << num_remote_nodes << " of src " << dev_id;
-        for (IdType i = 0; i < num_remote_nodes; i++) {
-          std::cerr << node_list_of_src[dev_id]->Ptr<IdType>()[i] << ",";
-        }
-        std::cerr << "\n";
-      }
       CUDA_CALL(cudaStreamSynchronize(cu_stream));
     }
   }

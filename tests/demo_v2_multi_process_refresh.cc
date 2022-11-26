@@ -240,6 +240,9 @@ int main(int argc, char** argv) {
       LOG(ERROR) << "replica " << replica_id << " round " << iteration << " done, time is " << iter_time / 100;
       iter_time = 0;
     }
+    if (replica_id == 0) {
+      cache_manager->report_last_epoch((iteration - 1) / 100);
+    }
 
     if (replica_id == 0) {
       auto freq_recorder = freq_recorder_;
@@ -255,9 +258,6 @@ int main(int argc, char** argv) {
 
     cache_manager->refresh(replica_id, rank_vec, freq_vec, stream);
     _replica_barrier->Wait();
-    if (replica_id == 0) {
-      cache_manager->report_last_epoch((iteration - 1) / 100);
-    }
   }
   for (int i = 0; i < RunConfig::num_device; i++) {
     _replica_barrier->Wait();

@@ -224,6 +224,7 @@ void CollCache::refresh(int replica_id, IdType *ranking_nodes_list_ptr,
     solve_impl_slave();
   }
   LOG(ERROR) << replica_id << " solved";
+  this->_replica_barrier->Wait();
 
   // if (RunConfig::cross_process) return;
   LOG(ERROR) << "worker " << RunConfig::worker_id << " thread " << replica_id << " refresh device " << device_id;
