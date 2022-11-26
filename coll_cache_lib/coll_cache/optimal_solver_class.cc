@@ -114,7 +114,8 @@ void OptimalSolver::Build(TensorPtr stream_id_list, TensorPtr stream_freq_list, 
    * Sum frequency & density of each block
    */
   LOG(WARNING) << "counting freq and density...";
-  block_density_tensor = Tensor::Empty(kF64, {total_num_blocks}, cpu_ctx, "coll_cache.block_density_tensor");
+  // block_density_tensor = Tensor::Empty(kF64, {total_num_blocks}, cpu_ctx, "coll_cache.block_density_tensor");
+  block_density_tensor = Tensor::CreateShm(Constant::kCollCachePlacementShmName + "_density", kF64, {total_num_blocks}, "");
   block_freq_tensor    = Tensor::Empty(kF64, {total_num_blocks, num_stream}, cpu_ctx, "coll_cache.block_freq_tensor");
 
   std::memset(block_density_tensor->MutableData(), 0, block_density_tensor->NumBytes());

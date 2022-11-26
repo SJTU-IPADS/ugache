@@ -202,6 +202,7 @@ class Profiler {
   void ReportInit();
   void ReportStep(uint64_t epoch, uint64_t step);
   void ReportStepAverage(uint64_t epoch, uint64_t step);
+  void ReportStepAverageLastEpoch(uint64_t epoch, uint64_t step);
   void ReportStepMax(uint64_t epoch, uint64_t step);
   void ReportStepMin(uint64_t epoch, uint64_t step);
   void ReportEpoch(uint64_t epoch);

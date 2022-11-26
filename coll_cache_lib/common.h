@@ -44,7 +44,8 @@ enum DataType {
   kI64 = 6,
 };
 
-enum DeviceType { kCPU = 0, kMMAP = 1, kGPU = 2, kGPU_UM = 3};
+// enum DeviceType { kCPU = 0, kMMAP = 1, kGPU = 2, kGPU_UM = 3};
+enum DeviceType { kMMAP = 0, kCPU = 1, kGPU = 2, kGPU_UM = 3};
 
 
 // cache by degree: cache the nodes with large degree
@@ -181,6 +182,7 @@ class Tensor {
                              std::vector<size_t> shape, std::string name);
   static TensorPtr Empty(DataType dtype, std::vector<size_t> shape, Context ctx,
                          std::string name);
+  static TensorPtr EmptyExternal(DataType dtype, std::vector<size_t> shape, const std::function<MemHandle(size_t)> & allocator, Context ctx, std::string name);
   static TensorPtr EmptyNoScale(DataType dtype, std::vector<size_t> shape,
                                 Context ctx, std::string name);
   // static TensorPtr Copy1D(TensorPtr tensor, size_t item_offset,
@@ -196,12 +198,17 @@ class Tensor {
   static TensorPtr CopyToExternal(TensorPtr source, const std::function<MemHandle(size_t)> & allocator, Context ctx, StreamHandle stream = nullptr, double scale = Constant::kAllocScale);
   static TensorPtr CopyLineToExternel(TensorPtr source, size_t line_idx, std::function<MemHandle(size_t)> & allocator, Context ctx, StreamHandle stream = nullptr, double scale = Constant::kAllocScale);
   // static TensorPtr CopyTo(TensorPtr source, Context ctx, StreamHandle stream, std::string name, double scale = Constant::kAllocScale);
+  static TensorPtr CopyLine(TensorPtr source, size_t line_idx, Context ctx, StreamHandle stream = nullptr, double scale = Constant::kAllocScale);
+  static TensorPtr CopyTo(TensorPtr source, Context ctx, StreamHandle stream, std::string name, double scale = Constant::kAllocScale);
   // static TensorPtr CopyLine(TensorPtr source, size_t line_idx, Context ctx, StreamHandle stream = nullptr, double scale = Constant::kAllocScale);
   // static TensorPtr UMCopyTo(TensorPtr source, std::vector<Context> ctxes, std::vector<StreamHandle> streams = {});
   // static TensorPtr UMCopyTo(TensorPtr source, std::vector<Context> ctxes, std::vector<StreamHandle> streams, std::string name);
   // static TensorPtr CopyBlob(const void * data, DataType dtype,
   //                           std::vector<size_t> shape, Context from_ctx,
   //                           Context to_ctx, std::string name, StreamHandle stream = nullptr);
+  static TensorPtr CopyBlob(const void * data, DataType dtype,
+                            std::vector<size_t> shape, Context from_ctx,
+                            Context to_ctx, std::string name, StreamHandle stream = nullptr);
 
  private:
   void* _data;

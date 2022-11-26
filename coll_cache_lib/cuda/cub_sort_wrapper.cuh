@@ -19,6 +19,17 @@ struct SelectIdxByEqual {
     return d_array[idx] == compare;
   }
 };
+template<typename T>
+struct SelectIdxByNotEqual {
+  const T* d_array;
+  T compare;
+  CUB_RUNTIME_FUNCTION __forceinline__
+  SelectIdxByNotEqual(const T* d_array, const T compare) : d_array(d_array), compare(compare) {}
+  __host__ __device__  __forceinline__
+  bool operator()(const T & idx) const {
+    return d_array[idx] != compare;
+  }
+};
 
 template<typename T>
 void CubSelectIndexByEq(Context gpu_ctx,
@@ -41,6 +52,84 @@ void CubSelectIndexByEq(Context gpu_ctx,
   auto workspace_mem_handle = allocator(workspace_bytes);
   workspace = workspace_mem_handle->ptr();
   cub::DeviceSelect::If(workspace, workspace_bytes, counter, d_out, d_num_selected_out, num_input, select_op, cu_stream);
+  device->StreamSync(gpu_ctx, stream);
+  num_selected_out = *d_num_selected_out;
+  Device::Get(CPU())->FreeWorkspace(CPU(), d_num_selected_out);
+}
+
+template<typename T, typename T_Side>
+void CubSelectIndexByEqSide(Context gpu_ctx,
+    const T_Side * d_in, const size_t num_input,
+    T* d_out, size_t & num_selected_out,
+    const T_Side compare,
+    std::function<MemHandle(size_t)> & allocator,
+    StreamHandle stream = nullptr) {
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+  auto device = Device::Get(gpu_ctx);
+
+  cub::CountingInputIterator<T> counter(0);
+  SelectIdxByEqual<T_Side> select_op(d_in, compare);
+
+  size_t * d_num_selected_out = Device::Get(CPU())->AllocArray<size_t>(CPU(), 1);
+
+  size_t workspace_bytes;
+  void * workspace = nullptr;
+  cub::DeviceSelect::If(workspace, workspace_bytes, counter, d_out, d_num_selected_out, num_input, select_op, cu_stream);
+  auto workspace_mem_handle = allocator(workspace_bytes);
+  workspace = workspace_mem_handle->ptr();
+  cub::DeviceSelect::If(workspace, workspace_bytes, counter, d_out, d_num_selected_out, num_input, select_op, cu_stream);
+  CUDA_CALL(cudaStreamSynchronize(cu_stream));
+  // device->StreamSync(gpu_ctx, stream);
+  num_selected_out = *d_num_selected_out;
+  Device::Get(CPU())->FreeWorkspace(CPU(), d_num_selected_out);
+}
+
+template<typename T, typename T_Side>
+void CubSelectBySideEq(Context gpu_ctx,
+    const T * d_in, const size_t num_input,
+    const T_Side * d_side,
+    T* d_out, size_t & num_selected_out,
+    const T_Side compare,
+    std::function<MemHandle(size_t)> & allocator,
+    StreamHandle stream = nullptr) {
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+  auto device = Device::Get(gpu_ctx);
+
+  SelectIdxByEqual<T_Side> select_op(d_side, compare);
+
+  size_t * d_num_selected_out = Device::Get(CPU())->AllocArray<size_t>(CPU(), 1);
+
+  size_t workspace_bytes;
+  void * workspace = nullptr;
+  cub::DeviceSelect::If(workspace, workspace_bytes, d_in, d_out, d_num_selected_out, num_input, select_op, cu_stream);
+  auto workspace_mem_handle = allocator(workspace_bytes);
+  workspace = workspace_mem_handle->ptr();
+  cub::DeviceSelect::If(workspace, workspace_bytes, d_in, d_out, d_num_selected_out, num_input, select_op, cu_stream);
+  device->StreamSync(gpu_ctx, stream);
+  num_selected_out = *d_num_selected_out;
+  Device::Get(CPU())->FreeWorkspace(CPU(), d_num_selected_out);
+}
+template<typename T, typename T_Side>
+void CubSelectBySideNe(Context gpu_ctx,
+    const T * d_in, const size_t num_input,
+    const T_Side * d_side,
+    T* d_out, size_t & num_selected_out,
+    const T_Side compare,
+    std::function<MemHandle(size_t)> & allocator,
+    StreamHandle stream = nullptr) {
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+  auto device = Device::Get(gpu_ctx);
+
+  SelectIdxByNotEqual<T_Side> select_op(d_side, compare);
+
+  size_t * d_num_selected_out = Device::Get(CPU())->AllocArray<size_t>(CPU(), 1);
+
+  size_t workspace_bytes;
+  void * workspace = nullptr;
+  cub::DeviceSelect::If(workspace, workspace_bytes, d_in, d_out, d_num_selected_out, num_input, select_op, cu_stream);
+  auto workspace_mem_handle = allocator(workspace_bytes);
+  workspace = workspace_mem_handle->ptr();
+  cub::DeviceSelect::If(workspace, workspace_bytes, d_in, d_out, d_num_selected_out, num_input, select_op, cu_stream);
   device->StreamSync(gpu_ctx, stream);
   num_selected_out = *d_num_selected_out;
   Device::Get(CPU())->FreeWorkspace(CPU(), d_num_selected_out);

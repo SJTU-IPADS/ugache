@@ -16,14 +16,17 @@ using namespace common;
 class CollCache : public std::enable_shared_from_this<CollCache> {
  private:
   TensorPtr _nid_to_block;
+  TensorPtr _block_density;
   TensorPtr _block_placement;
   TensorPtr _block_access_advise;
   // AtomicBarrier *_process_barrier;
   BarHandle _process_barrier;
   BarHandle _replica_barrier;
   friend class CacheContext;
+  friend class RefreshSession;
   std::vector<std::shared_ptr<CacheContext>> _cache_ctx_list;
   std::vector<std::shared_ptr<ExtractSession>> _session_list;
+  std::vector<std::shared_ptr<RefreshSession>> _refresh_session_list;
   void solve_impl_master(IdType *ranking_nodes_list_ptr,
              IdType *ranking_nodes_freq_list_ptr, IdType num_node);
   void solve_impl_slave();
@@ -48,7 +51,11 @@ class CollCache : public std::enable_shared_from_this<CollCache> {
                 std::function<MemHandle(size_t)> gpu_mem_allocator,
                 void *cpu_data, DataType dtype, size_t dim,
                 double cache_percentage, StreamHandle stream = nullptr);
+
+  void refresh(int replica_id, IdType *ranking_nodes_list_ptr,
+                IdType *ranking_nodes_freq_list_ptr, StreamHandle stream = nullptr);
   void report_avg();
+  void report_last_epoch(uint64_t epoch);
   void report(uint64_t key);
   std::shared_ptr<Profiler> _profiler;
 };

@@ -323,6 +323,34 @@ void Profiler::ReportStepAverage(uint64_t epoch, uint64_t step) {
 
   OutputStep(key, "Step(average)");
 }
+void Profiler::ReportStepAverageLastEpoch(uint64_t epoch, uint64_t step) {
+  uint64_t key = RunConfig::GetBatchKey(epoch, step);
+  if (key < RunConfig::num_global_step_per_epoch) {
+    return;
+  }
+
+  size_t num_items = static_cast<size_t>(kNumLogStepItems);
+  for (size_t i = 0; i < num_items; i++) {
+    double sum = 0;
+    size_t cnt = 0;
+    for (size_t current_key = key - RunConfig::num_global_step_per_epoch; current_key < key; current_key++) {
+      if (_step_data[i].bitmap[current_key] == false) continue;
+      sum += _step_data[i].vals[current_key];
+      cnt ++;
+    }
+    if (cnt <= 1) {
+      _step_buf[i] = 0;
+      continue;
+    }
+    if (cnt == 0) {
+      CHECK_LE(std::abs(sum), 1e-8) << " sum is " << sum;
+      cnt = 1;
+    }
+    _step_buf[i] = sum / cnt;
+  }
+
+  OutputStep(key, "Step(average)");
+}
 
 template<typename ReduceOp>
 void Profiler::PrepareStepReduce(uint64_t epoch, uint64_t step, const double init, ReduceOp op, const double default_val) {
