@@ -2097,6 +2097,10 @@ void RefreshSession::refresh_after_solve() {
     }
   }
 
+  _cache_ctx->_coll_cache->_replica_barrier->Wait();
+
+  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "refresh done";
+
   _cache_ctx->_cache_nodes = num_new_local_node;
   _cache_ctx->_local_node_list_tensor = new_local_node_list_cpu;
 }

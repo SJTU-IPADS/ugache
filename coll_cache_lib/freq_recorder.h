@@ -36,8 +36,9 @@ class FreqRecorder {
   TensorPtr GetRankNode();
   void GetRankNode(TensorPtr &);
   void GetRankNode(IdType *);
-  void Combine(FreqRecorder* other);
-  void Combine(int other_local_id);
+  // void Combine(FreqRecorder* other);
+  // void Combine(int other_local_id);
+  void Combine();
  private:
   Id64Type * freq_table;
   Id64Type * global_freq_table_ptr;

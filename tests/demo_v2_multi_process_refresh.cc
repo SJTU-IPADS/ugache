@@ -47,6 +47,7 @@ std::string env_empty_feat = "0";
 int enabled_gpus = 0;
 size_t dim = 128;
 size_t num_keys = 100000000;
+size_t num_step_per_epoch_per_replica = 100;
 
 void InitOptions(std::string app_name) {
   configs = {
@@ -75,8 +76,10 @@ void InitOptions(std::string app_name) {
   _app.add_option("--log-level",                  env_log_level);
   _app.add_option("--empty-feat",                 env_empty_feat);
   _app.add_option("--enabled-gpus",               enabled_gpus);
-  _app.add_option("--dim",               dim);
-  _app.add_option("--num-keys",               num_keys);
+  _app.add_option("--dim",                        dim);
+  _app.add_option("--num-keys",                   num_keys);
+  _app.add_option("--num-epoch",                  RunConfig::num_epoch);
+  _app.add_option("--num-step",                   num_step_per_epoch_per_replica);
 }
 void Parse(int argc, char** argv) {
   try {
@@ -133,8 +136,8 @@ int main(int argc, char** argv) {
     RunConfig::device_id_list[i] = i;
   }
   RunConfig::cross_process = true;
-  RunConfig::num_global_step_per_epoch = RunConfig::num_device * 100;
-  RunConfig::num_epoch = 10;
+  // RunConfig::num_epoch = 10;
+  RunConfig::num_global_step_per_epoch = RunConfig::num_device * num_step_per_epoch_per_replica;
   RunConfig::num_total_item = num_keys;
   // RunConfig::cache_policy = coll_cache_lib::common::kCollCacheAsymmLink;
   // RunConfig::cache_policy = coll_cache_lib::common::kCliquePart;
@@ -215,14 +218,14 @@ int main(int argc, char** argv) {
   auto output = output_handle->ptr();
   // void * output = new float[batch_size * dim];
   double iter_time = 0;
-  std::vector<double> iter_time_list(1000, 0);
-  for (int iteration = 0; iteration < 1000; ) {
-    int next_stop = iteration + 100;
+  for (int iteration = 0; iteration < num_step_per_epoch_per_replica * RunConfig::num_epoch; ) {
+    int next_stop = iteration + num_step_per_epoch_per_replica;
     for (; iteration < next_stop; iteration++) {
       _replica_barrier->Wait();
       // #pragma omp parallel for num_threads(RunConfig::omp_thread_num / RunConfig::num_device)
       for (int i = 0; i < batch_size; i++) {
-        IdType k = dist_int(gen);
+        // IdType k = dist_int(gen);
+        IdType k = (IdType)(dist(gen)) % num_keys;
         key_list_cpu->Ptr<IdType>()[i] = k;
       }
       freq_recorder_->Record(key_list_cpu->Ptr<IdType>(), batch_size);
@@ -233,24 +236,20 @@ int main(int argc, char** argv) {
       Timer t;
       cache_manager->lookup(replica_id, key_list->Ptr<IdType>(), batch_size, output, stream, replica_id + iteration * RunConfig::num_device);
       _replica_barrier->Wait();
-      iter_time_list[iteration] = cache_manager->_profiler->GetLogStepValue((uint64_t)(replica_id + iteration * RunConfig::num_device), kLogL2CacheCopyTime);
       iter_time += t.Passed();
     }
     if (replica_id == 0) {
-      LOG(ERROR) << "replica " << replica_id << " round " << iteration << " done, time is " << iter_time / 100;
+      LOG(ERROR) << "replica " << replica_id << " round " << iteration << " done, time is " << iter_time / num_step_per_epoch_per_replica;
       iter_time = 0;
     }
     if (replica_id == 0) {
-      cache_manager->report_last_epoch((iteration - 1) / 100);
+      cache_manager->report_last_epoch((iteration - 1) / num_step_per_epoch_per_replica);
     }
 
     if (replica_id == 0) {
       auto freq_recorder = freq_recorder_;
-      for (int32_t i = 1; i < RunConfig::num_device; i++) {
-        // freq_recorder->Combine(lookup_session_map_.begin()->second[i]->freq_recorder_.get());
-        freq_recorder->Combine(i);
-      }
 
+      freq_recorder->Combine();
       freq_recorder->Sort();
       freq_recorder->GetFreq(freq_vec);
       freq_recorder->GetRankNode(rank_vec);
@@ -266,14 +265,6 @@ int main(int argc, char** argv) {
     }
     if (replica_id < enabled_gpus) {
       cache_manager->report_avg();
-    }
-  }
-  int step = 50;
-  if (replica_id == 0) {
-    for (int iteration = 0; iteration < 1000; iteration += step) {
-      std::cerr << "max " << *std::max_element(&iter_time_list[iteration], &iter_time_list[iteration+step]) << "\n";
-      std::cerr << "min " << *std::min_element(&iter_time_list[iteration], &iter_time_list[iteration+step]) << "\n";
-      std::cerr << "avg " << std::accumulate(&iter_time_list[iteration], &iter_time_list[iteration+step], 0.) / step << "\n";
     }
   }
 
