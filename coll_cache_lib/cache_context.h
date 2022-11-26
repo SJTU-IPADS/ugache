@@ -129,6 +129,7 @@ class CacheContext {
   MemHandle _device_cache_data_local_handle;
   std::vector<HashTableEntryLocation*> _remote_hash_table_location;
   std::vector<HashTableEntryOffset*> _remote_hash_table_offset;
+  size_t * d_num_selected_out = nullptr;
 
   // MemHandle _local_node_list_handle;
   TensorPtr _local_node_list_tensor;
@@ -169,6 +170,11 @@ class ExtractSession {
  private:
 
   void SplitGroup(const SrcKey * src_index, const size_t len, IdType * & group_offset, StreamHandle stream);
+
+  void GetMissCacheIndexByCub(DstVal* & output_dst_index,
+    const IdType* nodes, const size_t num_nodes,
+    IdType * & group_offset,
+    StreamHandle stream);
 
   void GetMissCacheIndex(
     SrcKey* & output_src_index, DstVal* & output_dst_index,

@@ -408,6 +408,7 @@ template IdType* Tensor::Ptr<IdType>();
 template Id64Type* Tensor::Ptr<Id64Type>();
 template char* Tensor::Ptr<char>();
 template uint8_t* Tensor::Ptr<uint8_t>();
+template int* Tensor::Ptr<int>();
 
 std::ostream& operator<<(std::ostream& os, const Context& ctx) {
   switch (ctx.device_type)

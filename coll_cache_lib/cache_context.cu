@@ -408,6 +408,101 @@ void PreDecideSrc(int num_bits, int local_id, int cpu_location_id, int * placeme
 
 void CacheContext::lookup() {}
 
+namespace {
+
+struct SelectByLoc {
+  const HashTableEntryLocation* loc_table;
+  const HashTableEntryLocation expected_loc;
+  const IdType* input_keys;
+  CUB_RUNTIME_FUNCTION __forceinline__
+  SelectByLoc(const HashTableEntryLocation* loc_table, 
+              const HashTableEntryLocation expected_loc, const IdType* input_keys) : loc_table(loc_table), expected_loc(expected_loc), input_keys(input_keys) {}
+  template<typename Distance>
+  __host__ __device__  __forceinline__
+  bool operator()(const Distance & idx) const {
+    return loc_table[input_keys[idx]] == expected_loc;
+  }
+};
+
+struct DstValOutputIter {
+  using iterator_category = std::forward_iterator_tag;
+  using difference_type   = std::ptrdiff_t;
+  using value_type        = IdType;
+  using pointer           = IdType*;  // or also value_type*
+  using reference         = IdType&;  // or also value_type&
+
+  DstVal* output;
+  CUB_RUNTIME_FUNCTION __forceinline__
+  DstValOutputIter(DstVal* output) : output(output) {}
+  template<typename Distance>
+  __host__ __device__  __forceinline__
+  IdType & operator[](const Distance & idx) {
+    return output[idx]._dst_offset;
+  }
+};
+
+
+template <size_t BLOCK_SIZE=Constant::kCudaBlockSize, size_t TILE_SIZE=Constant::kCudaTileSize>
+__global__ void get_src_offset(
+    const IdType* reordered_idx_list,
+    DstVal* output,
+    const IdType* keys, const size_t num_node,
+    const HashTableEntryOffset* hash_table_offset) {
+  assert(BLOCK_SIZE == blockDim.x);
+  const size_t block_start = TILE_SIZE * blockIdx.x;
+  const size_t block_end = TILE_SIZE * (blockIdx.x + 1);
+
+  for (size_t idx = block_start + threadIdx.x; idx < block_end; idx += BLOCK_SIZE) {
+    if (idx < num_node) {
+      IdType idx_for_key = reordered_idx_list[idx];
+      output[idx]._src_offset = hash_table_offset[keys[idx_for_key]];
+      output[idx]._dst_offset = idx_for_key;
+    }
+  }
+}
+
+};
+
+void ExtractSession::GetMissCacheIndexByCub(DstVal* & output_dst_index,
+    const IdType* nodes, const size_t num_nodes,
+    IdType * & group_offset,
+    StreamHandle stream) {
+
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+  if (num_nodes == 0) return;
+  if (output_dst_index_handle == nullptr || output_dst_index_handle->nbytes() < num_nodes * sizeof(SrcKey)) {
+    output_dst_index_handle = _cache_ctx->_gpu_mem_allocator(num_nodes * sizeof(DstVal));
+    output_src_index_handle = _cache_ctx->_gpu_mem_allocator(num_nodes * sizeof(SrcKey));
+  }
+
+  output_dst_index = output_dst_index_handle->ptr<DstVal>();
+  group_offset = this->_group_offset;
+
+  auto reordered_idx_list = output_src_index_handle->ptr<IdType>();
+
+  this->_group_offset[0] = 0;
+
+  for (int loc_id = 0; loc_id < _cache_ctx->_num_location; loc_id++) {
+    cub::CountingInputIterator<IdType> counter(0);
+    SelectByLoc selector(_cache_ctx->_hash_table_location, loc_id, nodes);
+    size_t workspace_bytes;
+    cub::DeviceSelect::If(nullptr,   workspace_bytes, counter, reordered_idx_list + _group_offset[loc_id], _cache_ctx->d_num_selected_out, num_nodes, selector, cu_stream);
+    if (workspace_handle == nullptr || workspace_handle->nbytes() < workspace_bytes) {
+      workspace_handle = _cache_ctx->_gpu_mem_allocator(workspace_bytes);
+    }
+    void *workspace = workspace_handle->ptr();
+    cub::DeviceSelect::If(workspace, workspace_bytes, counter, reordered_idx_list + _group_offset[loc_id], _cache_ctx->d_num_selected_out, num_nodes, selector, cu_stream);
+    CUDA_CALL(cudaStreamSynchronize(cu_stream));
+    this->_group_offset[loc_id + 1] = this->_group_offset[loc_id] + *(_cache_ctx->d_num_selected_out);
+  }
+  CHECK(this->_group_offset[_cache_ctx->_num_location] == num_nodes) << this->_group_offset[_cache_ctx->_num_location] << "!=" << num_nodes;
+
+  {
+    SAM_CUDA_PREPARE_1D(num_nodes);
+    get_src_offset<><<<grid, block, 0, cu_stream>>>(reordered_idx_list, output_dst_index, nodes, num_nodes, _cache_ctx->_hash_table_offset);
+    CUDA_CALL(cudaStreamSynchronize(cu_stream));
+  }
+}
 
 void ExtractSession::GetMissCacheIndex(
     SrcKey* & output_src_index, DstVal* & output_dst_index,
@@ -790,6 +885,7 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     IdType * group_offset = nullptr;
     LOG(DEBUG) << "CollCache: ExtractFeat: coll, splitting group... ";
     SplitGroup(src_index, num_nodes, group_offset, stream);
+    // GetMissCacheIndexByCub(dst_index, nodes, num_nodes, group_offset, stream);
     double get_index_time = t0.Passed();
 
     // std::cout << "Split GrOup " <<t1.Passed() << "\n";
@@ -1529,6 +1625,8 @@ void CacheContext::build(std::function<MemHandle(size_t)> gpu_mem_allocator,
                          StreamHandle stream) {
   _coll_cache = coll_cache_ptr;
   _gpu_mem_allocator = gpu_mem_allocator;
+
+  d_num_selected_out = Device::Get(CPU())->AllocArray<size_t>(CPU(), 1);
 
   _eager_gpu_mem_allocator = [gpu_ctx](size_t nbytes)-> MemHandle{
     std::shared_ptr<EagerGPUMemoryHandler> ret = std::make_shared<EagerGPUMemoryHandler>();
