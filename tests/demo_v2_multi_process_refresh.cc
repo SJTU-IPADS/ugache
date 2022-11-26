@@ -11,6 +11,7 @@
 #include "run_config.h"
 #include <CLI/CLI.hpp>
 #include <algorithm>
+#include <atomic>
 #include <iostream>
 #include <numeric>
 #include <random>
@@ -48,8 +49,9 @@ int enabled_gpus = 0;
 size_t dim = 128;
 size_t num_keys = 100000000;
 size_t num_step_per_epoch_per_replica = 100;
-
+size_t refresh_every_per_rep_step = 100;
 void InitOptions(std::string app_name) {
+
   configs = {
     {"_cache_policy",  std::to_string((int)kRepCache)},
     {"cache_policy",  "rep"},
@@ -80,6 +82,7 @@ void InitOptions(std::string app_name) {
   _app.add_option("--num-keys",                   num_keys);
   _app.add_option("--num-epoch",                  RunConfig::num_epoch);
   _app.add_option("--num-step",                   num_step_per_epoch_per_replica);
+  _app.add_option("--refresh-per-step",           refresh_every_per_rep_step);
 }
 void Parse(int argc, char** argv) {
   try {
@@ -217,6 +220,8 @@ int main(int argc, char** argv) {
   auto output_handle = gpu_mem_allocator(batch_size * dim * GetDataTypeBytes(kF32));
   auto output = output_handle->ptr();
   // void * output = new float[batch_size * dim];
+  std::thread refresh_thread([](){});
+  std::atomic<bool> refresh_ongoing {false};
   double iter_time = 0;
   for (int iteration = 0; iteration < num_step_per_epoch_per_replica * RunConfig::num_epoch; ) {
     int next_stop = iteration + num_step_per_epoch_per_replica;
@@ -224,8 +229,8 @@ int main(int argc, char** argv) {
       _replica_barrier->Wait();
       // #pragma omp parallel for num_threads(RunConfig::omp_thread_num / RunConfig::num_device)
       for (int i = 0; i < batch_size; i++) {
-        // IdType k = dist_int(gen);
-        IdType k = (IdType)(dist(gen)) % num_keys;
+        IdType k = dist_int(gen);
+        // IdType k = (IdType)(dist(gen)) % num_keys;
         key_list_cpu->Ptr<IdType>()[i] = k;
       }
       freq_recorder_->Record(key_list_cpu->Ptr<IdType>(), batch_size);
@@ -246,16 +251,22 @@ int main(int argc, char** argv) {
       cache_manager->report_last_epoch((iteration - 1) / num_step_per_epoch_per_replica);
     }
 
-    if (replica_id == 0) {
-      auto freq_recorder = freq_recorder_;
-
-      freq_recorder->Combine();
-      freq_recorder->Sort();
-      freq_recorder->GetFreq(freq_vec);
-      freq_recorder->GetRankNode(rank_vec);
+    if (iteration % refresh_every_per_rep_step == 0 && refresh_ongoing.load() == false) {
+      refresh_ongoing.store(true);
+      refresh_thread.join();
+      refresh_thread = std::thread([freq_recorder_, replica_id, freq_vec, rank_vec, cache_manager, stream, &refresh_ongoing](){
+        if (replica_id == 0) {
+          freq_recorder_->Combine();
+          freq_recorder_->Sort();
+          freq_recorder_->GetFreq(freq_vec);
+          freq_recorder_->GetRankNode(rank_vec);
+        }
+        AnonymousBarrier::_refresh_instance->Wait();
+        cache_manager->refresh(replica_id, rank_vec, freq_vec, stream);
+        AnonymousBarrier::_refresh_instance->Wait();
+        refresh_ongoing.store(false);
+      });
     }
-
-    cache_manager->refresh(replica_id, rank_vec, freq_vec, stream);
     _replica_barrier->Wait();
   }
   for (int i = 0; i < RunConfig::num_device; i++) {
@@ -267,6 +278,8 @@ int main(int argc, char** argv) {
       cache_manager->report_avg();
     }
   }
+  refresh_thread.join();
+
 
   // samgraph::common::samgraph_config_from_map(configs);
   // samgraph::common::samgraph_init();

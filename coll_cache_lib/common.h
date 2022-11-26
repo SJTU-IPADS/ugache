@@ -151,6 +151,7 @@ class AnonymousBarrier : public ExternalBarrierHandler {
   AnonymousBarrier(int worker);
   void Wait() override;
   static std::shared_ptr<AnonymousBarrier> _global_instance;
+  static std::shared_ptr<AnonymousBarrier> _refresh_instance;
 };
 
 size_t GetDataTypeBytes(DataType dtype);

@@ -218,19 +218,19 @@ void CollCache::refresh(int replica_id, IdType *ranking_nodes_list_ptr,
     solve_impl_master(ranking_nodes_list_ptr, ranking_nodes_freq_list_ptr, RunConfig::num_total_item);
     LOG(ERROR) << replica_id << " solved master";
   }
-  this->_replica_barrier->Wait();
+  AnonymousBarrier::_refresh_instance->Wait();
   if (replica_id != 0 && RunConfig::cross_process) {
     // one-time call for none-master process
     solve_impl_slave();
   }
   LOG(ERROR) << replica_id << " solved";
-  this->_replica_barrier->Wait();
+  AnonymousBarrier::_refresh_instance->Wait();
 
   // if (RunConfig::cross_process) return;
   LOG(ERROR) << "worker " << RunConfig::worker_id << " thread " << replica_id << " refresh device " << device_id;
   this->_refresh_session_list[replica_id]->stream = stream;
   this->_refresh_session_list[replica_id]->refresh_after_solve();
-  this->_replica_barrier->Wait();
+  AnonymousBarrier::_refresh_instance->Wait();
 }
 
 void CollCache::report_last_epoch(uint64_t epoch) {

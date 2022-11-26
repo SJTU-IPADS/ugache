@@ -2034,7 +2034,7 @@ void RefreshSession::refresh_after_solve() {
   }
 #endif
 
-  _cache_ctx->_coll_cache->_replica_barrier->Wait();
+  AnonymousBarrier::_refresh_instance->Wait();
 
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "evicting remote nodes";
   {
@@ -2047,7 +2047,7 @@ void RefreshSession::refresh_after_solve() {
     CUDA_CALL(cudaStreamSynchronize(cu_stream));
   }
 
-  _cache_ctx->_coll_cache->_replica_barrier->Wait();
+  AnonymousBarrier::_refresh_instance->Wait();
 
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "inserting new local nodes";
   // fixme: wait for current extraction 
@@ -2080,7 +2080,7 @@ void RefreshSession::refresh_after_solve() {
   }
 #endif
 
-  _cache_ctx->_coll_cache->_replica_barrier->Wait();
+  AnonymousBarrier::_refresh_instance->Wait();
 
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "inserting new remote nodes";
   for (auto & link : RunConfig::coll_cache_link_desc.link_src[_local_location_id]) {
@@ -2097,7 +2097,7 @@ void RefreshSession::refresh_after_solve() {
     }
   }
 
-  _cache_ctx->_coll_cache->_replica_barrier->Wait();
+  AnonymousBarrier::_refresh_instance->Wait();
 
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "refresh done";
 
