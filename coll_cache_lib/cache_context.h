@@ -101,6 +101,7 @@ struct ExtractionThreadCtx {
 class CollCache;
 class CacheContext {
  private:
+  std::atomic<size_t> progress{0};
   BarHandle _barrier;
   using HashTableEntryLocation = int;
   using HashTableEntryOffset = IdType;

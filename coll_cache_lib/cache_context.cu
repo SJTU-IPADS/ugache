@@ -1116,6 +1116,7 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     }
     // cpu_device->FreeWorkspace(CPU(CPU_CUDA_HOST_MALLOC_DEVICE), group_offset);
   }
+  _cache_ctx->progress.fetch_add(1);
 }
 
 #ifdef DEAD_CODE
@@ -2145,7 +2146,14 @@ void RefreshSession::refresh_after_solve() {
     CUDA_CALL(cudaStreamSynchronize(cu_stream));
   }
 
+  size_t current_progress = _cache_ctx->progress.load();
+
   AnonymousBarrier::_refresh_instance->Wait();
+
+  Timer t0;
+  while (_cache_ctx->progress.load() < current_progress + 1) {
+    if (t0.PassedSec() >= 20) break;
+  }
 
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "inserting new local nodes";
   // fixme: wait for current extraction 
