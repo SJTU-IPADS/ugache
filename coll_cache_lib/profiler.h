@@ -145,6 +145,14 @@ struct LogData {
   LogData(size_t num_logs);
 };
 
+// log space across multiple process
+struct SharedLogData {
+  double* vals;
+  int* bitmap;
+
+  SharedLogData() {}
+};
+
 #define TRACE_TYPES( F ) \
   F(kL0Event_Train_Step) \
   F(kL1Event_Sample) \
@@ -223,10 +231,13 @@ class Profiler {
   void OutputEpoch(uint64_t epoch, std::string type);
 
   std::vector<LogData> _init_data;
-  std::vector<LogData> _step_data;
+  std::vector<SharedLogData> _step_data;
   std::vector<double> _step_buf;
   std::vector<LogData> _epoch_data;
   std::vector<double> _epoch_buf;
+  // SharedLogData* _step_data;
+  TensorPtr _step_data_val_buf;
+  TensorPtr _step_data_bitmap_buf;
 
   // for trace
   std::vector<TraceData> _step_trace;
