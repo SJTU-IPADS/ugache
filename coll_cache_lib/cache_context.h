@@ -161,6 +161,7 @@ class ExtractSession {
   std::shared_ptr<CacheContext> _cache_ctx;
   MemHandle output_src_index_handle, output_dst_index_handle;
   MemHandle output_src_index_alter_handle, output_dst_index_alter_handle;
+  MemHandle output_sorted_nodes_handle;
   MemHandle workspace_handle;
   IdType * _group_offset = nullptr;
   std::vector<StreamHandle> _concurrent_stream_array;
@@ -179,6 +180,11 @@ class ExtractSession {
 
   void GetMissCacheIndex(
     SrcKey* & output_src_index, DstVal* & output_dst_index,
+    const IdType* nodes, const size_t num_nodes, 
+    StreamHandle stream);
+
+  void SortByLocation(
+    IdType* &sorted_nodes,
     const IdType* nodes, const size_t num_nodes, 
     StreamHandle stream);
 

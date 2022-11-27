@@ -225,6 +225,25 @@ __global__ void get_miss_cache_index(
   }
 }
 
+template <size_t BLOCK_SIZE, size_t TILE_SIZE, typename LocIter_T>
+__global__ void get_location(
+    LocIter_T location_iter,
+    const IdType* nodes, const size_t num_nodes,
+    const HashTableEntryLocation* hash_table_location) {
+
+  assert(BLOCK_SIZE == blockDim.x);
+  const size_t block_start = TILE_SIZE * blockIdx.x;
+  const size_t block_end = TILE_SIZE * (blockIdx.x + 1);
+
+  for (size_t dst_idx = block_start + threadIdx.x; dst_idx < block_end;
+       dst_idx += BLOCK_SIZE) {
+    if (dst_idx < num_nodes) {
+      const IdType node_id = nodes[dst_idx];
+      location_iter[dst_idx] = hash_table_location[node_id];
+    }
+  }
+}
+
 
 template <size_t BLOCK_SIZE=Constant::kCudaBlockSize, size_t TILE_SIZE=Constant::kCudaTileSize, 
     typename LocationIter_T>
@@ -571,6 +590,57 @@ void ExtractSession::GetMissCacheIndex(
   // std::cout << "coll free workspace "<< t2.Passed() << "\n";
 }
 
+void ExtractSession::SortByLocation(
+    IdType* & sorted_nodes,
+    const IdType* nodes, const size_t num_nodes, 
+    StreamHandle stream) {
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+  auto device = Device::Get(_cache_ctx->_trainer_ctx);
+  if (num_nodes == 0) return;
+  if (output_src_index_handle == nullptr || output_src_index_handle->nbytes() < num_nodes * sizeof(SrcKey)) {
+    output_src_index_handle = _cache_ctx->_gpu_mem_allocator(num_nodes * sizeof(SrcKey));
+    output_src_index_alter_handle = _cache_ctx->_gpu_mem_allocator(num_nodes * sizeof(SrcKey));
+    output_sorted_nodes_handle = _cache_ctx->_gpu_mem_allocator(num_nodes * sizeof(IdType));
+  }
+
+  // alias of location indicator
+  SrcKey* output_src_index = output_src_index_handle->ptr<SrcKey>();
+  SrcKey* output_src_index_alter = output_src_index_alter_handle->ptr<SrcKey>();
+  sorted_nodes = output_sorted_nodes_handle->ptr<IdType>();
+
+  const size_t num_tiles = RoundUpDiv(num_nodes, Constant::kCudaTileSize);
+  const dim3 grid(num_tiles);
+  const dim3 block(Constant::kCudaBlockSize);
+  LOG(DEBUG) << "CollCacheManager: SortByGroup - getting miss/hit index...";
+  Timer t0;
+  LocationIter location_iter(output_src_index);
+  get_location<Constant::kCudaBlockSize, Constant::kCudaTileSize><<<grid, block, 0, cu_stream>>>(
+    location_iter, nodes, num_nodes, _cache_ctx->_hash_table_location);
+  // device->StreamSync(_cache_ctx->_trainer_ctx, stream);
+
+  Timer t1;
+
+  size_t workspace_bytes;
+  LOG(DEBUG) << "CollCacheManager: SortByGroup - sorting according to group...";
+
+  CUDA_CALL(cub::DeviceRadixSort::SortPairs(
+      nullptr, workspace_bytes, 
+      (int*)output_src_index, (int*)output_src_index_alter, nodes, sorted_nodes,
+      num_nodes, 0, sizeof(SrcKey)*8, cu_stream));
+
+  if (workspace_handle == nullptr || workspace_handle->nbytes() < workspace_bytes) {
+    workspace_handle = _cache_ctx->_gpu_mem_allocator(workspace_bytes);
+  }
+  void *workspace = workspace_handle->ptr();
+
+  CUDA_CALL(cub::DeviceRadixSort::SortPairs(
+      workspace, workspace_bytes, 
+      (int*)output_src_index, (int*)output_src_index_alter, nodes, sorted_nodes,
+      num_nodes, 0, sizeof(SrcKey)*8, cu_stream));
+
+  // device->StreamSync(_cache_ctx->_trainer_ctx, stream);
+  LOG(DEBUG) << "CollCacheManager: SortByGroup - sorting according to group - done...";
+}
 
 void ExtractSession::SplitGroup(const SrcKey * src_index, const size_t len, IdType * & group_offset, StreamHandle stream){
   auto cu_stream = static_cast<cudaStream_t>(stream);
@@ -849,12 +919,19 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     cpu_device->FreeWorkspace(CPU(CPU_CUDA_HOST_MALLOC_DEVICE), group_offset);
   } else 
 #endif
-  if (RunConfig::coll_cache_no_group) {
+  if (RunConfig::coll_cache_no_group != common::kAlwaysGroup) {
     // CHECK(false) << "Multi source extraction is not supported now";
     auto trainer_gpu_device = Device::Get(_cache_ctx->_trainer_ctx);
     auto cpu_device = Device::Get(CPU(CPU_CUDA_HOST_MALLOC_DEVICE));
     // Timer t0;
     // double get_index_time = t0.Passed();
+    Timer t0;
+    if (RunConfig::coll_cache_no_group == common::kOrderedNoGroup) {
+      IdType* sorted_nodes;
+      SortByLocation(sorted_nodes, nodes, num_nodes, stream);
+      nodes = sorted_nodes;
+    }
+    double get_index_time = t0.Passed();
     Timer t1;
     CombineNoGroup(nodes, num_nodes, output, _cache_ctx->_trainer_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
     double combine_time = t1.Passed();
@@ -865,7 +942,7 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL1FeatureBytes, GetTensorBytes(_dtype, {num_nodes, _dim}));
       // _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL1MissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
       // _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL1RemoteBytes, GetTensorBytes(_dtype, {num_remote, _dim}));
-      // _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheGetIndexTime, get_index_time);
+      _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheGetIndexTime, get_index_time);
       // _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheCombineMissTime,combine_times[0]);
       // _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheCombineRemoteTime,combine_times[1]);
       _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheCombineCacheTime,combine_time);

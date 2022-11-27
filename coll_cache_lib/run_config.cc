@@ -55,7 +55,7 @@ std::string          RunConfig::shared_meta_path               = "/shared_meta_d
 
 ConcurrentLinkImpl   RunConfig::concurrent_link_impl       = kNoConcurrentLink;
 bool                 RunConfig::coll_cache_concurrent_link = false;
-bool                 RunConfig::coll_cache_no_group    = false;
+NoGroupImpl          RunConfig::coll_cache_no_group    = kAlwaysGroup;
 size_t               RunConfig::coll_cache_num_slot    = 100;
 double               RunConfig::coll_cache_coefficient = 1.1;
 double               RunConfig::coll_cache_hyperparam_T_local  = 1;
@@ -98,8 +98,14 @@ void RunConfig::LoadConfigFromEnv() {
     std::string env = GetEnv(Constant::kEnvFakeFeatDim);
     RunConfig::option_fake_feat_dim = std::stoi(env);
   }
-  if (IsEnvSet("SAMGRAPH_COLL_CACHE_NO_GROUP")) {
-    RunConfig::coll_cache_no_group = true;
+  if (GetEnv("SAMGRAPH_COLL_CACHE_NO_GROUP") != "") {
+    if (GetEnv("SAMGRAPH_COLL_CACHE_NO_GROUP") == "DIRECT") {
+      RunConfig::coll_cache_no_group = kDirectNoGroup;
+    } else if (GetEnv("SAMGRAPH_COLL_CACHE_NO_GROUP") == "ORDERED") {
+      RunConfig::coll_cache_no_group = kOrderedNoGroup;
+    } else {
+      CHECK(false) << "Unknown nogroup impl " << GetEnv("SAMGRAPH_COLL_CACHE_NO_GROUP");
+    }
   }
   if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK") != "") {
     RunConfig::coll_cache_concurrent_link = ture_values.find(GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK")) != ture_values.end();
