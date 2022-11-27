@@ -91,6 +91,8 @@ struct TraceJsonHelper {
 }
 
 LogData::LogData(size_t num_logs) {
+  vals.resize(num_logs, 0);
+  bitmap.resize(num_logs, false);
   sum = 0;
   cnt = 0;
 }
@@ -114,7 +116,7 @@ Profiler::Profiler() {
   // _step_data.resize(num_step_items, LogData(num_step_logs));
 
   _step_data_val_buf = Tensor::CreateShm(Constant::kProfilerValShmName, kF64, {num_step_logs * num_step_items}, "");
-  _step_data_bitmap_buf = Tensor::CreateShm(Constant::kProfilerValShmName, kI32, {num_step_logs * num_step_items}, "");
+  _step_data_bitmap_buf = Tensor::CreateShm(Constant::kProfilerBitmapShmName, kI32, {num_step_logs * num_step_items}, "");
   memset(_step_data_val_buf->MutableData(), 0, _step_data_val_buf->NumBytes());
   memset(_step_data_bitmap_buf->MutableData(), 0, _step_data_bitmap_buf->NumBytes());
 

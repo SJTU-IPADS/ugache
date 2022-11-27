@@ -269,14 +269,8 @@ int main(int argc, char** argv) {
     }
     _replica_barrier->Wait();
   }
-  for (int i = 0; i < RunConfig::num_device; i++) {
-    _replica_barrier->Wait();
-    if (i != replica_id) {
-      continue;
-    }
-    if (replica_id < enabled_gpus) {
-      cache_manager->report_avg();
-    }
+  if (replica_id == 0) {
+    cache_manager->report_avg();
   }
   refresh_thread.join();
 
