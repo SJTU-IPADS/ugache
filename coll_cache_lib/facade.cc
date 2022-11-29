@@ -132,8 +132,11 @@ void CollCache::solve_impl_slave() {
                                     {}, "nid_to_block");
     _block_placement = Tensor::OpenShm(Constant::kCollCachePlacementShmName,
                                        kU8, {}, "coll_cache_block_placement");
-    _block_density = Tensor::OpenShm(Constant::kCollCachePlacementShmName + "_density",
-                                       kF64, {}, "coll_cache_block_density");
+    if (RunConfig::cache_policy == kCollCacheAsymmLink) {
+      // for refreshment to know about sizes
+      _block_density = Tensor::OpenShm(Constant::kCollCachePlacementShmName + "_density",
+                                        kF64, {}, "coll_cache_block_density");
+    }
     if (RunConfig::cache_policy == kCollCacheAsymmLink ||
         RunConfig::cache_policy == kCliquePart ||
         RunConfig::cache_policy == kCliquePartByDegree) {
