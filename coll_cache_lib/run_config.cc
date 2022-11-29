@@ -118,11 +118,14 @@ void RunConfig::LoadConfigFromEnv() {
       RunConfig::concurrent_link_impl = kFused;
     } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "FUSED_LIMIT_BLOCK") {
       RunConfig::concurrent_link_impl = kFusedLimitNumBlock;
+    } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "") {
+      RunConfig::concurrent_link_impl = kMPS;
     } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "MPS") {
       RunConfig::concurrent_link_impl = kMPS;
     } else {
       CHECK(false) << "Unknown concurrent link impl " << GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL");
     }
+    LOG(ERROR) << "using concurrent impl " << GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL");
   }
   if (GetEnv("COLL_CACHE_CPU_ADDUP") != "") {
     RunConfig::coll_cache_cpu_addup = std::stod(GetEnv("COLL_CACHE_CPU_ADDUP"));
