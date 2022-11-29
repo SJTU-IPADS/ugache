@@ -60,7 +60,7 @@ int MmapCPUDevice::CreateShm(size_t nbytes, std::string name) {
 int MmapCPUDevice::OpenShm(std::string name, size_t *nbytes) {
   int fd = 0;
   fd = shm_open(name.c_str(), O_RDWR, 0);
-  CHECK_NE(fd, -1) << "shm open faile, errno=" << errno;
+  CHECK_NE(fd, -1) << "shm open faile, errno=" << errno << ", fname " << name;
   if (nbytes) {
     struct stat st;
     fstat(fd, &st);

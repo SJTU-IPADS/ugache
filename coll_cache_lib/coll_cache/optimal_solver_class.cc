@@ -101,7 +101,8 @@ void OptimalSolver::Build(TensorPtr stream_id_list, TensorPtr stream_freq_list, 
   next_free_block.store(0);
 
   LOG(WARNING) << "counting blocks...";
-#pragma omp parallel for num_threads(RunConfig::omp_thread_num)
+// #pragma omp parallel for num_threads(RunConfig::omp_thread_num / 2)
+#pragma omp parallel for num_threads(8)
   for (uint32_t nid = 0; nid < num_node; nid++) {
     nid_to_block[nid].ref() = buckets[nid_to_block[nid].ref()].add_node(this);
   }
@@ -135,7 +136,7 @@ void OptimalSolver::Build(TensorPtr stream_id_list, TensorPtr stream_freq_list, 
         uint32_t orig_rank = nid_to_rank[nid][stream_idx].ref();
         double freq = stream_freq_list_view[stream_idx][orig_rank].ref();
         // assign all zero freq a minimal freq to handle touched node << cache space
-        freq = std::max(freq, 1e-3);
+        freq = std::max(freq, 1e-2);
         block_freq_array[block_id][stream_idx].ref() += freq;
       }
     }
