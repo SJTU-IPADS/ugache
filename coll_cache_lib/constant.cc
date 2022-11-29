@@ -89,5 +89,8 @@ const std::string Constant::kCollCacheHashTableOffsetPtrShmName = std::string("c
 const std::string Constant::kCollCacheDeviceCacheDataPtrShmName = std::string("coll_cache_device_cache_data_ptr_") + GetEnvStrong("USER");
 const std::string Constant::kCollCacheFreqRecorderShmName = std::string("coll_cache_freq_recorder_shm_") + GetEnvStrong("USER");
 
+const std::string Constant::kProfilerValShmName    = std::string("coll_cache_val_shm_") + GetEnvStrong("USER");
+const std::string Constant::kProfilerBitmapShmName = std::string("coll_cache_bitmap_shm_") + GetEnvStrong("USER");
+
 }  // namespace common
 }  // namespace coll_cache_lib

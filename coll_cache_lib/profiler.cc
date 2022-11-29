@@ -19,6 +19,7 @@
 
 #include <cstddef>
 #include <cstdio>
+#include <cstring>
 #include <fstream>
 #include <limits>
 #include <numeric>
@@ -112,7 +113,19 @@ Profiler::Profiler() {
   size_t num_epoch_logs = RunConfig::num_epoch;
 
   _init_data.resize(kNumLogInitItems, LogData(1));
-  _step_data.resize(num_step_items, LogData(num_step_logs));
+  // _step_data.resize(num_step_items, LogData(num_step_logs));
+
+  _step_data_val_buf = Tensor::CreateShm(Constant::kProfilerValShmName, kF64, {num_step_logs * num_step_items}, "");
+  _step_data_bitmap_buf = Tensor::CreateShm(Constant::kProfilerBitmapShmName, kI32, {num_step_logs * num_step_items}, "");
+  memset(_step_data_val_buf->MutableData(), 0, _step_data_val_buf->NumBytes());
+  memset(_step_data_bitmap_buf->MutableData(), 0, _step_data_bitmap_buf->NumBytes());
+
+  _step_data.resize(num_step_items, SharedLogData());
+  for (size_t i = 0; i < num_step_items; i++) {
+    _step_data[i].vals = _step_data_val_buf->Ptr<double>() + i * num_step_logs;
+    _step_data[i].bitmap = _step_data_bitmap_buf->Ptr<int>() + i * num_step_logs;
+  }
+
   _step_buf.resize(num_step_items);
   _epoch_data.resize(num_epoch_items, LogData(num_epoch_logs));
   _epoch_buf.resize(num_epoch_items);
@@ -131,12 +144,14 @@ Profiler::Profiler() {
 }
 
 void Profiler::ResetStepEpoch() {
+  memset(_step_data_val_buf->MutableData(), 0, _step_data_val_buf->NumBytes());
+  memset(_step_data_bitmap_buf->MutableData(), 0, _step_data_bitmap_buf->NumBytes());
   size_t num_step_items = static_cast<size_t>(kNumLogStepItems);
   size_t num_step_logs = RunConfig::num_epoch * RunConfig::num_global_step_per_epoch;
   size_t num_epoch_items = static_cast<size_t>(kNumLogEpochItems);
   size_t num_epoch_logs = RunConfig::num_epoch;
-  _step_data.clear();
-  _step_data.resize(num_step_items, LogData(num_step_logs));
+  // _step_data.clear();
+  // _step_data.resize(num_step_items, LogData(num_step_logs));
   _step_buf.clear();
   _step_buf.resize(num_step_items);
   _epoch_data.clear();
@@ -185,21 +200,17 @@ void Profiler::LogInitAdd(LogInitItem item, double val) {
 
 void Profiler::LogStep(uint64_t key, LogStepItem item, double val) {
   size_t item_idx = static_cast<size_t>(item);
-  _step_data[item_idx].vals.at(key) = val;
+  _step_data[item_idx].vals[key] = val;
   // _step_data[item_idx].sum += val;
   // _step_data[item_idx].cnt = _step_data[item_idx].bitmap[key]
   //                                ? _step_data[item_idx].cnt
   //                                : _step_data[item_idx].cnt + 1;
-  _step_data[item_idx].bitmap.at(key) = true;
+  _step_data[item_idx].bitmap[key] = true;
 }
 
 void Profiler::LogStepAdd(uint64_t key, LogStepItem item, double val) {
   size_t item_idx = static_cast<size_t>(item);
   _step_data[item_idx].vals[key] += val;
-  _step_data[item_idx].sum += val;
-  _step_data[item_idx].cnt = _step_data[item_idx].bitmap[key]
-                                 ? _step_data[item_idx].cnt
-                                 : _step_data[item_idx].cnt + 1;
   _step_data[item_idx].bitmap[key] = true;
 }
 
