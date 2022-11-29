@@ -1147,8 +1147,8 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     Timer t_cpu;
     call_combine(_cache_ctx->_cpu_location_id);
     if (group_offset[_cache_ctx->_cpu_location_id+1] - group_offset[_cache_ctx->_cpu_location_id] != 0) {
-      _cache_ctx->_barrier->Wait();
     }
+    _cache_ctx->_barrier->Wait();
     combine_times[0] = t_cpu.Passed();
 
     // DistEngine::Get()->GetTrainerBarrier()->Wait();
