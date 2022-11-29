@@ -1759,6 +1759,7 @@ void DevicePointerExchanger::close(void *ptr) {
 }
 
 ExtractSession::ExtractSession(std::shared_ptr<CacheContext> cache_ctx) : _cache_ctx(cache_ctx) {
+  if (cache_ctx->IsDirectMapping()) return;
   auto cpu_ctx = CPU(CPU_CUDA_HOST_MALLOC_DEVICE);
   _group_offset = (IdType*)Device::Get(cpu_ctx)->AllocWorkspace(cpu_ctx, sizeof(IdType) * (_cache_ctx->_num_location + 1));
   // _cache_ctx->ctx_injector_ = [](){};
