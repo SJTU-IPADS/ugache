@@ -143,7 +143,17 @@ class CacheContext {
   // std::function<void()> ctx_injector_;
   friend class ExtractSession;
   friend class RefreshSession;
+  inline bool IsDirectMapping() {
+    return _hash_table_location == nullptr;
+    // if (_hash_table_location == nullptr) {
+    //   CHECK(_num_location == 1);
+    //   return true;
+    // }
+    // return false;
+  }
 
+  void build_no_cache(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, StreamHandle stream = nullptr);
+  void build_full_cache(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, size_t num_total_nodes, StreamHandle stream = nullptr);
   void build_without_advise(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream = nullptr);
   void build_with_advise(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream = nullptr);
  public:

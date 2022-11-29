@@ -852,31 +852,31 @@ void ExtractSession::CombineNoGroup(const IdType * nodes, const size_t num_node,
 
 void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
                   void* output, StreamHandle stream, uint64_t task_key) {
-#ifdef DEAD_CODE
-  if (IsDirectMapping()) {
+  if (_cache_ctx->IsDirectMapping()) {
+    CHECK(_cache_ctx->_num_location == 1);
     // fast path
     // direct mapping from node id to freature, no need to go through hashtable
     LOG(DEBUG) << "CollCache: ExtractFeat: Direct mapping, going fast path... ";
     Timer t0;
-    const DataIter<const IdType*> src_data_iter(nodes, _device_cache_data[0], _dim);
-    DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), output, _dim);
-    Combine(src_data_iter, dst_data_iter, num_nodes, _trainer_ctx, _dtype, _dim, stream);
+    const DataIter<const IdType*> src_data_iter(nodes, _cache_ctx->_device_cache_data[0], _cache_ctx->_dim);
+    DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), output, _cache_ctx->_dim);
+    Combine(src_data_iter, dst_data_iter, num_nodes, _cache_ctx->_trainer_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
     double combine_time = t0.Passed();
     if (task_key != 0xffffffffffffffff) {
-      Profiler::Get().LogStep(task_key, kLogL1FeatureBytes, GetTensorBytes(_dtype, {num_nodes, _dim}));
-      // Profiler::Get().LogStep(task_key, kLogL3CacheGetIndexTime, get_index_time);
-      if (_cpu_location_id == -1) {
+      size_t nbytes = GetTensorBytes(_cache_ctx->_dtype, {num_nodes, _cache_ctx->_dim});
+      _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL1FeatureBytes, nbytes);
+      if (_cache_ctx->_cpu_location_id == -1) {
         // full cache
-        Profiler::Get().LogStep(task_key, kLogL3CacheCombineCacheTime,combine_time);
+        _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheCombineCacheTime,combine_time);
       } else {
         // no cache
-        Profiler::Get().LogStep(task_key, kLogL1MissBytes, GetTensorBytes(_dtype, {num_nodes, _dim}));
-        Profiler::Get().LogStep(task_key, kLogL3CacheCombineMissTime,combine_time);
+        _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL1MissBytes, nbytes);
+        _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheCombineMissTime,combine_time);
       }
-      // Profiler::Get().LogStep(task_key, kLogL3CacheCombineCacheTime,combine_cache_time);
-      Profiler::Get().LogEpochAdd(task_key, kLogEpochFeatureBytes,GetTensorBytes(_dtype, {num_nodes, _dim}));
-      Profiler::Get().LogEpochAdd(task_key, kLogEpochMissBytes, GetTensorBytes(_dtype, {num_nodes, _dim}));
+      _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochFeatureBytes,nbytes);
+      _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochMissBytes, nbytes);
     }
+#ifdef DEAD_CODE
   } else if (IsLegacy()) {
     auto trainer_gpu_device = Device::Get(_trainer_ctx);
     auto cpu_device = Device::Get(CPU(CPU_CUDA_HOST_MALLOC_DEVICE));
@@ -917,9 +917,8 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       Profiler::Get().LogEpochAdd(task_key, kLogEpochMissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
     }
     cpu_device->FreeWorkspace(CPU(CPU_CUDA_HOST_MALLOC_DEVICE), group_offset);
-  } else 
 #endif
-  if (RunConfig::coll_cache_no_group != common::kAlwaysGroup) {
+  } else if (RunConfig::coll_cache_no_group != common::kAlwaysGroup) {
     // CHECK(false) << "Multi source extraction is not supported now";
     auto trainer_gpu_device = Device::Get(_cache_ctx->_trainer_ctx);
     auto cpu_device = Device::Get(CPU(CPU_CUDA_HOST_MALLOC_DEVICE));
@@ -1148,8 +1147,8 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     Timer t_cpu;
     call_combine(_cache_ctx->_cpu_location_id);
     if (group_offset[_cache_ctx->_cpu_location_id+1] - group_offset[_cache_ctx->_cpu_location_id] != 0) {
-      _cache_ctx->_barrier->Wait();
     }
+    _cache_ctx->_barrier->Wait();
     combine_times[0] = t_cpu.Passed();
 
     // DistEngine::Get()->GetTrainerBarrier()->Wait();
@@ -1285,64 +1284,57 @@ CollCacheManager CollCacheManager::BuildLegacy(Context trainer_ctx,
   std::cout << "test_result:init:cache_nbytes=" << cm._cache_nbytes << "\n";
   return cm;
 }
+#endif
 
-CollCacheManager CollCacheManager::BuildNoCache(Context trainer_ctx,
-                  void* cpu_src_data, DataType dtype, size_t dim,
-                  StreamHandle stream) {
-  CollCacheManager cm(trainer_ctx, dtype, dim, 0);
-  cm._cpu_location_id = 0;
+void CacheContext::build_no_cache(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_src_data, DataType dtype, size_t dim, Context gpu_ctx, StreamHandle stream) {
+  _cpu_location_id = 0;
+  _num_location = 1;
+  _dtype = dtype;
+  _dim = dim;
+  _trainer_ctx = gpu_ctx;
 
-  Timer t;
+  _cache_nbytes = 0;
 
-  cm._cache_nbytes = 0;
+  _device_cache_data.resize(1);
+  _device_cache_data[0] = cpu_src_data;
 
-  // auto cpu_device = Device::Get(_extractor_ctx);
-  auto trainer_gpu_device = Device::Get(trainer_ctx);
+  _cache_nodes = 0;
+  _cache_space_capacity = 0;
 
-  // _cpu_hashtable = static_cast<IdType *>(
-  //     cpu_device->AllocDataSpace(_extractor_ctx, sizeof(IdType) * _num_nodes));
-  cm._device_cache_data.resize(1);
-  cm._device_cache_data[0] = cpu_src_data;
-  cm._hash_table_location = nullptr;
-  cm._hash_table_offset = nullptr;
-
-  LOG(INFO) << "Collaborative GPU cache (policy: " << "no cache"
-            << ") | " << t.Passed()
-            << " secs )";
-  std::cout << "test_result:init:cache_nbytes=" << cm._cache_nbytes << "\n";
-  return cm;
+  LOG(INFO) << "Collaborative GPU cache (policy: " << "no cache" << ")";
+  std::cout << "test_result:init:cache_nbytes=" << _cache_nbytes << "\n";
 }
 
-CollCacheManager CollCacheManager::BuildFullCache(Context trainer_ctx,
-                  void* cpu_src_data, DataType dtype, size_t dim,
-                  size_t num_total_nodes,
-                  StreamHandle stream) {
-  CollCacheManager cm(trainer_ctx, dtype, dim, 0);
-  cm._cpu_location_id = -1;
+void CacheContext::build_full_cache(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_src_data, DataType dtype, size_t dim, Context gpu_ctx, size_t num_total_nodes, StreamHandle stream) {
+  _cpu_location_id = -1;
+  _num_location = 1;
+  _dtype = dtype;
+  _dim = dim;
+  _trainer_ctx = gpu_ctx;
 
   Timer t;
 
-  cm._cache_nbytes = GetTensorBytes(cm._dtype, {num_total_nodes, cm._dim});
+  _cache_nbytes = GetTensorBytes(_dtype, {num_total_nodes, _dim});
 
-  auto trainer_gpu_device = Device::Get(trainer_ctx);
+  auto trainer_gpu_device = Device::Get(gpu_ctx);
 
-  void* local_cache = trainer_gpu_device->AllocDataSpace(trainer_ctx, cm._cache_nbytes);
-  trainer_gpu_device->CopyDataFromTo(cpu_src_data, 0, local_cache, 0, cm._cache_nbytes, CPU(), trainer_ctx, stream);
-  trainer_gpu_device->StreamSync(trainer_ctx, stream);
+  _device_cache_data_local_handle = _eager_gpu_mem_allocator(_cache_nbytes);
+  void* local_cache = _device_cache_data_local_handle->ptr();
 
-  cm._device_cache_data.resize(1);
-  cm._device_cache_data[0] = local_cache;
-  cm._hash_table_location = nullptr;
-  cm._hash_table_offset = nullptr;
+  trainer_gpu_device->CopyDataFromTo(cpu_src_data, 0, local_cache, 0, _cache_nbytes, CPU(), gpu_ctx, stream);
+  trainer_gpu_device->StreamSync(gpu_ctx, stream);
+
+  _device_cache_data.resize(1);
+  _device_cache_data[0] = local_cache;
 
   LOG(INFO) << "Collaborative GPU cache (policy: " << "full cache"
             << ") " << num_total_nodes << " nodes ( "
-            << ToReadableSize(cm._cache_nbytes) << " | " << t.Passed()
+            << ToReadableSize(_cache_nbytes) << " | " << t.Passed()
             << " secs )";
-  std::cout << "test_result:init:cache_nbytes=" << cm._cache_nbytes << "\n";
-  return cm;
+  std::cout << "test_result:init:cache_nbytes=" << _cache_nbytes << "\n";
 }
 
+#ifdef DEAD_CODE
 void CollCacheManager::CheckCudaEqual(const void * a, const void* b, const size_t nbytes, StreamHandle stream) {
   CHECK(nbytes % 4 == 0);
   const size_t n_elem = nbytes / 4;
@@ -1720,7 +1712,11 @@ void CacheContext::build(std::function<MemHandle(size_t)> gpu_mem_allocator,
   // _gpu_mem_allocator = _eager_gpu_mem_allocator;
   // _eager_gpu_mem_allocator = _gpu_mem_allocator;
 
-  if (_coll_cache->_block_access_advise) {
+  if (cache_percentage == 0) {
+    return build_no_cache(location_id, coll_cache_ptr, cpu_data, dtype, dim, gpu_ctx, stream);
+  } else if (cache_percentage == 1) {
+    return build_full_cache(location_id, coll_cache_ptr, cpu_data, dtype, dim, gpu_ctx, RunConfig::num_total_item, stream);
+  } else if (_coll_cache->_block_access_advise) {
     return build_with_advise(location_id, coll_cache_ptr, cpu_data, dtype, dim,
                              gpu_ctx, cache_percentage, stream);
   } else {
@@ -1763,6 +1759,7 @@ void DevicePointerExchanger::close(void *ptr) {
 }
 
 ExtractSession::ExtractSession(std::shared_ptr<CacheContext> cache_ctx) : _cache_ctx(cache_ctx) {
+  if (cache_ctx->IsDirectMapping()) return;
   auto cpu_ctx = CPU(CPU_CUDA_HOST_MALLOC_DEVICE);
   _group_offset = (IdType*)Device::Get(cpu_ctx)->AllocWorkspace(cpu_ctx, sizeof(IdType) * (_cache_ctx->_num_location + 1));
   // _cache_ctx->ctx_injector_ = [](){};
