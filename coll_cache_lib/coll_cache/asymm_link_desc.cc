@@ -166,7 +166,9 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
     RunConfig::coll_cache_hyperparam_T_remote = 330 / (double)38;
     RunConfig::coll_cache_hyperparam_T_cpu    = 330 / (double)11;
     if (RunConfig::concurrent_link_impl == kMPS) {
-      CHECK(false) << "not supported now";
+      desc.cpu_sm.clear();
+      desc.cpu_sm.resize(num_trainer, 8);
+      // CHECK(false) << "not supported now";
     }
   } else {
     CHECK(false) << "No bandwidth data for " << gpu_model;

@@ -1778,9 +1778,24 @@ ExtractSession::ExtractSession(std::shared_ptr<CacheContext> cache_ctx) : _cache
         ext_ctx_ptr->thread_func();
       });
       ext_ctx_ptr->forward_one_step([ext_ctx_ptr, dev_id=gpu_ctx.device_id, num_sm](cudaStream_t s){
+        if (dev_id == 0) {
+          size_t free = 0, total = 0;
+          cudaMemGetInfo(&free, &total);
+          LOG(WARNING) << "before create ctx, mem is " << ToReadableSize(total - free);
+        }
         ext_ctx_ptr->cu_ctx_ = cuda::create_ctx_with_sm_count(dev_id, num_sm);
+        if (dev_id == 0) {
+          size_t free = 0, total = 0;
+          cudaMemGetInfo(&free, &total);
+          LOG(WARNING) << "after create ctx, mem is " << ToReadableSize(total - free);
+        }
         check_current_ctx_is(ext_ctx_ptr->cu_ctx_);
         CUDA_CALL(cudaStreamCreate(&ext_ctx_ptr->stream_));
+        if (dev_id == 0) {
+          size_t free = 0, total = 0;
+          cudaMemGetInfo(&free, &total);
+          LOG(WARNING) << "after create stream, mem is " << ToReadableSize(total - free);
+        }
       });
       ext_ctx_ptr->wait_one_step();
     };
