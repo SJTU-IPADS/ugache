@@ -271,6 +271,64 @@ TensorPtr Tensor::FromBlob(void *data, DataType dtype,
   return tensor;
 }
 
+TensorPtr Tensor::CopyTo(TensorPtr source, Context ctx, StreamHandle stream, std::string name, double scale) {
+  CHECK(source && source->Defined());
+  std::vector<size_t> shape = source->Shape();
+  CHECK_GT(shape.size(), 0);
+
+  TensorPtr tensor = std::make_shared<Tensor>();
+  size_t nbytes = GetTensorBytes(source->_dtype, shape.begin(), shape.end());
+
+  tensor->_dtype = source->_dtype;
+  tensor->_shape = shape;
+  tensor->_nbytes = source->_nbytes;
+  tensor->_ctx = ctx;
+  tensor->_data = Device::Get(ctx)->AllocWorkspace(ctx, nbytes);
+  tensor->_name = source->_name;
+  Context working_ctx = Priority(source->Ctx(), ctx);
+  Device::Get(working_ctx)->CopyDataFromTo(source->_data, 0, tensor->_data, 0,
+                                                nbytes, source->_ctx, tensor->_ctx, stream);
+  Device::Get(working_ctx)->StreamSync(working_ctx, stream);
+  return tensor;
+}
+TensorPtr Tensor::CopyBlob(const void * data, DataType dtype,
+                            std::vector<size_t> shape, Context from_ctx,
+                            Context to_ctx, std::string name, StreamHandle stream) {
+  CHECK_GT(shape.size(), 0);
+
+  TensorPtr tensor = std::make_shared<Tensor>();
+  size_t nbytes = GetTensorBytes(dtype, shape.begin(), shape.end());
+
+  tensor->_dtype = dtype;
+  tensor->_shape = shape;
+  tensor->_nbytes = nbytes;
+  tensor->_ctx = to_ctx;
+  tensor->_data = Device::Get(to_ctx)->AllocWorkspace(to_ctx, nbytes);
+  tensor->_name = name;
+  Context working_ctx = Priority(from_ctx, to_ctx);
+  Device::Get(working_ctx)->CopyDataFromTo(data, 0, tensor->_data, 0,
+                                                nbytes, from_ctx, tensor->_ctx, stream);
+  Device::Get(working_ctx)->StreamSync(working_ctx, stream);
+  return tensor;
+}
+
+TensorPtr Tensor::EmptyExternal(DataType dtype, std::vector<size_t> shape, const std::function<MemHandle(size_t)> & allocator, Context ctx, std::string name) {
+  CHECK_GT(shape.size(), 0);
+
+  TensorPtr tensor = std::make_shared<Tensor>();
+  size_t nbytes = GetTensorBytes(dtype, shape.begin(), shape.end());
+
+  tensor->_dtype = dtype;
+  tensor->_shape = shape;
+  tensor->_nbytes = nbytes;
+  tensor->_ctx = ctx;
+  tensor->_external_mem_hanlder = allocator(nbytes);
+  tensor->_data = tensor->_external_mem_hanlder->ptr();
+  tensor->_name = name;
+  return tensor;
+}
+
+
 TensorPtr Tensor::CopyToExternal(TensorPtr source, const std::function<MemHandle(size_t)> & allocator, Context ctx, StreamHandle stream, double scale) {
   CHECK(source && source->Defined());
   std::vector<size_t> shape = source->Shape();
@@ -315,6 +373,29 @@ TensorPtr Tensor::CopyLineToExternel(TensorPtr source, size_t line_idx, std::fun
   return tensor;
 }
 
+TensorPtr Tensor::CopyLine(TensorPtr source, size_t line_idx, Context ctx, StreamHandle stream, double scale) {
+  CHECK(source && source->Defined());
+  const std::vector<size_t> & shape = source->_shape;
+  CHECK_GT(shape.size(), 0);
+  CHECK_LT(line_idx, shape[0]);
+
+  TensorPtr tensor = std::make_shared<Tensor>();
+  size_t nbytes = GetTensorBytes(source->_dtype, shape.begin() + 1, shape.end());
+
+  tensor->_dtype = source->_dtype;
+  tensor->_shape = std::vector<size_t>(shape.begin() + 1, shape.end());
+  tensor->_nbytes = nbytes;
+  tensor->_ctx = ctx;
+  tensor->_data = Device::Get(ctx)->AllocWorkspace(ctx, nbytes);
+  tensor->_name = source->_name;
+  Context working_ctx = Priority(source->Ctx(), ctx);
+  Device::Get(working_ctx)->CopyDataFromTo(source->_data, nbytes * line_idx, tensor->_data, 0, nbytes, source->_ctx, tensor->_ctx, stream);
+  Device::Get(working_ctx)->StreamSync(working_ctx, stream);
+
+  return tensor;
+}
+
+
 template<typename T> 
 T* Tensor::Ptr(){ 
   CHECK(_data == nullptr || (sizeof(T) == GetDataTypeBytes(_dtype))); 
@@ -327,6 +408,7 @@ template IdType* Tensor::Ptr<IdType>();
 template Id64Type* Tensor::Ptr<Id64Type>();
 template char* Tensor::Ptr<char>();
 template uint8_t* Tensor::Ptr<uint8_t>();
+template int* Tensor::Ptr<int>();
 
 std::ostream& operator<<(std::ostream& os, const Context& ctx) {
   switch (ctx.device_type)
@@ -529,6 +611,7 @@ AnonymousBarrier::AnonymousBarrier(int worker) {
 }
 void AnonymousBarrier::Wait() { (reinterpret_cast<AtomicBarrier*>(this->_barrier_buffer))->Wait(); }
 std::shared_ptr<AnonymousBarrier> AnonymousBarrier::_global_instance = std::make_shared<AnonymousBarrier>(std::stoi(GetEnvStrong("COLL_NUM_REPLICA")));
+std::shared_ptr<AnonymousBarrier> AnonymousBarrier::_refresh_instance = std::make_shared<AnonymousBarrier>(std::stoi(GetEnvStrong("COLL_NUM_REPLICA")));
 EagerGPUMemoryHandler::EagerGPUMemoryHandler() {}
 EagerGPUMemoryHandler::~EagerGPUMemoryHandler() {
   CUDA_CALL(cudaSetDevice(dev_id_));

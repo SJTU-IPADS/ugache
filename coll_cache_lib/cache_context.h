@@ -101,6 +101,7 @@ struct ExtractionThreadCtx {
 class CollCache;
 class CacheContext {
  private:
+  std::atomic<size_t> progress{0};
   BarHandle _barrier;
   using HashTableEntryLocation = int;
   using HashTableEntryOffset = IdType;
@@ -117,6 +118,8 @@ class CacheContext {
   int _local_location_id = -1;
 
   size_t _cache_nbytes = 0;
+  size_t _cache_nodes = 0;
+  size_t _cache_space_capacity = 0;
 
   // HashTableEntry* _hash_table = nullptr;
   HashTableEntryLocation* _hash_table_location = nullptr;
@@ -125,6 +128,12 @@ class CacheContext {
   MemHandle _hash_table_offset_handle;
   std::vector<void*> _device_cache_data;
   MemHandle _device_cache_data_local_handle;
+  std::vector<HashTableEntryLocation*> _remote_hash_table_location;
+  std::vector<HashTableEntryOffset*> _remote_hash_table_offset;
+  size_t * d_num_selected_out = nullptr;
+
+  // MemHandle _local_node_list_handle;
+  TensorPtr _local_node_list_tensor;
 
   // std::vector<int> _remote_device_list;
   // std::vector<int> _remote_sm_list;
@@ -133,6 +142,7 @@ class CacheContext {
   std::function<MemHandle(size_t)> _eager_gpu_mem_allocator;
   // std::function<void()> ctx_injector_;
   friend class ExtractSession;
+  friend class RefreshSession;
 
   void build_without_advise(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream = nullptr);
   void build_with_advise(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream = nullptr);
@@ -162,6 +172,11 @@ class ExtractSession {
 
   void SplitGroup(const SrcKey * src_index, const size_t len, IdType * & group_offset, StreamHandle stream);
 
+  void GetMissCacheIndexByCub(DstVal* & output_dst_index,
+    const IdType* nodes, const size_t num_nodes,
+    IdType * & group_offset,
+    StreamHandle stream);
+
   void GetMissCacheIndex(
     SrcKey* & output_src_index, DstVal* & output_dst_index,
     const IdType* nodes, const size_t num_nodes, 
@@ -179,4 +194,12 @@ class ExtractSession {
   void ExtractFeat(const IdType* nodes, const size_t num_nodes, void* output, StreamHandle stream, uint64_t task_key);
 
 };
+
+class RefreshSession {
+ public:
+  StreamHandle stream;
+  std::shared_ptr<CacheContext> _cache_ctx;
+  void refresh_after_solve();
+};
+
 }

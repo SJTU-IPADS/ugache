@@ -6,14 +6,17 @@
 #include "../coll_cache_lib/cuda/cuda_device.h"
 #include "../coll_cache_lib/cpu/mmap_cpu_device.h"
 #include "atomic_barrier.h"
+#include "../coll_cache_lib/freq_recorder.h"
 #include "profiler.h"
 #include "run_config.h"
 #include <CLI/CLI.hpp>
 #include <algorithm>
+#include <atomic>
 #include <iostream>
 #include <numeric>
 #include <random>
 #include <sys/mman.h>
+#include <unistd.h>
 #include <thread>
 #include "./workspace_pool.h"
 #include "timer.h"
@@ -43,11 +46,12 @@ std::string env_log_level = "warn";
 std::string env_empty_feat = "0";
 
 int enabled_gpus = 0;
-bool no_remote = false;
-bool no_local = false;
 size_t dim = 128;
-
+size_t num_keys = 100000000;
+size_t num_step_per_epoch_per_replica = 100;
+size_t refresh_every_per_rep_step = 100;
 void InitOptions(std::string app_name) {
+
   configs = {
     {"_cache_policy",  std::to_string((int)kRepCache)},
     {"cache_policy",  "rep"},
@@ -74,9 +78,11 @@ void InitOptions(std::string app_name) {
   _app.add_option("--log-level",                  env_log_level);
   _app.add_option("--empty-feat",                 env_empty_feat);
   _app.add_option("--enabled-gpus",               enabled_gpus);
-  _app.add_option("--dim",               dim);
-  _app.add_flag("--skip-local",                 no_local);
-  _app.add_flag("--skip-remote",                no_remote);
+  _app.add_option("--dim",                        dim);
+  _app.add_option("--num-keys",                   num_keys);
+  _app.add_option("--num-epoch",                  RunConfig::num_epoch);
+  _app.add_option("--num-step",                   num_step_per_epoch_per_replica);
+  _app.add_option("--refresh-per-step",           refresh_every_per_rep_step);
 }
 void Parse(int argc, char** argv) {
   try {
@@ -119,13 +125,11 @@ class DemoBarrier : public ExternalBarrierHandler {
 };
 
 int main(int argc, char** argv) {
-  size_t num_keys = 100000000;
   size_t batch_size = 8192*100;
   RunConfig::cache_percentage = 0.125;
   InitOptions("");
   Parse(argc, argv);
 
-  CHECK(!(no_local && no_remote)) << "at least one of local and remote should be enabled";
   if (enabled_gpus == 0) {
     enabled_gpus = RunConfig::num_device;
   }
@@ -135,8 +139,8 @@ int main(int argc, char** argv) {
     RunConfig::device_id_list[i] = i;
   }
   RunConfig::cross_process = true;
-  RunConfig::num_global_step_per_epoch = RunConfig::num_device * 100;
-  RunConfig::num_epoch = 10;
+  // RunConfig::num_epoch = 10;
+  RunConfig::num_global_step_per_epoch = RunConfig::num_device * num_step_per_epoch_per_replica;
   RunConfig::num_total_item = num_keys;
   // RunConfig::cache_policy = coll_cache_lib::common::kCollCacheAsymmLink;
   // RunConfig::cache_policy = coll_cache_lib::common::kCliquePart;
@@ -158,21 +162,24 @@ int main(int argc, char** argv) {
     }
   }
 
+  std::cout << "replica " << replica_id << " at process " << getpid() << "\n";
+  // sleep(30);
+
 
   thread_local std::mt19937 gen(0x45678f1 * replica_id);
 
-  IdType* ranking_nodes_list_ptr = nullptr;
-  IdType* ranking_nodes_freq_list_ptr = nullptr;
+  IdType* rank_vec = nullptr;
+  IdType* freq_vec = nullptr;
 
   if (replica_id == 0) {
-    ranking_nodes_list_ptr = new IdType[num_keys];
-    ranking_nodes_freq_list_ptr = new IdType[num_keys];
-    cpu::ArrangeArray(ranking_nodes_list_ptr, num_keys);
+    rank_vec = new IdType[num_keys];
+    freq_vec = new IdType[num_keys];
+    cpu::ArrangeArray(rank_vec, num_keys);
     std::exponential_distribution<double> dist(1);
     #pragma omp parallel for num_threads(RunConfig::omp_thread_num)
     for (size_t i = 0; i < num_keys; i++) {
-      ranking_nodes_freq_list_ptr[i] = 1;
-      // ranking_nodes_freq_list_ptr[i] = std::ceil(dist(gen));
+      freq_vec[i] = 1;
+      // freq_vec[i] = std::ceil(dist(gen));
     }
   }
 
@@ -199,7 +206,9 @@ int main(int argc, char** argv) {
   int device_id = RunConfig::device_id_list[replica_id];
   auto stream = Device::Get(GPU(device_id))->CreateStream(GPU(device_id));
 
-  cache_manager->build_v2(replica_id, ranking_nodes_list_ptr, ranking_nodes_freq_list_ptr, num_keys, gpu_mem_allocator, cpu_data, kF32, dim, RunConfig::cache_percentage, stream);
+  cache_manager->build_v2(replica_id, rank_vec, freq_vec, num_keys, gpu_mem_allocator, cpu_data, kF32, dim, RunConfig::cache_percentage, stream);
+
+  auto freq_recorder_ = std::make_shared<FreqRecorder>(RunConfig::num_total_item, replica_id);
 
   LOG(ERROR) << "replica " << replica_id << " build done";
 
@@ -211,33 +220,54 @@ int main(int argc, char** argv) {
   auto output_handle = gpu_mem_allocator(batch_size * dim * GetDataTypeBytes(kF32));
   auto output = output_handle->ptr();
   // void * output = new float[batch_size * dim];
+  std::thread refresh_thread([](){});
+  std::atomic<bool> refresh_ongoing {false};
   double iter_time = 0;
-  std::vector<double> iter_time_list(1000, 0);
-  for (int iteration = 0; iteration < 1000; iteration++) {
-    _replica_barrier->Wait();
-    // #pragma omp parallel for num_threads(RunConfig::omp_thread_num / RunConfig::num_device)
-    for (int i = 0; i < batch_size; i++) {
-      IdType k = dist_int(gen);
-      if (no_local) {
-        while(k % RunConfig::num_device == replica_id) { k = dist_int(gen); }
-      } else if (no_remote) {
-        while(k % RunConfig::num_device != replica_id) { k = dist_int(gen); }
+  for (int iteration = 0; iteration < num_step_per_epoch_per_replica * RunConfig::num_epoch; ) {
+    int next_stop = iteration + num_step_per_epoch_per_replica;
+    for (; iteration < next_stop; iteration++) {
+      _replica_barrier->Wait();
+      // #pragma omp parallel for num_threads(RunConfig::omp_thread_num / RunConfig::num_device)
+      for (int i = 0; i < batch_size; i++) {
+        IdType k = dist_int(gen);
+        // IdType k = (IdType)(dist(gen)) % num_keys;
+        key_list_cpu->Ptr<IdType>()[i] = k;
       }
-      key_list_cpu->Ptr<IdType>()[i] = k;
+      freq_recorder_->Record(key_list_cpu->Ptr<IdType>(), batch_size);
+      _replica_barrier->Wait();
+      auto key_list = Tensor::CopyToExternal(key_list_cpu, gpu_mem_allocator, GPU(dev_id), stream);
+      if (!(replica_id < enabled_gpus)) batch_size = 0;
+      _replica_barrier->Wait();
+      Timer t;
+      cache_manager->lookup(replica_id, key_list->Ptr<IdType>(), batch_size, output, stream, replica_id + iteration * RunConfig::num_device);
+      _replica_barrier->Wait();
+      iter_time += t.Passed();
     }
-    _replica_barrier->Wait();
-    auto key_list = Tensor::CopyToExternal(key_list_cpu, gpu_mem_allocator, GPU(dev_id), stream);
-    if (!(replica_id < enabled_gpus)) batch_size = 0;
-    _replica_barrier->Wait();
-    Timer t;
-    cache_manager->lookup(replica_id, key_list->Ptr<IdType>(), batch_size, output, stream, replica_id + iteration * RunConfig::num_device);
-    _replica_barrier->Wait();
-    iter_time_list[iteration] = cache_manager->_profiler->GetLogStepValue((uint64_t)(replica_id + iteration * RunConfig::num_device), kLogL2CacheCopyTime);
-    iter_time += t.Passed();
-    if (iteration % 100 == 0 && replica_id == 0) {
-      LOG(ERROR) << "replica " << replica_id << " round " << iteration << " done, time is " << iter_time / 100;
+    if (replica_id == 0) {
+      LOG(ERROR) << "replica " << replica_id << " round " << iteration << " done, time is " << iter_time / num_step_per_epoch_per_replica;
       iter_time = 0;
     }
+    if (replica_id == 0) {
+      cache_manager->report_last_epoch((iteration - 1) / num_step_per_epoch_per_replica);
+    }
+
+    if (iteration % refresh_every_per_rep_step == 0 && refresh_ongoing.load() == false) {
+      refresh_ongoing.store(true);
+      refresh_thread.join();
+      refresh_thread = std::thread([freq_recorder_, replica_id, freq_vec, rank_vec, cache_manager, stream, &refresh_ongoing](){
+        if (replica_id == 0) {
+          freq_recorder_->Combine();
+          freq_recorder_->Sort();
+          freq_recorder_->GetFreq(freq_vec);
+          freq_recorder_->GetRankNode(rank_vec);
+        }
+        AnonymousBarrier::_refresh_instance->Wait();
+        cache_manager->refresh(replica_id, rank_vec, freq_vec, stream);
+        AnonymousBarrier::_refresh_instance->Wait();
+        refresh_ongoing.store(false);
+      });
+    }
+    _replica_barrier->Wait();
   }
   for (int i = 0; i < RunConfig::num_device; i++) {
     _replica_barrier->Wait();
@@ -248,14 +278,8 @@ int main(int argc, char** argv) {
       cache_manager->report_avg();
     }
   }
-  int step = 50;
-  if (replica_id == 0) {
-    for (int iteration = 0; iteration < 1000; iteration += step) {
-      std::cerr << "max " << *std::max_element(&iter_time_list[iteration], &iter_time_list[iteration+step]) << "\n";
-      std::cerr << "min " << *std::min_element(&iter_time_list[iteration], &iter_time_list[iteration+step]) << "\n";
-      std::cerr << "avg " << std::accumulate(&iter_time_list[iteration], &iter_time_list[iteration+step], 0.) / step << "\n";
-    }
-  }
+  refresh_thread.join();
+
 
   // samgraph::common::samgraph_config_from_map(configs);
   // samgraph::common::samgraph_init();

@@ -1,4 +1,5 @@
 #include "facade.h"
+#include "cache_context.h"
 #include "coll_cache/ndarray.h"
 #include "coll_cache/optimal_solver_class.h"
 #include "cpu/mmap_cpu_device.h"
@@ -123,6 +124,7 @@ void CollCache::solve_impl_master(IdType *ranking_nodes_list_ptr,
     LOG(ERROR) << "solver solved";
     _block_placement = solver->block_placement;
     _block_access_advise = solver->block_access_from;
+    _block_density = solver->block_density_tensor;
     delete solver;
 }
 void CollCache::solve_impl_slave() {
@@ -130,6 +132,11 @@ void CollCache::solve_impl_slave() {
                                     {}, "nid_to_block");
     _block_placement = Tensor::OpenShm(Constant::kCollCachePlacementShmName,
                                        kU8, {}, "coll_cache_block_placement");
+    if (RunConfig::cache_policy == kCollCacheAsymmLink) {
+      // for refreshment to know about sizes
+      _block_density = Tensor::OpenShm(Constant::kCollCachePlacementShmName + "_density",
+                                        kF64, {}, "coll_cache_block_density");
+    }
     if (RunConfig::cache_policy == kCollCacheAsymmLink ||
         RunConfig::cache_policy == kCliquePart ||
         RunConfig::cache_policy == kCliquePartByDegree) {
@@ -173,6 +180,7 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
     CUDA_CALL(cudaHostRegister(cpu_data, RoundUp<size_t>(num_node * dim * GetDataTypeBytes(dtype), 1 << 21), cudaHostRegisterDefault | cudaHostRegisterReadOnly));
     this->_cache_ctx_list.resize(RunConfig::num_device);
     this->_session_list.resize(RunConfig::num_device);
+    this->_refresh_session_list.resize(RunConfig::num_device);
   }
   if (replica_id == 0) {
     solve_impl_master(ranking_nodes_list_ptr, ranking_nodes_freq_list_ptr, num_node);
@@ -193,7 +201,51 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
   Device::Get(gpu_ctx)->StreamSync(gpu_ctx, stream);
   this->_cache_ctx_list[replica_id] = cache_ctx;
   this->_session_list[replica_id] = std::make_shared<ExtractSession>(cache_ctx);
+  this->_refresh_session_list[replica_id] = std::make_shared<RefreshSession>();
+  this->_refresh_session_list[replica_id]->_cache_ctx = cache_ctx;
+  this->_refresh_session_list[replica_id]->stream = stream;
   this->_replica_barrier->Wait();
+}
+
+void CollCache::refresh(int replica_id, IdType *ranking_nodes_list_ptr,
+                         IdType *ranking_nodes_freq_list_ptr, StreamHandle stream) {
+  int device_id = RunConfig::device_id_list[replica_id];
+  if (RunConfig::cross_process || replica_id == 0) {
+    // one-time call for each process
+    this->_block_access_advise = nullptr;
+    this->_block_density = nullptr;
+    this->_block_placement = nullptr;
+    this->_nid_to_block = nullptr;
+  }
+  if (replica_id == 0) {
+    solve_impl_master(ranking_nodes_list_ptr, ranking_nodes_freq_list_ptr, RunConfig::num_total_item);
+    LOG(ERROR) << replica_id << " solved master";
+  }
+  AnonymousBarrier::_refresh_instance->Wait();
+  if (replica_id != 0 && RunConfig::cross_process) {
+    // one-time call for none-master process
+    solve_impl_slave();
+  }
+  LOG(ERROR) << replica_id << " solved";
+  AnonymousBarrier::_refresh_instance->Wait();
+
+  // if (RunConfig::cross_process) return;
+  LOG(ERROR) << "worker " << RunConfig::worker_id << " thread " << replica_id << " refresh device " << device_id;
+  this->_refresh_session_list[replica_id]->stream = stream;
+  this->_refresh_session_list[replica_id]->refresh_after_solve();
+  AnonymousBarrier::_refresh_instance->Wait();
+}
+
+void CollCache::report_last_epoch(uint64_t epoch) {
+  _profiler->ReportStepAverageLastEpoch(epoch + 1, 0);
+  // // _profiler->ReportStepMax(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1);
+  // // _profiler->ReportStepMin(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1);
+  // for (size_t epoch = 1; epoch < RunConfig::num_epoch; epoch ++) {
+  //   _profiler->ReportStepAverage(epoch, RunConfig::num_global_step_per_epoch - 1);
+  //   _profiler->ReportStepMax(epoch, RunConfig::num_global_step_per_epoch - 1);
+  //   _profiler->ReportStepMin(epoch, RunConfig::num_global_step_per_epoch - 1);
+  // }
+  std::cout.flush();
 }
 void CollCache::report_avg() {
   _profiler->ReportStepAverage(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1);
