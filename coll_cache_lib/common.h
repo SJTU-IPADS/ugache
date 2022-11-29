@@ -84,6 +84,11 @@ enum ConcurrentLinkImpl {
 };
 
 
+enum NoGroupImpl {
+  kAlwaysGroup = 0,
+  kDirectNoGroup,
+  kOrderedNoGroup,
+};
 
 struct Context {
   DeviceType device_type;
