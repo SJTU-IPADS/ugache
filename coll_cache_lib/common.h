@@ -81,8 +81,10 @@ enum ConcurrentLinkImpl {
   kNoConcurrentLink = 0,
   kFusedLimitNumBlock,
   kFused,
-  kMultiKernelNumBlock,
-  kMPS,
+  kMultiKernelNumBlock,    /** use revised extraction kernel */
+  kMultiKernelNumBlockOld, /** use old extraction kernel */
+  kMPS, /** use mps with old extraction kernel */
+  kMPSForLandC, /** use mpl only for local and cpu with old extraction kernel */
 };
 
 

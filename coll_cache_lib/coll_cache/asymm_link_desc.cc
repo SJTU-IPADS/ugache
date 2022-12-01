@@ -158,14 +158,20 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
   if (gpu_model.find("A100") != std::string::npos) {
     RunConfig::coll_cache_hyperparam_T_remote = 370 / (double)34;
     RunConfig::coll_cache_hyperparam_T_cpu    = 370 / (double)9;
-    if (RunConfig::concurrent_link_impl == kMPS) {
+    if (RunConfig::concurrent_link_impl == kMPS || 
+        RunConfig::concurrent_link_impl == kMPSForLandC || 
+        RunConfig::concurrent_link_impl == kMultiKernelNumBlock || 
+        RunConfig::concurrent_link_impl == kMultiKernelNumBlockOld) {
       desc.cpu_sm.clear();
       desc.cpu_sm.resize(num_trainer, 10);
     }
   } else if (gpu_model.find("V100") != std::string::npos) {
     RunConfig::coll_cache_hyperparam_T_remote = 330 / (double)38;
     RunConfig::coll_cache_hyperparam_T_cpu    = 330 / (double)11;
-    if (RunConfig::concurrent_link_impl == kMPS) {
+    if (RunConfig::concurrent_link_impl == kMPS || 
+        RunConfig::concurrent_link_impl == kMPSForLandC || 
+        RunConfig::concurrent_link_impl == kMultiKernelNumBlock || 
+        RunConfig::concurrent_link_impl == kMultiKernelNumBlockOld) {
       desc.cpu_sm.clear();
       desc.cpu_sm.resize(num_trainer, 8);
       // CHECK(false) << "not supported now";

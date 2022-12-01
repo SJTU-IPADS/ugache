@@ -118,10 +118,16 @@ void RunConfig::LoadConfigFromEnv() {
       RunConfig::concurrent_link_impl = kFused;
     } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "FUSED_LIMIT_BLOCK") {
       RunConfig::concurrent_link_impl = kFusedLimitNumBlock;
+    } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "MULTI_KERNEL") {
+      RunConfig::concurrent_link_impl = kMultiKernelNumBlock;
+    } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "MULTI_KERNEL_OLD") {
+      RunConfig::concurrent_link_impl = kMultiKernelNumBlockOld;
     } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "") {
       RunConfig::concurrent_link_impl = kMPS;
     } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "MPS") {
       RunConfig::concurrent_link_impl = kMPS;
+    } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "MPSForLandC") {
+      RunConfig::concurrent_link_impl = kMPSForLandC;
     } else {
       CHECK(false) << "Unknown concurrent link impl " << GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL");
     }
