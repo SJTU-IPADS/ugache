@@ -801,6 +801,72 @@ void ExtractSession::CombineFused(const SrcKey * src_index, const DstVal * dst_i
 }
 
 namespace {
+
+template<typename T>
+__global__ void extraction_kernel_random_ref(const T* src, T* dst, const uint32_t* index, size_t num_item_dot_dim, size_t feat_dim) {
+  uint32_t linearIdx = blockDim.x * blockIdx.x + threadIdx.x;
+  size_t num_item = num_item_dot_dim / feat_dim;
+  for (uint32_t i = linearIdx; i < num_item_dot_dim; i += blockDim.x * gridDim.x) {
+    uint32_t dstIdx = i / feat_dim ;
+    uint32_t offset = i % feat_dim ;
+    uint32_t dstStart = (index[dstIdx] % num_item) * feat_dim;
+    uint32_t srcStart = (index[dstIdx]) * feat_dim ;
+    dst[dstStart + offset] = src[srcStart + offset];
+  }
+}
+
+template<typename DType>
+void gpu_extraction_random(const DType* src, DType* dst, uint32_t* index, size_t num_item, size_t feat_dim, cudaStream_t stream, size_t block_limit) {
+  dim3 block(1024, 1);
+  dim3 grid(RoundUpDiv(num_item * feat_dim, static_cast<size_t>(block.x)));
+  if (block_limit != 0) {
+    grid.x = block_limit;
+  }
+  extraction_kernel_random_ref<<<grid, block, 0, stream>>>(src, dst, index, num_item * feat_dim, feat_dim);
+}
+
+template <typename T, typename SrcDataIter_T, typename DstDataIter_T>
+__global__ void extract_data_revised(
+      const SrcDataIter_T full_src, DstDataIter_T dst_index,
+      const size_t num_item, const size_t feat_dim) {
+  size_t linearIdx = blockDim.x * blockIdx.x + threadIdx.x;
+  size_t num_item_dot_dim = num_item * feat_dim;
+
+  for (size_t i = linearIdx; i < num_item_dot_dim; i += blockDim.x * gridDim.x) {
+    size_t item_id = i / feat_dim ;
+    size_t col = i % feat_dim ;
+    assert(item_id < num_item);
+    assert(col < feat_dim);
+    T* dst = dst_index.template operator[]<T>(item_id);
+    const T* src = full_src.template operator[]<T>(item_id);
+
+    dst[col] = src[col];
+  }
+}
+
+template <typename SrcDataIter_T, typename DstDataIter_T>
+void CombineRevised(const SrcDataIter_T src_data_iter, DstDataIter_T dst_data_iter,
+    const size_t num_node, Context _trainer_ctx, DataType _dtype, IdType _dim, StreamHandle stream, IdType limit_block, bool async) {
+  if (num_node == 0) return;
+  auto device = Device::Get(_trainer_ctx);
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+
+  const dim3 block(1024, 1);
+  dim3 grid(RoundUpDiv(num_node * _dim, static_cast<size_t>(block.x)));
+  if (limit_block != 0) {
+    grid.x = limit_block;
+  }
+
+  SWITCH_TYPE(_dtype, type, {
+      extract_data_revised<type><<<grid, block, 0, cu_stream>>>(
+          src_data_iter, dst_data_iter, num_node, _dim);
+  });
+
+  if (async == false) {
+    device->StreamSync(_trainer_ctx, stream);
+  }
+}
+
 template <typename SrcDataIter_T, typename DstDataIter_T>
 void Combine(const SrcDataIter_T src_data_iter, DstDataIter_T dst_data_iter,
     const size_t num_node, Context _trainer_ctx, DataType _dtype, IdType _dim, StreamHandle stream, IdType limit_block, bool async) {
@@ -829,6 +895,11 @@ void Combine(const SrcDataIter_T src_data_iter, DstDataIter_T dst_data_iter,
 }
 }
 
+void ExtractSession::CombineOneGroupRevised(const SrcKey * src_index, const DstVal * dst_index, const IdType* nodes, const size_t num_node, const void* src_data, void* output, StreamHandle stream, IdType limit_block, bool async) {
+  const DataIter<const SrcOffIter> src_data_iter(SrcOffIter(dst_index), src_data, _cache_ctx->_dim);
+  DataIter<const DstOffIter>       dst_data_iter(DstOffIter(dst_index), output, _cache_ctx->_dim);
+  CombineRevised<>(src_data_iter, dst_data_iter, num_node, _cache_ctx->_trainer_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream, limit_block, async);
+}
 void ExtractSession::CombineNoGroup(const IdType * nodes, const size_t num_node, void* output, Context _trainer_ctx, DataType _dtype, IdType _dim, StreamHandle stream) {
   if (num_node == 0) return;
   auto device = Device::Get(_trainer_ctx);
