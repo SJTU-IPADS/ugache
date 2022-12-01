@@ -1,7 +1,7 @@
 #include "asymm_link_desc.h"
 #include "../logging.h"
 #include "../run_config.h"
-#include "common.h"
+#include "../common.h"
 #include <cmath>
 #include <iostream>
 #include <cuda_runtime.h>
@@ -249,6 +249,40 @@ int AsymmLinkDesc::CliqueSize() {
     default: CHECK(false);
   }
 }
-} // namespace coll_cache_lib
+void AutoScaleDim(DataType& dtype, size_t& dim, Context ctx) {
+  size_t total_nbytes = GetDataTypeBytes(dtype) * dim;
+  CHECK((total_nbytes % 32) == 0) << "only support perfectly aligned dim for now.";
+  cudaDeviceProp prop;
+  CUDA_CALL(cudaGetDeviceProperties(&prop, ctx.device_id));
+  // fixme
+  std::string gpu_model = prop.name;
+
+  auto scale_func = [&dtype, &dim](DataType target_dtype){
+    CHECK((GetDataTypeBytes(target_dtype) % GetDataTypeBytes(dtype)) == 0);
+    size_t scale_factor = GetDataTypeBytes(target_dtype) / GetDataTypeBytes(dtype);
+    CHECK((dim % scale_factor) == 0);
+    size_t old_dim = dim;
+    dim /= scale_factor;
+    LOG(ERROR) << "scale from " << old_dim << "*" << dtype << " to " << dim << "*" << target_dtype;
+    dtype = target_dtype;
+  };
+
+  if (gpu_model.find("A100") != std::string::npos) {
+    // always use kF64_4, i.e. double4
+    scale_func(kF64_4);
+  } else if (gpu_model.find("V100") != std::string::npos) {
+    if (RunConfig::num_device <= 4) {
+      // always use kF64_2, i.e. double2
+      scale_func(kF64_2);
+    }
+    if (RunConfig::concurrent_link_impl != kMPS && total_nbytes == 1024) {
+      // corner case use kF64_4
+      scale_func(kF64_4);
+    } else {
+      scale_func(kF64_2);
+    }
+  }
+}
+}  // namespace coll_cache
 }
 }

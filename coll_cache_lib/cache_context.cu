@@ -28,6 +28,8 @@
     case kU8:  { typedef uint8_t Type; { __VA_ARGS__ }; break; } \
     case kI32: { typedef int32_t Type; { __VA_ARGS__ }; break; } \
     case kI64: { typedef int64_t Type; { __VA_ARGS__ }; break; } \
+    case kF64_2: { typedef double2 Type; { __VA_ARGS__ }; break; } \
+    case kF64_4: { typedef double4 Type; { __VA_ARGS__ }; break; } \
     default: CHECK(false);           \
   }
 

@@ -42,6 +42,8 @@ enum DataType {
   kI32 = 4,
   kI8 = 5,
   kI64 = 6,
+  kF64_2 = 7,
+  kF64_4 = 8,
 };
 
 // enum DeviceType { kCPU = 0, kMMAP = 1, kGPU = 2, kGPU_UM = 3};
