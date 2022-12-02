@@ -60,13 +60,10 @@ class CollCache : public std::enable_shared_from_this<CollCache> {
   std::shared_ptr<Profiler> _profiler;
 
   // for profile
-  inline void set_step_profile_value(uint64_t epoch, uint64_t step, LogStepItem item, double val) {
-    uint64_t global_step = step * RunConfig::num_device + RunConfig::worker_id;
-    uint64_t key = RunConfig::GetBatchKey(epoch, global_step);
+  inline void set_step_profile_value(uint64_t key, LogStepItem item, double val) {
     _profiler->LogStep(key, item, val);
   }
-  inline void add_epoch_profile_value(uint64_t epoch, LogEpochItem item, double val) {
-    uint64_t key = RunConfig::GetBatchKey(epoch, 0);
+  inline void add_epoch_profile_value(uint64_t key, LogEpochItem item, double val) {
     _profiler->LogEpochAdd(key, item, val);
   }
 };
