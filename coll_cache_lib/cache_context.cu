@@ -28,6 +28,8 @@
     case kU8:  { typedef uint8_t Type; { __VA_ARGS__ }; break; } \
     case kI32: { typedef int32_t Type; { __VA_ARGS__ }; break; } \
     case kI64: { typedef int64_t Type; { __VA_ARGS__ }; break; } \
+    case kF64_2: { typedef double2 Type; { __VA_ARGS__ }; break; } \
+    case kF64_4: { typedef double4 Type; { __VA_ARGS__ }; break; } \
     default: CHECK(false);           \
   }
 
@@ -799,6 +801,72 @@ void ExtractSession::CombineFused(const SrcKey * src_index, const DstVal * dst_i
 }
 
 namespace {
+
+template<typename T>
+__global__ void extraction_kernel_random_ref(const T* src, T* dst, const uint32_t* index, size_t num_item_dot_dim, size_t feat_dim) {
+  uint32_t linearIdx = blockDim.x * blockIdx.x + threadIdx.x;
+  size_t num_item = num_item_dot_dim / feat_dim;
+  for (uint32_t i = linearIdx; i < num_item_dot_dim; i += blockDim.x * gridDim.x) {
+    uint32_t dstIdx = i / feat_dim ;
+    uint32_t offset = i % feat_dim ;
+    uint32_t dstStart = (index[dstIdx] % num_item) * feat_dim;
+    uint32_t srcStart = (index[dstIdx]) * feat_dim ;
+    dst[dstStart + offset] = src[srcStart + offset];
+  }
+}
+
+template<typename DType>
+void gpu_extraction_random(const DType* src, DType* dst, uint32_t* index, size_t num_item, size_t feat_dim, cudaStream_t stream, size_t block_limit) {
+  dim3 block(1024, 1);
+  dim3 grid(RoundUpDiv(num_item * feat_dim, static_cast<size_t>(block.x)));
+  if (block_limit != 0) {
+    grid.x = block_limit;
+  }
+  extraction_kernel_random_ref<<<grid, block, 0, stream>>>(src, dst, index, num_item * feat_dim, feat_dim);
+}
+
+template <typename T, typename SrcDataIter_T, typename DstDataIter_T>
+__global__ void extract_data_revised(
+      const SrcDataIter_T full_src, DstDataIter_T dst_index,
+      const size_t num_item, const size_t feat_dim) {
+  size_t linearIdx = blockDim.x * blockIdx.x + threadIdx.x;
+  size_t num_item_dot_dim = num_item * feat_dim;
+
+  for (size_t i = linearIdx; i < num_item_dot_dim; i += blockDim.x * gridDim.x) {
+    size_t item_id = i / feat_dim ;
+    size_t col = i % feat_dim ;
+    assert(item_id < num_item);
+    assert(col < feat_dim);
+    T* dst = dst_index.template operator[]<T>(item_id);
+    const T* src = full_src.template operator[]<T>(item_id);
+
+    dst[col] = src[col];
+  }
+}
+
+template <typename SrcDataIter_T, typename DstDataIter_T>
+void CombineRevised(const SrcDataIter_T src_data_iter, DstDataIter_T dst_data_iter,
+    const size_t num_node, Context _trainer_ctx, DataType _dtype, IdType _dim, StreamHandle stream, IdType limit_block, bool async) {
+  if (num_node == 0) return;
+  auto device = Device::Get(_trainer_ctx);
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+
+  const dim3 block(1024, 1);
+  dim3 grid(RoundUpDiv(num_node * _dim, static_cast<size_t>(block.x)));
+  if (limit_block != 0) {
+    grid.x = limit_block;
+  }
+
+  SWITCH_TYPE(_dtype, type, {
+      extract_data_revised<type><<<grid, block, 0, cu_stream>>>(
+          src_data_iter, dst_data_iter, num_node, _dim);
+  });
+
+  if (async == false) {
+    device->StreamSync(_trainer_ctx, stream);
+  }
+}
+
 template <typename SrcDataIter_T, typename DstDataIter_T>
 void Combine(const SrcDataIter_T src_data_iter, DstDataIter_T dst_data_iter,
     const size_t num_node, Context _trainer_ctx, DataType _dtype, IdType _dim, StreamHandle stream, IdType limit_block, bool async) {
@@ -827,6 +895,11 @@ void Combine(const SrcDataIter_T src_data_iter, DstDataIter_T dst_data_iter,
 }
 }
 
+void ExtractSession::CombineOneGroupRevised(const SrcKey * src_index, const DstVal * dst_index, const IdType* nodes, const size_t num_node, const void* src_data, void* output, StreamHandle stream, IdType limit_block, bool async) {
+  const DataIter<const SrcOffIter> src_data_iter(SrcOffIter(dst_index), src_data, _cache_ctx->_dim);
+  DataIter<const DstOffIter>       dst_data_iter(DstOffIter(dst_index), output, _cache_ctx->_dim);
+  CombineRevised<>(src_data_iter, dst_data_iter, num_node, _cache_ctx->_trainer_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream, limit_block, async);
+}
 void ExtractSession::CombineNoGroup(const IdType * nodes, const size_t num_node, void* output, Context _trainer_ctx, DataType _dtype, IdType _dim, StreamHandle stream) {
   if (num_node == 0) return;
   auto device = Device::Get(_trainer_ctx);
@@ -1020,6 +1093,153 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
         if (group_offset[loc_id+1] - group_offset[loc_id] == 0) continue;
         this->_extract_ctx[loc_id]->forward_one_step([call_combine, loc_id](cudaStream_t cu_s){
           call_combine(loc_id, reinterpret_cast<StreamHandle>(cu_s));
+        });
+      }
+      for (int i = 0; i < num_link; i++) {
+        int loc_id = link_src[i][0];
+        if (group_offset[loc_id+1] - group_offset[loc_id] == 0) continue;
+        this->_extract_ctx[loc_id]->wait_one_step();
+      }
+      combine_times[1] = t_remote.Passed();
+      this->_extract_ctx[_cache_ctx->_cpu_location_id]->wait_one_step();
+    } else if (RunConfig::concurrent_link_impl == kMPSForLandC) {
+      auto call_combine = [src_index, group_offset, dst_index, nodes, this, output, num_nodes](int location_id, IdType num_sm, StreamHandle stream){
+        // LOG(ERROR) << "combine from " << location_id << " with sm=" << num_sm;
+        if (num_nodes == 0) return;
+        CombineOneGroupRevised(src_index + group_offset[location_id], 
+                        dst_index + group_offset[location_id], 
+                        nodes + group_offset[location_id], 
+                        group_offset[location_id+1] - group_offset[location_id], 
+                        _cache_ctx->_device_cache_data[location_id], output, stream, num_sm, true);
+        CUDA_CALL(cudaStreamSynchronize(reinterpret_cast<cudaStream_t>(stream)));
+      };
+
+      auto & link_desc = RunConfig::coll_cache_link_desc;
+      auto & link_src = link_desc.link_src[_cache_ctx->_local_location_id];
+      int num_link = link_src.size();
+
+      // launch cpu extraction
+      CHECK(this->_extract_ctx[_cache_ctx->_cpu_location_id]->cu_ctx_ != nullptr);
+      this->_extract_ctx[_cache_ctx->_cpu_location_id]->forward_one_step([&combine_times, &link_desc, this, call_combine, loc_id = _cache_ctx->_cpu_location_id](cudaStream_t cu_s){
+        Timer t_cpu;
+        call_combine(loc_id, 0, reinterpret_cast<StreamHandle>(cu_s));
+        combine_times[0] = t_cpu.Passed();
+      });
+
+      // launch local extraction
+      CHECK(this->_extract_ctx[_cache_ctx->_local_location_id]->cu_ctx_ != nullptr);
+      Timer t_local;
+      this->_extract_ctx[_cache_ctx->_local_location_id]->forward_one_step([&link_desc, this, call_combine, loc_id = _cache_ctx->_local_location_id](cudaStream_t cu_s){
+        call_combine(loc_id, 0, reinterpret_cast<StreamHandle>(cu_s));
+      });
+      this->_extract_ctx[_cache_ctx->_local_location_id]->wait_one_step();
+      combine_times[2] = t_local.Passed();
+
+      // launch remote extraction
+      Timer t_remote;
+      for (int i = 0; i < num_link; i++) {
+        CHECK(link_src[i].size() == 1);
+        int loc_id = link_src[i][0];
+        if (group_offset[loc_id+1] - group_offset[loc_id] == 0) continue;
+        CHECK(this->_extract_ctx[loc_id]->cu_ctx_ == nullptr);
+        this->_extract_ctx[loc_id]->forward_one_step([&link_desc, this, call_combine, loc_id, i](cudaStream_t cu_s){
+          call_combine(loc_id, link_desc.link_sm[_cache_ctx->_local_location_id][i], reinterpret_cast<StreamHandle>(cu_s));
+        });
+      }
+      for (int i = 0; i < num_link; i++) {
+        int loc_id = link_src[i][0];
+        if (group_offset[loc_id+1] - group_offset[loc_id] == 0) continue;
+        this->_extract_ctx[loc_id]->wait_one_step();
+      }
+      combine_times[1] = t_remote.Passed();
+      this->_extract_ctx[_cache_ctx->_cpu_location_id]->wait_one_step();
+    } else if (RunConfig::concurrent_link_impl == kMultiKernelNumBlock) {
+      auto call_combine = [src_index, group_offset, dst_index, nodes, this, output, num_nodes](int location_id, IdType num_sm, StreamHandle stream){
+        // LOG(ERROR) << "combine from " << location_id << " with sm=" << num_sm;
+        if (num_nodes == 0) return;
+        CombineOneGroupRevised(src_index + group_offset[location_id], 
+                        dst_index + group_offset[location_id], 
+                        nodes + group_offset[location_id], 
+                        group_offset[location_id+1] - group_offset[location_id], 
+                        _cache_ctx->_device_cache_data[location_id], output, stream, num_sm, true);
+        CUDA_CALL(cudaStreamSynchronize(reinterpret_cast<cudaStream_t>(stream)));
+      };
+
+      auto & link_desc = RunConfig::coll_cache_link_desc;
+      auto & link_src = link_desc.link_src[_cache_ctx->_local_location_id];
+      int num_link = link_src.size();
+
+      // launch cpu extraction
+      this->_extract_ctx[_cache_ctx->_cpu_location_id]->forward_one_step([&combine_times, &link_desc, this, call_combine, loc_id = _cache_ctx->_cpu_location_id](cudaStream_t cu_s){
+        Timer t_cpu;
+        call_combine(loc_id, link_desc.cpu_sm[_cache_ctx->_local_location_id], reinterpret_cast<StreamHandle>(cu_s));
+        combine_times[0] = t_cpu.Passed();
+      });
+
+      // launch local extraction
+      Timer t_local;
+      this->_extract_ctx[_cache_ctx->_local_location_id]->forward_one_step([&link_desc, this, call_combine, loc_id = _cache_ctx->_local_location_id](cudaStream_t cu_s){
+        call_combine(loc_id, link_desc.local_sm[_cache_ctx->_local_location_id], reinterpret_cast<StreamHandle>(cu_s));
+      });
+      this->_extract_ctx[_cache_ctx->_local_location_id]->wait_one_step();
+      combine_times[2] = t_local.Passed();
+
+      // launch remote extraction
+      Timer t_remote;
+      for (int i = 0; i < num_link; i++) {
+        CHECK(link_src[i].size() == 1);
+        int loc_id = link_src[i][0];
+        if (group_offset[loc_id+1] - group_offset[loc_id] == 0) continue;
+        this->_extract_ctx[loc_id]->forward_one_step([&link_desc, this, call_combine, loc_id, i](cudaStream_t cu_s){
+          call_combine(loc_id, link_desc.link_sm[_cache_ctx->_local_location_id][i], reinterpret_cast<StreamHandle>(cu_s));
+        });
+      }
+      for (int i = 0; i < num_link; i++) {
+        int loc_id = link_src[i][0];
+        if (group_offset[loc_id+1] - group_offset[loc_id] == 0) continue;
+        this->_extract_ctx[loc_id]->wait_one_step();
+      }
+      combine_times[1] = t_remote.Passed();
+      this->_extract_ctx[_cache_ctx->_cpu_location_id]->wait_one_step();
+    } else if (RunConfig::concurrent_link_impl == kMultiKernelNumBlockOld) {
+      auto call_combine = [src_index, group_offset, dst_index, nodes, this, output, num_nodes](int location_id, IdType num_sm, StreamHandle stream){
+        // LOG(ERROR) << "combine from " << location_id << " with sm=" << num_sm;
+        if (num_nodes == 0) return;
+        CombineOneGroup(src_index + group_offset[location_id], 
+                        dst_index + group_offset[location_id], 
+                        nodes + group_offset[location_id], 
+                        group_offset[location_id+1] - group_offset[location_id], 
+                        _cache_ctx->_device_cache_data[location_id], output, stream, num_sm, true);
+        CUDA_CALL(cudaStreamSynchronize(reinterpret_cast<cudaStream_t>(stream)));
+      };
+
+      auto & link_desc = RunConfig::coll_cache_link_desc;
+      auto & link_src = link_desc.link_src[_cache_ctx->_local_location_id];
+      int num_link = link_src.size();
+
+      // launch cpu extraction
+      this->_extract_ctx[_cache_ctx->_cpu_location_id]->forward_one_step([&combine_times, &link_desc, this, call_combine, loc_id = _cache_ctx->_cpu_location_id](cudaStream_t cu_s){
+        Timer t_cpu;
+        call_combine(loc_id, link_desc.cpu_sm[_cache_ctx->_local_location_id], reinterpret_cast<StreamHandle>(cu_s));
+        combine_times[0] = t_cpu.Passed();
+      });
+
+      // launch local extraction
+      Timer t_local;
+      this->_extract_ctx[_cache_ctx->_local_location_id]->forward_one_step([&link_desc, this, call_combine, loc_id = _cache_ctx->_local_location_id](cudaStream_t cu_s){
+        call_combine(loc_id, link_desc.local_sm[_cache_ctx->_local_location_id], reinterpret_cast<StreamHandle>(cu_s));
+      });
+      this->_extract_ctx[_cache_ctx->_local_location_id]->wait_one_step();
+      combine_times[2] = t_local.Passed();
+
+      // launch remote extraction
+      Timer t_remote;
+      for (int i = 0; i < num_link; i++) {
+        CHECK(link_src[i].size() == 1);
+        int loc_id = link_src[i][0];
+        if (group_offset[loc_id+1] - group_offset[loc_id] == 0) continue;
+        this->_extract_ctx[loc_id]->forward_one_step([&link_desc, this, call_combine, loc_id, i](cudaStream_t cu_s){
+          call_combine(loc_id, link_desc.link_sm[_cache_ctx->_local_location_id][i], reinterpret_cast<StreamHandle>(cu_s));
         });
       }
       for (int i = 0; i < num_link; i++) {
@@ -1812,6 +2032,111 @@ ExtractSession::ExtractSession(std::shared_ptr<CacheContext> cache_ctx) : _cache
     // _cache_ctx->ctx_injector_ = [this, _local_location_id](){
     //   CU_CALL(cuCtxSetCurrent(_extract_ctx[_local_location_id]->cu_ctx_));
     // };
+  } else if (RunConfig::concurrent_link_impl == kMultiKernelNumBlock || RunConfig::concurrent_link_impl == kMultiKernelNumBlockOld) {
+    this->_extract_threads.resize(_cache_ctx->_num_location);
+    this->_extract_ctx.resize(_cache_ctx->_num_location);
+    auto gpu_ctx = cache_ctx->_trainer_ctx;
+    auto & link_desc = RunConfig::coll_cache_link_desc;
+    auto & link_src = link_desc.link_src[cache_ctx->_local_location_id];
+
+    auto stream_creation_lambda = [gpu_ctx, this](int src_location_id){
+      auto ext_ctx_ptr = std::make_shared<ExtractionThreadCtx>();
+      this->_extract_ctx[src_location_id] = ext_ctx_ptr;
+      this->_extract_threads[src_location_id] = std::thread([ext_ctx_ptr](){
+        ext_ctx_ptr->thread_func();
+      });
+      ext_ctx_ptr->forward_one_step([ext_ctx_ptr, dev_id=gpu_ctx.device_id](cudaStream_t s){
+        CUDA_CALL(cudaSetDevice(dev_id));
+        if (dev_id == 0) {
+          size_t free = 0, total = 0;
+          cudaMemGetInfo(&free, &total);
+          LOG(WARNING) << "before create stream, mem is " << ToReadableSize(total - free);
+        }
+        CUDA_CALL(cudaStreamCreate(&ext_ctx_ptr->stream_));
+        if (dev_id == 0) {
+          size_t free = 0, total = 0;
+          cudaMemGetInfo(&free, &total);
+          LOG(WARNING) << "after create stream, mem is " << ToReadableSize(total - free);
+        }
+      });
+      ext_ctx_ptr->wait_one_step();
+    };
+
+    int num_link = link_src.size();
+    for (int link_id = 0; link_id < num_link; link_id++) {
+      CHECK(link_src[link_id].size() == 1);
+      stream_creation_lambda(link_src[link_id][0]);
+    }
+    stream_creation_lambda(gpu_ctx.device_id);
+    stream_creation_lambda(_cache_ctx->_cpu_location_id);
+  } else if (RunConfig::concurrent_link_impl == kMPSForLandC) {
+    this->_extract_threads.resize(_cache_ctx->_num_location);
+    this->_extract_ctx.resize(_cache_ctx->_num_location);
+    auto gpu_ctx = cache_ctx->_trainer_ctx;
+    auto & link_desc = RunConfig::coll_cache_link_desc;
+    auto & link_src = link_desc.link_src[cache_ctx->_local_location_id];
+
+
+    auto ctx_creation_lambda = [gpu_ctx, this](int num_sm, int src_location_id){
+      auto ext_ctx_ptr = std::make_shared<ExtractionThreadCtx>();
+      this->_extract_ctx[src_location_id] = ext_ctx_ptr;
+      this->_extract_threads[src_location_id] = std::thread([ext_ctx_ptr](){
+        ext_ctx_ptr->thread_func();
+      });
+      ext_ctx_ptr->forward_one_step([ext_ctx_ptr, dev_id=gpu_ctx.device_id, num_sm](cudaStream_t s){
+        if (dev_id == 0) {
+          size_t free = 0, total = 0;
+          cudaMemGetInfo(&free, &total);
+          LOG(WARNING) << "before create ctx, mem is " << ToReadableSize(total - free);
+        }
+        ext_ctx_ptr->cu_ctx_ = cuda::create_ctx_with_sm_count(dev_id, num_sm);
+        if (dev_id == 0) {
+          size_t free = 0, total = 0;
+          cudaMemGetInfo(&free, &total);
+          LOG(WARNING) << "after create ctx, mem is " << ToReadableSize(total - free);
+        }
+        check_current_ctx_is(ext_ctx_ptr->cu_ctx_);
+        CUDA_CALL(cudaStreamCreate(&ext_ctx_ptr->stream_));
+        if (dev_id == 0) {
+          size_t free = 0, total = 0;
+          cudaMemGetInfo(&free, &total);
+          LOG(WARNING) << "after create stream, mem is " << ToReadableSize(total - free);
+        }
+      });
+      ext_ctx_ptr->wait_one_step();
+    };
+
+    auto stream_creation_lambda = [gpu_ctx, this](int src_location_id){
+      auto ext_ctx_ptr = std::make_shared<ExtractionThreadCtx>();
+      this->_extract_ctx[src_location_id] = ext_ctx_ptr;
+      this->_extract_threads[src_location_id] = std::thread([ext_ctx_ptr](){
+        ext_ctx_ptr->thread_func();
+      });
+      ext_ctx_ptr->forward_one_step([ext_ctx_ptr, dev_id=gpu_ctx.device_id](cudaStream_t s){
+        CUDA_CALL(cudaSetDevice(dev_id));
+        if (dev_id == 0) {
+          size_t free = 0, total = 0;
+          cudaMemGetInfo(&free, &total);
+          LOG(WARNING) << "before create stream, mem is " << ToReadableSize(total - free);
+        }
+        CUDA_CALL(cudaStreamCreate(&ext_ctx_ptr->stream_));
+        if (dev_id == 0) {
+          size_t free = 0, total = 0;
+          cudaMemGetInfo(&free, &total);
+          LOG(WARNING) << "after create stream, mem is " << ToReadableSize(total - free);
+        }
+      });
+      ext_ctx_ptr->wait_one_step();
+    };
+
+    int num_link = link_src.size();
+    for (int link_id = 0; link_id < num_link; link_id++) {
+      CHECK(link_src[link_id].size() == 1);
+      stream_creation_lambda(link_src[link_id][0]);
+    }
+    int _local_location_id = cache_ctx->_local_location_id;
+    ctx_creation_lambda(link_desc.local_sm[_local_location_id], gpu_ctx.device_id);
+    ctx_creation_lambda(link_desc.cpu_sm[_local_location_id], _cache_ctx->_cpu_location_id);
   } else if (RunConfig::concurrent_link_impl != common::kNoConcurrentLink) {
     _concurrent_stream_array.resize(RunConfig::num_device - 1);
     for (auto & stream : _concurrent_stream_array) {

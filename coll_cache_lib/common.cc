@@ -476,6 +476,23 @@ DataType DataTypeParseName(std::string name) {
   return _map[name];
 }
 
+std::ostream& operator<<(std::ostream& os, const DataType& dtype) {
+  switch (dtype) {
+    case kF32   : os << "kF32";   return os;
+    case kF64   : os << "kF64";   return os;
+    case kF16   : os << "kF16";   return os;
+    case kU8    : os << "kU8";    return os;
+    case kI32   : os << "kI32";   return os;
+    case kI8    : os << "kI8";    return os;
+    case kI64   : os << "kI64";   return os;
+    case kF64_2 : os << "kF64_2"; return os;
+    case kF64_4 : os << "kF64_4"; return os;
+    default:
+      LOG(FATAL) << "not data type " << static_cast<int>(dtype) ;
+      return os;
+  }
+}
+
 size_t GetDataTypeBytes(DataType dtype) {
   switch (dtype) {
     case kI8:
@@ -489,6 +506,10 @@ size_t GetDataTypeBytes(DataType dtype) {
     case kI64:
     case kF64:
       return 8ul;
+    case kF64_2:
+      return 16ul;
+    case kF64_4:
+      return 32ul;
     default:
       CHECK(0) << "Unsupported data type: " << dtype;
   }

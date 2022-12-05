@@ -41,6 +41,8 @@ struct AsymmLinkDesc {
 };
 
 bool AutoEnableConcurrentLink();
+
+void AutoScaleDim(DataType& dtype, size_t& dim, Context ctx);
 }
 }
 }

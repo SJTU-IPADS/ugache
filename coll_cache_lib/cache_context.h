@@ -22,41 +22,6 @@
   const dim3 grid(num_tiles); \
   const dim3 block(Constant::kCudaBlockSize);
 
-#define SWITCH_TYPE(type, Type, ...)      \
-  switch(type) {                     \
-    case kF32: { typedef float   Type; { __VA_ARGS__ }; break; } \
-    case kF64: { typedef double  Type; { __VA_ARGS__ }; break; } \
-    case kF16: { typedef short   Type; { __VA_ARGS__ }; break; } \
-    case kU8:  { typedef uint8_t Type; { __VA_ARGS__ }; break; } \
-    case kI32: { typedef int32_t Type; { __VA_ARGS__ }; break; } \
-    case kI64: { typedef int64_t Type; { __VA_ARGS__ }; break; } \
-    default: CHECK(false);           \
-  }
-
-#define SWITCH_OP(op, Op, ...)                                      \
-  do {                                                              \
-    if ((op) == "add") {                                            \
-      typedef cuda::binary::Add<DType> Op;                          \
-      { __VA_ARGS__ }                                               \
-    } else if ((op) == "sub") {                                     \
-      typedef cuda::binary::Sub<DType> Op;                          \
-      { __VA_ARGS__ }                                               \
-    } else if ((op) == "mul") {                                     \
-      typedef cuda::binary::Mul<DType> Op;                          \
-      { __VA_ARGS__ }                                               \
-    } else if ((op) == "div") {                                     \
-      typedef cuda::binary::Div<DType> Op;                          \
-      { __VA_ARGS__ }                                               \
-    } else if ((op) == "copy_lhs") {                                \
-      typedef cuda::binary::CopyLhs<DType> Op;                      \
-      { __VA_ARGS__ }                                               \
-    } else if ((op) == "copy_rhs") {                                \
-      typedef cuda::binary::CopyRhs<DType> Op;                      \
-      { __VA_ARGS__ }                                               \
-    } else {                                                        \
-      LOG(FATAL) << "Unsupported SpMM binary operator: " << op;     \
-    }                                                               \
-  } while (0)
 
 namespace coll_cache_lib {
 
@@ -199,6 +164,7 @@ class ExtractSession {
     StreamHandle stream);
 
   void CombineOneGroup(const SrcKey * src_index, const DstVal * dst_index, const IdType* nodes, const size_t num_node, const void* src_data, void* output, StreamHandle stream, IdType limit_block = 0, bool async = false);
+  void CombineOneGroupRevised(const SrcKey * src_index, const DstVal * dst_index, const IdType* nodes, const size_t num_node, const void* src_data, void* output, StreamHandle stream, IdType limit_block = 0, bool async = false);
 
   void CombineNoGroup(const IdType* nodes, const size_t num_nodes, void* output, Context ctx, DataType _dtype, IdType _dim, StreamHandle stream);
   template<int NUM_LINK>
