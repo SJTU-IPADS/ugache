@@ -58,6 +58,14 @@ class CollCache : public std::enable_shared_from_this<CollCache> {
   void report_last_epoch(uint64_t epoch);
   void report(uint64_t key);
   std::shared_ptr<Profiler> _profiler;
+
+  // for profile
+  inline void set_step_profile_value(uint64_t key, LogStepItem item, double val) {
+    _profiler->LogStep(key, item, val);
+  }
+  inline void add_epoch_profile_value(uint64_t key, LogEpochItem item, double val) {
+    _profiler->LogEpochAdd(key, item, val);
+  }
 };
 
 };  // namespace coll_cache_lib
