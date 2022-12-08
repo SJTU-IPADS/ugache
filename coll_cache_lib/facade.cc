@@ -177,7 +177,11 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
     // one-time call for each process
     RunConfig::LoadConfigFromEnv();
     RunConfig::coll_cache_link_desc = coll_cache::AsymmLinkDesc::AutoBuild(GPU(device_id));
-    CUDA_CALL(cudaHostRegister(cpu_data, RoundUp<size_t>(num_node * dim * GetDataTypeBytes(dtype), 1 << 21), cudaHostRegisterDefault | cudaHostRegisterReadOnly));
+    size_t num_node_host_mem = num_node;
+    if (RunConfig::option_empty_feat != 0 && cache_percentage != 0) {
+      num_node_host_mem = 1 << RunConfig::option_empty_feat;
+    }
+    CUDA_CALL(cudaHostRegister(cpu_data, RoundUp<size_t>(num_node_host_mem * dim * GetDataTypeBytes(dtype), 1 << 21), cudaHostRegisterDefault | cudaHostRegisterReadOnly));
     this->_cache_ctx_list.resize(RunConfig::num_device);
     this->_session_list.resize(RunConfig::num_device);
     this->_refresh_session_list.resize(RunConfig::num_device);
