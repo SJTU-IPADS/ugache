@@ -27,6 +27,8 @@ namespace coll_cache {
 static_assert(sizeof(GRBVar) == sizeof(Id64Type),
               "size of GRBVar is not 8byte, cannot use tensor to hold it..");
 
+using PerT = double;
+
 class CollCacheSolver {
  public:
   virtual ~CollCacheSolver() {}
@@ -35,12 +37,12 @@ class CollCacheSolver {
                      const IdType num_node,
                      const TensorPtr nid_to_block_tensor) = 0;
   virtual void Solve(std::vector<int> device_to_stream,
-                     std::vector<int> device_to_cache_percent, std::string mode,
+                     std::vector<PerT> device_to_cache_percent, std::string mode,
                      double T_local, double T_cpu);
 
  protected:
   virtual void Solve(std::vector<int> device_to_stream,
-                     std::vector<int> device_to_cache_percent, std::string mode,
+                     std::vector<PerT> device_to_cache_percent, std::string mode,
                      double T_local, double T_remote,
                      double T_cpu) {CHECK(false) << "Unimplemented";}
  public:
@@ -59,7 +61,7 @@ public:
              const TensorPtr nid_to_block_tensor) override;
   using CollCacheSolver::Solve;
   void Solve(std::vector<int> device_to_stream,
-             std::vector<int> device_to_cache_percent, std::string mode,
+             std::vector<PerT> device_to_cache_percent, std::string mode,
              double T_local, double T_remote,
              double T_cpu) override;
 
@@ -166,7 +168,7 @@ class OptimalAsymmLinkSolver : public OptimalSolver {
  public:
   OptimalAsymmLinkSolver() : link_src(RunConfig::coll_cache_link_desc.link_src), link_time(RunConfig::coll_cache_link_desc.link_time) {}
   void Solve(std::vector<int> device_to_stream,
-             std::vector<int> device_to_cache_percent, std::string mode,
+             std::vector<PerT> device_to_cache_percent, std::string mode,
              double T_local,double T_cpu) override;
   vec<vec<vec<int>>> link_src;
   vec<vec<double>> link_time;
@@ -189,21 +191,21 @@ class IntuitiveSolver : public SingleStreamSolverBase {
 public:
   using CollCacheSolver::Solve;
   void Solve(std::vector<int> device_to_stream,
-             std::vector<int> device_to_cache_percent, std::string mode,
+             std::vector<PerT> device_to_cache_percent, std::string mode,
              double T_local, double T_remote, double T_cpu);
 };
 class PartitionSolver : public SingleStreamSolverBase {
 public:
   using CollCacheSolver::Solve;
   void Solve(std::vector<int> device_to_stream,
-             std::vector<int> device_to_cache_percent, std::string mode,
+             std::vector<PerT> device_to_cache_percent, std::string mode,
              double T_local, double T_remote, double T_cpu);
 };
 class PartRepSolver : public SingleStreamSolverBase {
 public:
   using CollCacheSolver::Solve;
   void Solve(std::vector<int> device_to_stream,
-             std::vector<int> device_to_cache_percent, std::string mode,
+             std::vector<PerT> device_to_cache_percent, std::string mode,
              double T_local, double T_remote, double T_cpu);
 };
 
@@ -211,7 +213,7 @@ class RepSolver : public SingleStreamSolverBase {
 public:
   using SingleStreamSolverBase::Solve;
   void Solve(std::vector<int> device_to_stream,
-             std::vector<int> device_to_cache_percent, std::string mode,
+             std::vector<PerT> device_to_cache_percent, std::string mode,
              double T_local, double T_cpu);
 };
 
@@ -220,7 +222,7 @@ public:
   CliquePartSolver() : clique_size(RunConfig::coll_cache_link_desc.CliqueSize()) {}
   using SingleStreamSolverBase::Solve;
   void Solve(std::vector<int> device_to_stream,
-             std::vector<int> device_to_cache_percent, std::string mode,
+             std::vector<PerT> device_to_cache_percent, std::string mode,
              double T_local, double T_cpu);
   int clique_size;
 };
@@ -230,7 +232,7 @@ public:
   CliquePartByDegreeSolver(TensorPtr ranking_nodes) : clique_size(RunConfig::coll_cache_link_desc.CliqueSize()), ranking_nodes(ranking_nodes) {}
   using SingleStreamSolverBase::Solve;
   void Solve(std::vector<int> device_to_stream,
-             std::vector<int> device_to_cache_percent, std::string mode,
+             std::vector<PerT> device_to_cache_percent, std::string mode,
              double T_local, double T_cpu);
   int clique_size;
   TensorPtr ranking_nodes;

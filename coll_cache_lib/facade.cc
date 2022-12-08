@@ -60,9 +60,12 @@ void CollCache::lookup(int replica_id, const IdType *nodes,
 
 void CollCache::solve_impl_master(IdType *ranking_nodes_list_ptr,
                       IdType *ranking_nodes_freq_list_ptr, IdType num_node) {
+    using PerT = common::coll_cache::PerT;
     std::vector<int> trainer_to_stream(RunConfig::num_device, 0);
-    std::vector<int> trainer_cache_percent(
-        RunConfig::num_device, std::round(RunConfig::cache_percentage * 100));
+    // std::vector<int> trainer_cache_percent(
+    //     RunConfig::num_device, std::round(RunConfig::cache_percentage * 100));
+    std::vector<PerT> trainer_cache_percent(
+        RunConfig::num_device, RunConfig::cache_percentage * 100);
     // replica 0 is master
     // Context gpu_ctx = GPU(RunConfig::device_id_list[0]);
 
