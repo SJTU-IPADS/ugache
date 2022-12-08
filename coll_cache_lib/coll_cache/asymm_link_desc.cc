@@ -168,6 +168,10 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
   } else if (gpu_model.find("V100") != std::string::npos) {
     RunConfig::coll_cache_hyperparam_T_remote = 330 / (double)38;
     RunConfig::coll_cache_hyperparam_T_cpu    = 330 / (double)11;
+    if (total_gpu > 4) {
+      LOG(ERROR) << "v100x8, slow pcie";
+      RunConfig::coll_cache_hyperparam_T_cpu    = 330 / (double)3.4;
+    }
     if (RunConfig::concurrent_link_impl == kMPS || 
         RunConfig::concurrent_link_impl == kMPSForLandC || 
         RunConfig::concurrent_link_impl == kMultiKernelNumBlock || 
