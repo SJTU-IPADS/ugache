@@ -196,6 +196,8 @@ struct DstOffIter {
 struct DirectOffIter {
   __host__ __device__ size_t operator[](const size_t & idx) const { return idx; }
 };
+
+// used when building cache with empty_feat
 struct MockOffIter {
   size_t empty_feat;
   MockOffIter() { empty_feat = RunConfig::option_empty_feat; }
@@ -1648,7 +1650,9 @@ void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCac
    */
   LOG(INFO) << "CollCacheManager: grouping node of same location";
   // auto loc_list  = (HashTableEntryLocation*)trainer_gpu_device->AllocDataSpace(trainer_ctx, sizeof(HashTableEntryLocation) * num_total_nodes);
-  auto node_list_buffer_handle = _eager_gpu_mem_allocator(num_total_nodes * sizeof(IdType));
+
+  // this buffer only stores node for local and each remote, so no need to be that large
+  auto node_list_buffer_handle = _eager_gpu_mem_allocator((size_t)(num_total_nodes * (cache_percentage + 0.001)) * sizeof(IdType));
   IdType* node_list_buffer = node_list_buffer_handle->ptr<IdType>();
   // IdType * group_offset;
   size_t num_cached_nodes;
@@ -1816,7 +1820,9 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
    */
   LOG(INFO) << "CollCacheManager: grouping node of same location";
   // auto loc_list  = (HashTableEntryLocation*)trainer_gpu_device->AllocDataSpace(trainer_ctx, sizeof(HashTableEntryLocation) * num_total_nodes);
-  auto node_list_buffer_handle = _eager_gpu_mem_allocator(num_total_nodes * sizeof(IdType));
+
+  // this buffer only stores node for local and each remote, so no need to be that large
+  auto node_list_buffer_handle = _eager_gpu_mem_allocator((size_t)(num_total_nodes * (cache_percentage + 0.001)) * sizeof(IdType));
   IdType* node_list_buffer = (IdType*)node_list_buffer_handle->ptr();
   // IdType * group_offset;
   size_t num_cached_nodes;
