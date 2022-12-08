@@ -182,12 +182,13 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
     this->_session_list.resize(RunConfig::num_device);
     this->_refresh_session_list.resize(RunConfig::num_device);
   }
-  if (replica_id == 0) {
+  bool need_solver = (cache_percentage != 0 && cache_percentage != 1);
+  if (replica_id == 0 && need_solver) {
     solve_impl_master(ranking_nodes_list_ptr, ranking_nodes_freq_list_ptr, num_node);
     LOG(ERROR) << replica_id << " solved master";
   }
   this->_replica_barrier->Wait();
-  if (replica_id != 0 && RunConfig::cross_process) {
+  if (replica_id != 0 && RunConfig::cross_process && need_solver) {
     // one-time call for none-master process
     solve_impl_slave();
   }
