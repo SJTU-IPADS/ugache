@@ -158,6 +158,12 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
   if (gpu_model.find("A100") != std::string::npos) {
     RunConfig::coll_cache_hyperparam_T_remote = 370 / (double)34;
     RunConfig::coll_cache_hyperparam_T_cpu    = 370 / (double)9;
+    if (GetEnv("COLL_CPU_TIME_OVERRIDE") != "") {
+      RunConfig::coll_cache_hyperparam_T_cpu    = 370 / std::stod(GetEnv("COLL_CPU_TIME_OVERRIDE"));
+    }
+    if (GetEnv("COLL_REMOTE_TIME_OVERRIDE") != "") {
+      RunConfig::coll_cache_hyperparam_T_remote    = 370 / std::stod(GetEnv("COLL_REMOTE_TIME_OVERRIDE"));
+    }
     if (RunConfig::concurrent_link_impl == kMPS || 
         RunConfig::concurrent_link_impl == kMPSForLandC || 
         RunConfig::concurrent_link_impl == kMultiKernelNumBlock || 
