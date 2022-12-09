@@ -153,8 +153,8 @@ void AsymmLinkDesc::BuildAsymmHardWire(int num_trainer) {
 
 AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
                                        std::string gpu_model) {
+  int cpu_sm_decision = 0;
   AsymmLinkDesc desc;
-  desc.cpu_sm.resize(num_trainer, 0);
   if (gpu_model.find("A100") != std::string::npos) {
     RunConfig::coll_cache_hyperparam_T_remote = 370 / (double)34;
     RunConfig::coll_cache_hyperparam_T_cpu    = 370 / (double)9;
@@ -162,8 +162,7 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
         RunConfig::concurrent_link_impl == kMPSForLandC || 
         RunConfig::concurrent_link_impl == kMultiKernelNumBlock || 
         RunConfig::concurrent_link_impl == kMultiKernelNumBlockOld) {
-      desc.cpu_sm.clear();
-      desc.cpu_sm.resize(num_trainer, 10);
+      cpu_sm_decision = 10;
     }
   } else if (gpu_model.find("V100") != std::string::npos) {
     RunConfig::coll_cache_hyperparam_T_remote = 330 / (double)38;
@@ -176,13 +175,18 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
         RunConfig::concurrent_link_impl == kMPSForLandC || 
         RunConfig::concurrent_link_impl == kMultiKernelNumBlock || 
         RunConfig::concurrent_link_impl == kMultiKernelNumBlockOld) {
-      desc.cpu_sm.clear();
-      desc.cpu_sm.resize(num_trainer, 8);
+      cpu_sm_decision = 8;
       // CHECK(false) << "not supported now";
     }
   } else {
     CHECK(false) << "No bandwidth data for " << gpu_model;
   }
+
+  if (GetEnv("COLL_CPU_SM_NUM_OVERRIDE") != "") {
+    cpu_sm_decision = std::stoi(GetEnv("COLL_CPU_SM_NUM_OVERRIDE"));
+  }
+  LOG(ERROR) << "assigning " << cpu_sm_decision << " to cpu";
+  desc.cpu_sm.resize(num_trainer, cpu_sm_decision);
 
   std::string topo_name;
   if (total_gpu <= 4) {

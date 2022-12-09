@@ -44,7 +44,7 @@ void *MmapCPUDevice::MapFd(Context ctx, size_t nbytes, int fd) {
   // round up, since it may be freed by mmapcpudevice's free workspace
   nbytes = RoundUp<size_t>(nbytes, 1<<21);
   void* ptr = mmap(nullptr, nbytes, prot, MAP_SHARED | MAP_LOCKED, fd, 0);
-  CHECK_NE(ptr, (void *)-1);
+  CHECK_NE(ptr, (void *)-1) << " fail to mmap fd " << fd << ", num nbytes is " << nbytes << " errno is " << errno;
   return ptr;
 }
 
