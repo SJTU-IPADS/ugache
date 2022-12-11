@@ -28,7 +28,7 @@ namespace common {
 std::unordered_map<std::string, std::string> RunConfig::raw_configs;
 
 // clang-format off
-CachePolicy          RunConfig::cache_policy;
+CachePolicy          RunConfig::cache_policy                   = kCollCacheAsymmLink;
 double               RunConfig::cache_percentage               = 0.0f;
 
 bool                 RunConfig::is_configured                  = false;
