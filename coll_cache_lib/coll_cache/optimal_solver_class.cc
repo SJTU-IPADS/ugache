@@ -38,6 +38,9 @@ void OptimalSolver::Build(TensorPtr stream_id_list, TensorPtr stream_freq_list, 
   // coarse-grained slice to reduce asymm solve time
   // symmetric & switch's precision still holds
   max_size_per_block = num_node / 1000;
+  if (GetEnv("COLL_BLOCK_SLICE_GRAIN") != "") {
+    max_size_per_block = num_node / std::stod(GetEnv("COLL_BLOCK_SLICE_GRAIN"));
+  }
   auto freq_to_slot = [this](float freq, uint32_t rank, IdType num_node){ return this->freq_to_slot_1(freq, rank, num_node);};
 
   TensorPtr nid_to_rank_tensor  = Tensor::Empty(kI32, {num_node, num_stream}, cpu_ctx, "coll_cache.nid_to_rank");
@@ -352,6 +355,8 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
   GRBEnv env = GRBEnv(true);
   env.set("LogFile", "cppsolver.log");
   env.set(GRB_IntParam_Threads, RunConfig::omp_thread_num*2);
+
+  // env.set(GRB_IntParam_LogToConsole, 0);
 
   env.set(GRB_DoubleParam_TimeLimit, 200);
 

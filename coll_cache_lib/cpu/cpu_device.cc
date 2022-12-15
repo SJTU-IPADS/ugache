@@ -35,6 +35,10 @@ void CPUDevice::SetDevice(Context ctx) {}
 
 void *CPUDevice::AllocDataSpace(Context ctx, size_t nbytes, size_t alignment) {
   void *ptr = nullptr;
+  if (nbytes == 0) {
+    LOG(FATAL) << "WORKER[" << RunConfig::worker_id << "] alloc zero host memory, is this intended?";
+    return nullptr;
+  }
   if (nbytes >= 10 * 1024 * 1024 && RunConfig::worker_id == 0) {
     LOG(WARNING) << "WORKER[" << RunConfig::worker_id << "] alloc host memory " << ToReadableSize(nbytes);
   }

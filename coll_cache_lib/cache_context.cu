@@ -558,7 +558,7 @@ void ExtractSession::GetMissCacheIndex(
   DstOffIter dst_offset_iter(output_dst_index);
   get_miss_cache_index<Constant::kCudaBlockSize, Constant::kCudaTileSize><<<grid, block, 0, cu_stream>>>(
     location_iter, src_offset_iter, dst_offset_iter, nodes, num_nodes, _cache_ctx->_hash_table_location, _cache_ctx->_hash_table_offset);
-  device->StreamSync(_cache_ctx->_trainer_ctx, stream);
+  // device->StreamSync(_cache_ctx->_trainer_ctx, stream);
   // std::cout << "coll get index "<< t0.Passed() << "\n";
   
   Timer t1;
@@ -579,6 +579,9 @@ void ExtractSession::GetMissCacheIndex(
   CUDA_CALL(cub::DeviceRadixSort::SortPairs(
       workspace, workspace_bytes, keys, vals, num_nodes, 0, sizeof(SrcKey) * 8,
       cu_stream));
+  {
+    std::memset(_group_offset, 0, sizeof(IdType) * (_cache_ctx->_num_location + 1));
+  }
   device->StreamSync(_cache_ctx->_trainer_ctx, stream);
   LOG(DEBUG) << "CollCacheManager: GetMissCacheIndex - sorting according to group - done...";
   // std::cout << "coll sort index "<< t1.Passed() << "\n";
@@ -657,7 +660,7 @@ void ExtractSession::SplitGroup(const SrcKey * src_index, const size_t len, IdTy
   Timer t0;
   group_offset = this->_group_offset;
   // group_offset = (IdType*)Device::Get(cpu_ctx)->AllocWorkspace(cpu_ctx, sizeof(IdType) * (_cache_ctx->_num_location + 1));
-  std::memset(group_offset, 0, sizeof(IdType) * (_cache_ctx->_num_location + 1));
+  // std::memset(group_offset, 0, sizeof(IdType) * (_cache_ctx->_num_location + 1));
   group_offset[_cache_ctx->_num_location] = len;
   if (len == 0) return;
   LOG(DEBUG) << "CollCache: SplitGroup: legacy finding offset...";
