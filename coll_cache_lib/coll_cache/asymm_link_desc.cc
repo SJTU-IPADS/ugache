@@ -165,6 +165,7 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
       RunConfig::coll_cache_hyperparam_T_remote    = 370 / std::stod(GetEnv("COLL_REMOTE_TIME_OVERRIDE"));
     }
     if (RunConfig::concurrent_link_impl == kMPS || 
+        RunConfig::concurrent_link_impl == kMPSPhase || 
         RunConfig::concurrent_link_impl == kMPSForLandC || 
         RunConfig::concurrent_link_impl == kMultiKernelNumBlock || 
         RunConfig::concurrent_link_impl == kMultiKernelNumBlockOld) {
@@ -178,6 +179,7 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
       RunConfig::coll_cache_hyperparam_T_cpu    = 330 / (double)3.4;
     }
     if (RunConfig::concurrent_link_impl == kMPS || 
+        RunConfig::concurrent_link_impl == kMPSPhase || 
         RunConfig::concurrent_link_impl == kMPSForLandC || 
         RunConfig::concurrent_link_impl == kMultiKernelNumBlock || 
         RunConfig::concurrent_link_impl == kMultiKernelNumBlockOld) {

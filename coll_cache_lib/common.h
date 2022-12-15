@@ -86,6 +86,7 @@ enum ConcurrentLinkImpl {
   kMultiKernelNumBlockOld, /** use old extraction kernel */
   kMPS, /** use mps with old extraction kernel */
   kMPSForLandC, /** use mpl only for local and cpu with old extraction kernel */
+  kMPSPhase,
 };
 
 

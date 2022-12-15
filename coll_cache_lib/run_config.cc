@@ -128,6 +128,8 @@ void RunConfig::LoadConfigFromEnv() {
       RunConfig::concurrent_link_impl = kMPS;
     } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "MPSForLandC") {
       RunConfig::concurrent_link_impl = kMPSForLandC;
+    } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "MPSPhase") {
+      RunConfig::concurrent_link_impl = kMPSPhase;
     } else {
       CHECK(false) << "Unknown concurrent link impl " << GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL");
     }

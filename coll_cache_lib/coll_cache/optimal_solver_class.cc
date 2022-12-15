@@ -490,6 +490,7 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
       local_weight_list[dst_dev] +=  weight * x_list[block_id][dst_dev].ref();
       cpu_weight_list[dst_dev]   +=  weight * c_list[block_id].ref();
     }
+    GRBLinExpr total_time;
     FOR_LOOP(src_link, num_link) {
       GRBLinExpr &remote_time = remote_time_list[dst_dev][src_link];
       FOR_LOOP(block_id, num_block) {
@@ -497,10 +498,25 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
         if (weight == 0) continue;
         remote_time += a_list[block_id][dst_dev][src_link].ref() * link_time[dst_dev][src_link] * weight;
       }
-      model.addConstr(remote_time <= max_remote_time[dst_dev].ref());
+      if (RunConfig::concurrent_link_impl == kMPSPhase) {
+        model.addConstr(remote_time <= z);
+        total_time += remote_time * RunConfig::coll_cache_link_desc.link_sm[dst_dev][src_link];
+      } else {
+        model.addConstr(remote_time <= max_remote_time[dst_dev].ref());
+      }
       // model.addConstr(remote_time + local_cpu_time <= z);
     }
-    model.addConstr(max_remote_time[dst_dev].ref() + local_time <= z);
+    if (RunConfig::concurrent_link_impl == kMPSPhase) {
+      model.addConstr(local_time <= z);
+      // local sm + cpu sm is always total sm
+      int total_sm = RunConfig::coll_cache_link_desc.local_sm[dst_dev] + RunConfig::coll_cache_link_desc.cpu_sm[dst_dev];
+      LOG(ERROR) << "dst " << dst_dev << ", total sm is " << total_sm;
+      total_time += local_time * RunConfig::coll_cache_link_desc.local_sm[dst_dev];
+      total_time += (cpu_time + sum_weight * RunConfig::coll_cache_cpu_addup * T_cpu) * RunConfig::coll_cache_link_desc.cpu_sm[dst_dev];
+      model.addConstr(total_time <= z * total_sm);
+    } else {
+      model.addConstr(max_remote_time[dst_dev].ref() + local_time <= z);
+    }
     model.addConstr(cpu_time + sum_weight * RunConfig::coll_cache_cpu_addup * T_cpu <= z);
     total_weight_list[dst_dev] = sum_weight;
   };
