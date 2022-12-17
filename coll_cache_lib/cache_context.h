@@ -52,6 +52,18 @@ struct DevicePointerExchanger {
   void close(void* ptr);
 };
 
+struct HostPointerExchanger {
+  void* _buffer;
+  // bool _cross_process = false;
+  // no way to ensure barrier is globally initialized then used, so let application pass-in a barrier
+  std::string _shm_name;
+  BarHandle _barrier;
+  HostPointerExchanger(BarHandle barrier, std::string shm_name);
+  void* signin(int local_id, size_t nbytes);
+  void* extract(int location_id);
+  void close(void* ptr);
+};
+
 struct ExtractionThreadCtx {
   CUcontext cu_ctx_ = nullptr;
   cudaStream_t stream_;

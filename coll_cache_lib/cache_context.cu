@@ -1830,11 +1830,20 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
   _remote_hash_table_location.resize(_num_location, nullptr);
   _device_cache_data.resize(_num_location, nullptr);
   _device_cache_data[_cpu_location_id] = cpu_data;
-  _hash_table_location_handle = _eager_gpu_mem_allocator(sizeof(HashTableEntryLocation) * num_total_nodes);
-  _hash_table_offset_handle   = _eager_gpu_mem_allocator(sizeof(HashTableEntryOffset)   * num_total_nodes);
 
-  _hash_table_location = _hash_table_location_handle->ptr<HashTableEntryLocation>();
-  _hash_table_offset   = _hash_table_offset_handle->ptr<HashTableEntryOffset>();
+  auto cpu_hashtable_location_list = HostPointerExchanger(_barrier, Constant::kCollCacheHashTableOffsetPtrShmName + "_cpu");
+  auto cpu_hashtable_offset_list = HostPointerExchanger(_barrier, Constant::kCollCacheHashTableOffsetPtrShmName + "_location_cpu");
+
+  if (GetEnv("COLL_CPU_HASHTABLE") != "") {
+    _hash_table_location = (HashTableEntryLocation*)cpu_hashtable_location_list.signin(_local_location_id, sizeof(HashTableEntryLocation) * num_total_nodes);
+    _hash_table_offset = (HashTableEntryOffset*)cpu_hashtable_offset_list.signin(_local_location_id, sizeof(HashTableEntryOffset) * num_total_nodes);
+  } else {
+    _hash_table_location_handle = _eager_gpu_mem_allocator(sizeof(HashTableEntryLocation) * num_total_nodes);
+    _hash_table_offset_handle   = _eager_gpu_mem_allocator(sizeof(HashTableEntryOffset)   * num_total_nodes);
+
+    _hash_table_location = _hash_table_location_handle->ptr<HashTableEntryLocation>();
+    _hash_table_offset   = _hash_table_offset_handle->ptr<HashTableEntryOffset>();
+  }
 
 
   LOG(INFO) << "CollCacheManager: Initializing hashtable location...";
@@ -1912,8 +1921,12 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
   LOG(INFO) << "CollCacheManager: waiting for remotes, here is " << _local_location_id;
 
   // wait until all device's hashtable is ready
-  hash_table_location_list.signin(_local_location_id, _hash_table_location);
-  hash_table_offset_list.signin(_local_location_id, _hash_table_offset);
+  if (GetEnv("COLL_CPU_HASHTABLE") != "") {
+    // _barrier->Wait();
+  } else {
+    hash_table_location_list.signin(_local_location_id, _hash_table_location);
+    hash_table_offset_list.signin(_local_location_id, _hash_table_offset);
+  }
   if (num_cached_nodes > 0) {
     device_cache_data_list.signin(_local_location_id, _device_cache_data[_local_location_id]);
   }
@@ -1934,8 +1947,13 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
         }
       }
       _device_cache_data[dev_id] = device_cache_data_list.extract(dev_id);
-      _remote_hash_table_location[dev_id] = (HashTableEntryLocation *)hash_table_location_list.extract(dev_id);
-      _remote_hash_table_offset[dev_id] = (HashTableEntryOffset * )hash_table_offset_list.extract(dev_id);
+      if (GetEnv("COLL_CPU_HASHTABLE") != "") {
+        _remote_hash_table_location[dev_id] = (HashTableEntryLocation *)cpu_hashtable_location_list.extract(dev_id);
+        _remote_hash_table_offset[dev_id] = (HashTableEntryOffset * )cpu_hashtable_offset_list.extract(dev_id);
+      } else {
+        _remote_hash_table_location[dev_id] = (HashTableEntryLocation *)hash_table_location_list.extract(dev_id);
+        _remote_hash_table_offset[dev_id] = (HashTableEntryOffset * )hash_table_offset_list.extract(dev_id);
+      }
 
       if (num_remote_nodes == 0) continue;
       SAM_CUDA_PREPARE_1D(num_remote_nodes);
@@ -2031,6 +2049,38 @@ void DevicePointerExchanger::close(void *ptr) {
   if (RunConfig::cross_process) {
     CUDA_CALL(cudaIpcCloseMemHandle(ptr));
   }
+}
+
+HostPointerExchanger::HostPointerExchanger(BarHandle barrier,
+                                               std::string shm_name) {
+  // int fd = cpu::MmapCPUDevice::CreateShm(4096, shm_name);
+  // _buffer = cpu::MmapCPUDevice::MapFd(MMAP(MMAP_RW_DEVICE), 4096, fd);
+  // _barrier = new ((char *)_buffer + 2048) AtomicBarrier(world_size, is_master);
+  CHECK(RunConfig::cross_process);
+  _barrier = barrier;
+  _shm_name = shm_name;
+  // even for single process, we require concurrent initialization of each gpu.
+  // _cross_process = cross_process;
+}
+
+void* HostPointerExchanger::signin(int local_id, size_t nbytes) {
+  // register a shared area for local
+  nbytes = RoundUp<size_t>(nbytes, 1<<21);
+  int local_area_fd = cpu::MmapCPUDevice::CreateShm(nbytes, _shm_name + "_" + std::to_string(local_id));
+  void* local_area = cpu::MmapCPUDevice::MapFd(MMAP(MMAP_RW_DEVICE), nbytes, local_area_fd);
+  CUDA_CALL(cudaHostRegister(local_area, nbytes, cudaHostRegisterDefault));
+  _barrier->Wait();
+  return local_area;
+}
+void *HostPointerExchanger::extract(int location_id) {
+  size_t nbytes = 0;
+  int remote_area_fd = cpu::MmapCPUDevice::OpenShm(_shm_name + "_" + std::to_string(location_id), &nbytes);
+  void* remote_area = cpu::MmapCPUDevice::MapFd(MMAP(MMAP_RW_DEVICE), nbytes, remote_area_fd);
+  CUDA_CALL(cudaHostRegister(remote_area, nbytes, cudaHostRegisterDefault));
+  return remote_area;
+}
+void HostPointerExchanger::close(void *ptr) {
+  CUDA_CALL(cudaHostUnregister(ptr));
 }
 
 ExtractSession::ExtractSession(std::shared_ptr<CacheContext> cache_ctx) : _cache_ctx(cache_ctx) {
