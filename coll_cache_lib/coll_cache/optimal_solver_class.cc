@@ -420,6 +420,7 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
   std::vector<GRBLinExpr> local_weight_list(num_device);
   std::vector<double>     total_weight_list(num_device);
   std::vector<GRBLinExpr> cpu_weight_list(num_device);
+  try {
 
   // for each dst, 
   // sum a_dst_src <= 1
@@ -556,6 +557,10 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
   model.write("asymm.lp");
 
   model.optimize();
+  } catch (GRBException e) {
+    LOG(FATAL) << e.getMessage();
+    abort();
+  }
 
   CHECK(num_device <= 8);
   CHECK(block_placement->Shape() == std::vector<size_t>{num_block});
