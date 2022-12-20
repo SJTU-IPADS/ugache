@@ -184,7 +184,9 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
     if (RunConfig::option_empty_feat != 0 && cache_percentage != 0) {
       num_node_host_mem = 1 << RunConfig::option_empty_feat;
     }
+    LOG(ERROR) << "registering cpu data with " << ToReadableSize(RoundUp<size_t>(num_node_host_mem * dim * GetDataTypeBytes(dtype), 1 << 21));
     CUDA_CALL(cudaHostRegister(cpu_data, RoundUp<size_t>(num_node_host_mem * dim * GetDataTypeBytes(dtype), 1 << 21), cudaHostRegisterDefault | cudaHostRegisterReadOnly));
+    LOG(ERROR) << "registering cpu data done.";
     this->_cache_ctx_list.resize(RunConfig::num_device);
     this->_session_list.resize(RunConfig::num_device);
     this->_refresh_session_list.resize(RunConfig::num_device);

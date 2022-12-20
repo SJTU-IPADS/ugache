@@ -58,7 +58,7 @@ FreqRecorder::~FreqRecorder() {
 void FreqRecorder::Record(const Id64Type* input, size_t num_inputs){
   auto cpu_device = Device::Get(CPU());
   Timer t2;
-  #pragma omp parallel for num_threads(RunConfig::omp_thread_num)
+  // #pragma omp parallel for num_threads(RunConfig::omp_thread_num)
   for (size_t i = 0; i < num_inputs; i++) {
     CHECK(input[i] < _num_nodes);
     auto freq_ptr = reinterpret_cast<IdType*>(&freq_table[input[i]]);
@@ -77,7 +77,7 @@ void FreqRecorder::Record(const Id64Type* input, size_t num_inputs){
 void FreqRecorder::Record(const IdType* input, size_t num_inputs){
   auto cpu_device = Device::Get(CPU());
   Timer t2;
-  #pragma omp parallel for num_threads(RunConfig::omp_thread_num)
+  // #pragma omp parallel for num_threads(RunConfig::omp_thread_num)
   for (size_t i = 0; i < num_inputs; i++) {
     CHECK(input[i] < _num_nodes) << input[i] << " greater than " << _num_nodes;
     auto freq_ptr = reinterpret_cast<IdType*>(&freq_table[input[i]]);
