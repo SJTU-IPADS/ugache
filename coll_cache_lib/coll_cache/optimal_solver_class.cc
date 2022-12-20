@@ -58,11 +58,18 @@ void OptimalSolver::Build(TensorPtr stream_id_list, TensorPtr stream_freq_list, 
   TensorView<IdType> stream_freq_list_view(stream_freq_list);
 
   // identify freq boundary of first slot
+  // when cache rate is extremely small, better use the largest val as alpha
   for (IdType i = 0; i < num_stream; i++) {
-    if (alpha < stream_freq_list_view[i][(num_node - 1) / 100].ref()) {
-      alpha = stream_freq_list_view[i][(num_node - 1) / 100].ref();
+    if (alpha < stream_freq_list_view[i][0].ref()) {
+      alpha = stream_freq_list_view[i][0].ref();
     }
   }
+  if (GetEnv("COLL_BLOCK_SLICE_BASE") != "") {
+    RunConfig::coll_cache_coefficient = std::stod(GetEnv("COLL_BLOCK_SLICE_BASE"));
+  }
+  LOG(ERROR) << "reconfigured max freq to be " << alpha;
+  RunConfig::coll_cache_num_slot = std::floor(std::log2(alpha) / std::log2(RunConfig::coll_cache_coefficient)) + 1;
+  LOG(ERROR) << "reconfigured num slot to be " << RunConfig::coll_cache_num_slot;
 
   /**
    * Map each node to a rank for each stream.
@@ -86,7 +93,8 @@ void OptimalSolver::Build(TensorPtr stream_id_list, TensorPtr stream_freq_list, 
     return ret;
   };
   LOG(WARNING) << "counting slots...";
-#pragma omp parallel for num_threads(RunConfig::omp_thread_num)
+  size_t max_seq_slot = 0;
+#pragma omp parallel for num_threads(8) reduction(max: max_seq_slot)
   for (uint32_t nid = 0; nid < num_node; nid++) {
     // for each nid, prepare a slot list
     for (uint32_t stream_idx = 0; stream_idx < num_stream; stream_idx++) {
@@ -97,16 +105,45 @@ void OptimalSolver::Build(TensorPtr stream_id_list, TensorPtr stream_freq_list, 
     }
     // map the slot list to block
     size_t seq_id = slot_list_to_full_block_id(nid_to_slot[nid]);
+    max_seq_slot = std::max(max_seq_slot, seq_id);
     nid_to_block[nid].ref() = slot_array_to_full_block.register_bucket(seq_id);
   }
   LOG(WARNING) << "Final num slot is " << slot_array_to_full_block.next_free_slot.load();
   block_identifer* buckets = new block_identifer[slot_array_to_full_block.next_free_slot.load()];
   next_free_block.store(0);
 
+  LOG(WARNING) << "preparing block granularity...";
+  #pragma omp parallel for num_threads(8)
+  for (uint32_t nid = 0; nid < num_node; nid++) {
+    // fixme: the total number of each full size block has already be counted at slot_array_to_full_block.
+    buckets[nid_to_block[nid].ref()].measure_total_node();
+  }
+  for (uint32_t bid = 0; bid < slot_array_to_full_block.next_free_slot.load(); bid++) {
+    buckets[bid].set_max_size(device_to_stream.size(), max_size_per_block);
+  }
+  LOG(ERROR) << "block -1 has " << slot_array_to_full_block.the_map.find(max_seq_slot)->second.size << " nodes";
+  LOG(ERROR) << "block -2 has " << slot_array_to_full_block.the_map.find(max_seq_slot - 1)->second.size << " nodes";
+  for (auto iter = slot_array_to_full_block.the_map.begin(); iter != slot_array_to_full_block.the_map.end(); iter++) {
+    LOG(ERROR) << "slot " << iter->first << " has " << iter->second.size << " nodes";
+  }
+  // zero block
+  if (slot_array_to_full_block.the_map.find(max_seq_slot)->second.size / (double)num_node < (1 - RunConfig::cache_percentage * device_to_stream.size())) {
+    buckets[slot_array_to_full_block.the_map.find(max_seq_slot)->second.remmaped_slot].set_max_size(1, num_node);
+  } else {
+    buckets[slot_array_to_full_block.the_map.find(max_seq_slot)->second.remmaped_slot].set_max_size(1, num_node / 100);
+  }
+  if (slot_array_to_full_block.the_map.find(max_seq_slot)->second.size + slot_array_to_full_block.the_map.find(max_seq_slot - 1)->second.size
+     / (double)num_node < (1 - RunConfig::cache_percentage * device_to_stream.size())) {
+    buckets[slot_array_to_full_block.the_map.find(max_seq_slot - 1)->second.remmaped_slot].set_max_size(1, num_node);
+  } else {
+    buckets[slot_array_to_full_block.the_map.find(max_seq_slot - 1)->second.remmaped_slot].set_max_size(1, num_node / 1000);
+  }
+
   LOG(WARNING) << "counting blocks...";
 // #pragma omp parallel for num_threads(RunConfig::omp_thread_num / 2)
-#pragma omp parallel for num_threads(8)
+// #pragma omp parallel for num_threads(8)
   for (uint32_t nid = 0; nid < num_node; nid++) {
+    block_identifer &bucket = buckets[nid_to_block[nid].ref()];
     nid_to_block[nid].ref() = buckets[nid_to_block[nid].ref()].add_node(this);
   }
   delete[] buckets;
@@ -127,6 +164,10 @@ void OptimalSolver::Build(TensorPtr stream_id_list, TensorPtr stream_freq_list, 
 
   TensorView<double> block_density_array(block_density_tensor);
   TensorView<double> block_freq_array(block_freq_tensor);
+  double min_freq = 1e-2;
+  if (GetEnv("COLL_MIN_FREQ") != "") {
+    min_freq = std::stod(GetEnv("COLL_MIN_FREQ"));
+  }
 #pragma omp parallel for num_threads(RunConfig::omp_thread_num)
   for (int thread_idx = 0; thread_idx < RunConfig::omp_thread_num; thread_idx++) {
     for (uint32_t nid = 0; nid < num_node; nid++) {
@@ -139,7 +180,7 @@ void OptimalSolver::Build(TensorPtr stream_id_list, TensorPtr stream_freq_list, 
         uint32_t orig_rank = nid_to_rank[nid][stream_idx].ref();
         double freq = stream_freq_list_view[stream_idx][orig_rank].ref();
         // assign all zero freq a minimal freq to handle touched node << cache space
-        freq = std::max(freq, 1e-2);
+        freq = std::max(freq, min_freq);
         block_freq_array[block_id][stream_idx].ref() += freq;
       }
     }
@@ -366,7 +407,7 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
   // env.set(GRB_IntParam_Method, 3);
   // env.set(GRB_DoubleParam_MIPGap, 0.03);
   // env.set(GRB_IntParam_MIPFocus, 2);
-  // env.set(GRB_IntParam_ConcurrentMIP, 36);
+  env.set(GRB_IntParam_ConcurrentMIP, 36);
   // env.set(GRB_IntParam_BranchDir, 1);
   // env.set(GRB_IntParam_AggFill, 100);
   // env.set(GRB_IntParam_NormAdjust, 3);
@@ -384,8 +425,10 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
   // new parameters for [           cpu          ]
   //                    [local][cuncurrent remote]
   env.set(GRB_DoubleParam_MIPGap, 0.05);
-  env.set(GRB_IntParam_Aggregate, 0);
-  env.set(GRB_IntParam_GomoryPasses, 0);
+  env.set(GRB_IntParam_Presolve, 2);
+  env.set(GRB_IntParam_AggFill, 100);
+  // env.set(GRB_IntParam_Aggregate, 0);
+  // env.set(GRB_IntParam_GomoryPasses, 0);
   /** todo: the following param seems hurt performance. needs investigation */
   // env.set(GRB_IntParam_Method, 2);
   // env.set(GRB_IntParam_DegenMoves, 0);

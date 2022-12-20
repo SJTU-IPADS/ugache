@@ -85,7 +85,7 @@ protected:
     if (freq >= alpha)
       return 0;
     double exp = std::log2(alpha / (double)freq) / std::log2(RunConfig::coll_cache_coefficient);
-    int slot = (int)std::ceil(exp);
+    int slot = (int)std::floor(exp);
     slot = std::min(slot, (int)RunConfig::coll_cache_num_slot - 2);
     return slot;
   }
@@ -107,17 +107,27 @@ protected:
     std::atomic_uint64_t _current_block_is_for_num_le_than{0xffffffff00000000};
     std::atomic_uint32_t _registered_node{0};
     std::atomic_uint32_t _done_node{0};
+    std::atomic_uint32_t _total_nodes{0};
+    volatile uint32_t max_size_this_block = 0;
+
+    void measure_total_node() {
+      _total_nodes.fetch_add(1);
+    }
+    void set_max_size(int num_worker, uint32_t min_boundary) {
+      // this->max_size_this_block = std::min<uint32_t>(RoundUpDiv<uint32_t>(_total_nodes, num_worker*2), min_boundary);
+      this->max_size_this_block = std::min<uint32_t>(RoundUpDiv<uint32_t>(_total_nodes, num_worker), min_boundary);
+    }
 
     uint32_t add_node(OptimalSolver * solver) {
       const uint32_t insert_order = _registered_node.fetch_add(1);
       uint64_t old_val = _current_block_is_for_num_le_than.load();
       uint32_t covered_num = old_val & 0xffffffff;
-      if ((insert_order % solver->max_size_per_block) == 0) {
+      if ((insert_order % max_size_this_block) == 0) {
         while (_done_node.load() < insert_order) {}
         old_val = _current_block_is_for_num_le_than.load();
         // alloc a new block
         uint32_t selected_block = solver->alloc_block();
-        uint64_t new_val = (((uint64_t) selected_block) << 32) | (insert_order + solver->max_size_per_block);
+        uint64_t new_val = (((uint64_t) selected_block) << 32) | (insert_order + max_size_this_block);
         CHECK(_current_block_is_for_num_le_than.compare_exchange_strong(old_val, new_val));
         _done_node.fetch_add(1);
         return selected_block;
@@ -133,21 +143,30 @@ protected:
     }
   };
 
+  struct full_slot {
+    volatile size_t remmaped_slot = 0xffffffffffffffff;
+    tbb::atomic<uint32_t> size{0};
+    size_t orig_seq_slot;
+  };
+
   struct concurrent_full_slot_map {
     const size_t _place_holder = 0xffffffffffffffff;
     std::atomic_uint32_t next_free_slot{0};
-    tbb::concurrent_unordered_map<size_t, volatile size_t> the_map;
+    // tbb::concurrent_unordered_map<size_t, volatile size_t> the_map;
+    tbb::concurrent_unordered_map<size_t, full_slot> the_map;
     concurrent_full_slot_map() {}
     uint32_t register_bucket(size_t slot_array_seq_id) {
-      auto rst = the_map.insert({slot_array_seq_id, _place_holder});
+      auto rst = the_map.insert({slot_array_seq_id, full_slot()});
       if (rst.second == true) {
-        rst.first->second =
+        rst.first->second.orig_seq_slot = slot_array_seq_id; // i.e. the key
+        rst.first->second.remmaped_slot =
             next_free_slot.fetch_add(1); // the allcoated block identifer
       } else {
-        while (rst.first->second == _place_holder) {
+        while (rst.first->second.remmaped_slot == _place_holder) {
         }
       }
-      return rst.first->second;
+      rst.first->second.size.fetch_and_increment();
+      return rst.first->second.remmaped_slot;
     }
   };
 
