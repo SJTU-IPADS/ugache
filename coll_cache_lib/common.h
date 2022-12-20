@@ -192,6 +192,10 @@ class Tensor {
                              std::vector<size_t> shape, std::string name);
   static TensorPtr OpenShm(std::string shm_path, DataType dtype,
                              std::vector<size_t> shape, std::string name);
+  static TensorPtr CreateShm(const char* shm_path, DataType dtype,
+                             std::vector<size_t> shape, const char* name);
+  static TensorPtr OpenShm(const char* shm_path, DataType dtype,
+                             std::vector<size_t> shape, const char* name);
   static TensorPtr Empty(DataType dtype, std::vector<size_t> shape, Context ctx,
                          std::string name);
   static TensorPtr EmptyExternal(DataType dtype, std::vector<size_t> shape, const std::function<MemHandle(size_t)> & allocator, Context ctx, std::string name);

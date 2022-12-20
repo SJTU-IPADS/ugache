@@ -151,6 +151,16 @@ TensorPtr Tensor::OpenShm(std::string shm_path, DataType dtype,
   return tensor;
 }
 
+TensorPtr Tensor::CreateShm(const char* shm_path, DataType dtype,
+                          std::vector<size_t> shape, const char* name) {
+  return CreateShm(std::string(shm_path), dtype, shape, std::string(name));
+}
+
+TensorPtr Tensor::OpenShm(const char* shm_path, DataType dtype,
+                          std::vector<size_t> shape, const char* name) {
+  return OpenShm(std::string(shm_path), dtype, shape, std::string(name));
+}
+
 TensorPtr Tensor::FromMmap(std::string filepath, DataType dtype,
                            std::vector<size_t> shape, Context ctx,
                            std::string name, StreamHandle stream) {
