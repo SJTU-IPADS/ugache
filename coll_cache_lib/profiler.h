@@ -113,6 +113,7 @@ enum LogStepItem {
   kLogL3CacheCombineCacheTime,
   kLogL3CacheCombineRemoteTime,
   kLogL3LabelExtractTime,
+  kLogL3CacheIntersectRatio,
   // Number of items
   kNumLogStepItems
 };
@@ -238,6 +239,7 @@ class Profiler {
   // SharedLogData* _step_data;
   TensorPtr _step_data_val_buf;
   TensorPtr _step_data_bitmap_buf;
+  double _cache_intersect_ratio;
 
   // for trace
   std::vector<TraceData> _step_trace;
