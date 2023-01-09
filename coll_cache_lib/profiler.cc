@@ -199,7 +199,6 @@ void Profiler::LogInitAdd(LogInitItem item, double val) {
 }
 
 void Profiler::LogStep(uint64_t key, LogStepItem item, double val) {
-  if (item == LogStepItem::kLogL3CacheIntersectRatio) {_cache_intersect_ratio = val;return;}
   size_t item_idx = static_cast<size_t>(item);
   _step_data[item_idx].vals[key] = val;
   // _step_data[item_idx].sum += val;
@@ -605,8 +604,7 @@ void Profiler::OutputStep(uint64_t key, std::string type) {
         "cache extract_miss  %.6lf\n"
         "        L3  cache copy_miss  %.6lf | cache combine_miss %.6lf | "
         "cache combine cache %.6lf | cache combine remote %.6lf\n"
-        "        L3  label extract  %.6lf\n"
-        "        L3  cache intersect ratio %.6lf\n",
+        "        L3  label extract  %.6lf\n",
         type.c_str(), epoch, step, _step_buf[kLogL3KHopSampleCooTime],
         _step_buf[kLogL3KHopSampleSortCooTime],
         _step_buf[kLogL3KHopSampleCountEdgeTime],
@@ -629,8 +627,19 @@ void Profiler::OutputStep(uint64_t key, std::string type) {
         _step_buf[kLogL3CacheCombineMissTime],
         _step_buf[kLogL3CacheCombineCacheTime],
         _step_buf[kLogL3CacheCombineRemoteTime],
-        _step_buf[kLogL3LabelExtractTime],
-        _cache_intersect_ratio);
+        _step_buf[kLogL3LabelExtractTime]);
+  }
+
+  if (_hps_cache_ratios.size() == 4) {
+    printf(
+        "    [%s Profiler Level 4 E%u S%u]\n"
+        "        L4  cache intersect ratio %.6lf | cache hit ratio %.6lf\n"
+        "        L4  cache hit overlap ratio %.6lf | cache miss overlap ratio %.6lf\n",
+        type.c_str(), epoch, step, 
+        _hps_cache_ratios[0],
+        _hps_cache_ratios[1],
+        _hps_cache_ratios[2],
+        _hps_cache_ratios[3]);
   }
 }
 

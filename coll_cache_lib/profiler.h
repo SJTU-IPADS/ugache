@@ -113,7 +113,6 @@ enum LogStepItem {
   kLogL3CacheCombineCacheTime,
   kLogL3CacheCombineRemoteTime,
   kLogL3LabelExtractTime,
-  kLogL3CacheIntersectRatio,
   // Number of items
   kNumLogStepItems
 };
@@ -200,6 +199,7 @@ class Profiler {
   void LogStep(uint64_t key, LogStepItem item, double val);
   void LogStepAdd(uint64_t key, LogStepItem item, double val);
   void LogEpochAdd(uint64_t key, LogEpochItem item, double val);
+  inline void LogHPSAdd(const std::vector<double> &ratios) {_hps_cache_ratios = ratios;}
 
   inline void TraceStepBegin(uint64_t key, TraceItem item, uint64_t us) { _step_trace[item].events[key].begin = us; }
   inline void TraceStepEnd(uint64_t key, TraceItem item, uint64_t us) { _step_trace[item].events[key].end = us; }
@@ -239,7 +239,6 @@ class Profiler {
   // SharedLogData* _step_data;
   TensorPtr _step_data_val_buf;
   TensorPtr _step_data_bitmap_buf;
-  double _cache_intersect_ratio;
 
   // for trace
   std::vector<TraceData> _step_trace;
@@ -253,6 +252,13 @@ class Profiler {
   std::vector<int> _epoch_last_visit;
   std::vector<int> _epoch_cur_visit;
   std::vector<double> _epoch_similarity;
+
+  // for HPS: 
+  // cache intersect ratio; 
+  // cache hit ratio;
+  // access hit overlap ratio; 
+  // access miss overlap ratio;
+  std::vector<double> _hps_cache_ratios;
 };
 
 }  // namespace common
