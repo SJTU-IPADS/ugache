@@ -227,6 +227,9 @@ TensorPtr Tensor::FromMmap(std::string filepath, DataType dtype,
 }
 
 TensorPtr Tensor::Empty(DataType dtype, std::vector<size_t> shape, Context ctx,
+                        const char* name) {return Tensor::Empty(dtype, shape, ctx, std::string(name));}
+
+TensorPtr Tensor::Empty(DataType dtype, std::vector<size_t> shape, Context ctx,
                         std::string name) {
   TensorPtr tensor = std::make_shared<Tensor>();
   CHECK_GT(shape.size(), 0);
@@ -419,6 +422,7 @@ template Id64Type* Tensor::Ptr<Id64Type>();
 template char* Tensor::Ptr<char>();
 template uint8_t* Tensor::Ptr<uint8_t>();
 template int* Tensor::Ptr<int>();
+template long long* Tensor::Ptr<long long>();
 
 std::ostream& operator<<(std::ostream& os, const Context& ctx) {
   switch (ctx.device_type)
