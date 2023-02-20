@@ -32,7 +32,7 @@ namespace samgraph {
 namespace common {
 namespace cuda {
 
-class MutableDeviceOrderedHashTable : public DeviceOrderedHashTable {
+class MutableDeviceSimpleHashTable : public DeviceSimpleHashTable {
   static inline __host__ __device__ uint32_t high32(uint64_t val) {
     constexpr uint64_t kI32Mask = 0xffffffff;
     return (val >> 32) & kI32Mask;
@@ -45,10 +45,10 @@ class MutableDeviceOrderedHashTable : public DeviceOrderedHashTable {
     return (((uint64_t)high) << 32) + low;
   }
  public:
-  typedef typename DeviceOrderedHashTable::BucketO2N *IteratorO2N;
+  typedef typename DeviceSimpleHashTable::BucketO2N *IteratorO2N;
 
-  explicit MutableDeviceOrderedHashTable(OrderedHashTable *const host_table)
-      : DeviceOrderedHashTable(host_table->DeviceHandle()) {}
+  explicit MutableDeviceSimpleHashTable(SimpleHashTable *const host_table)
+      : DeviceSimpleHashTable(host_table->DeviceHandle()) {}
 
   inline __device__ IteratorO2N SearchO2N(const IdType id) {
     const IdType pos = SearchForPositionO2N(id);
@@ -130,7 +130,7 @@ class MutableDeviceOrderedHashTable : public DeviceOrderedHashTable {
   inline __device__ IteratorO2N GetMutableO2N(const IdType pos) {
     assert(pos < this->_o2n_size);
     // The parent class Device is read-only, but we ensure this can only be
-    // constructed from a mutable version of OrderedHashTable, making this
+    // constructed from a mutable version of SimpleHashTable, making this
     // a safe cast to perform.
     return const_cast<IteratorO2N>(this->_o2n_table + pos);
   }
@@ -151,12 +151,12 @@ size_t TableSize(const size_t num, const size_t scale) {
 template <size_t BLOCK_SIZE, size_t TILE_SIZE>
 __global__ void generate_hashmap_unique(const IdType *const items,
                                         const size_t num_items,
-                                        MutableDeviceOrderedHashTable table,
+                                        MutableDeviceSimpleHashTable table,
                                         const IdType global_offset,
                                         const IdType version) {
   assert(BLOCK_SIZE == blockDim.x);
 
-  using IteratorO2N = typename MutableDeviceOrderedHashTable::IteratorO2N;
+  using IteratorO2N = typename MutableDeviceSimpleHashTable::IteratorO2N;
 
   const size_t block_start = TILE_SIZE * blockIdx.x;
   const size_t block_end = TILE_SIZE * (blockIdx.x + 1);
@@ -174,11 +174,11 @@ __global__ void generate_hashmap_unique(const IdType *const items,
 template <size_t BLOCK_SIZE, size_t TILE_SIZE>
 __global__ void evict_hashmap_unique(const IdType *const items,
                                     const size_t num_items,
-                                    MutableDeviceOrderedHashTable table,
+                                    MutableDeviceSimpleHashTable table,
                                     const IdType version) {
   assert(BLOCK_SIZE == blockDim.x);
 
-  using IteratorO2N = typename MutableDeviceOrderedHashTable::IteratorO2N;
+  using IteratorO2N = typename MutableDeviceSimpleHashTable::IteratorO2N;
 
   const size_t block_start = TILE_SIZE * blockIdx.x;
   const size_t block_end = TILE_SIZE * (blockIdx.x + 1);
@@ -196,7 +196,7 @@ template <size_t BLOCK_SIZE, size_t TILE_SIZE>
 __global__ void lookup_hashmap_ifexist(const IdType *const items,
                              const size_t num_items,
                              IdType* pos,
-                             MutableDeviceOrderedHashTable table,
+                             MutableDeviceSimpleHashTable table,
                              const IdType version) {
   assert(BLOCK_SIZE == blockDim.x);
 
@@ -217,7 +217,7 @@ template <size_t BLOCK_SIZE, size_t TILE_SIZE>
 __global__ void lookup_val_hashmap(const IdType *const items,
                              const size_t num_items,
                              ValType* vals,
-                             MutableDeviceOrderedHashTable table,
+                             MutableDeviceSimpleHashTable table,
                              const IdType version) {
   assert(BLOCK_SIZE == blockDim.x);
 
@@ -235,21 +235,21 @@ __global__ void lookup_val_hashmap(const IdType *const items,
 }
 
 
-// DeviceOrderedHashTable implementation
-DeviceOrderedHashTable::DeviceOrderedHashTable(const BucketO2N *const o2n_table,
+// DeviceSimpleHashTable implementation
+DeviceSimpleHashTable::DeviceSimpleHashTable(const BucketO2N *const o2n_table,
                                                const size_t o2n_size,
                                                const IdType version)
     : _o2n_table(o2n_table),
       _o2n_size(o2n_size),
       _version(version) {}
 
-DeviceOrderedHashTable OrderedHashTable::DeviceHandle() const {
-  return DeviceOrderedHashTable(_o2n_table,
+DeviceSimpleHashTable SimpleHashTable::DeviceHandle() const {
+  return DeviceSimpleHashTable(_o2n_table,
       _o2n_size, _version);
 }
 
-// OrderedHashTable implementation
-OrderedHashTable::OrderedHashTable(const size_t size, Context ctx,
+// SimpleHashTable implementation
+SimpleHashTable::SimpleHashTable(const size_t size, Context ctx,
                                    StreamHandle stream, const size_t scale)
     : _o2n_table(nullptr),
 #ifndef SXN_NAIVE_HASHMAP
@@ -274,7 +274,7 @@ OrderedHashTable::OrderedHashTable(const size_t size, Context ctx,
             << " O2N table size";
 }
 
-OrderedHashTable::~OrderedHashTable() {
+SimpleHashTable::~SimpleHashTable() {
   Timer t;
 
   auto device = Device::Get(_ctx);
@@ -283,20 +283,20 @@ OrderedHashTable::~OrderedHashTable() {
   LOG(DEBUG) << "free " << t.Passed();
 }
 
-void OrderedHashTable::Reset(StreamHandle stream) {
+void SimpleHashTable::Reset(StreamHandle stream) {
   _version++;
   _num_items = 0;
 }
 
 
-void OrderedHashTable::FillWithUnique(const IdType *const input,
+void SimpleHashTable::FillWithUnique(const IdType *const input,
                                       const size_t num_input,
                                       StreamHandle stream) {
   const size_t num_tiles = RoundUpDiv(num_input, Constant::kCudaTileSize);
   const dim3 grid(num_tiles);
   const dim3 block(Constant::kCudaBlockSize);
 
-  auto device_table = MutableDeviceOrderedHashTable(this);
+  auto device_table = MutableDeviceSimpleHashTable(this);
   auto cu_stream = static_cast<cudaStream_t>(stream);
 
   generate_hashmap_unique<Constant::kCudaBlockSize, Constant::kCudaTileSize>
@@ -306,18 +306,18 @@ void OrderedHashTable::FillWithUnique(const IdType *const input,
 
   _num_items += num_input;
 
-  LOG(DEBUG) << "OrderedHashTable::FillWithUnique insert " << num_input
+  LOG(DEBUG) << "SimpleHashTable::FillWithUnique insert " << num_input
              << " items, now " << _num_items << " in total";
 }
 
-void OrderedHashTable::EvictWithUnique(const IdType *const input,
+void SimpleHashTable::EvictWithUnique(const IdType *const input,
                                        const size_t num_input,
                                        StreamHandle stream) {
   const size_t num_tiles = RoundUpDiv(num_input, Constant::kCudaTileSize);
   const dim3 grid(num_tiles);
   const dim3 block(Constant::kCudaBlockSize);
 
-  auto device_table = MutableDeviceOrderedHashTable(this);
+  auto device_table = MutableDeviceSimpleHashTable(this);
   auto cu_stream = static_cast<cudaStream_t>(stream);
 
   evict_hashmap_unique<Constant::kCudaBlockSize, Constant::kCudaTileSize>
@@ -326,16 +326,16 @@ void OrderedHashTable::EvictWithUnique(const IdType *const input,
 
   _num_items -= num_input;
 
-  LOG(DEBUG) << "OrderedHashTable::EvictWithUnique remove " << num_input
+  LOG(DEBUG) << "SimpleHashTable::EvictWithUnique remove " << num_input
              << " items, now " << _num_items << " in total";
 }
 
-void OrderedHashTable::LookupIfExist(const IdType *const input, const size_t num_input, IdType *pos, StreamHandle stream) {
+void SimpleHashTable::LookupIfExist(const IdType *const input, const size_t num_input, IdType *pos, StreamHandle stream) {
   const size_t num_tiles = RoundUpDiv(num_input, Constant::kCudaTileSize);
   const dim3 grid(num_tiles);
   const dim3 block(Constant::kCudaBlockSize);
 
-  auto device_table = MutableDeviceOrderedHashTable(this);
+  auto device_table = MutableDeviceSimpleHashTable(this);
   auto cu_stream = static_cast<cudaStream_t>(stream);
 
   lookup_hashmap_ifexist<Constant::kCudaBlockSize, Constant::kCudaTileSize>
@@ -375,10 +375,10 @@ struct cubEntryIs {
   typedef IdType*                          pointer;                ///< The type of a pointer to an element the iterator can point to
   typedef IdType                           reference;              ///< The type of a reference to an element the iterator can point to
   typedef std::random_access_iterator_tag     iterator_category;      ///< The iterator category
-  OrderedHashTable::BucketO2N* array;
+  SimpleHashTable::BucketO2N* array;
   IdType cmp;
   IdType mask;
-  __host__ __device__ cubEntryIs(OrderedHashTable::BucketO2N* arr, IdType c, IdType m) : array(arr),cmp(c),mask(m) {}
+  __host__ __device__ cubEntryIs(SimpleHashTable::BucketO2N* arr, IdType c, IdType m) : array(arr),cmp(c),mask(m) {}
   template <typename Distance>
   __host__ __device__ __forceinline__ IdType operator[](const Distance d) const {
   // __host__ __device__ __forceinline__ IdType operator[](const IdType d) {
@@ -390,7 +390,7 @@ struct cubEntryIs {
   }
 };
 
-void OrderedHashTable::CountEntries(StreamHandle stream){
+void SimpleHashTable::CountEntries(StreamHandle stream){
   void* d_temp_storage = nullptr;
   size_t temp_storage_bytes;
   cubEntryIs<> input_iter(this->_o2n_table, 0, 0x80000000);

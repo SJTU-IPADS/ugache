@@ -77,7 +77,7 @@ int main(int argc, char** argv) {
   CUDA_CALL(cudaStreamCreate((cudaStream_t*)&stream));
   Context gpu_ctx = GPU(0);
   Device* gpu_dev = Device::Get(gpu_ctx);
-  auto hash_table = std::make_shared<cuda::OrderedHashTable>(cached_keys, gpu_ctx, stream);
+  auto hash_table = std::make_shared<cuda::SimpleHashTable>(cached_keys, gpu_ctx, stream);
   IdType num_evict_keys = cached_keys * evict_rate;
   TensorPtr cpu_total_key_list = Tensor::Empty(kI32, {num_full_key}, CPU(), "");
 

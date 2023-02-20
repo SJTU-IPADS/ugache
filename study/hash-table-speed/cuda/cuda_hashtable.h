@@ -31,12 +31,12 @@ namespace samgraph {
 namespace common {
 namespace cuda {
 
-class OrderedHashTable;
+class SimpleHashTable;
 
 using ValType = IdType;
 constexpr IdType kEmptyPos = 0xffffffff;
 
-class DeviceOrderedHashTable {
+class DeviceSimpleHashTable {
  public:
   // 1| 111...111 -> Default state, this bucket is not used yet
   //          insert may use this, search must stop at this
@@ -53,8 +53,8 @@ class DeviceOrderedHashTable {
 
   typedef const BucketO2N *ConstIterator;
 
-  DeviceOrderedHashTable(const DeviceOrderedHashTable &other) = default;
-  DeviceOrderedHashTable &operator=(const DeviceOrderedHashTable &other) =
+  DeviceSimpleHashTable(const DeviceSimpleHashTable &other) = default;
+  DeviceSimpleHashTable &operator=(const DeviceSimpleHashTable &other) =
       default;
 
   inline __device__ IdType SearchForPositionO2N(const IdType id) const {
@@ -88,7 +88,7 @@ class DeviceOrderedHashTable {
   const size_t _o2n_size;
   IdType _version;
 
-  explicit DeviceOrderedHashTable(const BucketO2N *const o2n_table,
+  explicit DeviceSimpleHashTable(const BucketO2N *const o2n_table,
                                   const size_t o2n_size,
                                   const IdType _);
 
@@ -101,23 +101,23 @@ class DeviceOrderedHashTable {
 #endif
   }
 
-  friend class OrderedHashTable;
+  friend class SimpleHashTable;
 };
 
-class OrderedHashTable {
+class SimpleHashTable {
  public:
   static constexpr size_t kDefaultScale = 2;
 
-  using BucketO2N = typename DeviceOrderedHashTable::BucketO2N;
+  using BucketO2N = typename DeviceSimpleHashTable::BucketO2N;
 
-  OrderedHashTable(const size_t size, Context ctx,
+  SimpleHashTable(const size_t size, Context ctx,
                    StreamHandle stream, const size_t scale = kDefaultScale);
 
-  ~OrderedHashTable();
+  ~SimpleHashTable();
 
   // Disable copying
-  OrderedHashTable(const OrderedHashTable &other) = delete;
-  OrderedHashTable &operator=(const OrderedHashTable &other) = delete;
+  SimpleHashTable(const SimpleHashTable &other) = delete;
+  SimpleHashTable &operator=(const SimpleHashTable &other) = delete;
 
   void Reset(StreamHandle stream);
 
@@ -131,7 +131,7 @@ class OrderedHashTable {
 
   size_t NumItems() const { return _num_items; }
 
-  DeviceOrderedHashTable DeviceHandle() const;
+  DeviceSimpleHashTable DeviceHandle() const;
 
  private:
   Context _ctx;
