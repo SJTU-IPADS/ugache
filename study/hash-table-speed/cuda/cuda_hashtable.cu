@@ -238,6 +238,30 @@ __global__ void lookup_val_hashmap(const IdType *const items,
     }
   }
 }
+template <size_t BLOCK_SIZE, size_t TILE_SIZE, typename DefValMaker>
+__global__ void lookup_hashmap_with_def(const IdType *const items,
+                             const size_t num_items,
+                             ValType* vals,
+                             DefValMaker def_val_maker,
+                             MutableDeviceSimpleHashTable table) {
+  assert(BLOCK_SIZE == blockDim.x);
+
+  const size_t block_start = TILE_SIZE * blockIdx.x;
+  const size_t block_end = TILE_SIZE * (blockIdx.x + 1);
+
+#pragma unroll
+  for (size_t index = threadIdx.x + block_start; index < block_end;
+       index += BLOCK_SIZE) {
+    if (index < num_items) {
+      auto iter = table.SearchO2N(items[index]);
+      if (iter == nullptr) {
+        vals[index] = def_val_maker(items[index]);
+      } else {
+        vals[index] = iter->val;
+      }
+    }
+  }
+}
 
 
 // DeviceSimpleHashTable implementation
@@ -347,6 +371,22 @@ void SimpleHashTable::LookupIfExist(const IdType *const input, const size_t num_
       <<<grid, block, 0, cu_stream>>>(input, num_input, pos, device_table);
   // Device::Get(_ctx)->StreamSync(_ctx, stream);
 }
+
+template<typename DefValMaker>
+void SimpleHashTable::LookupValWithDef(const IdType* const input, const size_t num_input, ValType * vals, DefValMaker default_val_maker, StreamHandle stream){
+  const size_t num_tiles = RoundUpDiv(num_input, Constant::kCudaTileSize);
+  const dim3 grid(num_tiles);
+  const dim3 block(Constant::kCudaBlockSize);
+
+  auto device_table = MutableDeviceSimpleHashTable(this);
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+
+  lookup_hashmap_with_def<Constant::kCudaBlockSize, Constant::kCudaTileSize>
+      <<<grid, block, 0, cu_stream>>>(input, num_input, vals, default_val_maker, device_table);
+  // Device::Get(_ctx)->StreamSync(_ctx, stream);
+}
+template
+void SimpleHashTable::LookupValWithDef<CPUFallback>(const IdType* const input, const size_t num_input, ValType * vals, CPUFallback default_val_maker, StreamHandle stream);
 
 template <size_t BLOCK_SIZE, size_t TILE_SIZE>
 __global__ void check_cuda_array_(IdType* array, IdType cmp, IdType num_items, bool exp) {

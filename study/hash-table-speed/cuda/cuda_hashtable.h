@@ -31,8 +31,14 @@ namespace common {
 namespace cuda {
 
 class SimpleHashTable;
+struct EmbCacheOff {
+  IdType data;
+  __host__ __device__ __forceinline__ EmbCacheOff(IdType loc, IdType off) { data = (loc << 28) + off; }
+  __host__ __device__ __forceinline__ IdType loc() { return data >> 28; }
+  __host__ __device__ __forceinline__ IdType off() { return data & 0xf0000000; }
+};
 
-using ValType = IdType;
+using ValType = EmbCacheOff;
 constexpr IdType kEmptyPos = 0xffffffff;
 
 class DeviceSimpleHashTable {
@@ -139,7 +145,9 @@ class SimpleHashTable {
   void EvictWithUnique(const IdType *const input, const size_t num_input,
                       StreamHandle stream);
   void LookupIfExist(const IdType* const input, const size_t num_input, IdType * pos, StreamHandle stream);
-  void LookupVal(const IdType* const input, const size_t num_input, ValType * vals, StreamHandle stream);
+  // void LookupVal(const IdType* const input, const size_t num_input, ValType * vals, StreamHandle stream);
+  template<typename DefValMaker>
+  void LookupValWithDef(const IdType* const input, const size_t num_input, ValType * vals, DefValMaker default_val_maker, StreamHandle stream);
   void CountEntries(StreamHandle stream);
 
   size_t NumItems() const { return _num_items; }
@@ -156,6 +164,13 @@ class SimpleHashTable {
   IdType _num_items;
 };
 
+struct CPUFallback {
+  int cpu_location_id;
+  CPUFallback(int cpu_loc) : cpu_location_id(cpu_loc) {}
+  inline __host__ __device__ ValType operator()(const IdType & key) {
+    return ValType(cpu_location_id, key);
+  }
+};
 
 void check_cuda_array(IdType* array, IdType cmp, IdType num_items, bool exp, StreamHandle stream);
 

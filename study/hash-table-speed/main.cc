@@ -104,7 +104,8 @@ int main(int argc, char** argv) {
   };
   auto lookup = [hash_table, lookup_rst, stream, gpu_dev, gpu_ctx](TensorPtr rqst){
     Timer t;
-    hash_table->LookupIfExist(rqst->CPtr<IdType>(), rqst_size, lookup_rst->Ptr<IdType>(), stream);
+    hash_table->LookupValWithDef<>(rqst->CPtr<IdType>(), rqst_size, lookup_rst->Ptr<cuda::ValType>(), cuda::CPUFallback(0), stream);
+    // hash_table->LookupIfExist(rqst->CPtr<IdType>(), rqst_size, lookup_rst->Ptr<IdType>(), stream);
     gpu_dev->StreamSync(gpu_ctx, stream);
     LOG(ERROR) << "lookup time " << t.PassedMicro();
   };
