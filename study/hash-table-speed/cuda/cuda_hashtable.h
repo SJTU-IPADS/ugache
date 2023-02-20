@@ -32,27 +32,23 @@ namespace common {
 namespace cuda {
 
 class OrderedHashTable;
-enum EntryStatus {
-  kUnused = 0,
-  kOccupied,
-  kInvalid,
-};
 
 using ValType = IdType;
 constexpr IdType kEmptyPos = 0xffffffff;
 
 class DeviceOrderedHashTable {
  public:
+  // 1| 111...111 -> Default state, this bucket is not used yet
+  //          insert may use this, search must stop at this
+  // 1| xxx...xxx -> Invalid bucket,
+  //          insert may use this, but search must proceed beyond this
+  // 0| xxx...xxx -> bucket inuse,
+  //          insert cannot use this, but search must proceed beyond this
   struct alignas(unsigned long long) BucketO2N {
     // don't change the position of version and key
     //   which used for efficient insert operation
-    // IdType version;
-    IdType key;
-    IdType state; // 0 for unused, 1 for inserted, 2 for inserted but evicted out
-    // IdType local;
+    IdType state_key;
     ValType val;
-    // IdType index;
-
   };
 
   typedef const BucketO2N *ConstIterator;
@@ -67,15 +63,15 @@ class DeviceOrderedHashTable {
 
     // linearly scan for matching entry
     IdType delta = 1;
-    while (_o2n_table[pos].key != id) {
-      if (_o2n_table[pos].key == Constant::kEmptyKey || _o2n_table[pos].state == kUnused) {
+    while ((_o2n_table[pos].state_key & 0x7fffffff) != id) {
+      if (_o2n_table[pos].state_key == Constant::kEmptyKey) {
         return kEmptyPos;
       }
       pos = HashO2N(pos + delta);
       delta += 1;
     }
     assert(pos < _o2n_size);
-    if (_o2n_table[pos].state == kInvalid) return kEmptyPos;
+    if (_o2n_table[pos].state_key & 0x80000000) return kEmptyPos;
     return pos;
 #else
     return id;

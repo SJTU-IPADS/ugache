@@ -35,7 +35,7 @@ include_directories(
   ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
   # ../3rdparty/cub
   # ../3rdparty/parallel-hashmap
-  ../../3rdparty/CLI11/include
+  ../../../CLI11/include
   # $ENV{CONDA_PREFIX}/lib/python3.8/site-packages/torch/include
   # $ENV{CONDA_PREFIX}/lib/python3.8/site-packages/torch/include/torch/csrc/api/include
   # $ENV{CONDA_PREFIX}/include/python3.8

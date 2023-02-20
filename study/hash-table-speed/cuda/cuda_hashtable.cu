@@ -70,22 +70,20 @@ class MutableDeviceOrderedHashTable : public DeviceOrderedHashTable {
     // FIXME: only support sizeof(IdType) == 4
     static_assert(sizeof(IdType) == 4, "");
 
-    using ull = unsigned long long int;
-    // constexpr ull kI32Mask = 0xffffffff;
-    ull old = *(reinterpret_cast<ull*>(iter));
-    auto old_state = high32(old);
-    auto old_key = low32(old);
-    if (old_state == kOccupied) {
+    IdType old = iter->state_key;
+    IdType old_state = old & 0x80000000;
+    IdType old_key = old & 0x7fffffff;
+    if (old_state == 0) {
       if (old_key == id) assert(false);
       return kConflict;
     }
-    ull new_val = uint_to_ll(id, kOccupied);
-    ull ret_val = atomicCAS(reinterpret_cast<ull*>(iter), old, new_val);
+    IdType new_val = id;
+    IdType ret_val = atomicCAS(&iter->state_key, old, new_val);
     if (ret_val == old) {
       iter->val = val;
       return kFirstSuccess;
     }
-    IdType ret_key = low32(ret_val);
+    IdType ret_key = ret_val & 0x7fffffff;
     if (ret_key == id) assert(false);
     return kConflict;
 #else
@@ -190,7 +188,7 @@ __global__ void evict_hashmap_unique(const IdType *const items,
        index += BLOCK_SIZE) {
     if (index < num_items) {
       const IteratorO2N bucket = table.SearchO2N(items[index]);
-      bucket->state = kInvalid;
+      bucket->state_key |= 0x80000000;
     }
   }
 }
@@ -368,8 +366,7 @@ void check_cuda_array(IdType* array, IdType cmp, IdType num_items, bool exp, Str
       <<<grid, block, 0, cu_stream>>>(array, cmp, num_items, exp);
 }
 
-template <
-    typename OffsetT = ptrdiff_t>
+template <typename OffsetT = ptrdiff_t>
 struct cubEntryIs {
   // Required iterator traits
   typedef cubEntryIs                       self_type;              ///< My own type
@@ -380,51 +377,50 @@ struct cubEntryIs {
   typedef std::random_access_iterator_tag     iterator_category;      ///< The iterator category
   OrderedHashTable::BucketO2N* array;
   IdType cmp;
-  __host__ __device__ cubEntryIs(OrderedHashTable::BucketO2N* arr, IdType c) : array(arr),cmp(c) {}
+  IdType mask;
+  __host__ __device__ cubEntryIs(OrderedHashTable::BucketO2N* arr, IdType c, IdType m) : array(arr),cmp(c),mask(m) {}
   template <typename Distance>
   __host__ __device__ __forceinline__ IdType operator[](const Distance d) const {
   // __host__ __device__ __forceinline__ IdType operator[](const IdType d) {
-    return (array[d].state == cmp) ? 1 : 0;
+    return ((array[d].state_key & mask) == cmp) ? 1 : 0;
   }
   template <typename Distance>
   __host__ __device__ __forceinline__ self_type operator+(Distance n) const {
-    return self_type(array + n, cmp);
+    return self_type(array + n, cmp, mask);
   }
 };
 
 void OrderedHashTable::CountEntries(StreamHandle stream){
   void* d_temp_storage = nullptr;
   size_t temp_storage_bytes;
-  cubEntryIs<> input_iter(this->_o2n_table, kOccupied);
+  cubEntryIs<> input_iter(this->_o2n_table, 0, 0x80000000);
   auto out = Tensor::Empty(kI32, {1}, GPU(0), "");
   auto cu_stream = static_cast<cudaStream_t>(stream);
   cub::DeviceReduce::Sum(d_temp_storage, temp_storage_bytes, input_iter, out->Ptr<IdType>(), this->_o2n_size, cu_stream);
   CUDA_CALL(cudaMalloc(&d_temp_storage, temp_storage_bytes));
 
-  auto print_out = [out, stream](std::string s){
+  auto get_out = [out, stream](){
     auto cpu_out = Tensor::CopyTo(out, CPU(), stream);
     Device::Get(GPU(0))->StreamSync(GPU(0), stream);
-    LOG(ERROR) << s << cpu_out->CPtr<IdType>()[0];
+    return cpu_out->CPtr<IdType>()[0];
   };
 
+  input_iter = cubEntryIs<>(this->_o2n_table, 0, 0x80000000);
   cub::DeviceReduce::Sum(d_temp_storage, temp_storage_bytes, input_iter, out->Ptr<IdType>(), this->_o2n_size, cu_stream);
   Device::Get(GPU(0))->StreamSync(GPU(0), stream);
-  print_out("Occupied ");
+  LOG(ERROR) << "Occupied " << get_out();
 
-  input_iter.cmp = kInvalid;
+  input_iter = cubEntryIs<>(this->_o2n_table, 0x80000000, 0x80000000);
   cub::DeviceReduce::Sum(d_temp_storage, temp_storage_bytes, input_iter, out->Ptr<IdType>(), this->_o2n_size, cu_stream);
   Device::Get(GPU(0))->StreamSync(GPU(0), stream);
-  print_out("Invalid ");
+  IdType state1 = get_out();
 
-  input_iter.cmp = kUnused;
+  input_iter = cubEntryIs<>(this->_o2n_table, 0xffffffff, 0xffffffff);
   cub::DeviceReduce::Sum(d_temp_storage, temp_storage_bytes, input_iter, out->Ptr<IdType>(), this->_o2n_size, cu_stream);
   Device::Get(GPU(0))->StreamSync(GPU(0), stream);
-  print_out("Unused ");
-
-  input_iter.cmp = 0xffffffff;
-  cub::DeviceReduce::Sum(d_temp_storage, temp_storage_bytes, input_iter, out->Ptr<IdType>(), this->_o2n_size, cu_stream);
-  Device::Get(GPU(0))->StreamSync(GPU(0), stream);
-  print_out("Default ");
+  IdType default_state = get_out();
+  LOG(ERROR) << "Invalid " << state1 - default_state;
+  LOG(ERROR) << "Default " << default_state;
 }
 
 }  // namespace cuda
