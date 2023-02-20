@@ -89,9 +89,10 @@ int main(int argc, char** argv) {
   LOG(ERROR) << "preparing random cache keys";
   shuffle_first(cpu_total_key_list->Ptr<IdType>(), cached_keys + num_evict_keys, num_full_key);
   TensorPtr gpu_cached_nodes = subtensor(cpu_total_key_list, 0, cached_keys, gpu_ctx, stream);
+  TensorPtr fake_vals = Tensor::Empty(kI32, {cached_keys}, GPU(0), "");
   gpu_dev->StreamSync(gpu_ctx, stream);
   LOG(ERROR) << "filling hash table";
-  hash_table->FillWithUnique(gpu_cached_nodes->CPtr<IdType>(), cached_keys, stream);
+  hash_table->FillWithUnique(gpu_cached_nodes->CPtr<IdType>(), fake_vals->CPtr<cuda::ValType>(), cached_keys, stream);
   gpu_dev->StreamSync(gpu_ctx, stream);
   auto lookup_rst = Tensor::Empty(kI32, {rqst_size}, gpu_ctx, "");
   auto tmp_lookup_rst = Tensor::Empty(kI32, {num_evict_keys}, gpu_ctx, "");
@@ -117,13 +118,14 @@ int main(int argc, char** argv) {
 
     TensorPtr keys_to_evict = Tensor::CopyBlob(cached_keys_cpu, kI32, {num_evict_keys}, CPU(), gpu_ctx, "", stream);
     TensorPtr new_keys = Tensor::CopyBlob(non_cached_keys_cpu, kI32, {num_evict_keys}, CPU(), gpu_ctx, "", stream);
+    TensorPtr temp_vals = Tensor::Empty(kI32, {num_evict_keys}, gpu_ctx, "");
     gpu_dev->CopyDataFromTo(keys_to_evict->Data(), 0, non_cached_keys_cpu, 0, keys_to_evict->NumBytes(), gpu_ctx, CPU(), stream);
     gpu_dev->CopyDataFromTo(new_keys->Data(), 0, cached_keys_cpu, 0, new_keys->NumBytes(), gpu_ctx, CPU(), stream);
     gpu_dev->StreamSync(gpu_ctx, stream);
 
     Timer t;
     hash_table->EvictWithUnique(keys_to_evict->CPtr<IdType>(), num_evict_keys, stream);
-    hash_table->FillWithUnique(new_keys->CPtr<IdType>(), num_evict_keys, stream);
+    hash_table->FillWithUnique(new_keys->CPtr<IdType>(), temp_vals->CPtr<cuda::ValType>(), num_evict_keys, stream);
     gpu_dev->StreamSync(gpu_ctx, stream);
     LOG(ERROR) << "evict time " << t.PassedMicro();
 

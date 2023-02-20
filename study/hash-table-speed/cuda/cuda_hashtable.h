@@ -15,8 +15,7 @@
  *
  */
 
-#ifndef SAMGRAPH_CUDA_HASHTABLE_H
-#define SAMGRAPH_CUDA_HASHTABLE_H
+#pragma once
 
 #include <cuda_runtime.h>
 
@@ -121,7 +120,9 @@ class SimpleHashTable {
 
   void Reset(StreamHandle stream);
 
-  void FillWithUnique(const IdType *const input, const size_t num_input,
+  void FillWithUnique(const IdType *const input, 
+                      const ValType *const vals,
+                      const size_t num_input,
                       StreamHandle stream);
   void EvictWithUnique(const IdType *const input, const size_t num_input,
                       StreamHandle stream);
@@ -149,5 +150,3 @@ void check_cuda_array(IdType* array, IdType cmp, IdType num_items, bool exp, Str
 }  // namespace cuda
 }  // namespace common
 }  // namespace samgraph
-
-#endif  // SAMGRAPH_CUDA_HASHTABLE_H

@@ -63,8 +63,7 @@ class MutableDeviceSimpleHashTable : public DeviceSimpleHashTable {
     kDupSuccess,
   };
   inline __device__ InsertStatus AttemptInsertAtO2N(const IdType pos, const IdType id,
-                                            const IdType val,
-                                            const IdType _) {
+                                            const ValType val) {
     auto iter = GetMutableO2N(pos);
 #ifndef SXN_NAIVE_HASHMAP
     // FIXME: only support sizeof(IdType) == 4
@@ -102,15 +101,14 @@ class MutableDeviceSimpleHashTable : public DeviceSimpleHashTable {
   /** Return corresponding bucket on first insertion.
    *  Duplicate attemps return nullptr
    */
-  inline __device__ IteratorO2N InsertO2N(const IdType id, const IdType index,
-                                          const IdType version) {
+  inline __device__ IteratorO2N InsertO2N(const IdType id, const ValType val) {
 #ifndef SXN_NAIVE_HASHMAP
     IdType pos = HashO2N(id);
 
     // linearly scan for an empty slot or matching entry
     IdType delta = 1;
     InsertStatus ret;
-    while ((ret = AttemptInsertAtO2N(pos, id, index, version)) == kConflict) {
+    while ((ret = AttemptInsertAtO2N(pos, id, val)) == kConflict) {
       pos = HashO2N(pos + delta);
       delta += 1;
     }
@@ -150,10 +148,9 @@ size_t TableSize(const size_t num, const size_t scale) {
 
 template <size_t BLOCK_SIZE, size_t TILE_SIZE>
 __global__ void generate_hashmap_unique(const IdType *const items,
+                                        const ValType* const vals,
                                         const size_t num_items,
-                                        MutableDeviceSimpleHashTable table,
-                                        const IdType global_offset,
-                                        const IdType version) {
+                                        MutableDeviceSimpleHashTable table) {
   assert(BLOCK_SIZE == blockDim.x);
 
   using IteratorO2N = typename MutableDeviceSimpleHashTable::IteratorO2N;
@@ -165,7 +162,7 @@ __global__ void generate_hashmap_unique(const IdType *const items,
   for (size_t index = threadIdx.x + block_start; index < block_end;
        index += BLOCK_SIZE) {
     if (index < num_items) {
-      const IteratorO2N bucket = table.InsertO2N(items[index], index, version);
+      const IteratorO2N bucket = table.InsertO2N(items[index], vals[index]);
       // since we are only inserting unique items, we know their local id
       // will be equal to their index
     }
@@ -174,8 +171,7 @@ __global__ void generate_hashmap_unique(const IdType *const items,
 template <size_t BLOCK_SIZE, size_t TILE_SIZE>
 __global__ void evict_hashmap_unique(const IdType *const items,
                                     const size_t num_items,
-                                    MutableDeviceSimpleHashTable table,
-                                    const IdType version) {
+                                    MutableDeviceSimpleHashTable table) {
   assert(BLOCK_SIZE == blockDim.x);
 
   using IteratorO2N = typename MutableDeviceSimpleHashTable::IteratorO2N;
@@ -196,8 +192,7 @@ template <size_t BLOCK_SIZE, size_t TILE_SIZE>
 __global__ void lookup_hashmap_ifexist(const IdType *const items,
                              const size_t num_items,
                              IdType* pos,
-                             MutableDeviceSimpleHashTable table,
-                             const IdType version) {
+                             MutableDeviceSimpleHashTable table) {
   assert(BLOCK_SIZE == blockDim.x);
 
   const size_t block_start = TILE_SIZE * blockIdx.x;
@@ -217,8 +212,7 @@ template <size_t BLOCK_SIZE, size_t TILE_SIZE>
 __global__ void lookup_val_hashmap(const IdType *const items,
                              const size_t num_items,
                              ValType* vals,
-                             MutableDeviceSimpleHashTable table,
-                             const IdType version) {
+                             MutableDeviceSimpleHashTable table) {
   assert(BLOCK_SIZE == blockDim.x);
 
   const size_t block_start = TILE_SIZE * blockIdx.x;
@@ -290,6 +284,7 @@ void SimpleHashTable::Reset(StreamHandle stream) {
 
 
 void SimpleHashTable::FillWithUnique(const IdType *const input,
+                                      const ValType *const vals,
                                       const size_t num_input,
                                       StreamHandle stream) {
   const size_t num_tiles = RoundUpDiv(num_input, Constant::kCudaTileSize);
@@ -300,8 +295,7 @@ void SimpleHashTable::FillWithUnique(const IdType *const input,
   auto cu_stream = static_cast<cudaStream_t>(stream);
 
   generate_hashmap_unique<Constant::kCudaBlockSize, Constant::kCudaTileSize>
-      <<<grid, block, 0, cu_stream>>>(input, num_input, device_table,
-                                      _num_items, _version);
+      <<<grid, block, 0, cu_stream>>>(input, vals, num_input, device_table);
   // Device::Get(_ctx)->StreamSync(_ctx, stream);
 
   _num_items += num_input;
@@ -321,7 +315,7 @@ void SimpleHashTable::EvictWithUnique(const IdType *const input,
   auto cu_stream = static_cast<cudaStream_t>(stream);
 
   evict_hashmap_unique<Constant::kCudaBlockSize, Constant::kCudaTileSize>
-      <<<grid, block, 0, cu_stream>>>(input, num_input, device_table, _version);
+      <<<grid, block, 0, cu_stream>>>(input, num_input, device_table);
   // Device::Get(_ctx)->StreamSync(_ctx, stream);
 
   _num_items -= num_input;
@@ -339,7 +333,7 @@ void SimpleHashTable::LookupIfExist(const IdType *const input, const size_t num_
   auto cu_stream = static_cast<cudaStream_t>(stream);
 
   lookup_hashmap_ifexist<Constant::kCudaBlockSize, Constant::kCudaTileSize>
-      <<<grid, block, 0, cu_stream>>>(input, num_input, pos, device_table, _version);
+      <<<grid, block, 0, cu_stream>>>(input, num_input, pos, device_table);
   // Device::Get(_ctx)->StreamSync(_ctx, stream);
 }
 
