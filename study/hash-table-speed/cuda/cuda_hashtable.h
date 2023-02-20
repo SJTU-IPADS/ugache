@@ -78,7 +78,19 @@ class DeviceSimpleHashTable {
   }
 
   inline __device__ ConstIterator SearchO2N(const IdType id) const {
-    const IdType pos = SearchForPositionO2N(id);
+    IdType pos = HashO2N(id);
+
+    // linearly scan for matching entry
+    IdType delta = 1;
+    while ((_o2n_table[pos].state_key & 0x7fffffff) != id) {
+      if (_o2n_table[pos].state_key == Constant::kEmptyKey) {
+        return nullptr;
+      }
+      pos = HashO2N(pos + delta);
+      delta += 1;
+    }
+    assert(pos < _o2n_size);
+    if (_o2n_table[pos].state_key & 0x80000000) return nullptr;
     return &_o2n_table[pos];
   }
 

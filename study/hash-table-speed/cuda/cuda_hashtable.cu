@@ -51,9 +51,20 @@ class MutableDeviceSimpleHashTable : public DeviceSimpleHashTable {
       : DeviceSimpleHashTable(host_table->DeviceHandle()) {}
 
   inline __device__ IteratorO2N SearchO2N(const IdType id) {
-    const IdType pos = SearchForPositionO2N(id);
+    IdType pos = HashO2N(id);
 
-    return GetMutableO2N(pos);
+    // linearly scan for matching entry
+    IdType delta = 1;
+    while ((_o2n_table[pos].state_key & 0x7fffffff) != id) {
+      if (_o2n_table[pos].state_key == Constant::kEmptyKey) {
+        return nullptr;
+      }
+      pos = HashO2N(pos + delta);
+      delta += 1;
+    }
+    assert(pos < _o2n_size);
+    if (_o2n_table[pos].state_key & 0x80000000) return nullptr;
+    return const_cast<IteratorO2N>(_o2n_table + pos);
   }
 
   static constexpr IdType MAX_DELTA = 100;
