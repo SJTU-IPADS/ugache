@@ -19,8 +19,8 @@ struct EmbCacheOff {
   IdType data;
   __host__ __device__ __forceinline__ EmbCacheOff(IdType loc, IdType off) { data = (loc << 28) + off; }
   __host__ __device__ __forceinline__ EmbCacheOff& operator=(const EmbCacheOff & v) { data = v.data; return *this;}
-  __host__ __device__ __forceinline__ IdType loc() const { return data >> 28; }
-  __host__ __device__ __forceinline__ IdType off() const { return data & 0xf0000000; }
+  __host__ __device__ __forceinline__ IdType loc() const { return (data >> 28) & 0x0f; }
+  __host__ __device__ __forceinline__ IdType off() const { return data & 0x0fffffff; }
 };
 
 using ValType = EmbCacheOff;
@@ -30,5 +30,6 @@ struct alignas(unsigned long long) BucketO2N {
   IdType state_key;
   ValType val;
 };
+class CacheEntryManager;
 }
 }

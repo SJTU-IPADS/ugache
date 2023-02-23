@@ -106,6 +106,29 @@ class DeviceSimpleHashTable {
   friend class SimpleHashTable;
 };
 
+namespace {
+
+template <size_t BLOCK_SIZE, size_t TILE_SIZE, typename Helper>
+__global__ void lookup_hashmap_with_helper(const IdType *const items,
+                             const size_t num_items,
+                             Helper helper,
+                             DeviceSimpleHashTable table) {
+  assert(BLOCK_SIZE == blockDim.x);
+
+  const size_t block_start = TILE_SIZE * blockIdx.x;
+  const size_t block_end = TILE_SIZE * (blockIdx.x + 1);
+
+#pragma unroll
+  for (size_t index = threadIdx.x + block_start; index < block_end;
+       index += BLOCK_SIZE) {
+    if (index < num_items) {
+      auto iter = table.SearchO2N(items[index]);
+      helper(index, items[index], iter);
+    }
+  }
+}
+};
+
 class SimpleHashTable {
  public:
   static constexpr size_t kDefaultScale = 2;
@@ -138,7 +161,18 @@ class SimpleHashTable {
   template<typename DefValMaker>
   void LookupValWithDef(const IdType* const input, const size_t num_input, ValType * vals, DefValMaker default_val_maker, StreamHandle stream);
   template<typename Helper>
-  void LookupValCustom(const IdType* const input, const size_t num_input, Helper helper, StreamHandle stream);
+  void LookupValCustom(const IdType* const input, const size_t num_input, Helper helper, StreamHandle stream) {
+    const size_t num_tiles = RoundUpDiv(num_input, Constant::kCudaTileSize);
+    const dim3 grid(num_tiles);
+    const dim3 block(Constant::kCudaBlockSize);
+
+    auto device_table = DeviceHandle();
+    auto cu_stream = static_cast<cudaStream_t>(stream);
+
+    lookup_hashmap_with_helper<Constant::kCudaBlockSize, Constant::kCudaTileSize>
+        <<<grid, block, 0, cu_stream>>>(input, num_input, helper, device_table);
+    // Device::Get(_ctx)->StreamSync(_ctx, stream);
+  }
   void CountEntries(StreamHandle stream);
 
   DeviceSimpleHashTable DeviceHandle() const;
@@ -167,6 +201,18 @@ struct OffsetOnly {
       offset_list[idx] = val->val.off();
     } else {
       offset_list[idx] = key;
+    };
+  }
+};
+struct LocOnly {
+  IdType *loc_list;
+  int fallback_loc;
+  LocOnly(IdType* loc_list, int fallback_loc) : loc_list(loc_list), fallback_loc(fallback_loc) {}
+  inline __host__ __device__ void operator()(const IdType & idx, const IdType & key, const DeviceSimpleHashTable::BucketO2N* val) {
+    if (val) {
+      loc_list[idx] = val->val.loc();
+    } else {
+      loc_list[idx] = fallback_loc;
     };
   }
 };
@@ -235,7 +281,7 @@ struct SingleLocSeqOff {
 
 }
 
-void check_cuda_array(IdType* array, IdType cmp, IdType num_items, bool exp, StreamHandle stream);
+void check_cuda_array(const IdType* array, IdType cmp, IdType num_items, bool exp, StreamHandle stream);
 
 
 class CacheEntryManager {
@@ -269,6 +315,10 @@ class CacheEntryManager {
   }
   void LookupOffset(TensorPtr keys, TensorPtr off, StreamHandle stream) {
     auto helper = HashTableLookupHelper::OffsetOnly(off->Ptr<IdType>());
+    _hash_table->LookupValCustom(keys->CPtr<IdType>(), keys->NumItem(), helper, stream);
+  }
+  void LookupLoc(TensorPtr keys, TensorPtr loc, StreamHandle stream) {
+    auto helper = HashTableLookupHelper::LocOnly(loc->Ptr<IdType>(), cpu_location_id);
     _hash_table->LookupValCustom(keys->CPtr<IdType>(), keys->NumItem(), helper, stream);
   }
   void InsertWithLoc(TensorPtr keys, TensorPtr off, int loc, StreamHandle stream) {
@@ -341,7 +391,7 @@ class CacheEntryManager {
     matched_keys->ForceScale(kI32, {num_matched_keys}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
     return matched_keys;
   }
-  void DetectKeysForAllSource(TensorPtr nid_to_block, TensorPtr block_access_advise, int local_location_id, TensorPtr block_density, size_t num_total_item,
+  static void DetectKeysForAllSource(TensorPtr nid_to_block, TensorPtr block_access_advise, int local_location_id, TensorPtr block_density, size_t num_total_item,
       TensorPtr* node_list_of_src) {
     // TensorPtr block_access_advise = Tensor::CopyLine(_cache_ctx->_coll_cache->_block_access_advise, local_location_id, CPU(CPU_CLIB_MALLOC_DEVICE), stream); // small
     size_t num_blocks = block_access_advise->Shape()[0];
@@ -361,6 +411,7 @@ class CacheEntryManager {
         for (size_t node_id = 0; node_id < num_total_item; node_id++) {
           IdType block_id = nid_to_block->CPtr<IdType>()[node_id];
           if (block_access_advise->CPtr<uint8_t>()[block_id] != dev_id) continue;
+          CHECK_LE(next_idx, per_src_size[dev_id]);
           node_list_of_src[dev_id]->Ptr<IdType>()[next_idx] = node_id;
           next_idx++;
         }

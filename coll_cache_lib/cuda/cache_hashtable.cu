@@ -281,25 +281,6 @@ __global__ void lookup_hashmap_with_def(const IdType *const items,
     }
   }
 }
-template <size_t BLOCK_SIZE, size_t TILE_SIZE, typename Helper>
-__global__ void lookup_hashmap_with_helper(const IdType *const items,
-                             const size_t num_items,
-                             Helper helper,
-                             MutableDeviceSimpleHashTable table) {
-  assert(BLOCK_SIZE == blockDim.x);
-
-  const size_t block_start = TILE_SIZE * blockIdx.x;
-  const size_t block_end = TILE_SIZE * (blockIdx.x + 1);
-
-#pragma unroll
-  for (size_t index = threadIdx.x + block_start; index < block_end;
-       index += BLOCK_SIZE) {
-    if (index < num_items) {
-      auto iter = table.SearchO2N(items[index]);
-      helper(index, items[index], iter);
-    }
-  }
-}
 
 
 // DeviceSimpleHashTable implementation
@@ -327,6 +308,7 @@ SimpleHashTable::SimpleHashTable(const size_t size, Context ctx,
   auto device = Device::Get(_ctx);
   auto cu_stream = static_cast<cudaStream_t>(stream);
 
+  LOG(INFO) << "SimpleHashTable allocating " << ToReadableSize(sizeof(BucketO2N) * _o2n_size);
   _o2n_table = static_cast<BucketO2N *>(
       device->AllocDataSpace(_ctx, sizeof(BucketO2N) * _o2n_size));
 
@@ -365,6 +347,7 @@ SimpleHashTable::SimpleHashTable(std::function<MemHandle(size_t)> allocator, con
   auto device = Device::Get(_ctx);
   auto cu_stream = static_cast<cudaStream_t>(stream);
 
+  LOG(INFO) << "SimpleHashTable allocating " << ToReadableSize(sizeof(BucketO2N) * _o2n_size);
   _o2n_table_handle = (allocator(sizeof(BucketO2N) * _o2n_size));
   _o2n_table = _o2n_table_handle->ptr<BucketO2N>();
 
@@ -408,6 +391,8 @@ void SimpleHashTable::InsertUnique(const IdType *const input, ValMaker val_maker
       <<<grid, block, 0, cu_stream>>>(input, val_maker, num_input, device_table);
   // Device::Get(_ctx)->StreamSync(_ctx, stream);
 }
+template void SimpleHashTable::InsertUnique<HashTableInsertHelper::SingleLoc>(const IdType *const input, HashTableInsertHelper::SingleLoc val_maker, const size_t num_input, StreamHandle stream);
+template void SimpleHashTable::InsertUnique<HashTableInsertHelper::SingleLocSeqOff>(const IdType *const input, HashTableInsertHelper::SingleLocSeqOff val_maker, const size_t num_input, StreamHandle stream);
 
 void SimpleHashTable::EvictWithUnique(const IdType *const input,
                                        const size_t num_input,
@@ -453,26 +438,13 @@ void SimpleHashTable::LookupValWithDef(const IdType* const input, const size_t n
 template
 void SimpleHashTable::LookupValWithDef<CPUFallback>(const IdType* const input, const size_t num_input, ValType * vals, CPUFallback default_val_maker, StreamHandle stream);
 
-template<typename Helper>
-void SimpleHashTable::LookupValCustom(const IdType* const input, const size_t num_input, Helper helper, StreamHandle stream) {
-  const size_t num_tiles = RoundUpDiv(num_input, Constant::kCudaTileSize);
-  const dim3 grid(num_tiles);
-  const dim3 block(Constant::kCudaBlockSize);
-
-  auto device_table = MutableDeviceSimpleHashTable(this);
-  auto cu_stream = static_cast<cudaStream_t>(stream);
-
-  lookup_hashmap_with_helper<Constant::kCudaBlockSize, Constant::kCudaTileSize>
-      <<<grid, block, 0, cu_stream>>>(input, num_input, helper, device_table);
-  // Device::Get(_ctx)->StreamSync(_ctx, stream);
-}
 
 template void SimpleHashTable::LookupValCustom<HashTableLookupHelper::EmbedVal>(const IdType* const input, const size_t num_input, HashTableLookupHelper::EmbedVal helper, StreamHandle stream);
 template void SimpleHashTable::LookupValCustom<HashTableLookupHelper::OffsetOnly>(const IdType* const input, const size_t num_input, HashTableLookupHelper::OffsetOnly helper, StreamHandle stream);
 template void SimpleHashTable::LookupValCustom<HashTableLookupHelper::SepLocOffset>(const IdType* const input, const size_t num_input, HashTableLookupHelper::SepLocOffset helper, StreamHandle stream);
 
 template <size_t BLOCK_SIZE, size_t TILE_SIZE>
-__global__ void check_cuda_array_(IdType* array, IdType cmp, IdType num_items, bool exp) {
+__global__ void check_cuda_array_(const IdType* array, IdType cmp, IdType num_items, bool exp) {
   assert(BLOCK_SIZE == blockDim.x);
   const size_t block_start = TILE_SIZE * blockIdx.x;
   const size_t block_end = TILE_SIZE * (blockIdx.x + 1);
@@ -485,7 +457,7 @@ __global__ void check_cuda_array_(IdType* array, IdType cmp, IdType num_items, b
   }
 }
 
-void check_cuda_array(IdType* array, IdType cmp, IdType num_items, bool exp, StreamHandle stream) {
+void check_cuda_array(const IdType* array, IdType cmp, IdType num_items, bool exp, StreamHandle stream) {
   const size_t num_tiles = RoundUpDiv<size_t>(num_items, Constant::kCudaTileSize);
   const dim3 grid(num_tiles);
   const dim3 block(Constant::kCudaBlockSize);
@@ -522,33 +494,37 @@ void SimpleHashTable::CountEntries(StreamHandle stream){
   void* d_temp_storage = nullptr;
   size_t temp_storage_bytes;
   cubEntryIs<> input_iter(this->_o2n_table, 0, 0x80000000);
-  auto out = Tensor::Empty(kI32, {1}, GPU(0), "");
+  IdType * d_out;
+  CUDA_CALL(cudaMalloc(&d_out, sizeof(IdType)));
+  // auto out = Tensor::Empty(kI32, {1}, GPU(0), "");
   auto cu_stream = static_cast<cudaStream_t>(stream);
-  cub::DeviceReduce::Sum(d_temp_storage, temp_storage_bytes, input_iter, out->Ptr<IdType>(), this->_o2n_size, cu_stream);
+  cub::DeviceReduce::Sum(d_temp_storage, temp_storage_bytes, input_iter, d_out, this->_o2n_size, cu_stream);
   CUDA_CALL(cudaMalloc(&d_temp_storage, temp_storage_bytes));
 
-  auto get_out = [out, stream](){
-    auto cpu_out = Tensor::CopyTo(out, CPU(), stream, "");
-    Device::Get(GPU(0))->StreamSync(GPU(0), stream);
-    return cpu_out->CPtr<IdType>()[0];
+  auto get_out = [d_out, stream, this](){
+    IdType cpu_out;
+    Device::Get(_ctx)->CopyDataFromTo(d_out, 0, &cpu_out, 0, sizeof(IdType), _ctx, CPU(), stream);
+    Device::Get(_ctx)->StreamSync(_ctx, stream);
+    return cpu_out;
   };
 
   input_iter = cubEntryIs<>(this->_o2n_table, 0, 0x80000000);
-  cub::DeviceReduce::Sum(d_temp_storage, temp_storage_bytes, input_iter, out->Ptr<IdType>(), this->_o2n_size, cu_stream);
-  Device::Get(GPU(0))->StreamSync(GPU(0), stream);
+  cub::DeviceReduce::Sum(d_temp_storage, temp_storage_bytes, input_iter, d_out, this->_o2n_size, cu_stream);
+  Device::Get(_ctx)->StreamSync(_ctx, stream);
   LOG(ERROR) << "Occupied " << get_out();
 
   input_iter = cubEntryIs<>(this->_o2n_table, 0x80000000, 0x80000000);
-  cub::DeviceReduce::Sum(d_temp_storage, temp_storage_bytes, input_iter, out->Ptr<IdType>(), this->_o2n_size, cu_stream);
-  Device::Get(GPU(0))->StreamSync(GPU(0), stream);
+  cub::DeviceReduce::Sum(d_temp_storage, temp_storage_bytes, input_iter, d_out, this->_o2n_size, cu_stream);
+  Device::Get(_ctx)->StreamSync(_ctx, stream);
   IdType state1 = get_out();
 
   input_iter = cubEntryIs<>(this->_o2n_table, 0xffffffff, 0xffffffff);
-  cub::DeviceReduce::Sum(d_temp_storage, temp_storage_bytes, input_iter, out->Ptr<IdType>(), this->_o2n_size, cu_stream);
-  Device::Get(GPU(0))->StreamSync(GPU(0), stream);
+  cub::DeviceReduce::Sum(d_temp_storage, temp_storage_bytes, input_iter, d_out, this->_o2n_size, cu_stream);
+  Device::Get(_ctx)->StreamSync(_ctx, stream);
   IdType default_state = get_out();
   LOG(ERROR) << "Invalid " << state1 - default_state;
   LOG(ERROR) << "Default " << default_state;
+  CUDA_CALL(cudaFree(d_out));
 }
 
 
