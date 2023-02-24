@@ -89,6 +89,27 @@ struct DataIterMultiLocation {
     return _remote_raw_data + offset * dim;
   }
 };
+template<typename LocIter_T, typename SrcOffIter_T>
+struct DataIterMixLocation {
+  LocIter_T _loc_iter;
+  SrcOffIter_T _off_iter;
+  void* _device_cache_data[9] = {nullptr};
+  size_t dim;
+  DataIterMixLocation(const LocIter_T loc_iter,
+        const SrcOffIter_T off_iter,
+        std::vector<void*> & cache_data,
+        size_t dim) :
+    _loc_iter(loc_iter), _off_iter(off_iter), dim(dim) {
+    memcpy(_device_cache_data, cache_data.data(), sizeof(void*) * cache_data.size());
+  }
+  template<typename T>
+  __host__ __device__ T* operator[](const size_t & idx) const {
+    const int location = _loc_iter[idx];
+    const auto _remote_raw_data = (T*)_device_cache_data[location];
+    const auto offset = _off_iter[idx];
+    return _remote_raw_data + offset * dim;
+  }
+};
 template<typename OffsetIter_T>
 struct DataIter {
   OffsetIter_T offset_iter;
@@ -992,6 +1013,28 @@ void ExtractSession::CombineNoGroup(const IdType * nodes, const size_t num_node,
 
   device->StreamSync(_trainer_ctx, stream);
 }
+void ExtractSession::CombineMixGroup(const SrcKey* src_key, const DstVal* dst_val, const size_t num_node, void* output, Context _trainer_ctx, DataType _dtype, IdType _dim, StreamHandle stream) {
+  if (num_node == 0) return;
+  auto device = Device::Get(_trainer_ctx);
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+
+  // dim3 block(256, 1);
+  dim3 block(1024, 1);
+  while (static_cast<size_t>(block.x) >= 2 * _dim) {
+    block.x /= 2;
+    block.y *= 2;
+  }
+  const dim3 grid(RoundUpDiv(num_node, static_cast<size_t>(block.y * 4)));
+
+  const DataIterMixLocation<LocationIter, SrcOffIter> src_iter(LocationIter(src_key), SrcOffIter(dst_val), _cache_ctx->_device_cache_data, _dim);
+  DataIter<DirectOffIter> dst_iter(DirectOffIter(), output, _dim);
+
+  SWITCH_TYPE(_dtype, type, {
+      extract_data<type><<<grid, block, 0, cu_stream>>>(src_iter, dst_iter, num_node, _dim);
+  });
+
+  device->StreamSync(_trainer_ctx, stream);
+}
 
 void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
                   void* output, StreamHandle stream, uint64_t task_key) {
@@ -1073,9 +1116,14 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       SortByLocation(sorted_nodes, nodes, num_nodes, stream);
       nodes = sorted_nodes;
     }
+    SrcKey * src_index = nullptr;
+    DstVal * dst_index = nullptr;
+    LOG(DEBUG) << "CollCache: ExtractFeat: coll, get miss cache index... ";
+    GetMissCacheIndex(src_index, dst_index, nodes, num_nodes, stream);
     double get_index_time = t0.Passed();
     Timer t1;
-    CombineNoGroup(nodes, num_nodes, output, _cache_ctx->_trainer_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
+    // CombineNoGroup(nodes, num_nodes, output, _cache_ctx->_trainer_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
+    CombineMixGroup(src_index, dst_index, num_nodes, output, _cache_ctx->_trainer_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
     double combine_time = t1.Passed();
     if (task_key != 0xffffffffffffffff) {
       // size_t num_hit = group_offset[1];

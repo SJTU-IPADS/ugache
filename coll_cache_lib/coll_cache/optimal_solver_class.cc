@@ -996,6 +996,15 @@ void RepSolver::Solve(std::vector<int> device_to_stream,
   block_placement = Tensor::CreateShm(Constant::kCollCachePlacementShmName, kU8, {static_cast<size_t>(num_block)}, "coll_cache_block_placement");
   block_placement->Ptr<uint8_t>()[0] = (1 << num_device) - 1;
   block_placement->Ptr<uint8_t>()[1] = 0;
+  block_access_from = Tensor::CreateShm(Constant::kCollCacheAccessShmName, kU8, {(size_t)num_device, static_cast<size_t>(num_block)}, "coll_cache_advise");
+  TensorView<uint8_t> block_access_from_array(block_access_from);
+  for (IdType dev_id = 0; dev_id < num_device; dev_id++) {
+    block_access_from_array[dev_id][0].ref() = dev_id;
+    block_access_from_array[dev_id][1].ref() = num_device;
+  }
+  block_density_tensor = Tensor::CreateShm(Constant::kCollCachePlacementShmName + "_density", kF64, {num_block}, "");
+  block_density_tensor->Ptr<double>()[0] = (double)replicate_size * 100 / (double)num_node;
+  block_density_tensor->Ptr<double>()[1] = (double)cpu_size * 100 / (double)num_node;
 }
 
 void CliquePartSolver::Solve(std::vector<int> device_to_stream,
@@ -1082,6 +1091,7 @@ void CliquePartSolver::Solve(std::vector<int> device_to_stream,
 
   block_placement = Tensor::CreateShm(Constant::kCollCachePlacementShmName, kU8, {static_cast<size_t>(num_block)}, "coll_cache_block_placement");
   block_access_from = Tensor::CreateShm(Constant::kCollCacheAccessShmName, kU8, {num_device, static_cast<size_t>(num_block)}, "coll_cache_advise");
+  block_density_tensor = Tensor::CreateShm(Constant::kCollCachePlacementShmName + "_density", kF64, {(size_t)num_block}, "");
   TensorView<uint8_t> block_access_from_array(block_access_from);
   // there are clique_size + 1 blocks; first clique_size block is clique-partitioned, the last is on cpu
   for (int block_id = 0; block_id < clique_size; block_id++) {
@@ -1089,12 +1099,14 @@ void CliquePartSolver::Solve(std::vector<int> device_to_stream,
     for (IdType dev_id = 0; dev_id < num_device; dev_id++) {
       block_access_from_array[dev_id][block_id].ref() = block_id_to_src_dev(block_id, dev_id);
     }
+    block_density_tensor->Ptr<double>()[block_id] = (double)partition_size * 100 / (double)num_node;
   }
   // the one on cpu
   block_placement->Ptr<uint8_t>()[clique_size] = 0;
   for (IdType dev_id = 0; dev_id < num_device; dev_id++) {
     block_access_from_array[dev_id][clique_size].ref() = num_device;
   }
+  block_density_tensor->Ptr<double>()[clique_size] = ((double)num_node - partition_size * clique_size) * 100 / (double)num_node;
 
   FOR_LOOP(block_id, num_block) {
     // std::ios_base::fmtflags f( std::cerr.flags() );
@@ -1215,6 +1227,7 @@ void CliquePartByDegreeSolver::Solve(std::vector<int> device_to_stream,
 
   block_placement = Tensor::CreateShm(Constant::kCollCachePlacementShmName, kU8, {static_cast<size_t>(num_block)}, "coll_cache_block_placement");
   block_access_from = Tensor::CreateShm(Constant::kCollCacheAccessShmName, kU8, {num_device, static_cast<size_t>(num_block)}, "coll_cache_advise");
+  block_density_tensor = Tensor::CreateShm(Constant::kCollCachePlacementShmName + "_density", kF64, {(size_t)num_block}, "");
   TensorView<uint8_t> block_access_from_array(block_access_from);
   // there are clique_size + 1 blocks; first clique_size block is clique-partitioned, the last is on cpu
   for (int block_id = 0; block_id < clique_size; block_id++) {
@@ -1222,12 +1235,14 @@ void CliquePartByDegreeSolver::Solve(std::vector<int> device_to_stream,
     for (IdType dev_id = 0; dev_id < num_device; dev_id++) {
       block_access_from_array[dev_id][block_id].ref() = block_id_to_src_dev(block_id, dev_id);
     }
+    block_density_tensor->Ptr<double>()[block_id] = (double)partition_size * 100 / (double)num_node;
   }
   // the one on cpu
   block_placement->Ptr<uint8_t>()[clique_size] = 0;
   for (IdType dev_id = 0; dev_id < num_device; dev_id++) {
     block_access_from_array[dev_id][clique_size].ref() = num_device;
   }
+  block_density_tensor->Ptr<double>()[clique_size] = ((double)num_node - partition_size * clique_size) * 100 / (double)num_node;
 
   FOR_LOOP(block_id, num_block) {
     // std::ios_base::fmtflags f( std::cerr.flags() );

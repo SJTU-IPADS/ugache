@@ -135,12 +135,11 @@ void CollCache::solve_impl_slave() {
                                     {}, "nid_to_block");
     _block_placement = Tensor::OpenShm(Constant::kCollCachePlacementShmName,
                                        kU8, {}, "coll_cache_block_placement");
-    if (RunConfig::cache_policy == kCollCacheAsymmLink) {
-      // for refreshment to know about sizes
-      _block_density = Tensor::OpenShm(Constant::kCollCachePlacementShmName + "_density",
-                                        kF64, {}, "coll_cache_block_density");
-    }
+    // if (RunConfig::cache_policy == kCollCacheAsymmLink) {
+    //   // for refreshment to know about sizes
+    // }
     if (RunConfig::cache_policy == kCollCacheAsymmLink ||
+        RunConfig::cache_policy == kRepCache ||
         RunConfig::cache_policy == kCliquePart ||
         RunConfig::cache_policy == kCliquePartByDegree) {
       size_t num_blocks = _block_placement->Shape()[0];
@@ -149,6 +148,8 @@ void CollCache::solve_impl_slave() {
           {static_cast<decltype(num_blocks)>(RunConfig::num_device),
            num_blocks},
           "block_access_advise");
+      _block_density = Tensor::OpenShm(Constant::kCollCachePlacementShmName + "_density",
+                                        kF64, {}, "coll_cache_block_density");
     }
 }
 
