@@ -96,6 +96,21 @@ void Tensor::Swap(TensorPtr tensor) {
   std::swap(this->_data, tensor->_data);
 }
 
+void Tensor::ForceScale(DataType dt, std::vector<size_t> shape, Context ctx, std::string name) {
+  CHECK(Defined());
+  CHECK(_dtype == dt);
+  CHECK(_ctx == ctx);
+  CHECK(_shape.size() == shape.size());
+  if (_external_mem_hanlder) {
+    CHECK_LE(GetTensorBytes(dt, shape), _external_mem_hanlder->nbytes());
+  } else {
+    CHECK_LE(std::accumulate(shape.begin(), shape.end(), 1ul, std::multiplies<size_t>()), NumItem());
+  }
+  _name = name;
+  _shape = shape;
+  _nbytes = GetTensorBytes(dt, shape.begin(), shape.end());
+}
+
 void Tensor::ReShape(std::vector<size_t> new_shape) {
   CHECK(Defined());
   CHECK(GetTensorBytes(kI8, _shape) == GetTensorBytes(kI8, new_shape));

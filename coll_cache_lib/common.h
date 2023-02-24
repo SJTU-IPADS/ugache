@@ -184,6 +184,7 @@ class Tensor {
   size_t NumBytes() const { return _nbytes; }
   Context Ctx() const { return _ctx; }
   inline size_t NumItem() const { return std::accumulate(_shape.begin(), _shape.end(), 1ul, std::multiplies<size_t>()); }
+  void ForceScale(DataType dt, std::vector<size_t> shape, Context ctx, std::string name);
   void ReShape(std::vector<size_t> new_shape);
 
   static TensorPtr Null();

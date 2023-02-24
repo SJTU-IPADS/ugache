@@ -19,6 +19,7 @@
 #include "cache_context.h"
 #include "cuda/cub_sort_wrapper.cuh"
 #include "cuda/mps_util.h"
+#include "cuda/cache_hashtable.cuh"
 
 #define SWITCH_TYPE(type, Type, ...)      \
   switch(type) {                     \
@@ -44,6 +45,23 @@ namespace coll_cache_lib {
 
 using namespace common;
 // per-gpu cache handler
+struct GetIdxHelper {
+  SrcKey* src_key;
+  DstVal* dst_val;
+  int fallback_loc;
+  GetIdxHelper(SrcKey* src_key, DstVal* dst_val, int fallback_loc) : src_key(src_key), dst_val(dst_val), fallback_loc(fallback_loc) {}
+  inline __host__ __device__ void operator()(const IdType & idx, const IdType & key, const DeviceSimpleHashTable::BucketO2N* val) {
+    if (val) {
+      src_key[idx]._location_id = val->val.loc();
+      dst_val[idx]._src_offset = val->val.off();
+      dst_val[idx]._dst_offset = idx;
+    } else {
+      src_key[idx]._location_id = fallback_loc;
+      dst_val[idx]._src_offset = key;
+      dst_val[idx]._dst_offset = idx;
+    };
+  }
+};
 
 namespace {
 
@@ -527,6 +545,37 @@ void ExtractSession::GetMissCacheIndexByCub(DstVal* & output_dst_index,
   }
 }
 
+template <size_t BLOCK_SIZE=Constant::kCudaBlockSize, size_t TILE_SIZE=Constant::kCudaTileSize>
+__global__ void check_eq(const uint32_t * a, const uint32_t * b, const size_t n_elem) {
+
+  assert(BLOCK_SIZE == blockDim.x);
+  const size_t block_start = TILE_SIZE * blockIdx.x;
+  const size_t block_end = TILE_SIZE * (blockIdx.x + 1);
+
+  for (size_t offset = block_start + threadIdx.x; offset < block_end; offset += BLOCK_SIZE) {
+    if (offset < n_elem) {
+      assert(a[offset] == b[offset]);
+    }
+  }
+}
+void CheckCudaEqual(const void * a, const void* b, const size_t nbytes, StreamHandle stream) {
+  CHECK(nbytes % 4 == 0);
+  const size_t n_elem = nbytes / 4;
+  // {
+  //   SAM_CUDA_PREPARE_1D(n_elem);
+  //   check_eq<><<<grid, block, 0, (cudaStream_t)stream>>>((const uint32_t*)a, (const uint32_t*)b, n_elem);
+  // }
+
+  {
+    const size_t num_tiles = 1; // RoundUpDiv((n_elem), Constant::kCudaTileSize);
+    const dim3 grid(num_tiles);
+    const dim3 block(4);
+
+    check_eq<4, 1000000><<<grid, block, 0, (cudaStream_t)stream>>>((const uint32_t*)a, (const uint32_t*)b, n_elem);
+  }
+  CUDA_CALL(cudaStreamSynchronize((cudaStream_t)stream));
+}
+
 void ExtractSession::GetMissCacheIndex(
     SrcKey* & output_src_index, DstVal* & output_dst_index,
     const IdType* nodes, const size_t num_nodes, 
@@ -556,11 +605,27 @@ void ExtractSession::GetMissCacheIndex(
   LocationIter location_iter(output_src_index);
   SrcOffIter src_offset_iter(output_dst_index);
   DstOffIter dst_offset_iter(output_dst_index);
+  Timer t_flatern;
   get_miss_cache_index<Constant::kCudaBlockSize, Constant::kCudaTileSize><<<grid, block, 0, cu_stream>>>(
     location_iter, src_offset_iter, dst_offset_iter, nodes, num_nodes, _cache_ctx->_hash_table_location, _cache_ctx->_hash_table_offset);
   // device->StreamSync(_cache_ctx->_trainer_ctx, stream);
   // std::cout << "coll get index "<< t0.Passed() << "\n";
   
+  {
+    device->StreamSync(_cache_ctx->_trainer_ctx, stream);
+    LOG(ERROR) << "flatern get idx " << t_flatern.Passed();
+    Timer t_hash;
+    _cache_ctx->_new_hash_table->_hash_table->LookupValCustom(nodes, num_nodes, GetIdxHelper(output_src_index_alter, output_dst_index_alter, _cache_ctx->_cpu_location_id), stream);
+    device->StreamSync(_cache_ctx->_trainer_ctx, stream);
+    LOG(ERROR) << "hashtable get idx " << t_hash.Passed();
+    CheckCudaEqual(output_src_index, output_src_index_alter, sizeof(SrcKey) * num_nodes, stream);
+    device->StreamSync(_cache_ctx->_trainer_ctx, stream);
+    LOG(ERROR) << "src key checked";
+    CheckCudaEqual(output_dst_index, output_dst_index_alter, sizeof(DstVal) * num_nodes, stream);
+    device->StreamSync(_cache_ctx->_trainer_ctx, stream);
+    LOG(ERROR) << "dst val checked";
+  }
+
   Timer t1;
   cub::DoubleBuffer<int> keys(reinterpret_cast<int*>(output_src_index), reinterpret_cast<int*>(output_src_index_alter));
   cub::DoubleBuffer<Id64Type> vals(reinterpret_cast<Id64Type*>(output_dst_index), reinterpret_cast<Id64Type*>(output_dst_index_alter));
@@ -1801,8 +1866,9 @@ void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCac
 }
 
 void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream) {
+  // auto hash_table_list = DevicePointerExchanger(_barrier, Constant::kCollCacheHashTableOffsetPtrShmName + "_hashtable");
   auto hash_table_offset_list = DevicePointerExchanger(_barrier, Constant::kCollCacheHashTableOffsetPtrShmName);
-  auto device_cache_data_list = DevicePointerExchanger(_barrier, Constant::kCollCacheDeviceCacheDataPtrShmName);
+  // auto device_cache_data_list = DevicePointerExchanger(_barrier, Constant::kCollCacheDeviceCacheDataPtrShmName);
   auto hash_table_location_list = DevicePointerExchanger(_barrier, Constant::kCollCacheHashTableOffsetPtrShmName + "_location");
   _trainer_ctx = gpu_ctx;
   _dtype = dtype;
@@ -1826,10 +1892,11 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
   auto gpu_device = Device::Get(gpu_ctx);
   auto cpu_device = Device::Get(CPU(CPU_CUDA_HOST_MALLOC_DEVICE));
 
+  // _remote_hash_table.resize(_num_location, nullptr);
   _remote_hash_table_offset.resize(_num_location, nullptr);
   _remote_hash_table_location.resize(_num_location, nullptr);
-  _device_cache_data.resize(_num_location, nullptr);
-  _device_cache_data[_cpu_location_id] = cpu_data;
+  // _device_cache_data.resize(_num_location, nullptr);
+  // _device_cache_data[_cpu_location_id] = cpu_data;
 
   auto cpu_hashtable_location_list = HostPointerExchanger(_barrier, Constant::kCollCacheHashTableOffsetPtrShmName + "_cpu");
   auto cpu_hashtable_offset_list = HostPointerExchanger(_barrier, Constant::kCollCacheHashTableOffsetPtrShmName + "_location_cpu");
@@ -1896,18 +1963,18 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
     _cache_space_capacity = num_cached_nodes + num_total_nodes * 0.0001;
     _cache_nbytes = GetTensorBytes(_dtype, {_cache_space_capacity, _dim});
     _cache_nodes = num_cached_nodes;
-    _device_cache_data_local_handle = _eager_gpu_mem_allocator(_cache_nbytes);
-    _device_cache_data[_local_location_id] = _device_cache_data_local_handle->ptr();
+    // _device_cache_data_local_handle = _eager_gpu_mem_allocator(_cache_nbytes);
+    // _device_cache_data[_local_location_id] = _device_cache_data_local_handle->ptr();
     if (num_cached_nodes > 0) {
-      if (RunConfig::option_empty_feat == 0) {
-        const DataIter<const IdType*> src_data_iter(cache_node_list, cpu_data, dim);
-        DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), _device_cache_data[_local_location_id], dim);
-        Combine(src_data_iter, dst_data_iter, num_cached_nodes, gpu_ctx, dtype, dim, stream);
-      } else {
-        const DataIter<MockOffIter> src_data_iter(MockOffIter(), cpu_data, dim);
-        DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), _device_cache_data[_local_location_id], dim);
-        Combine(src_data_iter, dst_data_iter, num_cached_nodes, gpu_ctx, dtype, dim, stream);
-      }
+      // if (RunConfig::option_empty_feat == 0) {
+      //   const DataIter<const IdType*> src_data_iter(cache_node_list, cpu_data, dim);
+      //   DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), _device_cache_data[_local_location_id], dim);
+      //   Combine(src_data_iter, dst_data_iter, num_cached_nodes, gpu_ctx, dtype, dim, stream);
+      // } else {
+      //   const DataIter<MockOffIter> src_data_iter(MockOffIter(), cpu_data, dim);
+      //   DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), _device_cache_data[_local_location_id], dim);
+      //   Combine(src_data_iter, dst_data_iter, num_cached_nodes, gpu_ctx, dtype, dim, stream);
+      // }
 
       LOG(INFO) << "CollCacheManager: fix offset of local nodes in hash table";
       SAM_CUDA_PREPARE_1D(num_cached_nodes);
@@ -1917,6 +1984,28 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
       gpu_device->StreamSync(gpu_ctx, stream);
     }
   }
+  // TensorPtr keys_for_each_source[9] = {nullptr};
+  // {
+  //   this->_new_hash_table = new CacheEntryManager;
+  //   _new_hash_table->DetectKeysForAllSource(
+  //       coll_cache_ptr->_nid_to_block, Tensor::CopyLine(coll_cache_ptr->_block_access_advise, location_id, CPU(), stream), location_id, coll_cache_ptr->_block_density, num_total_nodes, keys_for_each_source);
+  //   gpu_device->StreamSync(gpu_ctx, stream);
+  //   auto cache_node_list = Tensor::CopyToExternal(keys_for_each_source[location_id], _eager_gpu_mem_allocator, _trainer_ctx, stream);
+  //   gpu_device->StreamSync(gpu_ctx, stream);
+  //   CHECK_EQ(num_cached_nodes, keys_for_each_source[location_id]->NumItem());
+  //   if (keys_for_each_source[_cpu_location_id] == nullptr) {
+  //     CHECK_EQ(num_cpu_nodes, 0);
+  //   } else {
+  //     CHECK_EQ(num_cpu_nodes, keys_for_each_source[_cpu_location_id]->NumItem());
+  //   }
+  //   _new_hash_table->_hash_table = std::make_shared<SimpleHashTable>(_eager_gpu_mem_allocator, (size_t)(num_total_nodes - num_cpu_nodes), _trainer_ctx, stream);
+  //   CheckCudaEqual(cache_node_list->Data(), node_list_buffer, num_cached_nodes * sizeof(IdType), stream);
+  //   gpu_device->StreamSync(gpu_ctx, stream);
+  //   _new_hash_table->InsertSeqOffWithLoc(cache_node_list, location_id, stream);
+  //   gpu_device->StreamSync(gpu_ctx, stream);
+  //   _new_hash_table->_hash_table->CountEntries(stream);
+  //   gpu_device->StreamSync(gpu_ctx, stream);
+  // }
 
   LOG(INFO) << "CollCacheManager: waiting for remotes, here is " << _local_location_id;
 
@@ -1928,8 +2017,9 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
     hash_table_offset_list.signin(_local_location_id, _hash_table_offset);
   }
   if (num_cached_nodes > 0) {
-    device_cache_data_list.signin(_local_location_id, _device_cache_data[_local_location_id]);
+    // device_cache_data_list.signin(_local_location_id, _device_cache_data[_local_location_id]);
   }
+  // hash_table_list.signin(_local_location_id, _new_hash_table->_hash_table->_o2n_table);
 
   /**
    * 3. get hashtable entry, cache data from remote devices
@@ -1940,13 +2030,13 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
       IdType * remote_node_list = node_list_buffer;
       size_t num_remote_nodes;
       cuda::CubSelectIndexByEq<IdType>(gpu_ctx, (const IdType *)_hash_table_location, num_total_nodes, remote_node_list, num_remote_nodes, dev_id, _eager_gpu_mem_allocator, stream);
-      if (!RunConfig::cross_process) {
-        auto cuda_err = cudaDeviceEnablePeerAccess(dev_id, 0);
-        if (cuda_err != cudaErrorPeerAccessAlreadyEnabled) {
-          CUDA_CALL(cuda_err);
-        }
-      }
-      _device_cache_data[dev_id] = device_cache_data_list.extract(dev_id);
+      // if (!RunConfig::cross_process) {
+      //   auto cuda_err = cudaDeviceEnablePeerAccess(dev_id, 0);
+      //   if (cuda_err != cudaErrorPeerAccessAlreadyEnabled) {
+      //     CUDA_CALL(cuda_err);
+      //   }
+      // }
+      // _device_cache_data[dev_id] = device_cache_data_list.extract(dev_id);
       if (GetEnv("COLL_CPU_HASHTABLE") != "") {
         _remote_hash_table_location[dev_id] = (HashTableEntryLocation *)cpu_hashtable_location_list.extract(dev_id);
         _remote_hash_table_offset[dev_id] = (HashTableEntryOffset * )cpu_hashtable_offset_list.extract(dev_id);
@@ -1963,11 +2053,177 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
       gpu_device->StreamSync(gpu_ctx, stream);
       // hash_table_offset_list.close((void*)_remote_hash_table_offset[dev_id]);
       // CUDA_CALL(cudaIpcCloseMemHandle((void*)_remote_hash_table_offset[dev_id]))
+      // {
+      //   CHECK_EQ(num_remote_nodes, keys_for_each_source[dev_id]->NumItem());
+      //   _remote_hash_table[dev_id] = (BucketO2N * )hash_table_list.extract(dev_id);
+      //   CacheEntryManager remote_cache_manager;
+      //   remote_cache_manager._hash_table = std::make_shared<SimpleHashTable>(_remote_hash_table[dev_id], (size_t)(num_total_nodes - num_cpu_nodes), _trainer_ctx, stream);
+      //   auto keys = Tensor::CopyToExternal(keys_for_each_source[dev_id], _eager_gpu_mem_allocator, _trainer_ctx, stream);
+      //   auto off = Tensor::EmptyExternal(kI32, keys->Shape(), _eager_gpu_mem_allocator, _trainer_ctx, "");
+      //   remote_cache_manager.LookupOffset(keys, off, stream);
+      //   gpu_device->StreamSync(gpu_ctx, stream);
+      //   _new_hash_table->InsertWithLoc(keys, off, dev_id, stream);
+      //   gpu_device->StreamSync(gpu_ctx, stream);
+      //   CheckCudaEqual(keys->Data(), remote_node_list, num_remote_nodes*sizeof(IdType), stream);
+      //   gpu_device->StreamSync(gpu_ctx, stream);
+
+      //   auto tmp = Tensor::EmptyExternal(kI32, keys->Shape(), _eager_gpu_mem_allocator, _trainer_ctx, "");
+
+      //   auto new_loc = tmp;
+      //   _new_hash_table->LookupLoc(keys, new_loc, stream);
+      //   check_cuda_array(new_loc->CPtr<IdType>(), dev_id, num_remote_nodes, true, stream);
+      //   gpu_device->StreamSync(gpu_ctx, stream);
+
+      //   auto orig_off = tmp;
+      //   DataIter<const IdType*> src_data_iter(remote_node_list, _hash_table_offset, 1);
+      //   DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), orig_off->Ptr<IdType>(), 1);
+      //   Combine(src_data_iter, dst_data_iter, num_remote_nodes, gpu_ctx, kI32, 1, stream);
+      //   gpu_device->StreamSync(gpu_ctx, stream);
+      //   CheckCudaEqual(orig_off->Data(), off->Data(), num_remote_nodes*sizeof(IdType), stream);
+      //   gpu_device->StreamSync(gpu_ctx, stream);
+      // }
     }
   }
+  // _new_hash_table->_hash_table->CountEntries(stream);
+  // gpu_device->StreamSync(gpu_ctx, stream);
+  // _new_hash_table->_cached_keys = keys_for_each_source[location_id];
+  // _new_hash_table->_cache_space_capacity = _cache_space_capacity;
+  // _new_hash_table->cpu_location_id = _cpu_location_id;
+  // _new_hash_table->num_total_key = num_total_nodes;
+  // _new_hash_table->_free_offsets = Tensor::Empty(kI32, {_cache_space_capacity - num_cached_nodes}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+  // cpu::ArrangeArray<IdType>(_new_hash_table->_free_offsets->Ptr<IdType>(), _cache_space_capacity - num_cached_nodes, num_cached_nodes);
   // 4. Free index
   node_list_buffer_handle = nullptr;
 
+  size_t num_remote_nodes = num_total_nodes - num_cached_nodes - num_cpu_nodes;
+
+  LOG(ERROR) << "Asymm Coll cache (policy: " << RunConfig::cache_policy << ") | "
+            << "local "  << num_cached_nodes << " / " << num_total_nodes << " nodes ( "<< ToPercentage(num_cached_nodes / (double)num_total_nodes) << "~" << ToPercentage(cache_percentage) << ") | "
+            << "remote " << num_remote_nodes << " / " << num_total_nodes << " nodes ( "<< ToPercentage(num_remote_nodes / (double)num_total_nodes) << ") | "
+            << "cpu "    << num_cpu_nodes    << " / " << num_total_nodes << " nodes ( "<< ToPercentage(num_cpu_nodes    / (double)num_total_nodes) << ") | "
+            << ToReadableSize(_cache_nbytes) << " | " << t.Passed()
+            << " secs ";
+  std::cout << "test_result:init:feat_nbytes=" << GetTensorBytes(dtype, {num_total_nodes, dim}) << "\n";
+  std::cout << "test_result:init:cache_nbytes=" << _cache_nbytes << "\n";
+}
+
+void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream) {
+  auto hash_table_list = DevicePointerExchanger(_barrier, Constant::kCollCacheHashTableOffsetPtrShmName);
+  auto device_cache_data_list = DevicePointerExchanger(_barrier, Constant::kCollCacheDeviceCacheDataPtrShmName);
+  _trainer_ctx = gpu_ctx;
+  _dtype = dtype;
+  _dim = dim;
+  // cpu counts as a location
+  _num_location = RunConfig::num_device + 1,
+  _cpu_location_id = RunConfig::num_device;
+  LOG(INFO) << "Coll cache init with " << RunConfig::num_device << " gpus, " << _num_location << " locations";
+
+  LOG(ERROR) << "Building Coll Cache with ... num gpu device is " << RunConfig::num_device;
+
+  CHECK(location_id == gpu_ctx.device_id);
+  _local_location_id = location_id;
+  size_t num_total_nodes = coll_cache_ptr-> _nid_to_block->Shape()[0];
+  size_t num_blocks = coll_cache_ptr->_block_placement->Shape()[0];
+
+  Timer t;
+
+  auto gpu_device = Device::Get(gpu_ctx);
+  auto cpu_device = Device::Get(CPU(CPU_CUDA_HOST_MALLOC_DEVICE));
+
+  _remote_hash_table.resize(_num_location, nullptr);
+  _device_cache_data.resize(_num_location, nullptr);
+  _device_cache_data[_cpu_location_id] = cpu_data;
+
+  LOG(INFO) << "CollCacheManager: Initializing hashtable location...";
+
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+  // 1. Build a mapping from node id to target device
+  LOG(INFO) << "CollCacheManager: Initializing hashtable location done";
+
+  /**
+   * 2. build list of cached node
+   *    prepare local cache
+   *    fill hash table for local nodes.
+   */
+  LOG(INFO) << "CollCacheManager: grouping node of same location";
+
+  TensorPtr keys_for_each_source[9] = {nullptr};
+  CHECK(coll_cache_ptr->_nid_to_block != nullptr);
+  CHECK(coll_cache_ptr->_block_access_advise != nullptr);
+  CHECK(coll_cache_ptr->_block_density != nullptr);
+  CacheEntryManager::DetectKeysForAllSource(
+      coll_cache_ptr->_nid_to_block, Tensor::CopyLine(coll_cache_ptr->_block_access_advise, location_id, CPU(), stream), location_id, coll_cache_ptr->_block_density, num_total_nodes, keys_for_each_source);
+  gpu_device->StreamSync(gpu_ctx, stream);
+  LOG(INFO) << "CollCacheManager: grouping node of same location done";
+  size_t num_cached_nodes = keys_for_each_source[location_id]->NumItem();
+  size_t num_cpu_nodes = (keys_for_each_source[_cpu_location_id] == nullptr) ? 0 : keys_for_each_source[_cpu_location_id]->NumItem();
+
+  _new_hash_table = new CacheEntryManager;
+  {
+    // CHECK_NE(num_cached_nodes, 0);
+    _cache_space_capacity = num_cached_nodes + num_total_nodes * 0.0001;
+    _cache_nbytes = GetTensorBytes(_dtype, {_cache_space_capacity, _dim});
+    _cache_nodes = num_cached_nodes;
+    _device_cache_data_local_handle = _eager_gpu_mem_allocator(_cache_nbytes);
+    _device_cache_data[_local_location_id] = _device_cache_data_local_handle->ptr();
+    auto cache_node_list = Tensor::CopyToExternal(keys_for_each_source[location_id], _eager_gpu_mem_allocator, _trainer_ctx, stream);
+    if (num_cached_nodes > 0) {
+      if (RunConfig::option_empty_feat == 0) {
+        const DataIter<const IdType*> src_data_iter(cache_node_list->CPtr<IdType>(), cpu_data, dim);
+        DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), _device_cache_data[_local_location_id], dim);
+        Combine(src_data_iter, dst_data_iter, num_cached_nodes, gpu_ctx, dtype, dim, stream);
+      } else {
+        const DataIter<MockOffIter> src_data_iter(MockOffIter(), cpu_data, dim);
+        DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), _device_cache_data[_local_location_id], dim);
+        Combine(src_data_iter, dst_data_iter, num_cached_nodes, gpu_ctx, dtype, dim, stream);
+      }
+
+      LOG(INFO) << "CollCacheManager: fix offset of local nodes in hash table";
+      _new_hash_table->_hash_table = std::make_shared<SimpleHashTable>(_eager_gpu_mem_allocator, (size_t)(num_total_nodes - num_cpu_nodes), _trainer_ctx, stream);
+      _new_hash_table->InsertSeqOffWithLoc(cache_node_list, location_id, stream);
+      gpu_device->StreamSync(gpu_ctx, stream);
+      _new_hash_table->_hash_table->CountEntries(stream);
+      gpu_device->StreamSync(gpu_ctx, stream);
+    }
+  }
+
+  LOG(INFO) << "CollCacheManager: waiting for remotes, here is " << _local_location_id;
+
+  // wait until all device's hashtable is ready
+  hash_table_list.signin(_local_location_id, _new_hash_table->_hash_table->_o2n_table);
+  if (num_cached_nodes > 0) {
+    device_cache_data_list.signin(_local_location_id, _device_cache_data[_local_location_id]);
+  }
+
+  /**
+   * 3. get hashtable entry, cache data from remote devices
+   */
+  for (int dev_id = 0; dev_id < _cpu_location_id; dev_id++) {
+    _barrier->Wait();
+    if (keys_for_each_source[dev_id] == nullptr || dev_id == _local_location_id) continue;
+    if (!RunConfig::cross_process) {
+      auto cuda_err = cudaDeviceEnablePeerAccess(dev_id, 0);
+      if (cuda_err != cudaErrorPeerAccessAlreadyEnabled) {
+        CUDA_CALL(cuda_err);
+      }
+    }
+    _device_cache_data[dev_id] = device_cache_data_list.extract(dev_id);
+    _remote_hash_table[dev_id] = (BucketO2N * )hash_table_list.extract(dev_id);
+    CacheEntryManager remote_cache_manager;
+    remote_cache_manager._hash_table = std::make_shared<SimpleHashTable>(_remote_hash_table[dev_id], (size_t)(num_total_nodes - num_cpu_nodes), _trainer_ctx, stream);
+    auto keys = Tensor::CopyToExternal(keys_for_each_source[dev_id], _eager_gpu_mem_allocator, _trainer_ctx, stream);
+    auto off = Tensor::EmptyExternal(kI32, keys->Shape(), _eager_gpu_mem_allocator, _trainer_ctx, "");
+    remote_cache_manager.LookupOffset(keys, off, stream);
+    _new_hash_table->InsertWithLoc(keys, off, dev_id, stream);
+    gpu_device->StreamSync(gpu_ctx, stream);
+  }
+  _new_hash_table->_cached_keys = keys_for_each_source[location_id];
+  _new_hash_table->_cache_space_capacity = _cache_space_capacity;
+  _new_hash_table->cpu_location_id = _cpu_location_id;
+  _new_hash_table->num_total_key = num_total_nodes;
+  _new_hash_table->_free_offsets = Tensor::Empty(kI32, {_cache_space_capacity - num_cached_nodes}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+  cpu::ArrangeArray<IdType>(_new_hash_table->_free_offsets->Ptr<IdType>(), _cache_space_capacity - num_cached_nodes, num_cached_nodes);
+  // 4. Free index 
   size_t num_remote_nodes = num_total_nodes - num_cached_nodes - num_cpu_nodes;
 
   LOG(ERROR) << "Asymm Coll cache (policy: " << RunConfig::cache_policy << ") | "
@@ -2010,7 +2266,9 @@ void CacheContext::build(std::function<MemHandle(size_t)> gpu_mem_allocator,
   } else if (cache_percentage == 1) {
     return build_full_cache(location_id, coll_cache_ptr, cpu_data, dtype, dim, gpu_ctx, RunConfig::num_total_item, stream);
   } else if (_coll_cache->_block_access_advise) {
-    return build_with_advise(location_id, coll_cache_ptr, cpu_data, dtype, dim,
+    build_with_advise_new_hash(location_id, coll_cache_ptr, cpu_data, dtype, dim,
+                             gpu_ctx, cache_percentage, stream);
+    build_with_advise(location_id, coll_cache_ptr, cpu_data, dtype, dim,
                              gpu_ctx, cache_percentage, stream);
   } else {
     return build_without_advise(location_id, coll_cache_ptr, cpu_data, dtype, dim,

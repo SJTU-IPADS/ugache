@@ -9,6 +9,7 @@
 // #include "facade.h"
 // #include "timer.h"
 // #include "atomic_barrier.h"
+#include "cuda/cache_hashtable.h"
 #include <atomic>
 #include <mutex>
 #include <condition_variable>
@@ -105,6 +106,8 @@ class CacheContext {
   MemHandle _hash_table_offset_handle;
   std::vector<void*> _device_cache_data;
   MemHandle _device_cache_data_local_handle;
+  std::vector<BucketO2N*> _remote_hash_table;
+  CacheEntryManager* _new_hash_table;
   std::vector<HashTableEntryLocation*> _remote_hash_table_location;
   std::vector<HashTableEntryOffset*> _remote_hash_table_offset;
   size_t * d_num_selected_out = nullptr;
@@ -133,6 +136,7 @@ class CacheContext {
   void build_full_cache(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, size_t num_total_nodes, StreamHandle stream = nullptr);
   void build_without_advise(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream = nullptr);
   void build_with_advise(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream = nullptr);
+  void build_with_advise_new_hash(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream = nullptr);
  public:
   CacheContext(BarHandle barrier) : _barrier(barrier) {}
   void build(std::function<MemHandle(size_t)> gpu_mem_allocator,
