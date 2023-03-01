@@ -436,6 +436,23 @@ void Profiler::ReportStepPercentile(uint64_t epoch, uint64_t step, double percen
   OutputStep(key, "Step(Percentile" + std::to_string(static_cast<int>(percentage)) + ")");
 }
 
+void Profiler::ReportStepItemPercentiles(uint64_t epoch, uint64_t step, LogStepItem item, 
+                                        std::vector<double> percentages, const char* type) {
+  StepSort(epoch, step);
+  printf("    [Profiler Level Percentiles E%lu S%lu]\n", epoch, step);
+  auto sorted_data = _sorted_step_data[item];
+  for (size_t i = 0; i < percentages.size(); i++) {
+    double value = 0, percentage = percentages[i];
+    if (sorted_data.cnt != 0) {
+      size_t pos = static_cast<size_t>(static_cast<double>(sorted_data.cnt) * (percentage / 100));
+      if (pos >= sorted_data.cnt) pos = sorted_data.cnt - 1;
+      value = sorted_data.vals[pos];
+    }
+    printf("        p%.2lf_%s=%.6lf\n", percentage, type, value);
+  }
+  std::cout.flush();
+}
+
 void Profiler::ReportSequentialAverage(size_t bucket_size, std::ostream &out) {
   size_t total_global_steps = RunConfig::num_epoch * RunConfig::num_global_step_per_epoch;
   size_t num_items = static_cast<size_t>(kNumLogStepItems);

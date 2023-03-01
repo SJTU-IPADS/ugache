@@ -224,6 +224,7 @@ class Profiler {
   void ReportStepMax(uint64_t epoch, uint64_t step);
   void ReportStepMin(uint64_t epoch, uint64_t step);
   void ReportStepPercentile(uint64_t epoch, uint64_t step, double percentage);
+  void ReportStepItemPercentiles(uint64_t epoch, uint64_t step, LogStepItem item, std::vector<double> percentages, const char* type);
   void ReportSequentialAverage(uint64_t bucket_size, std::ostream &out);
   void ReportEpoch(uint64_t epoch);
   void ReportEpochAverage(uint64_t epoch);
