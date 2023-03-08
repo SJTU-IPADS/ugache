@@ -2155,6 +2155,21 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
   std::cout << "test_result:init:cache_nbytes=" << _cache_nbytes << "\n";
 }
 
+class HostWorkspaceHandle : public ExternelGPUMemoryHandler {
+ public:
+  Context _ctx;
+  void* _data;
+  size_t _nbytes = 0;
+  void* ptr() override { return _data; }
+  size_t nbytes() override { return _nbytes; }
+  HostWorkspaceHandle(Context ctx, size_t nb) : _ctx(ctx), _nbytes(nb) {
+    _data = Device::Get(_ctx)->AllocWorkspace(_ctx, _nbytes);
+  } 
+  ~HostWorkspaceHandle() { 
+    Device::Get(_ctx)->FreeWorkspace(_ctx, _data, _nbytes);
+  }
+};
+
 void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream) {
   auto hash_table_list = DevicePointerExchanger(_barrier, Constant::kCollCacheHashTableOffsetPtrShmName);
   auto device_cache_data_list = DevicePointerExchanger(_barrier, Constant::kCollCacheDeviceCacheDataPtrShmName);
@@ -2271,7 +2286,10 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
   _new_hash_table->_cache_space_capacity = _cache_space_capacity;
   _new_hash_table->cpu_location_id = _cpu_location_id;
   _new_hash_table->num_total_key = num_total_nodes;
-  _new_hash_table->_free_offsets = Tensor::Empty(kI32, {_cache_space_capacity - num_cached_nodes}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+  _new_hash_table->_free_offsets = Tensor::EmptyExternal(kI32, {_cache_space_capacity}, [](size_t nb){
+    return std::make_shared<HostWorkspaceHandle>(CPU(CPU_CLIB_MALLOC_DEVICE), nb);
+  }, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+  _new_hash_table->_free_offsets->ForceScale(kI32, {_cache_space_capacity - num_cached_nodes}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
   cpu::ArrangeArray<IdType>(_new_hash_table->_free_offsets->Ptr<IdType>(), _cache_space_capacity - num_cached_nodes, num_cached_nodes);
   // 4. Free index 
   size_t num_remote_nodes = num_total_nodes - num_cached_nodes - num_cpu_nodes;
