@@ -288,12 +288,14 @@ class CacheEntryManager {
  public:
   template<bool is_place_on>
   struct PlaceOn {
+    PlaceOn<is_place_on>(int location_id) : location_id(location_id) {}
     int location_id;
     bool operator()(const uint8_t & placement) {
       return (bool(placement & (1 << location_id))) == is_place_on;
     }
   };
   struct AccessFrom {
+    AccessFrom(int location_id) : location_id(location_id) {}
     int location_id;
     bool operator()(const uint8_t access_from) {
       return access_from == location_id;
@@ -355,7 +357,7 @@ class CacheEntryManager {
   TensorPtr DetectKeysWithPlacement(InputIterator inputs, IdType num_input, TensorPtr nid_to_block, TensorPtr block_placement, PlaceCond cond) {
     TensorPtr matched_keys = Tensor::Empty(kI32, {_cache_space_capacity}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
     size_t num_matched_keys = 0;
-    for (IdType idx = 0; idx < num_total_key; idx++) {
+    for (IdType idx = 0; idx < num_input; idx++) {
       auto key = inputs[idx];
       IdType block_id = nid_to_block->Ptr<IdType>()[key];
       if (cond(block_placement->Ptr<uint8_t>()[block_id])) {
@@ -371,15 +373,15 @@ class CacheEntryManager {
       TensorPtr old_nid_to_block, TensorPtr old_block_placement,
       TensorPtr new_nid_to_block, TensorPtr new_block_placement,
       int local_location) {
-    TensorPtr new_local_keys = DetectKeysWithPlacement(cub::CountingInputIterator<IdType>(0), num_total_key, new_nid_to_block, new_block_placement, PlaceOn<true>());
-    TensorPtr new_insert_keys = DetectKeysWithPlacement(new_local_keys->CPtr<IdType>(), new_local_keys->Shape()[0], old_nid_to_block, old_block_placement, PlaceOn<false>());
-    TensorPtr evict_keys = DetectKeysWithPlacement(_cached_keys->CPtr<IdType>(), _cached_keys->Shape()[0], old_nid_to_block, old_block_placement, PlaceOn<false>());
+    TensorPtr new_local_keys = DetectKeysWithPlacement(cub::CountingInputIterator<IdType>(0), num_total_key, new_nid_to_block, new_block_placement, PlaceOn<true>(local_location));
+    TensorPtr new_insert_keys = DetectKeysWithPlacement(new_local_keys->CPtr<IdType>(), new_local_keys->Shape()[0], old_nid_to_block, old_block_placement, PlaceOn<false>(local_location));
+    TensorPtr evict_keys = DetectKeysWithPlacement(_cached_keys->CPtr<IdType>(), _cached_keys->Shape()[0], old_nid_to_block, old_block_placement, PlaceOn<false>(local_location));
   }
   template<typename InputIterator, typename AccessCond>
   TensorPtr DetectKeysWithAccess(InputIterator inputs, IdType num_input, TensorPtr nid_to_block, TensorPtr block_access_advise, AccessCond cond) {
     TensorPtr matched_keys = Tensor::Empty(kI32, {_cache_space_capacity}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
     size_t num_matched_keys = 0;
-    for (IdType idx = 0; idx < num_total_key; idx++) {
+    for (IdType idx = 0; idx < num_input; idx++) {
       auto key = inputs[idx];
       IdType block_id = nid_to_block->Ptr<IdType>()[key];
       if (cond(block_access_advise->Ptr<uint8_t>()[block_id])) {
