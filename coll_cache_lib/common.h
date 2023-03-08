@@ -176,7 +176,7 @@ class Tensor : public std::enable_shared_from_this<Tensor> {
   DataType Type() const { return _dtype; }
   const std::vector<size_t>& Shape() const { return _shape; }
   const void* Data() const { return _data; }
-  template<typename T> T* Ptr();
+  template<typename T> T* Ptr() { check_elem_size(sizeof(T)); return static_cast<T*>(_data); }
   template<typename T> const T* CPtr() const { return const_cast<Tensor*>(this)->Ptr<T>(); }
   void* MutableData() { return _data; }
   void ReplaceData(void* data);
@@ -248,6 +248,7 @@ class Tensor : public std::enable_shared_from_this<Tensor> {
   std::string _name;
 
   MemHandle _external_mem_hanlder;
+  void check_elem_size(size_t nbyte);
 };
 
 

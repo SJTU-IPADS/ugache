@@ -427,20 +427,9 @@ TensorPtr Tensor::CopyLine(TensorPtr source, size_t line_idx, Context ctx, Strea
 }
 
 
-template<typename T> 
-T* Tensor::Ptr(){ 
-  CHECK(_data == nullptr || (sizeof(T) == GetDataTypeBytes(_dtype))); 
-  return static_cast<T*>(_data);
+void Tensor::check_elem_size(size_t nbyte) {
+  CHECK(_data == nullptr || (nbyte == GetDataTypeBytes(_dtype))); 
 }
-template float* Tensor::Ptr<float>();
-template double* Tensor::Ptr<double>();
-template size_t* Tensor::Ptr<size_t>();
-template IdType* Tensor::Ptr<IdType>();
-template Id64Type* Tensor::Ptr<Id64Type>();
-template char* Tensor::Ptr<char>();
-template uint8_t* Tensor::Ptr<uint8_t>();
-template int* Tensor::Ptr<int>();
-template long long* Tensor::Ptr<long long>();
 
 std::ostream& operator<<(std::ostream& os, const Context& ctx) {
   switch (ctx.device_type)
