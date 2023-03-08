@@ -28,6 +28,11 @@
 #include "../constant.h"
 #include "../logging.h"
 #include "cache_hashtable.h"
+#ifdef __linux__
+#include <parallel/algorithm>
+#else
+#include <algorithm>
+#endif
 
 namespace coll_cache_lib {
 namespace common {
@@ -178,6 +183,7 @@ class SimpleHashTable {
   DeviceSimpleHashTable DeviceHandle() const;
 
   BucketO2N *_o2n_table;
+  size_t max_efficient_size;
  private:
   Context _ctx;
 
@@ -343,6 +349,19 @@ class CacheEntryManager {
     CHECK(sizeof(ValType) == 4);
     _hash_table->EvictWithUnique(keys_to_evict->CPtr<IdType>(), keys_to_evict->NumItem(), stream);
   }
+  void Evict(TensorPtr keys_to_evict, StreamHandle stream) {
+    CHECK(sizeof(ValType) == 4);
+    _hash_table->EvictWithUnique(keys_to_evict->CPtr<IdType>(), keys_to_evict->NumItem(), stream);
+  }
+  void SortFreeOffsets() {
+#ifdef __linux__
+    __gnu_parallel::sort(_free_offsets->Ptr<IdType>(), &_free_offsets->Ptr<IdType>()[_free_offsets->NumItem()],
+                         std::less<IdType>());
+#else
+    std::sort(_free_offsets->CPtr<IdType>(), &_free_offsets->CPtr<IdType>()[_free_offsets->NumItem()],
+              std::greater<IdType>());
+#endif
+  }
   void ReturnOffset(TensorPtr new_offsets) {
     IdType old_num_offsets = _free_offsets->NumItem();
     _free_offsets->ForceScale(kI32, {old_num_offsets + new_offsets->NumItem()}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
@@ -352,6 +371,15 @@ class CacheEntryManager {
   TensorPtr ReserveOffset(IdType num_new_insert_keys) {
     CHECK(_free_offsets->Shape()[0] > num_new_insert_keys);
     auto ret = Tensor::CopyBlob(_free_offsets->CPtr<IdType>() + _free_offsets->NumItem() - num_new_insert_keys, kI32, {num_new_insert_keys}, CPU(CPU_CLIB_MALLOC_DEVICE), CPU(CPU_CLIB_MALLOC_DEVICE), "");
+    _free_offsets->ForceScale(kI32, {_free_offsets->NumItem() - num_new_insert_keys}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+    return ret;
+  }
+  TensorPtr ReserveOffsetFront(IdType num_new_insert_keys) {
+    CHECK(_free_offsets->Shape()[0] > num_new_insert_keys);
+    auto ret = Tensor::CopyBlob(_free_offsets->CPtr<IdType>(), kI32, {num_new_insert_keys}, CPU(CPU_CLIB_MALLOC_DEVICE), CPU(CPU_CLIB_MALLOC_DEVICE), "");
+    for (size_t i = 0; i < _free_offsets->NumItem() - num_new_insert_keys; i++) {
+      _free_offsets->Ptr<IdType>()[i] = _free_offsets->Ptr<IdType>()[i + num_new_insert_keys];
+    }
     _free_offsets->ForceScale(kI32, {_free_offsets->NumItem() - num_new_insert_keys}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
     return ret;
   }
@@ -391,6 +419,25 @@ class CacheEntryManager {
       IdType block_id = nid_to_block->Ptr<IdType>()[key];
       if (cond(block_access_advise->Ptr<uint8_t>()[block_id])) {
       // if ((block_placement->Ptr<uint8_t>()[block_id] & (1 << local_location_id)) != 0) {
+        matched_keys->Ptr<IdType>()[num_matched_keys] = key;
+        num_matched_keys++;
+      }
+    }
+    matched_keys->ForceScale(kI32, {num_matched_keys}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+    return matched_keys;
+  }
+  template<typename InputIterator, typename CondT>
+  TensorPtr DetectKeysWithCond(InputIterator inputs, IdType num_input, CondT cond, size_t max_result_storage = 0) {
+    if (max_result_storage == 0) {
+      max_result_storage = _cache_space_capacity;
+    }
+    TensorPtr matched_keys = Tensor::Empty(kI32, {max_result_storage}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+    size_t num_matched_keys = 0;
+    for (IdType idx = 0; idx < num_input; idx++) {
+      auto key = inputs[idx];
+      if (cond(key)) {
+      // if ((block_placement->Ptr<uint8_t>()[block_id] & (1 << local_location_id)) != 0) {
+        CHECK(num_matched_keys < max_result_storage);
         matched_keys->Ptr<IdType>()[num_matched_keys] = key;
         num_matched_keys++;
       }

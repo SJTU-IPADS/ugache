@@ -298,6 +298,7 @@ DeviceSimpleHashTable SimpleHashTable::DeviceHandle() const {
 SimpleHashTable::SimpleHashTable(const size_t size, Context ctx,
                                    StreamHandle stream, const size_t scale)
     : _o2n_table(nullptr),
+      max_efficient_size(size),
 #ifndef SXN_NAIVE_HASHMAP
       _o2n_size(TableSize(size, scale)),
 #else
@@ -323,6 +324,7 @@ SimpleHashTable::SimpleHashTable(const size_t size, Context ctx,
 SimpleHashTable::SimpleHashTable(BucketO2N* table, const size_t size, Context ctx,
                                    StreamHandle stream, const size_t scale)
     : _o2n_table(table),
+      max_efficient_size(size),
 #ifndef SXN_NAIVE_HASHMAP
       _o2n_size(TableSize(size, scale)),
 #else
@@ -337,6 +339,7 @@ SimpleHashTable::SimpleHashTable(BucketO2N* table, const size_t size, Context ct
 SimpleHashTable::SimpleHashTable(std::function<MemHandle(size_t)> allocator, const size_t size, Context ctx,
                                    StreamHandle stream, const size_t scale)
     : _o2n_table(nullptr),
+      max_efficient_size(size),
 #ifndef SXN_NAIVE_HASHMAP
       _o2n_size(TableSize(size, scale)),
 #else
