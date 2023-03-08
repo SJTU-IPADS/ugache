@@ -132,6 +132,7 @@ class CacheContext {
     // }
     // return false;
   }
+  void compare_hashtable(StreamHandle stream);
 
   void build_no_cache(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, StreamHandle stream = nullptr);
   void build_full_cache(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, size_t num_total_nodes, StreamHandle stream = nullptr);

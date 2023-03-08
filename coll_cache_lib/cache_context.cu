@@ -2320,6 +2320,7 @@ void CacheContext::build(std::function<MemHandle(size_t)> gpu_mem_allocator,
                              gpu_ctx, cache_percentage, stream);
     build_with_advise(location_id, coll_cache_ptr, cpu_data, dtype, dim,
                              gpu_ctx, cache_percentage, stream);
+    compare_hashtable(stream);
   } else {
     return build_without_advise(location_id, coll_cache_ptr, cpu_data, dtype, dim,
                                 gpu_ctx, cache_percentage, stream);
@@ -2792,6 +2793,39 @@ void check_covers(const T* large, size_t num_large, const T* small, size_t num_s
 #endif
 
 };
+void CacheContext::compare_hashtable(StreamHandle stream) {
+  IdType validate_batch_size = 1 << 19;
+  auto keys = Tensor::EmptyExternal(kI32, {validate_batch_size}, this->_gpu_mem_allocator, this->_trainer_ctx, "");
+  auto old_val = Tensor::EmptyExternal(kI32, {validate_batch_size}, this->_gpu_mem_allocator, this->_trainer_ctx, "");
+  auto new_val = Tensor::EmptyExternal(kI32, {validate_batch_size}, this->_gpu_mem_allocator, this->_trainer_ctx, "");
+  auto cu_stream = reinterpret_cast<cudaStream_t>(stream);
+  for (IdType i = 0; i < RoundUp<size_t>(RunConfig::num_total_item, validate_batch_size); i += validate_batch_size) {
+    IdType this_batch_len = (i + validate_batch_size > RunConfig::num_total_item) ? (RunConfig::num_total_item - i) : (validate_batch_size);
+    keys->ForceScale(kI32, {this_batch_len}, _trainer_ctx, "");
+    cuda::ArrangeArray<IdType>(keys->Ptr<IdType>(), this_batch_len, i, 1, stream);
+    CUDA_CALL(cudaStreamSynchronize(cu_stream));
+    {
+      const DataIter<const IdType*> src_data_iter(keys->CPtr<IdType>(), this->_hash_table_offset, 1);
+      DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), old_val->Ptr<IdType>(), 1);
+      Combine(src_data_iter, dst_data_iter, this_batch_len, _trainer_ctx, kI32, 1, stream);
+      CUDA_CALL(cudaStreamSynchronize(cu_stream));
+      _new_hash_table->LookupOffset(keys, new_val, stream);
+      CUDA_CALL(cudaStreamSynchronize(cu_stream));
+      CheckCudaEqual(old_val->Data(), new_val->Data(), old_val->NumBytes(), stream);
+      CUDA_CALL(cudaStreamSynchronize(cu_stream));
+    }
+    {
+      const DataIter<const IdType*> src_data_iter(keys->CPtr<IdType>(), this->_hash_table_location, 1);
+      DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), old_val->Ptr<IdType>(), 1);
+      Combine(src_data_iter, dst_data_iter, this_batch_len, _trainer_ctx, kI32, 1, stream);
+      CUDA_CALL(cudaStreamSynchronize(cu_stream));
+      _new_hash_table->LookupLoc(keys, new_val, stream);
+      CUDA_CALL(cudaStreamSynchronize(cu_stream));
+      CheckCudaEqual(old_val->Data(), new_val->Data(), old_val->NumBytes(), stream);
+      CUDA_CALL(cudaStreamSynchronize(cu_stream));
+    }
+  }
+}
 
 void RefreshSession::refresh_after_solve() {
   Context gpu_ctx = _cache_ctx->_trainer_ctx;
