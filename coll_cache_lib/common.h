@@ -166,7 +166,7 @@ class AnonymousBarrier : public ExternalBarrierHandler {
 };
 
 size_t GetDataTypeBytes(DataType dtype);
-class Tensor {
+class Tensor : public std::enable_shared_from_this<Tensor> {
  public:
   Tensor();
   ~Tensor();
@@ -229,6 +229,13 @@ class Tensor {
   static TensorPtr CopyBlob(const void * data, DataType dtype,
                             std::vector<size_t> shape, Context from_ctx,
                             Context to_ctx, std::string name, StreamHandle stream = nullptr);
+
+  inline TensorPtr CopyToExternal(const std::function<MemHandle(size_t)> & allocator, Context ctx, StreamHandle stream = nullptr, double scale = Constant::kAllocScale) {
+    return Tensor::CopyToExternal(this->shared_from_this(), allocator, ctx, stream, scale);
+  }
+  inline TensorPtr CopyTo(Context ctx, StreamHandle stream, std::string name, double scale = Constant::kAllocScale) {
+    return Tensor::CopyTo(shared_from_this(), ctx, stream, name, scale);
+  }
 
  private:
   void* _data;
