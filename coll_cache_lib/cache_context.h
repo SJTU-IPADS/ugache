@@ -110,6 +110,7 @@ class CacheContext {
   CacheEntryManager* _new_hash_table;
   std::vector<HashTableEntryLocation*> _remote_hash_table_location;
   std::vector<HashTableEntryOffset*> _remote_hash_table_offset;
+  std::vector<CacheEntryManager*> _remote_new_hash_table;
   size_t * d_num_selected_out = nullptr;
 
   // MemHandle _local_node_list_handle;

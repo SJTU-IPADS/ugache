@@ -307,6 +307,7 @@ class CacheEntryManager {
   IdType _cache_space_capacity;
   IdType num_total_key;
   int cpu_location_id;
+  TensorPtr _keys_for_each_src[9];
   void Lookup(TensorPtr keys, TensorPtr vals, StreamHandle stream) {
     CHECK(sizeof(ValType) == 4);
     _hash_table->LookupValWithDef<>(keys->CPtr<IdType>(), keys->NumItem(), vals->Ptr<ValType>(), CPUFallback(cpu_location_id), stream);
@@ -345,6 +346,7 @@ class CacheEntryManager {
   void ReturnOffset(TensorPtr new_offsets) {
     IdType old_num_offsets = _free_offsets->NumItem();
     _free_offsets->ForceScale(kI32, {old_num_offsets + new_offsets->NumItem()}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+    CHECK(new_offsets->Ctx().device_type == kCPU);
     Device::Get(CPU(CPU_CLIB_MALLOC_DEVICE))->CopyDataFromTo(new_offsets->Data(), 0, _free_offsets->Ptr<IdType>() + old_num_offsets, 0, new_offsets->NumItem() * sizeof(IdType), CPU(), CPU(), nullptr);
   }
   TensorPtr ReserveOffset(IdType num_new_insert_keys) {
@@ -355,6 +357,9 @@ class CacheEntryManager {
   }
   template<typename InputIterator, typename PlaceCond>
   TensorPtr DetectKeysWithPlacement(InputIterator inputs, IdType num_input, TensorPtr nid_to_block, TensorPtr block_placement, PlaceCond cond) {
+    CHECK_NOTNULL(inputs);
+    CHECK_NOTNULL(nid_to_block);
+    CHECK_NOTNULL(block_placement);
     TensorPtr matched_keys = Tensor::Empty(kI32, {_cache_space_capacity}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
     size_t num_matched_keys = 0;
     for (IdType idx = 0; idx < num_input; idx++) {

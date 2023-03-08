@@ -2178,6 +2178,7 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
   auto gpu_device = Device::Get(gpu_ctx);
   auto cpu_device = Device::Get(CPU(CPU_CUDA_HOST_MALLOC_DEVICE));
 
+  _remote_new_hash_table.resize(_num_location, nullptr);
   _remote_hash_table.resize(_num_location, nullptr);
   _device_cache_data.resize(_num_location, nullptr);
   _device_cache_data[_cpu_location_id] = cpu_data;
@@ -2195,7 +2196,8 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
    */
   LOG(INFO) << "CollCacheManager: grouping node of same location";
 
-  TensorPtr keys_for_each_source[9] = {nullptr};
+  _new_hash_table = new CacheEntryManager;
+  TensorPtr* keys_for_each_source = _new_hash_table->_keys_for_each_src;
   CHECK(coll_cache_ptr->_nid_to_block != nullptr);
   CHECK(coll_cache_ptr->_block_access_advise != nullptr);
   CHECK(coll_cache_ptr->_block_density != nullptr);
@@ -2206,7 +2208,6 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
   size_t num_cached_nodes = keys_for_each_source[location_id]->NumItem();
   size_t num_cpu_nodes = (keys_for_each_source[_cpu_location_id] == nullptr) ? 0 : keys_for_each_source[_cpu_location_id]->NumItem();
 
-  _new_hash_table = new CacheEntryManager;
   {
     // CHECK_NE(num_cached_nodes, 0);
     _cache_space_capacity = num_cached_nodes + num_total_nodes * 0.0001;
@@ -2257,7 +2258,8 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
     }
     _device_cache_data[dev_id] = device_cache_data_list.extract(dev_id);
     _remote_hash_table[dev_id] = (BucketO2N * )hash_table_list.extract(dev_id);
-    CacheEntryManager remote_cache_manager;
+    _remote_new_hash_table[dev_id] = new CacheEntryManager;
+    CacheEntryManager &remote_cache_manager = *_remote_new_hash_table[dev_id];
     remote_cache_manager._hash_table = std::make_shared<SimpleHashTable>(_remote_hash_table[dev_id], (size_t)(num_total_nodes - num_cpu_nodes), _trainer_ctx, stream);
     auto keys = Tensor::CopyToExternal(keys_for_each_source[dev_id], _eager_gpu_mem_allocator, _trainer_ctx, stream);
     auto off = Tensor::EmptyExternal(kI32, keys->Shape(), _eager_gpu_mem_allocator, _trainer_ctx, "");
