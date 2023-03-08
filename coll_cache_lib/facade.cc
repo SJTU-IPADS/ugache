@@ -223,11 +223,28 @@ void CollCache::refresh(int replica_id, IdType *ranking_nodes_list_ptr,
   int device_id = RunConfig::device_id_list[replica_id];
   if (RunConfig::cross_process || replica_id == 0) {
     // one-time call for each process
+    size_t num_block = _block_density->Shape()[0];
+
+    auto copy_shm = [replica_id](std::string path, TensorPtr old_t) -> TensorPtr {
+      if (old_t == nullptr) return nullptr;
+      auto ret = Tensor::CreateShm(path, old_t->Type(), old_t->Shape(), "");
+      if (replica_id == 0) {
+        memcpy(ret->MutableData(), old_t->Data(), old_t->NumBytes());
+      }
+      return ret;
+    };
+
+    this->_old_block_access_advise = copy_shm(Constant::kCollCacheAccessShmName + "_old", _block_access_advise);
+    this->_old_block_density = copy_shm(Constant::kCollCachePlacementShmName + "_density" + "_old", _block_density);
+    this->_old_block_placement = copy_shm(Constant::kCollCachePlacementShmName + "_old",            _block_placement);
+    this->_old_nid_to_block = copy_shm(Constant::kCollCacheNIdToBlockShmName + "_old",              _nid_to_block);
+
     this->_block_access_advise = nullptr;
     this->_block_density = nullptr;
     this->_block_placement = nullptr;
     this->_nid_to_block = nullptr;
   }
+  AnonymousBarrier::_refresh_instance->Wait();
   if (replica_id == 0) {
     solve_impl_master(ranking_nodes_list_ptr, ranking_nodes_freq_list_ptr, RunConfig::num_total_item);
     LOG(ERROR) << replica_id << " solved master";

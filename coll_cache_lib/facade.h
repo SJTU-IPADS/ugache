@@ -19,6 +19,10 @@ class CollCache : public std::enable_shared_from_this<CollCache> {
   TensorPtr _block_density;
   TensorPtr _block_placement;
   TensorPtr _block_access_advise;
+  TensorPtr _old_nid_to_block;
+  TensorPtr _old_block_density;
+  TensorPtr _old_block_placement;
+  TensorPtr _old_block_access_advise;
   // AtomicBarrier *_process_barrier;
   BarHandle _process_barrier;
   BarHandle _replica_barrier;
