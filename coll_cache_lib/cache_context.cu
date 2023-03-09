@@ -3662,114 +3662,84 @@ void RefreshSession::refresh_after_solve_new() {
   auto _local_location_id = _cache_ctx->_local_location_id;
   auto cu_stream = reinterpret_cast<cudaStream_t>(stream);
 
-  TensorPtr node_list_of_src_cmp[9] = {nullptr};
-  {
-    auto coll_cache = _cache_ctx->_coll_cache;
-    CacheEntryManager::DetectKeysForAllSource(coll_cache->_nid_to_block, coll_cache->_block_access_advise, _local_location_id, coll_cache->_block_density, RunConfig::num_total_item, node_list_of_src_cmp);
-  }
+  // Step.1 Detect key for each source
+  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "making key list for each source";
+  TensorPtr key_list_of_each_src[9] = {nullptr};
+  auto coll_cache = _cache_ctx->_coll_cache;
+  CacheEntryManager::DetectKeysForAllSource(coll_cache->_nid_to_block, coll_cache->_block_access_advise, _local_location_id, coll_cache->_block_density, RunConfig::num_total_item, key_list_of_each_src);
 
-  // figure out new local cache id list
-  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "making local node list";
-  size_t num_new_local_node = node_list_of_src_cmp[_local_location_id]->NumItem();
-  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "new local node = " << num_new_local_node;
+  size_t num_new_local_key = key_list_of_each_src[_local_location_id]->NumItem();
+  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "new local node = " << num_new_local_key;
+  CHECK(num_new_local_key <= _cache_ctx->_cache_space_capacity) << "cache space can not hold refreshed new cache";
 
-  CHECK(num_new_local_node <= _cache_ctx->_cache_space_capacity) << "cache space can not hold refreshed new cache";
-
+  // Step.2 Detect new local keys to insert
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "finding preserved node and new insert nodes";
-  TensorPtr _new_insert_keys;
-  {
-    TensorPtr _new_local_keys = node_list_of_src_cmp[_local_location_id];
-    _new_insert_keys = _new_hash_table->DetectKeysWithPlacement(
-        _new_local_keys->CPtr<IdType>(), 
-        _new_local_keys->Shape()[0], 
-        _cache_ctx->_coll_cache->_old_nid_to_block, 
-        _cache_ctx->_coll_cache->_old_block_placement, 
-        CacheEntryManager::PlaceOn<false>(_local_location_id));
-    LOG(ERROR) << " new hashtable find new local key done";
-    if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "preserved node = " << _new_local_keys->NumItem() - _new_insert_keys->NumItem();
-    if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "new insert node = " << _new_insert_keys->NumItem();
-    CUDA_CALL(cudaStreamSynchronize(cu_stream));
-    // preserved keys is not necessary when using new hashtable
-    LOG(ERROR) << " new hashtable new local key done";
-    AnonymousBarrier::_refresh_instance->Wait();
-  }
+  TensorPtr _new_insert_keys = _new_hash_table->DetectKeysWithPlacement(
+      key_list_of_each_src[_local_location_id]->CPtr<IdType>(), 
+      num_new_local_key, 
+      _cache_ctx->_coll_cache->_old_nid_to_block, 
+      _cache_ctx->_coll_cache->_old_block_placement, 
+      CacheEntryManager::PlaceOn<false>(_local_location_id)
+    )->CopyToExternal(_cache_ctx->_gpu_mem_allocator, gpu_ctx, stream);
+  LOG(ERROR) << " new hashtable find new local key done";
+  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "preserved node = " << key_list_of_each_src[_local_location_id]->NumItem() - _new_insert_keys->NumItem();
+  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "new insert node = " << _new_insert_keys->NumItem();
+  CUDA_CALL(cudaStreamSynchronize(cu_stream));
+  // preserved keys is not necessary when using new hashtable
+
+  // Step.3 Detect old local keys to evict, and corresponding cache offset, then evict
+  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "finding evicted nodes";
+  TensorPtr _new_evict_keys_gpu = _new_hash_table->DetectKeysWithPlacement(
+      _new_hash_table->_cached_keys->CPtr<IdType>(), 
+      _new_hash_table->_cached_keys->Shape()[0], 
+      _cache_ctx->_coll_cache->_nid_to_block, 
+      _cache_ctx->_coll_cache->_block_placement, 
+      CacheEntryManager::PlaceOn<false>(_local_location_id)
+    )->CopyToExternal(_cache_ctx->_gpu_mem_allocator, gpu_ctx, stream);
+  size_t num_eviced_node = _new_evict_keys_gpu->NumItem();
+  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "num evicted node = " << num_eviced_node;
 
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "gathering unused offsets";
+  auto _new_evict_offsets_gpu = Tensor::EmptyExternal(kI32, {num_eviced_node}, _cache_ctx->_gpu_mem_allocator, gpu_ctx, "");
+  _new_hash_table->LookupOffset(_new_evict_keys_gpu, _new_evict_offsets_gpu, stream);
+  CUDA_CALL(cudaStreamSynchronize(cu_stream));
+  auto _new_evict_offsets_cpu = _new_evict_offsets_gpu->CopyTo(CPU(), stream, "");
+  CUDA_CALL(cudaStreamSynchronize(cu_stream));
+  _new_hash_table->ReturnOffset(_new_evict_offsets_cpu);
+  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "num no use offset = " << _new_hash_table->_free_offsets->NumItem();
+  _new_hash_table->SortFreeOffsets();
 
-  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "finding evicted nodes";
-
-  TensorPtr _new_evict_keys_gpu;
-  size_t num_eviced_node;
-  {
-    AnonymousBarrier::_refresh_instance->Wait();
-    TensorPtr _new_evict_keys_cpu = _new_hash_table->DetectKeysWithPlacement(
-        _new_hash_table->_cached_keys->CPtr<IdType>(), 
-        _new_hash_table->_cached_keys->Shape()[0], 
-        _cache_ctx->_coll_cache->_nid_to_block, 
-        _cache_ctx->_coll_cache->_block_placement, 
-        CacheEntryManager::PlaceOn<false>(_local_location_id));
-    num_eviced_node = _new_evict_keys_cpu->NumItem();
-    if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "num evicted node = " << num_eviced_node;
-    AnonymousBarrier::_refresh_instance->Wait();
-
-    _new_evict_keys_gpu = Tensor::CopyToExternal(_new_evict_keys_cpu, _cache_ctx->_gpu_mem_allocator, gpu_ctx, stream);
-    CUDA_CALL(cudaStreamSynchronize(cu_stream));
-    auto _new_evict_offsets_gpu = Tensor::EmptyExternal(kI32, {num_eviced_node}, _cache_ctx->_gpu_mem_allocator, gpu_ctx, "");
-    CUDA_CALL(cudaStreamSynchronize(cu_stream));
-    _new_hash_table->LookupOffset(_new_evict_keys_gpu, _new_evict_offsets_gpu, stream);
-    CUDA_CALL(cudaStreamSynchronize(cu_stream));
-    LOG(ERROR) << "evict keys offset fetched";
-    AnonymousBarrier::_refresh_instance->Wait();
-    auto _new_evict_offsets_cpu = _new_evict_offsets_gpu->CopyTo(CPU(), stream, "");
-    CUDA_CALL(cudaStreamSynchronize(cu_stream));
-    AnonymousBarrier::_refresh_instance->Wait();
-    _new_hash_table->ReturnOffset(_new_evict_offsets_cpu);
-    if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "num no use offset = " << _new_hash_table->_free_offsets->NumItem();
-    AnonymousBarrier::_refresh_instance->Wait();
-    _new_hash_table->SortFreeOffsets();
-    AnonymousBarrier::_refresh_instance->Wait();
-  }
-
-  CHECK(num_eviced_node + node_list_of_src_cmp[_local_location_id]->NumItem() - _new_insert_keys->NumItem() == _new_hash_table->_cached_keys->NumItem());
+  CHECK(num_eviced_node + key_list_of_each_src[_local_location_id]->NumItem() - _new_insert_keys->NumItem() == _new_hash_table->_cached_keys->NumItem());
   CHECK(num_eviced_node <= _new_hash_table->_free_offsets->NumItem());
 
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "evicting nodes";
 
-  {
-    _cache_ctx->_new_hash_table->Evict(_new_evict_keys_gpu, stream);
-    CUDA_CALL(cudaStreamSynchronize(cu_stream));
-    AnonymousBarrier::_refresh_instance->Wait();
-  }
+  _new_hash_table->Evict(_new_evict_keys_gpu, stream);
+  CUDA_CALL(cudaStreamSynchronize(cu_stream));
 
-  AnonymousBarrier::_refresh_instance->Wait();
+  // new hashtable do not depends on remote hashtable to detech remote keys to evict
+  // AnonymousBarrier::_refresh_instance->Wait();
 
+  // Step.4 Evict remote keys
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "evicting remote nodes";
-  {
-    LOG(ERROR) << "remote nodes to evict detecting";
-    auto remote_keys_to_evict = _cache_ctx->_new_hash_table->DetectKeysWithCond(
-        cub::CountingInputIterator<IdType>(0), 
-        RunConfig::num_total_item, 
-        SelectEvictedRemoteKeys(
-            _cache_ctx->_coll_cache->_old_nid_to_block,
-            _cache_ctx->_coll_cache->_old_block_access_advise,
-            _cache_ctx->_coll_cache->_nid_to_block,
-            _cache_ctx->_coll_cache->_block_access_advise,
-            nullptr, // _cache_ctx->_coll_cache->_block_placement,
-            _local_location_id, _cache_ctx->_cpu_location_id
-          ),
-        _new_hash_table->_hash_table->max_efficient_size
-      );
-    AnonymousBarrier::_refresh_instance->Wait();
-    LOG(ERROR) << "remote nodes to evict detected";
-    auto remote_keys_to_evict_gpu = Tensor::CopyToExternal(remote_keys_to_evict, _cache_ctx->_gpu_mem_allocator, gpu_ctx, stream);
-    CUDA_CALL(cudaStreamSynchronize(cu_stream));
-    AnonymousBarrier::_refresh_instance->Wait();
-    LOG(ERROR) << "calling evict remote";
-    _cache_ctx->_new_hash_table->EvictRemote(remote_keys_to_evict_gpu, stream);
-    CUDA_CALL(cudaStreamSynchronize(cu_stream));
-    AnonymousBarrier::_refresh_instance->Wait();
-  }
+  auto remote_keys_to_evict_gpu = _new_hash_table->DetectKeysWithCond(
+      cub::CountingInputIterator<IdType>(0), 
+      RunConfig::num_total_item, 
+      SelectEvictedRemoteKeys(
+          _cache_ctx->_coll_cache->_old_nid_to_block,
+          _cache_ctx->_coll_cache->_old_block_access_advise,
+          _cache_ctx->_coll_cache->_nid_to_block,
+          _cache_ctx->_coll_cache->_block_access_advise,
+          nullptr, // _cache_ctx->_coll_cache->_block_placement,
+          _local_location_id, _cache_ctx->_cpu_location_id
+        ),
+      _new_hash_table->_hash_table->max_efficient_size
+    )->CopyToExternal(_cache_ctx->_gpu_mem_allocator, gpu_ctx, stream);
+  CUDA_CALL(cudaStreamSynchronize(cu_stream));
+  _new_hash_table->EvictRemote(remote_keys_to_evict_gpu, stream);
+  CUDA_CALL(cudaStreamSynchronize(cu_stream));
 
+  // Step.5 wait for one lookup batch, eliminate cache read dependency
   size_t current_progress = _cache_ctx->progress.load();
 
   AnonymousBarrier::_refresh_instance->Wait();
@@ -3779,28 +3749,33 @@ void RefreshSession::refresh_after_solve_new() {
     if (t0.PassedSec() >= 20) break;
   }
 
+  // Step.6 Update cache content, insert new local keys to hashtable
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "inserting new local nodes";
+
+  auto reserved_offset = _new_hash_table->ReserveOffsetFront(_new_insert_keys->NumItem())
+      ->CopyToExternal(_cache_ctx->_gpu_mem_allocator, gpu_ctx, stream);
   {
-    auto reserved_offset = _new_hash_table->ReserveOffsetFront(_new_insert_keys->NumItem())->CopyToExternal(_cache_ctx->_gpu_mem_allocator, gpu_ctx, stream);
-    _new_insert_keys = _new_insert_keys->CopyToExternal(_cache_ctx->_gpu_mem_allocator, gpu_ctx, stream);
-    _new_hash_table->InsertWithLoc(_new_insert_keys, reserved_offset, _local_location_id, stream);
-    CUDA_CALL(cudaStreamSynchronize(cu_stream));
+    const DataIter<const IdType*> src_data_iter(_new_insert_keys->CPtr<IdType>(), _cache_ctx->_device_cache_data[_cache_ctx->_cpu_location_id], _cache_ctx->_dim);
+    DataIter<FreeOffIter> dst_data_iter(FreeOffIter(reserved_offset->Ptr<IdType>()), _cache_ctx->_device_cache_data[_cache_ctx->_local_location_id], _cache_ctx->_dim);
+    Combine(src_data_iter, dst_data_iter, _new_insert_keys->NumItem(), gpu_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
   }
+
+  _new_hash_table->InsertWithLoc(_new_insert_keys, reserved_offset, _local_location_id, stream);
+  CUDA_CALL(cudaStreamSynchronize(cu_stream));
   AnonymousBarrier::_refresh_instance->Wait();
 
+  // Step.7 Update remote keys to hashtable
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "inserting new remote nodes";
   for (auto & link : RunConfig::coll_cache_link_desc.link_src[_local_location_id]) {
     for (auto dev_id : link) {
-      {
-        auto _old_access_view = coll_cache::TensorView<uint8_t>(_cache_ctx->_coll_cache->_old_block_access_advise)[dev_id];
-        auto _remote_new_keys = _new_hash_table->DetectKeysWithCond(node_list_of_src_cmp[dev_id]->CPtr<IdType>(), node_list_of_src_cmp[dev_id]->NumItem(), [this, _old_access_view, dev_id](const IdType & key) mutable{
-          auto block_id = _cache_ctx->_coll_cache->_old_nid_to_block->CPtr<IdType>()[key];
-          return _old_access_view[block_id].ref() != dev_id;
-        })->CopyToExternal(_cache_ctx->_gpu_mem_allocator, gpu_ctx, stream);
-        auto _remote_offsets = Tensor::EmptyExternal(kI32, _remote_new_keys->Shape(), _cache_ctx->_gpu_mem_allocator, gpu_ctx, "");
-        _cache_ctx->_remote_new_hash_table[dev_id]->LookupOffset(_remote_new_keys, _remote_offsets, stream);
-        _new_hash_table->InsertWithLoc(_remote_new_keys, _remote_offsets, dev_id, stream);
-      }
+      auto _old_access_view = coll_cache::TensorView<uint8_t>(_cache_ctx->_coll_cache->_old_block_access_advise)[dev_id];
+      auto _remote_new_keys = _new_hash_table->DetectKeysWithCond(key_list_of_each_src[dev_id]->CPtr<IdType>(), key_list_of_each_src[dev_id]->NumItem(), [this, _old_access_view, dev_id](const IdType & key) mutable{
+        auto block_id = _cache_ctx->_coll_cache->_old_nid_to_block->CPtr<IdType>()[key];
+        return _old_access_view[block_id].ref() != dev_id;
+      })->CopyToExternal(_cache_ctx->_gpu_mem_allocator, gpu_ctx, stream);
+      auto _remote_offsets = Tensor::EmptyExternal(kI32, _remote_new_keys->Shape(), _cache_ctx->_gpu_mem_allocator, gpu_ctx, "");
+      _cache_ctx->_remote_new_hash_table[dev_id]->LookupOffset(_remote_new_keys, _remote_offsets, stream);
+      _new_hash_table->InsertWithLoc(_remote_new_keys, _remote_offsets, dev_id, stream);
     }
   }
 
@@ -3808,7 +3783,7 @@ void RefreshSession::refresh_after_solve_new() {
 
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "refresh done";
 
-  _new_hash_table->_cached_keys = node_list_of_src_cmp[_local_location_id];
+  _new_hash_table->_cached_keys = key_list_of_each_src[_local_location_id];
 }
 
 void RefreshSession::refresh_after_solve_main() {
