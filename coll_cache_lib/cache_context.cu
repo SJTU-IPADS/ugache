@@ -2947,14 +2947,14 @@ void RefreshSession::refresh_after_solve() {
   TensorPtr node_list_of_src_cmp[9] = {nullptr};
   {
     auto coll_cache = _cache_ctx->_coll_cache;
-    CacheEntryManager::DetectKeysForAllSource(coll_cache->_nid_to_block, coll_cache->_block_access_advise, _local_location_id, coll_cache->_block_density, RunConfig::num_total_item, node_list_of_src_cmp);
+    CacheEntryManager::DetectKeysForAllSource(coll_cache->_nid_to_block, block_access_advise_cpu, _local_location_id, coll_cache->_block_density, RunConfig::num_total_item, node_list_of_src_cmp);
 
     for (auto & link : RunConfig::coll_cache_link_desc.link_src[_local_location_id]) {
       for (auto dev_id : link) {
         if (node_list_of_src_cmp[dev_id] == nullptr) {
           CHECK(per_src_size[dev_id] == 0);
         } else {
-          CHECK_EQ(node_list_of_src_cmp[dev_id]->NumItem(), per_src_size[dev_id]);
+          CHECK_EQ(node_list_of_src_cmp[dev_id]->NumItem(), per_src_size[dev_id]) << node_list_of_src_cmp[dev_id]->NumItem() << "!=" << per_src_size[dev_id];
           CheckCpuEqual(node_list_of_src_cmp[dev_id]->CPtr<IdType>(), node_list_of_src[dev_id]->CPtr<IdType>(), node_list_of_src_cmp[dev_id]->NumBytes());
         }
       }
@@ -3666,7 +3666,8 @@ void RefreshSession::refresh_after_solve_new() {
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "making key list for each source";
   TensorPtr key_list_of_each_src[9] = {nullptr};
   auto coll_cache = _cache_ctx->_coll_cache;
-  CacheEntryManager::DetectKeysForAllSource(coll_cache->_nid_to_block, coll_cache->_block_access_advise, _local_location_id, coll_cache->_block_density, RunConfig::num_total_item, key_list_of_each_src);
+  TensorPtr block_access_advise_cpu = Tensor::CopyLine(_cache_ctx->_coll_cache->_block_access_advise, _local_location_id, CPU(CPU_CLIB_MALLOC_DEVICE), stream); // small
+  CacheEntryManager::DetectKeysForAllSource(coll_cache->_nid_to_block, block_access_advise_cpu, _local_location_id, coll_cache->_block_density, RunConfig::num_total_item, key_list_of_each_src);
 
   size_t num_new_local_key = key_list_of_each_src[_local_location_id]->NumItem();
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "new local node = " << num_new_local_key;
@@ -3768,6 +3769,7 @@ void RefreshSession::refresh_after_solve_new() {
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "inserting new remote nodes";
   for (auto & link : RunConfig::coll_cache_link_desc.link_src[_local_location_id]) {
     for (auto dev_id : link) {
+      if (key_list_of_each_src[dev_id] == nullptr || key_list_of_each_src[dev_id]->NumItem() == 0) continue;
       auto _old_access_view = coll_cache::TensorView<uint8_t>(_cache_ctx->_coll_cache->_old_block_access_advise)[dev_id];
       auto _remote_new_keys = _new_hash_table->DetectKeysWithCond(key_list_of_each_src[dev_id]->CPtr<IdType>(), key_list_of_each_src[dev_id]->NumItem(), [this, _old_access_view, dev_id](const IdType & key) mutable{
         auto block_id = _cache_ctx->_coll_cache->_old_nid_to_block->CPtr<IdType>()[key];
