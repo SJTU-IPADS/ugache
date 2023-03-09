@@ -634,17 +634,17 @@ void ExtractSession::GetMissCacheIndex(
   
   {
     device->StreamSync(_cache_ctx->_trainer_ctx, stream);
-    LOG(ERROR) << "flatern get idx " << t_flatern.Passed();
+    LOG(DEBUG) << "flatern get idx " << t_flatern.Passed();
     Timer t_hash;
     _cache_ctx->_new_hash_table->_hash_table->LookupValCustom(nodes, num_nodes, GetIdxHelper(output_src_index_alter, output_dst_index_alter, _cache_ctx->_cpu_location_id), stream);
     device->StreamSync(_cache_ctx->_trainer_ctx, stream);
-    LOG(ERROR) << "hashtable get idx " << t_hash.Passed();
+    LOG(DEBUG) << "hashtable get idx " << t_hash.Passed();
     CheckCudaEqual(output_src_index, output_src_index_alter, sizeof(SrcKey) * num_nodes, stream);
     device->StreamSync(_cache_ctx->_trainer_ctx, stream);
-    LOG(ERROR) << "src key checked";
+    LOG(DEBUG) << "src key checked";
     CheckCudaEqual(output_dst_index, output_dst_index_alter, sizeof(DstVal) * num_nodes, stream);
     device->StreamSync(_cache_ctx->_trainer_ctx, stream);
-    LOG(ERROR) << "dst val checked";
+    LOG(DEBUG) << "dst val checked";
   }
 
   Timer t1;

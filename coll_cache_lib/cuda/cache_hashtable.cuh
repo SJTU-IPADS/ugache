@@ -447,6 +447,7 @@ class CacheEntryManager {
   }
   static void DetectKeysForAllSource(TensorPtr nid_to_block, TensorPtr block_access_advise, int local_location_id, TensorPtr block_density, size_t num_total_item,
       TensorPtr* node_list_of_src) {
+    CHECK_EQ(block_access_advise->Shape().size(), 1);
     // TensorPtr block_access_advise = Tensor::CopyLine(_cache_ctx->_coll_cache->_block_access_advise, local_location_id, CPU(CPU_CLIB_MALLOC_DEVICE), stream); // small
     size_t num_blocks = block_access_advise->Shape()[0];
     size_t per_src_size[9] = {0};
