@@ -3320,7 +3320,7 @@ void RefreshSession::refresh_after_solve(bool foreground) {
           _cache_ctx->_remote_hash_table_offset[dev_id], remote_node_list_tensor->CPtr<IdType>(), num_remote_nodes, dev_id);
       CUDA_CALL(cudaStreamSynchronize(cu_stream));
       {
-        auto _old_access_view = coll_cache::TensorView<uint8_t>(_cache_ctx->_coll_cache->_old_block_access_advise)[dev_id];
+        auto _old_access_view = coll_cache::TensorView<uint8_t>(_cache_ctx->_coll_cache->_old_block_access_advise)[_local_location_id];
         auto _remote_new_keys = _new_hash_table->DetectKeysWithCond(node_list_of_src_cmp[dev_id]->CPtr<IdType>(), node_list_of_src_cmp[dev_id]->NumItem(), [this, _old_access_view, dev_id](const IdType & key) mutable{
           auto block_id = _cache_ctx->_coll_cache->_old_nid_to_block->CPtr<IdType>()[key];
           return _old_access_view[block_id].ref() != dev_id;
@@ -3770,7 +3770,7 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
   for (auto & link : RunConfig::coll_cache_link_desc.link_src[_local_location_id]) {
     for (auto dev_id : link) {
       if (key_list_of_each_src[dev_id] == nullptr || key_list_of_each_src[dev_id]->NumItem() == 0) continue;
-      auto _old_access_view = coll_cache::TensorView<uint8_t>(_cache_ctx->_coll_cache->_old_block_access_advise)[dev_id];
+      auto _old_access_view = coll_cache::TensorView<uint8_t>(_cache_ctx->_coll_cache->_old_block_access_advise)[_local_location_id];
       auto _remote_new_keys = _new_hash_table->DetectKeysWithCond(key_list_of_each_src[dev_id]->CPtr<IdType>(), key_list_of_each_src[dev_id]->NumItem(), [this, _old_access_view, dev_id](const IdType & key) mutable{
         auto block_id = _cache_ctx->_coll_cache->_old_nid_to_block->CPtr<IdType>()[key];
         return _old_access_view[block_id].ref() != dev_id;
