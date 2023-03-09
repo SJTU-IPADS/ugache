@@ -2896,7 +2896,7 @@ struct SelectEvictedRemoteKeys {
 };
 
 
-void RefreshSession::refresh_after_solve() {
+void RefreshSession::refresh_after_solve(bool foreground) {
   auto _new_hash_table = _cache_ctx->_new_hash_table;
   Context gpu_ctx = _cache_ctx->_trainer_ctx;
   auto _hash_table_location = _cache_ctx->_hash_table_location;
@@ -3344,7 +3344,7 @@ void RefreshSession::refresh_after_solve() {
   _new_hash_table->_cached_keys = node_list_of_src_cmp[_local_location_id];
 }
 
-void RefreshSession::refresh_after_solve_old() {
+void RefreshSession::refresh_after_solve_old(bool foreground) {
   Context gpu_ctx = _cache_ctx->_trainer_ctx;
   auto _hash_table_location = _cache_ctx->_hash_table_location;
   auto _hash_table_offset = _cache_ctx->_hash_table_offset;
@@ -3596,7 +3596,7 @@ void RefreshSession::refresh_after_solve_old() {
   AnonymousBarrier::_refresh_instance->Wait();
 
   Timer t0;
-  while (_cache_ctx->progress.load() < current_progress + 1) {
+  while (!foreground && _cache_ctx->progress.load() < current_progress + 1) {
     if (t0.PassedSec() >= 20) break;
   }
 
@@ -3656,7 +3656,7 @@ void RefreshSession::refresh_after_solve_old() {
   _cache_ctx->_local_node_list_tensor = new_local_node_list_cpu;
 }
 
-void RefreshSession::refresh_after_solve_new() {
+void RefreshSession::refresh_after_solve_new(bool foreground) {
   auto _new_hash_table = _cache_ctx->_new_hash_table;
   Context gpu_ctx = _cache_ctx->_trainer_ctx;
   auto _local_location_id = _cache_ctx->_local_location_id;
@@ -3746,7 +3746,7 @@ void RefreshSession::refresh_after_solve_new() {
   AnonymousBarrier::_refresh_instance->Wait();
 
   Timer t0;
-  while (_cache_ctx->progress.load() < current_progress + 1) {
+  while (!foreground && _cache_ctx->progress.load() < current_progress + 1) {
     if (t0.PassedSec() >= 20) break;
   }
 
@@ -3788,10 +3788,10 @@ void RefreshSession::refresh_after_solve_new() {
   _new_hash_table->_cached_keys = key_list_of_each_src[_local_location_id];
 }
 
-void RefreshSession::refresh_after_solve_main() {
+void RefreshSession::refresh_after_solve_main(bool foreground) {
   auto cu_stream = reinterpret_cast<cudaStream_t>(stream);
-  refresh_after_solve_old();
-  refresh_after_solve_new();
+  refresh_after_solve_old(foreground);
+  refresh_after_solve_new(foreground);
   _cache_ctx->compare_hashtable(stream);
   CUDA_CALL(cudaStreamSynchronize(cu_stream));
 }

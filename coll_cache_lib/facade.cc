@@ -219,7 +219,7 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
 }
 
 void CollCache::refresh(int replica_id, IdType *ranking_nodes_list_ptr,
-                         IdType *ranking_nodes_freq_list_ptr, StreamHandle stream) {
+                         IdType *ranking_nodes_freq_list_ptr, StreamHandle stream, bool foreground) {
   int device_id = RunConfig::device_id_list[replica_id];
   if (RunConfig::cross_process || replica_id == 0) {
     // one-time call for each process
@@ -260,7 +260,8 @@ void CollCache::refresh(int replica_id, IdType *ranking_nodes_list_ptr,
   // if (RunConfig::cross_process) return;
   LOG(ERROR) << "worker " << RunConfig::worker_id << " thread " << replica_id << " refresh device " << device_id;
   this->_refresh_session_list[replica_id]->stream = stream;
-  this->_refresh_session_list[replica_id]->refresh_after_solve_main();
+  // this->_refresh_session_list[replica_id]->refresh_after_solve(foreground);
+  this->_refresh_session_list[replica_id]->refresh_after_solve_main(foreground);
   AnonymousBarrier::_refresh_instance->Wait();
 }
 

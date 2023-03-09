@@ -200,10 +200,10 @@ class RefreshSession {
  public:
   StreamHandle stream;
   std::shared_ptr<CacheContext> _cache_ctx;
-  void refresh_after_solve();
-  void refresh_after_solve_old();
-  void refresh_after_solve_new();
-  void refresh_after_solve_main();
+  void refresh_after_solve(bool foreground);
+  void refresh_after_solve_old(bool foreground);
+  void refresh_after_solve_new(bool foreground);
+  void refresh_after_solve_main(bool foreground);
 };
 
 }

@@ -57,7 +57,7 @@ class CollCache : public std::enable_shared_from_this<CollCache> {
                 double cache_percentage, StreamHandle stream = nullptr);
 
   void refresh(int replica_id, IdType *ranking_nodes_list_ptr,
-                IdType *ranking_nodes_freq_list_ptr, StreamHandle stream = nullptr);
+                IdType *ranking_nodes_freq_list_ptr, StreamHandle stream = nullptr, bool foreground=false);
   void report_avg();
   void report_last_epoch(uint64_t epoch);
   void report(uint64_t key);
