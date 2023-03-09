@@ -2829,6 +2829,10 @@ void CacheContext::compare_hashtable(StreamHandle stream) {
       CUDA_CALL(cudaStreamSynchronize(cu_stream));
       _new_hash_table->LookupOffset(keys, new_val, stream);
       CUDA_CALL(cudaStreamSynchronize(cu_stream));
+      // auto old_val_cpu = old_val->CopyTo(CPU(), stream, "");
+      // auto new_val_cpu = new_val->CopyTo(CPU(), stream, "");
+      // CUDA_CALL(cudaStreamSynchronize(cu_stream));
+      // CheckCpuEqual(old_val_cpu->Data(), new_val_cpu->Data(), old_val_cpu->NumBytes());
       CheckCudaEqual(old_val->Data(), new_val->Data(), old_val->NumBytes(), stream);
       CUDA_CALL(cudaStreamSynchronize(cu_stream));
     }
@@ -2839,6 +2843,10 @@ void CacheContext::compare_hashtable(StreamHandle stream) {
       CUDA_CALL(cudaStreamSynchronize(cu_stream));
       _new_hash_table->LookupLoc(keys, new_val, stream);
       CUDA_CALL(cudaStreamSynchronize(cu_stream));
+      // auto old_val_cpu = old_val->CopyTo(CPU(), stream, "");
+      // auto new_val_cpu = new_val->CopyTo(CPU(), stream, "");
+      // CUDA_CALL(cudaStreamSynchronize(cu_stream));
+      // CheckCpuEqual(old_val_cpu->Data(), new_val_cpu->Data(), old_val_cpu->NumBytes());
       CheckCudaEqual(old_val->Data(), new_val->Data(), old_val->NumBytes(), stream);
       CUDA_CALL(cudaStreamSynchronize(cu_stream));
     }
@@ -3263,7 +3271,7 @@ void RefreshSession::refresh_after_solve(bool foreground) {
   AnonymousBarrier::_refresh_instance->Wait();
 
   Timer t0;
-  while (_cache_ctx->progress.load() < current_progress + 1) {
+  while (!foreground && _cache_ctx->progress.load() < current_progress + 1) {
     if (t0.PassedSec() >= 20) break;
   }
 
