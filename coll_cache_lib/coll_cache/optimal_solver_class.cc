@@ -122,7 +122,7 @@ void OptimalSolver::Build(TensorPtr stream_id_list, TensorPtr stream_freq_list, 
     buckets[bid].set_max_size(device_to_stream.size(), max_size_per_block);
   }
   LOG(ERROR) << "block -1 has " << slot_array_to_full_block.the_map.find(max_seq_slot)->second.size << " nodes";
-  LOG(ERROR) << "block -2 has " << slot_array_to_full_block.the_map.find(max_seq_slot - 1)->second.size << " nodes";
+  if (max_seq_slot > 0) LOG(ERROR) << "block -2 has " << slot_array_to_full_block.the_map.find(max_seq_slot - 1)->second.size << " nodes";
   for (auto iter = slot_array_to_full_block.the_map.begin(); iter != slot_array_to_full_block.the_map.end(); iter++) {
     LOG(ERROR) << "slot " << iter->first << " has " << iter->second.size << " nodes";
   }
@@ -132,11 +132,13 @@ void OptimalSolver::Build(TensorPtr stream_id_list, TensorPtr stream_freq_list, 
   } else {
     buckets[slot_array_to_full_block.the_map.find(max_seq_slot)->second.remmaped_slot].set_max_size(1, num_node / 100);
   }
-  if (slot_array_to_full_block.the_map.find(max_seq_slot)->second.size + slot_array_to_full_block.the_map.find(max_seq_slot - 1)->second.size
-     / (double)num_node < (1 - RunConfig::cache_percentage * device_to_stream.size())) {
-    buckets[slot_array_to_full_block.the_map.find(max_seq_slot - 1)->second.remmaped_slot].set_max_size(1, num_node);
-  } else {
-    buckets[slot_array_to_full_block.the_map.find(max_seq_slot - 1)->second.remmaped_slot].set_max_size(1, num_node / 1000);
+  if (max_seq_slot > 0) {
+    if (slot_array_to_full_block.the_map.find(max_seq_slot)->second.size + slot_array_to_full_block.the_map.find(max_seq_slot - 1)->second.size
+      / (double)num_node < (1 - RunConfig::cache_percentage * device_to_stream.size())) {
+      buckets[slot_array_to_full_block.the_map.find(max_seq_slot - 1)->second.remmaped_slot].set_max_size(1, num_node);
+    } else {
+      buckets[slot_array_to_full_block.the_map.find(max_seq_slot - 1)->second.remmaped_slot].set_max_size(1, num_node / 1000);
+    }
   }
 
   LOG(WARNING) << "counting blocks...";
