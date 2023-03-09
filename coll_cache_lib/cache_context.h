@@ -201,6 +201,9 @@ class RefreshSession {
   StreamHandle stream;
   std::shared_ptr<CacheContext> _cache_ctx;
   void refresh_after_solve();
+  void refresh_after_solve_old();
+  void refresh_after_solve_new();
+  void refresh_after_solve_main();
 };
 
 }

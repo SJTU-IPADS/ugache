@@ -260,7 +260,7 @@ void CollCache::refresh(int replica_id, IdType *ranking_nodes_list_ptr,
   // if (RunConfig::cross_process) return;
   LOG(ERROR) << "worker " << RunConfig::worker_id << " thread " << replica_id << " refresh device " << device_id;
   this->_refresh_session_list[replica_id]->stream = stream;
-  this->_refresh_session_list[replica_id]->refresh_after_solve();
+  this->_refresh_session_list[replica_id]->refresh_after_solve_main();
   AnonymousBarrier::_refresh_instance->Wait();
 }
 
