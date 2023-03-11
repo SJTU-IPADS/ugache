@@ -263,6 +263,12 @@ struct MockOffIter {
   MockOffIter() { empty_feat = RunConfig::option_empty_feat; }
   __host__ __device__ size_t operator[](const size_t & idx) const { return idx % (1 << empty_feat); }
 };
+struct MockSrcOffIter {
+  size_t empty_feat;
+  IdType* idx_list;
+  MockSrcOffIter(IdType* idx_list) : idx_list(idx_list) { empty_feat = RunConfig::option_empty_feat; }
+  __host__ __device__ size_t operator[](const size_t & idx) const { return idx_list[idx] % (1 << empty_feat); }
+};
 
 template <size_t BLOCK_SIZE, size_t TILE_SIZE, typename LocIter_T, typename SrcOffIter_T, typename DstOffIter_T>
 __global__ void get_miss_cache_index(
@@ -1870,7 +1876,7 @@ void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCac
       DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), _device_cache_data[_local_location_id], dim);
       Combine(src_data_iter, dst_data_iter, num_cached_nodes, gpu_ctx, dtype, dim, stream);
     } else {
-      const DataIter<MockOffIter> src_data_iter(MockOffIter(), cpu_data, dim);
+      const DataIter<MockSrcOffIter> src_data_iter(MockSrcOffIter(cache_node_list), cpu_data, dim);
       // const DataIter<const IdType*> src_data_iter(cache_node_list, cpu_src_data, dim);
       DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), _device_cache_data[_local_location_id], dim);
       Combine(src_data_iter, dst_data_iter, num_cached_nodes, gpu_ctx, dtype, dim, stream);
@@ -2262,7 +2268,7 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
         DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), _device_cache_data[_local_location_id], dim);
         Combine(src_data_iter, dst_data_iter, num_cached_nodes, gpu_ctx, dtype, dim, stream);
       } else {
-        const DataIter<MockOffIter> src_data_iter(MockOffIter(), cpu_data, dim);
+        const DataIter<MockSrcOffIter> src_data_iter(MockSrcOffIter(cache_node_list->Ptr<IdType>()), cpu_data, dim);
         DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), _device_cache_data[_local_location_id], dim);
         Combine(src_data_iter, dst_data_iter, num_cached_nodes, gpu_ctx, dtype, dim, stream);
       }
@@ -3639,9 +3645,16 @@ void RefreshSession::refresh_after_solve_old(bool foreground) {
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "inserting new local nodes";
   // fixme: wait for current extraction 
   size_t num_new_insert_node = num_new_local_node - num_preserved_node;
-  const DataIter<const IdType*> src_data_iter(new_insert_node_list_gpu->CPtr<IdType>(), _cache_ctx->_device_cache_data[_cache_ctx->_cpu_location_id], _cache_ctx->_dim);
-  DataIter<FreeOffIter> dst_data_iter(FreeOffIter(nouse_offset->Ptr<IdType>()), _cache_ctx->_device_cache_data[_cache_ctx->_local_location_id], _cache_ctx->_dim);
-  Combine(src_data_iter, dst_data_iter, num_new_insert_node, gpu_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
+  
+  if (RunConfig::option_empty_feat == 0) {
+    const DataIter<const IdType*> src_data_iter(new_insert_node_list_gpu->CPtr<IdType>(), _cache_ctx->_device_cache_data[_cache_ctx->_cpu_location_id], _cache_ctx->_dim);
+    DataIter<FreeOffIter> dst_data_iter(FreeOffIter(nouse_offset->Ptr<IdType>()), _cache_ctx->_device_cache_data[_cache_ctx->_local_location_id], _cache_ctx->_dim);
+    Combine(src_data_iter, dst_data_iter, num_new_insert_node, gpu_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
+  } else {
+    const DataIter<MockSrcOffIter> src_data_iter(MockSrcOffIter(new_insert_node_list_gpu->Ptr<IdType>()), _cache_ctx->_device_cache_data[_cache_ctx->_cpu_location_id], _cache_ctx->_dim);
+    DataIter<FreeOffIter> dst_data_iter(FreeOffIter(nouse_offset->Ptr<IdType>()), _cache_ctx->_device_cache_data[_cache_ctx->_local_location_id], _cache_ctx->_dim);
+    Combine(src_data_iter, dst_data_iter, num_new_insert_node, gpu_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
+  }
 
   LOG(INFO) << "CollCacheManager: fix location and offset of local nodes in hash table";
   if (num_new_insert_node > 0) {
@@ -3799,9 +3812,16 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
     _new_insert_keys = _new_insert_keys->CopyToExternal(_cache_ctx->_gpu_mem_allocator, gpu_ctx, stream);
     auto reserved_offset = _new_hash_table->ReserveOffsetFront(_new_insert_keys->NumItem())
         ->CopyToExternal(_cache_ctx->_gpu_mem_allocator, gpu_ctx, stream);
-    const DataIter<const IdType*> src_data_iter(_new_insert_keys->CPtr<IdType>(), _cache_ctx->_device_cache_data[_cache_ctx->_cpu_location_id], _cache_ctx->_dim);
-    DataIter<FreeOffIter> dst_data_iter(FreeOffIter(reserved_offset->Ptr<IdType>()), _cache_ctx->_device_cache_data[_cache_ctx->_local_location_id], _cache_ctx->_dim);
-    Combine(src_data_iter, dst_data_iter, _new_insert_keys->NumItem(), gpu_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
+    
+    if (RunConfig::option_empty_feat == 0) {
+      const DataIter<const IdType*> src_data_iter(_new_insert_keys->CPtr<IdType>(), _cache_ctx->_device_cache_data[_cache_ctx->_cpu_location_id], _cache_ctx->_dim);
+      DataIter<FreeOffIter> dst_data_iter(FreeOffIter(reserved_offset->Ptr<IdType>()), _cache_ctx->_device_cache_data[_cache_ctx->_local_location_id], _cache_ctx->_dim);
+      Combine(src_data_iter, dst_data_iter, _new_insert_keys->NumItem(), gpu_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
+    } else {
+      const DataIter<MockSrcOffIter> src_data_iter(MockSrcOffIter(_new_insert_keys->Ptr<IdType>()), _cache_ctx->_device_cache_data[_cache_ctx->_cpu_location_id], _cache_ctx->_dim);
+      DataIter<FreeOffIter> dst_data_iter(FreeOffIter(reserved_offset->Ptr<IdType>()), _cache_ctx->_device_cache_data[_cache_ctx->_local_location_id], _cache_ctx->_dim);
+      Combine(src_data_iter, dst_data_iter, _new_insert_keys->NumItem(), gpu_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
+    }
     _new_hash_table->InsertWithLoc(_new_insert_keys, reserved_offset, _local_location_id, stream);
     CUDA_CALL(cudaStreamSynchronize(cu_stream));
   }
