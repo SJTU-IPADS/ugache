@@ -62,6 +62,27 @@ struct GetIdxHelper {
     };
   }
 };
+struct GetIdxHelperMock {
+  SrcKey* src_key;
+  DstVal* dst_val;
+  int fallback_loc;
+  size_t empty_feat;
+
+  GetIdxHelperMock(SrcKey* src_key, DstVal* dst_val, int fallback_loc) : src_key(src_key), dst_val(dst_val), fallback_loc(fallback_loc) {
+    empty_feat = RunConfig::option_empty_feat;
+  }
+  inline __host__ __device__ void operator()(const IdType & idx, const IdType & key, const DeviceSimpleHashTable::BucketO2N* val) {
+    if (val) {
+      src_key[idx]._location_id = val->val.loc();
+      dst_val[idx]._src_offset = val->val.off();
+      dst_val[idx]._dst_offset = idx;
+    } else {
+      src_key[idx]._location_id = fallback_loc;
+      dst_val[idx]._src_offset = key % (1 << empty_feat);
+      dst_val[idx]._dst_offset = idx;
+    };
+  }
+};
 
 namespace {
 
@@ -636,7 +657,11 @@ void ExtractSession::GetMissCacheIndex(
     device->StreamSync(_cache_ctx->_trainer_ctx, stream);
     LOG(DEBUG) << "flatern get idx " << t_flatern.Passed();
     Timer t_hash;
-    _cache_ctx->_new_hash_table->_hash_table->LookupValCustom(nodes, num_nodes, GetIdxHelper(output_src_index_alter, output_dst_index_alter, _cache_ctx->_cpu_location_id), stream);
+    if (RunConfig::option_empty_feat == 0) {
+      _cache_ctx->_new_hash_table->_hash_table->LookupValCustom(nodes, num_nodes, GetIdxHelper(output_src_index_alter, output_dst_index_alter, _cache_ctx->_cpu_location_id), stream);
+    } else {
+      _cache_ctx->_new_hash_table->_hash_table->LookupValCustom(nodes, num_nodes, GetIdxHelperMock(output_src_index_alter, output_dst_index_alter, _cache_ctx->_cpu_location_id), stream);
+    }
     device->StreamSync(_cache_ctx->_trainer_ctx, stream);
     LOG(DEBUG) << "hashtable get idx " << t_hash.Passed();
     CheckCudaEqual(output_src_index, output_src_index_alter, sizeof(SrcKey) * num_nodes, stream);
@@ -2338,7 +2363,9 @@ void CacheContext::build(std::function<MemHandle(size_t)> gpu_mem_allocator,
                              gpu_ctx, cache_percentage, stream);
     build_with_advise(location_id, coll_cache_ptr, cpu_data, dtype, dim,
                              gpu_ctx, cache_percentage, stream);
+    LOG(ERROR) << "comparing hashtable after construction";
     compare_hashtable(stream);
+    LOG(ERROR) << "comparing hashtable after construction - passed";
   } else {
     return build_without_advise(location_id, coll_cache_ptr, cpu_data, dtype, dim,
                                 gpu_ctx, cache_percentage, stream);

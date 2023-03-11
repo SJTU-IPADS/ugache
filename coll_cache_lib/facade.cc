@@ -220,6 +220,7 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
 
 void CollCache::refresh(int replica_id, IdType *ranking_nodes_list_ptr,
                          IdType *ranking_nodes_freq_list_ptr, StreamHandle stream, bool foreground) {
+  AnonymousBarrier::_refresh_instance->Wait();
   int device_id = RunConfig::device_id_list[replica_id];
   if (RunConfig::cross_process || replica_id == 0) {
     // one-time call for each process

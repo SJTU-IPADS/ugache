@@ -33,6 +33,7 @@
 #else
 #include <algorithm>
 #endif
+#include "../run_config.h"
 
 namespace coll_cache_lib {
 namespace common {
@@ -210,6 +211,18 @@ struct OffsetOnly {
     };
   }
 };
+struct OffsetOnlyMock {
+  IdType *offset_list;
+  size_t empty_feat;
+  OffsetOnlyMock(IdType* offset_list) : offset_list(offset_list) { empty_feat = RunConfig::option_empty_feat; }
+  inline __host__ __device__ void operator()(const IdType & idx, const IdType & key, const DeviceSimpleHashTable::BucketO2N* val) {
+    if (val) {
+      offset_list[idx] = val->val.off();
+    } else {
+      offset_list[idx] = key % (1 << empty_feat);
+    };
+  }
+};
 struct LocOnly {
   IdType *loc_list;
   int fallback_loc;
@@ -323,8 +336,13 @@ class CacheEntryManager {
     _hash_table->LookupValCustom(keys->CPtr<IdType>(), keys->NumItem(), helper, stream);
   }
   void LookupOffset(TensorPtr keys, TensorPtr off, StreamHandle stream) {
-    auto helper = HashTableLookupHelper::OffsetOnly(off->Ptr<IdType>());
-    _hash_table->LookupValCustom(keys->CPtr<IdType>(), keys->NumItem(), helper, stream);
+    if (RunConfig::option_empty_feat == 0) {
+      auto helper = HashTableLookupHelper::OffsetOnly(off->Ptr<IdType>());
+      _hash_table->LookupValCustom(keys->CPtr<IdType>(), keys->NumItem(), helper, stream);
+    } else {
+      auto helper = HashTableLookupHelper::OffsetOnlyMock(off->Ptr<IdType>());
+      _hash_table->LookupValCustom(keys->CPtr<IdType>(), keys->NumItem(), helper, stream);
+    }
   }
   void LookupLoc(TensorPtr keys, TensorPtr loc, StreamHandle stream) {
     auto helper = HashTableLookupHelper::LocOnly(loc->Ptr<IdType>(), cpu_location_id);
@@ -458,6 +476,7 @@ class CacheEntryManager {
     }
 
     // TensorPtr node_list_of_src[9] = {nullptr};
+    LOG(ERROR) << "detecting key for all source";
     #pragma omp parallel for
     for (int dev_id = 0; dev_id < 9; dev_id++) {
         if (per_src_size[dev_id] == 0) continue;

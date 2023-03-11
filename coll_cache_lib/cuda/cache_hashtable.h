@@ -8,7 +8,7 @@
 #include "../device.h"
 #include "../common.h"
 #include "../constant.h"
-#include "../logging.h"
+// #include "../logging.h"
 
 namespace coll_cache_lib {
 namespace common {
