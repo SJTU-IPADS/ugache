@@ -670,12 +670,12 @@ void ExtractSession::GetMissCacheIndex(
     }
     device->StreamSync(_cache_ctx->_trainer_ctx, stream);
     LOG(DEBUG) << "hashtable get idx " << t_hash.Passed();
-    CheckCudaEqual(output_src_index, output_src_index_alter, sizeof(SrcKey) * num_nodes, stream);
-    device->StreamSync(_cache_ctx->_trainer_ctx, stream);
-    LOG(DEBUG) << "src key checked";
-    CheckCudaEqual(output_dst_index, output_dst_index_alter, sizeof(DstVal) * num_nodes, stream);
-    device->StreamSync(_cache_ctx->_trainer_ctx, stream);
-    LOG(DEBUG) << "dst val checked";
+    // CheckCudaEqual(output_src_index, output_src_index_alter, sizeof(SrcKey) * num_nodes, stream);
+    // device->StreamSync(_cache_ctx->_trainer_ctx, stream);
+    // LOG(DEBUG) << "src key checked";
+    // CheckCudaEqual(output_dst_index, output_dst_index_alter, sizeof(DstVal) * num_nodes, stream);
+    // device->StreamSync(_cache_ctx->_trainer_ctx, stream);
+    // LOG(DEBUG) << "dst val checked";
   }
 
   Timer t1;
@@ -3754,8 +3754,8 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
 
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "gathering unused offsets";
   if (num_eviced_node > 0) {
-    _new_evict_keys = _new_evict_keys->CopyToExternal(_cache_ctx->_gpu_mem_allocator, gpu_ctx, stream);
-    auto _new_evict_offsets_gpu = Tensor::EmptyExternal(kI32, {num_eviced_node}, _cache_ctx->_gpu_mem_allocator, gpu_ctx, "");
+    _new_evict_keys = CopyTo1DReuse(__keys_buffer, _new_evict_keys, gpu_ctx, stream);
+    auto _new_evict_offsets_gpu = Empty1DReuse(__offs_buffer, kI32, {num_eviced_node}, gpu_ctx);
     _new_hash_table->LookupOffset(_new_evict_keys, _new_evict_offsets_gpu, stream);
     CUDA_CALL(cudaStreamSynchronize(cu_stream));
     auto _new_evict_offsets_cpu = _new_evict_offsets_gpu->CopyTo(CPU(), stream, "");
@@ -3792,7 +3792,7 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
       _new_hash_table->_hash_table->max_efficient_size
     );
   if (remote_keys_to_evict->NumItem() > 0) {
-    remote_keys_to_evict = remote_keys_to_evict->CopyToExternal(_cache_ctx->_gpu_mem_allocator, gpu_ctx, stream);
+    remote_keys_to_evict = CopyTo1DReuse(__keys_buffer, remote_keys_to_evict, gpu_ctx, stream);
     CUDA_CALL(cudaStreamSynchronize(cu_stream));
     _new_hash_table->EvictRemote(remote_keys_to_evict, stream);
     CUDA_CALL(cudaStreamSynchronize(cu_stream));
@@ -3812,9 +3812,8 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "inserting new local nodes";
 
   if (_new_insert_keys->NumItem() > 0) {
-    _new_insert_keys = _new_insert_keys->CopyToExternal(_cache_ctx->_gpu_mem_allocator, gpu_ctx, stream);
-    auto reserved_offset = _new_hash_table->ReserveOffsetFront(_new_insert_keys->NumItem())
-        ->CopyToExternal(_cache_ctx->_gpu_mem_allocator, gpu_ctx, stream);
+    _new_insert_keys = CopyTo1DReuse(__keys_buffer, _new_insert_keys, gpu_ctx, stream);
+    auto reserved_offset = CopyTo1DReuse(__offs_buffer, _new_hash_table->ReserveOffsetFront(_new_insert_keys->NumItem()), gpu_ctx, stream);
     
     if (RunConfig::option_empty_feat == 0) {
       const DataIter<const IdType*> src_data_iter(_new_insert_keys->CPtr<IdType>(), _cache_ctx->_device_cache_data[_cache_ctx->_cpu_location_id], _cache_ctx->_dim);
@@ -3842,8 +3841,8 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
         return _old_access_view[block_id].ref() != dev_id;
       });
       if (_remote_new_keys->NumItem() > 0) {
-        _remote_new_keys = _remote_new_keys->CopyToExternal(_cache_ctx->_gpu_mem_allocator, gpu_ctx, stream);
-        auto _remote_offsets = Tensor::EmptyExternal(kI32, _remote_new_keys->Shape(), _cache_ctx->_gpu_mem_allocator, gpu_ctx, "");
+        _remote_new_keys = CopyTo1DReuse(__keys_buffer, _remote_new_keys, gpu_ctx, stream);
+        auto _remote_offsets = Empty1DReuse(__offs_buffer, kI32, _remote_new_keys->Shape(), gpu_ctx);
         _cache_ctx->_remote_new_hash_table[dev_id]->LookupOffset(_remote_new_keys, _remote_offsets, stream);
         _new_hash_table->InsertWithLoc(_remote_new_keys, _remote_offsets, dev_id, stream);
       }
@@ -3865,4 +3864,18 @@ void RefreshSession::refresh_after_solve_main(bool foreground) {
   CUDA_CALL(cudaStreamSynchronize(cu_stream));
 }
 
+TensorPtr RefreshSession::Empty1DReuse(TensorPtr& preserved_buffer, DataType dtype, std::vector<size_t> shape, Context ctx) {
+  CHECK(shape.size() == 1);
+  if (preserved_buffer && preserved_buffer->CanForceScale(dtype, shape)) {
+    preserved_buffer->ForceScale(dtype, shape, ctx, "");
+    return preserved_buffer;
+  }
+  preserved_buffer = Tensor::EmptyExternal(dtype, shape, _cache_ctx->_eager_gpu_mem_allocator, ctx, "");
+  return preserved_buffer;
+}
+TensorPtr RefreshSession::CopyTo1DReuse(TensorPtr& preserved_buffer, TensorPtr src, Context ctx, StreamHandle stream) {
+  auto ret = Empty1DReuse(preserved_buffer, src->Type(), src->Shape(), ctx);
+  Device::Get(ctx)->CopyDataFromTo(src->Data(), 0, ret->MutableData(), 0, src->NumBytes(), src->Ctx(), ctx, stream);
+  return ret;
+}
 } // namespace coll_cache_lib

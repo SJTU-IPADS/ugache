@@ -166,6 +166,7 @@ class AnonymousBarrier : public ExternalBarrierHandler {
 };
 
 size_t GetDataTypeBytes(DataType dtype);
+size_t GetTensorBytes(DataType dtype, const std::vector<size_t> shape);
 class Tensor : public std::enable_shared_from_this<Tensor> {
  public:
   Tensor();
@@ -184,6 +185,9 @@ class Tensor : public std::enable_shared_from_this<Tensor> {
   size_t NumBytes() const { return _nbytes; }
   Context Ctx() const { return _ctx; }
   inline size_t NumItem() const { return std::accumulate(_shape.begin(), _shape.end(), 1ul, std::multiplies<size_t>()); }
+  bool CanForceScale(DataType dt, std::vector<size_t> shape) {
+    return GetTensorBytes(dt, shape) <= _external_mem_hanlder->nbytes();
+  }
   void ForceScale(DataType dt, std::vector<size_t> shape, Context ctx, std::string name);
   void ReShape(std::vector<size_t> new_shape);
 

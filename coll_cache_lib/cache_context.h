@@ -204,6 +204,13 @@ class RefreshSession {
   void refresh_after_solve_old(bool foreground);
   void refresh_after_solve_new(bool foreground);
   void refresh_after_solve_main(bool foreground);
+  // preserved allocation for new hashtable allocation
+  TensorPtr __keys_buffer       = nullptr;
+  TensorPtr __offs_buffer       = nullptr;
+  TensorPtr Empty1DReuse(TensorPtr& preserved_buffer, DataType dtype, std::vector<size_t> shape,
+                         Context ctx);
+  TensorPtr CopyTo1DReuse(TensorPtr& preserved_buffer, TensorPtr src, Context ctx,
+                          StreamHandle stream);
 };
 
 }
