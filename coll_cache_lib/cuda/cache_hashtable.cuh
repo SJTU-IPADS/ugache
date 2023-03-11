@@ -413,6 +413,7 @@ class CacheEntryManager {
       IdType block_id = nid_to_block->Ptr<IdType>()[key];
       if (cond(block_placement->Ptr<uint8_t>()[block_id])) {
       // if ((block_placement->Ptr<uint8_t>()[block_id] & (1 << local_location_id)) != 0) {
+        CHECK(num_matched_keys < _cache_space_capacity);
         matched_keys->Ptr<IdType>()[num_matched_keys] = key;
         num_matched_keys++;
       }
@@ -437,6 +438,7 @@ class CacheEntryManager {
       IdType block_id = nid_to_block->Ptr<IdType>()[key];
       if (cond(block_access_advise->Ptr<uint8_t>()[block_id])) {
       // if ((block_placement->Ptr<uint8_t>()[block_id] & (1 << local_location_id)) != 0) {
+        CHECK(num_matched_keys < _cache_space_capacity);
         matched_keys->Ptr<IdType>()[num_matched_keys] = key;
         num_matched_keys++;
       }

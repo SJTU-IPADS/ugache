@@ -3425,6 +3425,7 @@ void RefreshSession::refresh_after_solve_old(bool foreground) {
       for (size_t node_id = 0; node_id < RunConfig::num_total_item; node_id++) {
         IdType block_id = _cache_ctx->_coll_cache->_nid_to_block->CPtr<IdType>()[node_id];
         if (block_access_advise_cpu->CPtr<uint8_t>()[block_id] != dev_id) continue;
+        CHECK(next_idx < per_src_size[dev_id]);
         node_list_of_src[dev_id]->Ptr<IdType>()[next_idx] = node_id;
         next_idx++;
       }
@@ -3440,6 +3441,7 @@ void RefreshSession::refresh_after_solve_old(bool foreground) {
   for (IdType node_id = 0; node_id < RunConfig::num_total_item; node_id++) {
     IdType block_id = _cache_ctx->_coll_cache->_nid_to_block->Ptr<IdType>()[node_id];
     if ((_cache_ctx->_coll_cache->_block_placement->Ptr<uint8_t>()[block_id] & (1 << _local_location_id)) != 0) {
+      CHECK(num_new_local_node < _cache_ctx->_cache_space_capacity) << num_new_local_node << " >=" << _cache_ctx->_cache_space_capacity;
       new_local_node_list_cpu->Ptr<IdType>()[num_new_local_node] = node_id;
       num_new_local_node++;
     }
@@ -3545,6 +3547,7 @@ void RefreshSession::refresh_after_solve_old(bool foreground) {
     IdType node_id = cache_node_list_cpu->Ptr<IdType>()[i];
     IdType block_id = _cache_ctx->_coll_cache->_nid_to_block->Ptr<IdType>()[node_id];
     if ((_cache_ctx->_coll_cache->_block_placement->Ptr<uint8_t>()[block_id] & (1 << _local_location_id)) == 0) {
+      CHECK(num_eviced_node < _cache_ctx->_cache_nodes - num_preserved_node);
       evicted_node_list_cpu->Ptr<IdType>()[num_eviced_node] = node_id;
       num_eviced_node++;
     }
