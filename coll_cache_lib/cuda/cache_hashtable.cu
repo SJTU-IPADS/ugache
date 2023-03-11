@@ -400,6 +400,7 @@ template void SimpleHashTable::InsertUnique<HashTableInsertHelper::SingleLocSeqO
 void SimpleHashTable::EvictWithUnique(const IdType *const input,
                                        const size_t num_input,
                                        StreamHandle stream) {
+  if (num_input == 0) return;
   const size_t num_tiles = RoundUpDiv(num_input, Constant::kCudaTileSize);
   const dim3 grid(num_tiles);
   const dim3 block(Constant::kCudaBlockSize);
