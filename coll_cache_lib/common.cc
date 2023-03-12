@@ -132,6 +132,7 @@ TensorPtr Tensor::CreateShm(std::string shm_path, DataType dtype,
   tensor->_data = data;
   tensor->_ctx = MMAP(MMAP_RW_DEVICE);
   tensor->_name = name;
+  tensor->BuildLenOfEachShape();
 
   return tensor;
 }
@@ -162,6 +163,7 @@ TensorPtr Tensor::OpenShm(std::string shm_path, DataType dtype,
   tensor->_data = data;
   tensor->_ctx = MMAP(MMAP_RW_DEVICE);
   tensor->_name = name;
+  tensor->BuildLenOfEachShape();
 
   return tensor;
 }
@@ -237,6 +239,7 @@ TensorPtr Tensor::FromMmap(std::string filepath, DataType dtype,
     default:
       CHECK(0);
   }
+  tensor->BuildLenOfEachShape();
 
   return tensor;
 }
@@ -256,6 +259,7 @@ TensorPtr Tensor::Empty(DataType dtype, std::vector<size_t> shape, Context ctx,
   tensor->_data = Device::Get(ctx)->AllocWorkspace(ctx, nbytes);
   tensor->_ctx = ctx;
   tensor->_name = name;
+  tensor->BuildLenOfEachShape();
 
   return tensor;
 }
@@ -272,6 +276,7 @@ TensorPtr Tensor::EmptyNoScale(DataType dtype, std::vector<size_t> shape,
     AllocWorkspace(ctx, nbytes, Constant::kAllocNoScale);
   tensor->_ctx = ctx;
   tensor->_name = name;
+  tensor->BuildLenOfEachShape();
 
   return tensor;
 }
@@ -295,6 +300,7 @@ TensorPtr Tensor::FromBlob(void *data, DataType dtype,
   tensor->_data = data;
   tensor->_ctx = ctx;
   tensor->_name = name;
+  tensor->BuildLenOfEachShape();
 
   return tensor;
 }
@@ -317,6 +323,7 @@ TensorPtr Tensor::CopyTo(TensorPtr source, Context ctx, StreamHandle stream, std
   Device::Get(working_ctx)->CopyDataFromTo(source->_data, 0, tensor->_data, 0,
                                                 nbytes, source->_ctx, tensor->_ctx, stream);
   Device::Get(working_ctx)->StreamSync(working_ctx, stream);
+  tensor->BuildLenOfEachShape();
   return tensor;
 }
 TensorPtr Tensor::CopyBlob(const void * data, DataType dtype,
@@ -337,6 +344,7 @@ TensorPtr Tensor::CopyBlob(const void * data, DataType dtype,
   Device::Get(working_ctx)->CopyDataFromTo(data, 0, tensor->_data, 0,
                                                 nbytes, from_ctx, tensor->_ctx, stream);
   Device::Get(working_ctx)->StreamSync(working_ctx, stream);
+  tensor->BuildLenOfEachShape();
   return tensor;
 }
 
@@ -356,6 +364,7 @@ TensorPtr Tensor::EmptyExternal(DataType dtype, std::vector<size_t> shape, const
   tensor->_external_mem_hanlder = allocator(nbytes);
   tensor->_data = tensor->_external_mem_hanlder->ptr();
   tensor->_name = name;
+  tensor->BuildLenOfEachShape();
   return tensor;
 }
 
@@ -379,6 +388,7 @@ TensorPtr Tensor::CopyToExternal(TensorPtr source, const std::function<MemHandle
   Device::Get(working_ctx)->CopyDataFromTo(source->_data, 0, tensor->_data, 0,
                                                 nbytes, source->_ctx, tensor->_ctx, stream);
   Device::Get(working_ctx)->StreamSync(working_ctx, stream);
+  tensor->BuildLenOfEachShape();
   return tensor;
 }
 TensorPtr Tensor::CopyLineToExternel(TensorPtr source, size_t line_idx, std::function<MemHandle(size_t)> & allocator, Context ctx, StreamHandle stream, double scale) {
@@ -401,6 +411,7 @@ TensorPtr Tensor::CopyLineToExternel(TensorPtr source, size_t line_idx, std::fun
   Device::Get(working_ctx)->CopyDataFromTo(source->_data, nbytes * line_idx, tensor->_data, 0, nbytes, source->_ctx, tensor->_ctx, stream);
   Device::Get(working_ctx)->StreamSync(working_ctx, stream);
 
+  tensor->BuildLenOfEachShape();
   return tensor;
 }
 
@@ -423,6 +434,7 @@ TensorPtr Tensor::CopyLine(TensorPtr source, size_t line_idx, Context ctx, Strea
   Device::Get(working_ctx)->CopyDataFromTo(source->_data, nbytes * line_idx, tensor->_data, 0, nbytes, source->_ctx, tensor->_ctx, stream);
   Device::Get(working_ctx)->StreamSync(working_ctx, stream);
 
+  tensor->BuildLenOfEachShape();
   return tensor;
 }
 

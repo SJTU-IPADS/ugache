@@ -176,6 +176,7 @@ class Tensor : public std::enable_shared_from_this<Tensor> {
   bool Defined() const { return _data; }
   DataType Type() const { return _dtype; }
   const std::vector<size_t>& Shape() const { return _shape; }
+  const std::vector<size_t>& LenOfEachShape() const { return _len_of_each_dim; }
   const void* Data() const { return _data; }
   template<typename T> T* Ptr() { check_elem_size(sizeof(T)); return static_cast<T*>(_data); }
   template<typename T> const T* CPtr() const { return const_cast<Tensor*>(this)->Ptr<T>(); }
@@ -246,8 +247,18 @@ class Tensor : public std::enable_shared_from_this<Tensor> {
   DataType _dtype;
   Context _ctx;
 
+  void BuildLenOfEachShape() {
+    auto _num_shape = _shape.size();
+    _len_of_each_dim.resize(_num_shape);
+    _len_of_each_dim.back() = 1;
+    for (int i = _num_shape - 1; i > 0; i--) {
+      _len_of_each_dim[i - 1] = _len_of_each_dim[i] * _shape[i];
+    }
+  }
+
   size_t _nbytes;
   std::vector<size_t> _shape;
+  std::vector<size_t> _len_of_each_dim;
 
   std::string _name;
 
