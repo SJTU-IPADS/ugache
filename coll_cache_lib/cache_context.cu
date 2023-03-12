@@ -2742,12 +2742,13 @@ __global__ void mark_offset_inuse(
   }
 }
 
-template <size_t BLOCK_SIZE, size_t TILE_SIZE>
+template <size_t BLOCK_SIZE, size_t TILE_SIZE, bool use_empty_feat = false>
 __global__ void mark_evict_nodes(
     const IdType* evict_node_list, const size_t num_input,
     const IdType fall_back_location_id,
     const IdType old_location_id,
-    HashTableEntryLocation* _location, HashTableEntryOffset* _offset) {
+    HashTableEntryLocation* _location, HashTableEntryOffset* _offset,
+    size_t empty_feat = 0) {
   assert(BLOCK_SIZE == blockDim.x);
   const size_t block_start = TILE_SIZE * blockIdx.x;
   const size_t block_end = TILE_SIZE * (blockIdx.x + 1);
@@ -2757,7 +2758,11 @@ __global__ void mark_evict_nodes(
       const IdType node_id = evict_node_list[idx];
       assert(_location[node_id] == old_location_id);
       _location[node_id] = fall_back_location_id;
-      _offset[node_id] = node_id;
+      if (use_empty_feat) {
+        _offset[node_id] = node_id % (1 << empty_feat);
+      } else {
+        _offset[node_id] = node_id;
+      }
     }
   }
 }
@@ -2766,13 +2771,14 @@ struct _LocationPack {
   const HashTableEntryLocation* data[9];
 };
 
-template <size_t BLOCK_SIZE, size_t TILE_SIZE>
+template <size_t BLOCK_SIZE, size_t TILE_SIZE, bool use_empty_feat = false>
 __global__ void mark_remote_evict_nodes(
     _LocationPack _remote_location,
     HashTableEntryLocation* local_location_table,
     HashTableEntryOffset* local_offset_table,
     const HashTableEntryLocation local_loc, const HashTableEntryLocation cpu_loc,
-    const size_t num_input) {
+    const size_t num_input,
+    size_t empty_feat = 0) {
   assert(BLOCK_SIZE == blockDim.x);
   const size_t block_start = TILE_SIZE * blockIdx.x;
   const size_t block_end = TILE_SIZE * (blockIdx.x + 1);
@@ -2782,7 +2788,11 @@ __global__ void mark_remote_evict_nodes(
       auto location_id = local_location_table[node_id];
       if (location_id != local_loc && location_id != cpu_loc && _remote_location.data[location_id][node_id] != location_id) {
         local_location_table[node_id] = cpu_loc;
-        local_offset_table[node_id] = node_id;
+        if (use_empty_feat) {
+          local_offset_table[node_id] = node_id % (1 << empty_feat);
+        } else {
+          local_offset_table[node_id] = node_id;
+        }
       }
     }
   }
@@ -3218,12 +3228,21 @@ void RefreshSession::refresh_after_solve(bool foreground) {
   if (num_eviced_node > 0) {
     TensorPtr evicted_node_list_gpu = Tensor::CopyToExternal(evicted_node_list_cpu, _cache_ctx->_gpu_mem_allocator, gpu_ctx, stream);
     SAM_CUDA_PREPARE_1D(num_eviced_node);
-    mark_evict_nodes<Constant::kCudaBlockSize, Constant::kCudaTileSize>
-      <<<grid, block, 0, cu_stream>>>(
-        evicted_node_list_gpu->CPtr<IdType>(), num_eviced_node, 
-        _cache_ctx->_cpu_location_id, 
-        _local_location_id,
-        _cache_ctx->_hash_table_location, _cache_ctx->_hash_table_offset);
+    if (RunConfig::option_empty_feat) {
+      mark_evict_nodes<Constant::kCudaBlockSize, Constant::kCudaTileSize, true>
+        <<<grid, block, 0, cu_stream>>>(
+          evicted_node_list_gpu->CPtr<IdType>(), num_eviced_node, 
+          _cache_ctx->_cpu_location_id, 
+          _local_location_id,
+          _cache_ctx->_hash_table_location, _cache_ctx->_hash_table_offset, RunConfig::option_empty_feat);
+    } else {
+      mark_evict_nodes<Constant::kCudaBlockSize, Constant::kCudaTileSize>
+        <<<grid, block, 0, cu_stream>>>(
+          evicted_node_list_gpu->CPtr<IdType>(), num_eviced_node, 
+          _cache_ctx->_cpu_location_id, 
+          _local_location_id,
+          _cache_ctx->_hash_table_location, _cache_ctx->_hash_table_offset);
+    }
     CUDA_CALL(cudaStreamSynchronize(cu_stream));
   }
   {
@@ -3270,9 +3289,15 @@ void RefreshSession::refresh_after_solve(bool foreground) {
     _LocationPack _location_param;
     memcpy(_location_param.data, _cache_ctx->_remote_hash_table_location.data(), sizeof(HashTableEntryLocation*) * _cache_ctx->_remote_hash_table_location.size());
     SAM_CUDA_PREPARE_1D(RunConfig::num_total_item);
-    mark_remote_evict_nodes<Constant::kCudaBlockSize, Constant::kCudaTileSize>
-      <<<grid, block, 0, cu_stream>>>(_location_param, _cache_ctx->_hash_table_location, _cache_ctx->_hash_table_offset, 
-        _cache_ctx->_local_location_id, _cache_ctx->_cpu_location_id, RunConfig::num_total_item);
+    if (RunConfig::option_empty_feat) {
+      mark_remote_evict_nodes<Constant::kCudaBlockSize, Constant::kCudaTileSize, true>
+        <<<grid, block, 0, cu_stream>>>(_location_param, _cache_ctx->_hash_table_location, _cache_ctx->_hash_table_offset, 
+          _cache_ctx->_local_location_id, _cache_ctx->_cpu_location_id, RunConfig::num_total_item, RunConfig::option_empty_feat);
+    } else {
+      mark_remote_evict_nodes<Constant::kCudaBlockSize, Constant::kCudaTileSize, false>
+        <<<grid, block, 0, cu_stream>>>(_location_param, _cache_ctx->_hash_table_location, _cache_ctx->_hash_table_offset, 
+          _cache_ctx->_local_location_id, _cache_ctx->_cpu_location_id, RunConfig::num_total_item);
+    }
     CUDA_CALL(cudaStreamSynchronize(cu_stream));
   }
   {
@@ -3587,12 +3612,21 @@ void RefreshSession::refresh_after_solve_old(bool foreground) {
   if (num_eviced_node > 0) {
     TensorPtr evicted_node_list_gpu = Tensor::CopyToExternal(evicted_node_list_cpu, _cache_ctx->_eager_gpu_mem_allocator, gpu_ctx, stream);
     SAM_CUDA_PREPARE_1D(num_eviced_node);
-    mark_evict_nodes<Constant::kCudaBlockSize, Constant::kCudaTileSize>
-      <<<grid, block, 0, cu_stream>>>(
-        evicted_node_list_gpu->CPtr<IdType>(), num_eviced_node, 
-        _cache_ctx->_cpu_location_id, 
-        _local_location_id,
-        _cache_ctx->_hash_table_location, _cache_ctx->_hash_table_offset);
+    if (RunConfig::option_empty_feat) {
+      mark_evict_nodes<Constant::kCudaBlockSize, Constant::kCudaTileSize, true>
+        <<<grid, block, 0, cu_stream>>>(
+          evicted_node_list_gpu->CPtr<IdType>(), num_eviced_node, 
+          _cache_ctx->_cpu_location_id, 
+          _local_location_id,
+          _cache_ctx->_hash_table_location, _cache_ctx->_hash_table_offset, RunConfig::option_empty_feat);
+    } else {
+      mark_evict_nodes<Constant::kCudaBlockSize, Constant::kCudaTileSize, false>
+        <<<grid, block, 0, cu_stream>>>(
+          evicted_node_list_gpu->CPtr<IdType>(), num_eviced_node, 
+          _cache_ctx->_cpu_location_id, 
+          _local_location_id,
+          _cache_ctx->_hash_table_location, _cache_ctx->_hash_table_offset);
+    }
     CUDA_CALL(cudaStreamSynchronize(cu_stream));
   }
 #ifdef DEAD_CODE
@@ -3632,9 +3666,15 @@ void RefreshSession::refresh_after_solve_old(bool foreground) {
     _LocationPack _location_param;
     memcpy(_location_param.data, _cache_ctx->_remote_hash_table_location.data(), sizeof(HashTableEntryLocation*) * _cache_ctx->_remote_hash_table_location.size());
     SAM_CUDA_PREPARE_1D(RunConfig::num_total_item);
-    mark_remote_evict_nodes<Constant::kCudaBlockSize, Constant::kCudaTileSize>
-      <<<grid, block, 0, cu_stream>>>(_location_param, _cache_ctx->_hash_table_location, _cache_ctx->_hash_table_offset, 
-        _cache_ctx->_local_location_id, _cache_ctx->_cpu_location_id, RunConfig::num_total_item);
+    if (RunConfig::option_empty_feat) {
+      mark_remote_evict_nodes<Constant::kCudaBlockSize, Constant::kCudaTileSize, true>
+        <<<grid, block, 0, cu_stream>>>(_location_param, _cache_ctx->_hash_table_location, _cache_ctx->_hash_table_offset, 
+          _cache_ctx->_local_location_id, _cache_ctx->_cpu_location_id, RunConfig::num_total_item, RunConfig::option_empty_feat);
+    } else {
+      mark_remote_evict_nodes<Constant::kCudaBlockSize, Constant::kCudaTileSize, false>
+        <<<grid, block, 0, cu_stream>>>(_location_param, _cache_ctx->_hash_table_location, _cache_ctx->_hash_table_offset, 
+          _cache_ctx->_local_location_id, _cache_ctx->_cpu_location_id, RunConfig::num_total_item);
+    }
     CUDA_CALL(cudaStreamSynchronize(cu_stream));
   }
 
