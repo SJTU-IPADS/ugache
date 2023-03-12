@@ -2293,25 +2293,27 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
   /**
    * 3. get hashtable entry, cache data from remote devices
    */
-  for (int dev_id = 0; dev_id < _cpu_location_id; dev_id++) {
-    _barrier->Wait();
-    if (keys_for_each_source[dev_id] == nullptr || dev_id == _local_location_id) continue;
-    if (!RunConfig::cross_process) {
-      auto cuda_err = cudaDeviceEnablePeerAccess(dev_id, 0);
-      if (cuda_err != cudaErrorPeerAccessAlreadyEnabled) {
-        CUDA_CALL(cuda_err);
+  for (auto & link : RunConfig::coll_cache_link_desc.link_src[_local_location_id]) {
+    for (auto dev_id : link) {
+      _barrier->Wait();
+      if (!RunConfig::cross_process) {
+        auto cuda_err = cudaDeviceEnablePeerAccess(dev_id, 0);
+        if (cuda_err != cudaErrorPeerAccessAlreadyEnabled) {
+          CUDA_CALL(cuda_err);
+        }
       }
+      _device_cache_data[dev_id] = device_cache_data_list.extract(dev_id);
+      _remote_hash_table[dev_id] = (BucketO2N * )hash_table_list.extract(dev_id);
+      _remote_new_hash_table[dev_id] = new CacheEntryManager;
+      CacheEntryManager &remote_cache_manager = *_remote_new_hash_table[dev_id];
+      remote_cache_manager._hash_table = std::make_shared<SimpleHashTable>(_remote_hash_table[dev_id], (size_t)(num_total_nodes - num_cpu_nodes), _trainer_ctx, stream);
+      if (keys_for_each_source[dev_id] == nullptr || dev_id == _local_location_id) continue;
+      auto keys = Tensor::CopyToExternal(keys_for_each_source[dev_id], _eager_gpu_mem_allocator, _trainer_ctx, stream);
+      auto off = Tensor::EmptyExternal(kI32, keys->Shape(), _eager_gpu_mem_allocator, _trainer_ctx, "");
+      remote_cache_manager.LookupOffset(keys, off, stream);
+      _new_hash_table->InsertWithLoc(keys, off, dev_id, stream);
+      gpu_device->StreamSync(gpu_ctx, stream);
     }
-    _device_cache_data[dev_id] = device_cache_data_list.extract(dev_id);
-    _remote_hash_table[dev_id] = (BucketO2N * )hash_table_list.extract(dev_id);
-    _remote_new_hash_table[dev_id] = new CacheEntryManager;
-    CacheEntryManager &remote_cache_manager = *_remote_new_hash_table[dev_id];
-    remote_cache_manager._hash_table = std::make_shared<SimpleHashTable>(_remote_hash_table[dev_id], (size_t)(num_total_nodes - num_cpu_nodes), _trainer_ctx, stream);
-    auto keys = Tensor::CopyToExternal(keys_for_each_source[dev_id], _eager_gpu_mem_allocator, _trainer_ctx, stream);
-    auto off = Tensor::EmptyExternal(kI32, keys->Shape(), _eager_gpu_mem_allocator, _trainer_ctx, "");
-    remote_cache_manager.LookupOffset(keys, off, stream);
-    _new_hash_table->InsertWithLoc(keys, off, dev_id, stream);
-    gpu_device->StreamSync(gpu_ctx, stream);
   }
   _new_hash_table->_cached_keys = keys_for_each_source[location_id];
   _new_hash_table->_cache_space_capacity = _cache_space_capacity;
