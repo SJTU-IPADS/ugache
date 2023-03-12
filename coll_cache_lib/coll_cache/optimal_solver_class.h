@@ -148,8 +148,14 @@ protected:
     tbb::atomic<uint32_t> size{0};
     size_t orig_seq_slot;
   };
+  struct full_slot_single_thread {
+    size_t remmaped_slot = 0xffffffffffffffff;
+    uint32_t size = 0;
+    size_t orig_seq_slot;
+  };
 
   struct concurrent_full_slot_map {
+    #ifdef DEAD_CODE
     const size_t _place_holder = 0xffffffffffffffff;
     std::atomic_uint32_t next_free_slot{0};
     // tbb::concurrent_unordered_map<size_t, volatile size_t> the_map;
@@ -167,6 +173,25 @@ protected:
       }
       rst.first->second.size.fetch_and_increment();
       return rst.first->second.remmaped_slot;
+    }
+    #endif
+    // const size_t _place_holder = 0xffffffffffffffff;
+    std::atomic_uint32_t next_free_slot{0};
+    uint32_t __next_free_slot = 0;
+    std::unordered_map<size_t, full_slot_single_thread> the_map;
+    uint32_t register_bucket(size_t slot_array_seq_id) {
+      auto iter = the_map.find(slot_array_seq_id);
+      if (iter == the_map.end()) {
+        auto val = full_slot_single_thread();
+        val.orig_seq_slot = slot_array_seq_id;
+        val.remmaped_slot = __next_free_slot++;
+        val.size = 1;
+        auto rst = the_map.insert({slot_array_seq_id, val});
+        return val.remmaped_slot;
+      } else {
+        iter->second.size++;
+        return iter->second.remmaped_slot;
+      }
     }
   };
 

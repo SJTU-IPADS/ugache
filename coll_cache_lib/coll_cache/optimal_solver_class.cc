@@ -94,7 +94,7 @@ void OptimalSolver::Build(TensorPtr stream_id_list, TensorPtr stream_freq_list, 
   };
   LOG(WARNING) << "counting slots...";
   size_t max_seq_slot = 0;
-#pragma omp parallel for num_threads(8) reduction(max: max_seq_slot)
+// #pragma omp parallel for num_threads(RunConfig::omp_thread_num) reduction(max: max_seq_slot)
   for (uint32_t nid = 0; nid < num_node; nid++) {
     // for each nid, prepare a slot list
     for (uint32_t stream_idx = 0; stream_idx < num_stream; stream_idx++) {
@@ -108,16 +108,20 @@ void OptimalSolver::Build(TensorPtr stream_id_list, TensorPtr stream_freq_list, 
     max_seq_slot = std::max(max_seq_slot, seq_id);
     nid_to_block[nid].ref() = slot_array_to_full_block.register_bucket(seq_id);
   }
+  slot_array_to_full_block.next_free_slot.store(slot_array_to_full_block.__next_free_slot);
   LOG(WARNING) << "Final num slot is " << slot_array_to_full_block.next_free_slot.load();
   block_identifer* buckets = new block_identifer[slot_array_to_full_block.next_free_slot.load()];
   next_free_block.store(0);
 
   LOG(WARNING) << "preparing block granularity...";
-  #pragma omp parallel for num_threads(8)
-  for (uint32_t nid = 0; nid < num_node; nid++) {
-    // fixme: the total number of each full size block has already be counted at slot_array_to_full_block.
-    buckets[nid_to_block[nid].ref()].measure_total_node();
+  for (auto iter = slot_array_to_full_block.the_map.begin(); iter != slot_array_to_full_block.the_map.end(); iter++) {
+    buckets[iter->second.remmaped_slot]._total_nodes = iter->second.size;
   }
+  // #pragma omp parallel for num_threads(8)
+  // for (uint32_t nid = 0; nid < num_node; nid++) {
+  //   // fixme: the total number of each full size block has already be counted at slot_array_to_full_block.
+  //   buckets[nid_to_block[nid].ref()].measure_total_node();
+  // }
   for (uint32_t bid = 0; bid < slot_array_to_full_block.next_free_slot.load(); bid++) {
     buckets[bid].set_max_size(device_to_stream.size(), max_size_per_block);
   }
