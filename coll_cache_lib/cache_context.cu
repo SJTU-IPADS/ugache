@@ -2039,7 +2039,7 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
     gpu_device->CopyDataFromTo(cache_node_list, 0, _local_node_list_tensor->Ptr<IdType>(), 0, _local_node_list_tensor->NumBytes(), gpu_ctx, CPU(CPU_CLIB_MALLOC_DEVICE), stream);
     cuda::CubCountByEq<IdType>(gpu_ctx, (const IdType *)_hash_table_location, num_total_nodes, num_cpu_nodes, _cpu_location_id, _eager_gpu_mem_allocator, stream);
     // CHECK_NE(num_cached_nodes, 0);
-    _cache_space_capacity = num_cached_nodes + num_total_nodes * 0.0001;
+    _cache_space_capacity = (size_t)(num_total_nodes * (cache_percentage + 0.001));
     _cache_nbytes = GetTensorBytes(_dtype, {_cache_space_capacity, _dim});
     _cache_nodes = num_cached_nodes;
     // _device_cache_data_local_handle = _eager_gpu_mem_allocator(_cache_nbytes);
@@ -2256,7 +2256,7 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
 
   {
     // CHECK_NE(num_cached_nodes, 0);
-    _cache_space_capacity = num_cached_nodes + num_total_nodes * 0.0001;
+    _cache_space_capacity = (size_t)(num_total_nodes * (cache_percentage + 0.001));
     _cache_nbytes = GetTensorBytes(_dtype, {_cache_space_capacity, _dim});
     _cache_nodes = num_cached_nodes;
     _device_cache_data_local_handle = _eager_gpu_mem_allocator(_cache_nbytes);
