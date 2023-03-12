@@ -122,6 +122,7 @@ void OptimalSolver::Build(TensorPtr stream_id_list, TensorPtr stream_freq_list, 
   //   // fixme: the total number of each full size block has already be counted at slot_array_to_full_block.
   //   buckets[nid_to_block[nid].ref()].measure_total_node();
   // }
+  #ifdef DEAD_CODE
   for (uint32_t bid = 0; bid < slot_array_to_full_block.next_free_slot.load(); bid++) {
     buckets[bid].set_max_size(device_to_stream.size(), max_size_per_block);
   }
@@ -130,20 +131,34 @@ void OptimalSolver::Build(TensorPtr stream_id_list, TensorPtr stream_freq_list, 
   for (auto iter = slot_array_to_full_block.the_map.begin(); iter != slot_array_to_full_block.the_map.end(); iter++) {
     LOG(ERROR) << "slot " << iter->first << " has " << iter->second.size << " nodes";
   }
+  #endif
   // zero block
-  if (slot_array_to_full_block.the_map.find(max_seq_slot)->second.size / (double)num_node < (1 - RunConfig::cache_percentage * device_to_stream.size())) {
-    buckets[slot_array_to_full_block.the_map.find(max_seq_slot)->second.remmaped_slot].set_max_size(1, num_node);
-  } else {
-    buckets[slot_array_to_full_block.the_map.find(max_seq_slot)->second.remmaped_slot].set_max_size(1, num_node / 100);
-  }
-  if (max_seq_slot > 0) {
-    if (slot_array_to_full_block.the_map.find(max_seq_slot)->second.size + slot_array_to_full_block.the_map.find(max_seq_slot - 1)->second.size
-      / (double)num_node < (1 - RunConfig::cache_percentage * device_to_stream.size())) {
-      buckets[slot_array_to_full_block.the_map.find(max_seq_slot - 1)->second.remmaped_slot].set_max_size(1, num_node);
+  size_t accumulate_size = 0;
+  for (size_t seq_slot_id = 0; seq_slot_id <= max_seq_slot; seq_slot_id++) {
+    auto iter = slot_array_to_full_block.the_map.find(seq_slot_id);
+    if (iter == slot_array_to_full_block.the_map.end()) continue;
+    accumulate_size += iter->second.size;
+    if (accumulate_size / (double)num_node < RunConfig::cache_percentage * device_to_stream.size()) {
+      buckets[iter->second.remmaped_slot].set_max_size(device_to_stream.size(), std::min(max_size_per_block, RoundUpDiv<uint32_t>(iter->second.size, device_to_stream.size())));
     } else {
-      buckets[slot_array_to_full_block.the_map.find(max_seq_slot - 1)->second.remmaped_slot].set_max_size(1, num_node / 1000);
+      buckets[iter->second.remmaped_slot].set_max_size(1, num_node);
     }
+    LOG(ERROR) << "slot " << iter->first << " has " << iter->second.size << " nodes, max_size set to " << buckets[iter->second.remmaped_slot].max_size_this_block;
   }
+
+  // if (slot_array_to_full_block.the_map.find(max_seq_slot)->second.size / (double)num_node < (1 - RunConfig::cache_percentage * device_to_stream.size())) {
+  //   buckets[slot_array_to_full_block.the_map.find(max_seq_slot)->second.remmaped_slot].set_max_size(1, num_node);
+  // } else {
+  //   buckets[slot_array_to_full_block.the_map.find(max_seq_slot)->second.remmaped_slot].set_max_size(1, num_node / 100);
+  // }
+  // if (max_seq_slot > 0) {
+  //   if (slot_array_to_full_block.the_map.find(max_seq_slot)->second.size + slot_array_to_full_block.the_map.find(max_seq_slot - 1)->second.size
+  //     / (double)num_node < (1 - RunConfig::cache_percentage * device_to_stream.size())) {
+  //     buckets[slot_array_to_full_block.the_map.find(max_seq_slot - 1)->second.remmaped_slot].set_max_size(1, num_node);
+  //   } else {
+  //     buckets[slot_array_to_full_block.the_map.find(max_seq_slot - 1)->second.remmaped_slot].set_max_size(1, num_node / 1000);
+  //   }
+  // }
 
   LOG(WARNING) << "counting blocks...";
 // #pragma omp parallel for num_threads(RunConfig::omp_thread_num / 2)
