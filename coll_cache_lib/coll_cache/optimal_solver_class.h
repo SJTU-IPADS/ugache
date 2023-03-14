@@ -50,6 +50,7 @@ class CollCacheSolver {
   TensorPtr block_freq_tensor;
   TensorPtr block_placement;
   TensorPtr block_access_from;
+  int num_working_threads;
 };
 
 class OptimalSolver : public CollCacheSolver {
@@ -59,6 +60,10 @@ public:
              std::vector<int> device_to_stream,
              const IdType num_node,
              const TensorPtr nid_to_block_tensor) override;
+  void BuildSingleStream(TensorPtr stream_id_list, TensorPtr stream_freq_list,
+             std::vector<int> device_to_stream,
+             const IdType num_node,
+             const TensorPtr nid_to_block_tensor);
   using CollCacheSolver::Solve;
   void Solve(std::vector<int> device_to_stream,
              std::vector<PerT> device_to_cache_percent, std::string mode,
@@ -149,7 +154,7 @@ protected:
     size_t orig_seq_slot;
   };
   struct full_slot_single_thread {
-    size_t remmaped_slot = 0xffffffffffffffff;
+    uint32_t remmaped_slot = 0xffffffff;
     uint32_t size = 0;
     size_t orig_seq_slot;
   };

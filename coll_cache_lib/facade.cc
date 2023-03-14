@@ -114,6 +114,7 @@ void CollCache::solve_impl_master(IdType *ranking_nodes_list_ptr,
     default:
       CHECK(false);
     }
+    solver->num_working_threads = RunConfig::omp_thread_num;
 
     LOG(ERROR) << "solver created. now build & solve";
     _nid_to_block = Tensor::CreateShm(Constant::kCollCacheNIdToBlockShmName,

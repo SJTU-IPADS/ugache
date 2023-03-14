@@ -4,6 +4,7 @@
 #include "../device.h"
 #include "../cpu/mmap_cpu_device.h"
 #include "../cpu/cpu_utils.h"
+#include "../timer.h"
 #include "ndarray.h"
 #include <omp.h>
 #include <sys/mman.h>
@@ -28,12 +29,185 @@ void CollCacheSolver::Solve(std::vector<int> device_to_stream,
   Solve(device_to_stream, device_to_cache_percent, mode, T_local, RunConfig::coll_cache_link_desc.AggregatedRemoteTime(), T_cpu);
 };
 
+void OptimalSolver::BuildSingleStream(TensorPtr stream_id_list, TensorPtr stream_freq_list, std::vector<int> device_to_stream, const IdType num_node, const TensorPtr nid_to_block_tensor) {
+  CHECK_EQ(stream_id_list->Shape().size(), 2);
+  CHECK_EQ(stream_freq_list->Shape().size(), 2);
+  CHECK_EQ(stream_id_list->Shape(), stream_freq_list->Shape());
+  CHECK_EQ(stream_id_list->Shape()[1], num_node);
+  IdType num_stream = stream_id_list->Shape()[0];
+  CHECK(num_stream == 1);
+  auto cpu_ctx = CPU(CPU_CLIB_MALLOC_DEVICE);
+  // coarse-grained slice to reduce asymm solve time
+  // symmetric & switch's precision still holds
+  max_size_per_block = num_node / 1000;
+  if (GetEnv("COLL_BLOCK_SLICE_GRAIN") != "") {
+    max_size_per_block = num_node / std::stod(GetEnv("COLL_BLOCK_SLICE_GRAIN"));
+  }
+  auto freq_to_slot = [this](float freq, uint32_t rank, IdType num_node){ return this->freq_to_slot_1(freq, rank, num_node);};
+
+  TensorPtr nid_to_rank_tensor  = Tensor::Empty(kI32, {num_node}, cpu_ctx, "coll_cache.nid_to_rank");
+  // nid_to_block_tensor = Tensor::Empty(kI32, {num_node}, cpu_ctx, "coll_cache.nid_to_block");
+  CHECK(nid_to_block_tensor->Shape() == std::vector<size_t>{num_node});
+
+  // TensorView<uint32_t> nid_to_rank(nid_to_rank_tensor);
+  // TensorView<uint32_t> nid_to_slot(nid_to_slot_tensor);
+  uint32_t* nid_to_block = nid_to_block_tensor->Ptr<uint32_t>();
+
+  concurrent_full_slot_map slot_array_to_full_block;
+
+  // TensorView<IdType> stream_id_list_view(stream_id_list);
+  // TensorView<IdType> stream_freq_list_view(stream_freq_list);
+  const IdType *stream_id_ptr = stream_id_list->CPtr<IdType>();
+  const IdType *stream_freq_ptr = stream_freq_list->CPtr<IdType>();
+
+  // identify freq boundary of first slot
+  // when cache rate is extremely small, better use the largest val as alpha
+  if (alpha < stream_freq_ptr[0]) {
+    alpha = stream_freq_ptr[0];
+  }
+  if (GetEnv("COLL_BLOCK_SLICE_BASE") != "") {
+    RunConfig::coll_cache_coefficient = std::stod(GetEnv("COLL_BLOCK_SLICE_BASE"));
+  }
+  LOG(ERROR) << "reconfigured max freq to be " << alpha;
+  RunConfig::coll_cache_num_slot = std::floor(std::log2(alpha) / std::log2(RunConfig::coll_cache_coefficient)) + 1;
+  LOG(ERROR) << "reconfigured num slot to be " << RunConfig::coll_cache_num_slot;
+
+  /**
+   * Map each node to a rank for each stream.
+   * Nodes with same rank for every stream forms a block.
+   */
+  LOG(WARNING) << "mapping nid to rank...";
+  Timer t_nid_to_rank;
+  const uint32_t stream_idx = 0;
+// #pragma omp parallel for num_threads(RunConfig::omp_thread_num)
+  for (uint32_t orig_rank = 0; orig_rank < num_node; orig_rank++) {
+    uint32_t nid = stream_id_ptr[orig_rank];
+    nid_to_rank_tensor->Ptr<uint32_t>()[nid] = orig_rank;
+  }
+  LOG(ERROR) << "mapping nid to rank takes " << t_nid_to_rank.Passed();
+
+
+  LOG(WARNING) << "counting slots...";
+  size_t max_seq_slot = 0;
+// #pragma omp parallel for num_threads(RunConfig::omp_thread_num) reduction(max: max_seq_slot)
+  for (uint32_t nid = 0; nid < num_node; nid++) {
+    // for each nid, prepare a slot list
+    uint32_t orig_rank = nid_to_rank_tensor->Ptr<uint32_t>()[nid];
+    double freq = stream_freq_ptr[orig_rank];
+    size_t seq_slot_id = freq_to_slot(freq, orig_rank, num_node);
+    max_seq_slot = std::max(max_seq_slot, seq_slot_id);
+    nid_to_block[nid] = slot_array_to_full_block.register_bucket(seq_slot_id);
+  }
+  slot_array_to_full_block.next_free_slot.store(slot_array_to_full_block.__next_free_slot);
+  LOG(WARNING) << "Final num slot is " << slot_array_to_full_block.next_free_slot.load();
+  block_identifer* buckets = new block_identifer[slot_array_to_full_block.next_free_slot.load()];
+  next_free_block.store(0);
+
+  LOG(WARNING) << "preparing block granularity...";
+  for (auto iter = slot_array_to_full_block.the_map.begin(); iter != slot_array_to_full_block.the_map.end(); iter++) {
+    buckets[iter->second.remmaped_slot]._total_nodes = iter->second.size;
+  }
+
+  // zero block
+  size_t accumulate_size = 0;
+  for (size_t seq_slot_id = 0; seq_slot_id <= max_seq_slot; seq_slot_id++) {
+    auto iter = slot_array_to_full_block.the_map.find(seq_slot_id);
+    if (iter == slot_array_to_full_block.the_map.end()) continue;
+    accumulate_size += iter->second.size;
+    if (accumulate_size / (double)num_node < RunConfig::cache_percentage * device_to_stream.size()) {
+      buckets[iter->second.remmaped_slot].set_max_size(device_to_stream.size(), std::min(max_size_per_block, RoundUpDiv<uint32_t>(iter->second.size, device_to_stream.size())));
+    } else {
+      buckets[iter->second.remmaped_slot].set_max_size(1, num_node);
+    }
+    LOG(ERROR) << "slot " << iter->first << " has " << iter->second.size << " nodes, max_size set to " << buckets[iter->second.remmaped_slot].max_size_this_block;
+  }
+
+  // if (slot_array_to_full_block.the_map.find(max_seq_slot)->second.size / (double)num_node < (1 - RunConfig::cache_percentage * device_to_stream.size())) {
+  //   buckets[slot_array_to_full_block.the_map.find(max_seq_slot)->second.remmaped_slot].set_max_size(1, num_node);
+  // } else {
+  //   buckets[slot_array_to_full_block.the_map.find(max_seq_slot)->second.remmaped_slot].set_max_size(1, num_node / 100);
+  // }
+  // if (max_seq_slot > 0) {
+  //   if (slot_array_to_full_block.the_map.find(max_seq_slot)->second.size + slot_array_to_full_block.the_map.find(max_seq_slot - 1)->second.size
+  //     / (double)num_node < (1 - RunConfig::cache_percentage * device_to_stream.size())) {
+  //     buckets[slot_array_to_full_block.the_map.find(max_seq_slot - 1)->second.remmaped_slot].set_max_size(1, num_node);
+  //   } else {
+  //     buckets[slot_array_to_full_block.the_map.find(max_seq_slot - 1)->second.remmaped_slot].set_max_size(1, num_node / 1000);
+  //   }
+  // }
+
+  LOG(WARNING) << "counting blocks...";
+// #pragma omp parallel for num_threads(RunConfig::omp_thread_num / 2)
+// #pragma omp parallel for num_threads(8)
+  for (uint32_t nid = 0; nid < num_node; nid++) {
+    block_identifer &bucket = buckets[nid_to_block[nid]];
+    nid_to_block[nid] = buckets[nid_to_block[nid]].add_node(this);
+  }
+  delete[] buckets;
+
+  uint32_t total_num_blocks = next_free_block.load();
+  LOG(WARNING) << "Final num block is " << total_num_blocks;
+
+  /**
+   * Sum frequency & density of each block
+   */
+  LOG(WARNING) << "counting freq and density...";
+  // block_density_tensor = Tensor::Empty(kF64, {total_num_blocks}, cpu_ctx, "coll_cache.block_density_tensor");
+  block_density_tensor = Tensor::CreateShm(Constant::kCollCachePlacementShmName + "_density", kF64, {total_num_blocks}, "");
+  block_freq_tensor    = Tensor::Empty(kF64, {total_num_blocks, num_stream}, cpu_ctx, "coll_cache.block_freq_tensor");
+
+  std::memset(block_density_tensor->MutableData(), 0, block_density_tensor->NumBytes());
+  std::memset(block_freq_tensor->MutableData(), 0, block_freq_tensor->NumBytes());
+
+  // TensorView<double> block_density_array(block_density_tensor);
+  // TensorView<double> block_freq_array(block_freq_tensor);
+  double* block_density_array = block_density_tensor->Ptr<double>();
+  double* block_freq_array    = block_freq_tensor->Ptr<double>();
+  double min_freq = 1e-2;
+  if (GetEnv("COLL_MIN_FREQ") != "") {
+    min_freq = std::stod(GetEnv("COLL_MIN_FREQ"));
+  }
+#pragma omp parallel for num_threads(RunConfig::omp_thread_num)
+  for (int thread_idx = 0; thread_idx < RunConfig::omp_thread_num; thread_idx++) {
+    for (uint32_t nid = 0; nid < num_node; nid++) {
+      uint32_t block_id = nid_to_block[nid];
+      if (std::hash<uint64_t>()(block_id) % RunConfig::omp_thread_num != thread_idx) {
+        continue;
+      }
+      block_density_array[block_id] += 1;
+      uint32_t orig_rank = nid_to_rank_tensor->CPtr<uint32_t>()[nid];
+      double freq = stream_freq_ptr[orig_rank];
+      // assign all zero freq a minimal freq to handle touched node << cache space
+      freq = std::max(freq, min_freq);
+      block_freq_array[block_id] += freq;
+    }
+  }
+
+  /**
+   * Average the frequency for each block
+   */
+  LOG(WARNING) << "averaging freq and density...";
+  LOG(WARNING) << block_density_tensor->NumItem();
+// #pragma omp parallel for num_threads(RunConfig::omp_thread_num)
+  for (uint32_t block_id = 0; block_id < block_density_tensor->NumItem(); block_id++) {
+    if (block_density_array[block_id] == 0) continue; 
+    block_freq_array[block_id] /= block_density_array[block_id];
+    block_density_array[block_id] *= 100/(double)num_node ;
+    // std::cout << block_density_array[block_id].ref() << " ";
+  }
+  // std::cout << "\n";
+  block_placement = Tensor::CreateShm(Constant::kCollCachePlacementShmName, kU8, block_density_tensor->Shape(), "coll_cache_block_placement");
+}
+
 void OptimalSolver::Build(TensorPtr stream_id_list, TensorPtr stream_freq_list, std::vector<int> device_to_stream, const IdType num_node, const TensorPtr nid_to_block_tensor) {
   CHECK_EQ(stream_id_list->Shape().size(), 2);
   CHECK_EQ(stream_freq_list->Shape().size(), 2);
   CHECK_EQ(stream_id_list->Shape(), stream_freq_list->Shape());
   CHECK_EQ(stream_id_list->Shape()[1], num_node);
   IdType num_stream = stream_id_list->Shape()[0];
+  if (num_stream == 1) {
+    return BuildSingleStream(stream_id_list, stream_freq_list, device_to_stream, num_node, nid_to_block_tensor);
+  }
   auto cpu_ctx = CPU(CPU_CLIB_MALLOC_DEVICE);
   // coarse-grained slice to reduce asymm solve time
   // symmetric & switch's precision still holds
@@ -76,6 +250,7 @@ void OptimalSolver::Build(TensorPtr stream_id_list, TensorPtr stream_freq_list, 
    * Nodes with same rank for every stream forms a block.
    */
   LOG(WARNING) << "mapping nid to rank...";
+  Timer t_nid_to_rank;
 #pragma omp parallel for num_threads(RunConfig::omp_thread_num)
   for (uint32_t orig_rank = 0; orig_rank < num_node; orig_rank++) {
     for (uint32_t stream_idx = 0; stream_idx < num_stream; stream_idx++) {
@@ -83,6 +258,7 @@ void OptimalSolver::Build(TensorPtr stream_id_list, TensorPtr stream_freq_list, 
       nid_to_rank[nid][stream_idx].ref() = orig_rank;
     }
   }
+  LOG(ERROR) << "mapping nid to rank takes " << t_nid_to_rank.Passed();
   auto slot_list_to_full_block_id = [num_stream](const TensorView<uint32_t>& slot_array){
     CHECK(*slot_array._shape == num_stream);
     size_t ret = 0;
