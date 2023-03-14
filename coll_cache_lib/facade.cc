@@ -114,7 +114,6 @@ void CollCache::solve_impl_master(IdType *ranking_nodes_list_ptr,
     default:
       CHECK(false);
     }
-    solver->num_working_threads = RunConfig::omp_thread_num;
 
     LOG(ERROR) << "solver created. now build & solve";
     _nid_to_block = Tensor::CreateShm(Constant::kCollCacheNIdToBlockShmName,
@@ -195,6 +194,7 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
   }
   bool need_solver = (cache_percentage != 0 && cache_percentage != 1);
   if (replica_id == 0 && need_solver) {
+    RunConfig::solver_omp_thread_num = RunConfig::omp_thread_num;
     solve_impl_master(ranking_nodes_list_ptr, ranking_nodes_freq_list_ptr, num_node);
     LOG(ERROR) << replica_id << " solved master";
   }
