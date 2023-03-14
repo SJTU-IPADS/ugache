@@ -2856,6 +2856,20 @@ void check_covers(const T* large, size_t num_large, const T* small, size_t num_s
 #endif
 
 };
+void CheckCpuEqual(const void * a_in, const void* b_in, const size_t nbytes) {
+  CHECK(nbytes % 4 == 0);
+  const size_t n_elem = nbytes / 4;
+  auto a = (const uint32_t*)a_in;
+  auto b = (const uint32_t*)b_in;
+  // {
+  //   SAM_CUDA_PREPARE_1D(n_elem);
+  //   check_eq<><<<grid, block, 0, (cudaStream_t)stream>>>((const uint32_t*)a, (const uint32_t*)b, n_elem);
+  // }
+
+  for (size_t offset = 0; offset < n_elem; offset += 1) {
+    CHECK_EQ(a[offset], b[offset]) << " at offset " << offset << ", " << a[offset] << "!=" << b[offset] << "\n";
+  }
+}
 void CacheContext::compare_hashtable(StreamHandle stream) {
   IdType validate_batch_size = 1 << 19;
   auto keys = Tensor::EmptyExternal(kI32, {validate_batch_size}, this->_eager_gpu_mem_allocator, this->_trainer_ctx, "");
@@ -2895,21 +2909,6 @@ void CacheContext::compare_hashtable(StreamHandle stream) {
       CheckCudaEqual(old_val->Data(), new_val->Data(), old_val->NumBytes(), stream);
       CUDA_CALL(cudaStreamSynchronize(cu_stream));
     }
-  }
-}
-
-void CheckCpuEqual(const void * a_in, const void* b_in, const size_t nbytes) {
-  CHECK(nbytes % 4 == 0);
-  const size_t n_elem = nbytes / 4;
-  auto a = (const uint32_t*)a_in;
-  auto b = (const uint32_t*)b_in;
-  // {
-  //   SAM_CUDA_PREPARE_1D(n_elem);
-  //   check_eq<><<<grid, block, 0, (cudaStream_t)stream>>>((const uint32_t*)a, (const uint32_t*)b, n_elem);
-  // }
-
-  for (size_t offset = 0; offset < n_elem; offset += 1) {
-    CHECK_EQ(a[offset], b[offset]) << " at offset " << offset << ", " << a[offset] << "!=" << b[offset] << "\n";
   }
 }
 
@@ -3902,8 +3901,11 @@ void RefreshSession::refresh_after_solve_main(bool foreground) {
   auto cu_stream = reinterpret_cast<cudaStream_t>(stream);
   refresh_after_solve_old(foreground);
   refresh_after_solve_new(foreground);
+
+  LOG(ERROR) << "comparing hashtable after refresh";
   _cache_ctx->compare_hashtable(stream);
   CUDA_CALL(cudaStreamSynchronize(cu_stream));
+  LOG(ERROR) << "comparing hashtable after refresh - done";
 }
 
 TensorPtr RefreshSession::Empty1DReuse(TensorPtr& preserved_buffer, DataType dtype, std::vector<size_t> shape, Context ctx) {
