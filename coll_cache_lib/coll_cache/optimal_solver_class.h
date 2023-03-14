@@ -50,7 +50,6 @@ class CollCacheSolver {
   TensorPtr block_freq_tensor;
   TensorPtr block_placement;
   TensorPtr block_access_from;
-  int num_working_threads;
 };
 
 class OptimalSolver : public CollCacheSolver {
@@ -114,13 +113,16 @@ protected:
     std::atomic_uint32_t _done_node{0};
     std::atomic_uint32_t _total_nodes{0};
     volatile uint32_t max_size_this_block = 0;
+    uint32_t num_slices = 0;
+    uint32_t slice_begin = 0;
 
     void measure_total_node() {
       _total_nodes.fetch_add(1);
     }
     void set_max_size(int num_worker, uint32_t min_boundary) {
       // this->max_size_this_block = std::min<uint32_t>(RoundUpDiv<uint32_t>(_total_nodes, num_worker*2), min_boundary);
-      this->max_size_this_block = std::min<uint32_t>(RoundUpDiv<uint32_t>(_total_nodes, num_worker), min_boundary);
+      // this->max_size_this_block = std::min<uint32_t>(RoundUpDiv<uint32_t>(_total_nodes, num_worker), min_boundary);
+      this->max_size_this_block = min_boundary;
     }
 
     uint32_t add_node(OptimalSolver * solver) {

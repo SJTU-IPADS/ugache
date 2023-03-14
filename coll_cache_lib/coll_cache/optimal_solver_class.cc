@@ -126,24 +126,43 @@ void OptimalSolver::BuildSingleStream(TensorPtr stream_id_list, TensorPtr stream
 
   // zero block
   size_t accumulate_size = 0;
+  size_t accumulate_num_slice = 0;
   for (size_t seq_slot_id = 0; seq_slot_id <= max_seq_slot; seq_slot_id++) {
     auto iter = slot_array_to_full_block.the_map.find(seq_slot_id);
     if (iter == slot_array_to_full_block.the_map.end()) continue;
     accumulate_size += iter->second.size;
+    auto & bucket = buckets[iter->second.remmaped_slot];
     if (accumulate_size / (double)num_node < RunConfig::cache_percentage * device_to_stream.size()) {
-      buckets[iter->second.remmaped_slot].set_max_size(device_to_stream.size(), std::min(max_size_per_block, RoundUpDiv<uint32_t>(iter->second.size, device_to_stream.size())));
+      auto slice_size = std::min(max_size_per_block, RoundUpDiv<uint32_t>(iter->second.size, device_to_stream.size()));
+      bucket.set_max_size(device_to_stream.size(), slice_size);
+      bucket.num_slices = RoundUpDiv(iter->second.size, slice_size);
     } else {
-      buckets[iter->second.remmaped_slot].set_max_size(1, num_node);
+      bucket.set_max_size(1, iter->second.size);
+      bucket.num_slices = 1;
     }
+    bucket.slice_begin = accumulate_num_slice;
+    accumulate_num_slice += bucket.num_slices;
     LOG(ERROR) << "slot " << iter->first << " has " << iter->second.size << " nodes, max_size set to " << buckets[iter->second.remmaped_slot].max_size_this_block;
   }
 
+  next_free_block.store(accumulate_num_slice);
+
   LOG(WARNING) << "counting blocks...";
-// #pragma omp parallel for num_threads(8)
-  for (uint32_t nid = 0; nid < num_node; nid++) {
-    auto seq_slot_id = nid_to_block[nid];
-    auto remapped_block_id = slot_array_to_full_block.the_map[seq_slot_id].remmaped_slot;
-    nid_to_block[nid] = buckets[remapped_block_id].add_node(this);
+  std::vector<std::uint32_t> seeds(RunConfig::solver_omp_thread_num);
+  {
+    std::seed_seq seq{1, 2, 3, 4, 5};
+    seq.generate(seeds.begin(), seeds.end());
+  }
+  #pragma omp parallel num_threads(RunConfig::solver_omp_thread_num)
+  {
+    std::mt19937 gen(seeds[omp_get_thread_num()]);
+    #pragma omp for
+    for (uint32_t nid = 0; nid < num_node; nid++) {
+      auto seq_slot_id = nid_to_block[nid];
+      auto remapped_block_id = slot_array_to_full_block.the_map[seq_slot_id].remmaped_slot;
+      auto &bucket = buckets[remapped_block_id];
+      nid_to_block[nid] = std::uniform_int_distribution<uint32_t>(0, bucket.num_slices - 1)(gen) + bucket.slice_begin;
+    }
   }
   delete[] buckets;
 

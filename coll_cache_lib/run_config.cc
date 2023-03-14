@@ -49,6 +49,8 @@ size_t               RunConfig::option_empty_feat              = 0;
 size_t               RunConfig::option_fake_feat_dim = 0;
 
 int                  RunConfig::omp_thread_num                 = 40;
+int                  RunConfig::solver_omp_thread_num          = 40;
+int                  RunConfig::refresher_omp_thread_num       = 10;
 
 std::string          RunConfig::shared_meta_path               = "/shared_meta_data";
 // clang-format on
