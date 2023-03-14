@@ -466,34 +466,67 @@ class CacheEntryManager {
     return matched_keys;
   }
   static void DetectKeysForAllSource(TensorPtr nid_to_block, TensorPtr block_access_advise, int local_location_id, TensorPtr block_density, size_t num_total_item,
-      TensorPtr* node_list_of_src) {
+      TensorPtr* node_list_of_src, int num_gpu = 8) {
+    LOG(ERROR) << "detecting key for all source";
     CHECK_EQ(block_access_advise->Shape().size(), 1);
     // TensorPtr block_access_advise = Tensor::CopyLine(_cache_ctx->_coll_cache->_block_access_advise, local_location_id, CPU(CPU_CLIB_MALLOC_DEVICE), stream); // small
     size_t num_blocks = block_access_advise->Shape()[0];
     size_t per_src_size[9] = {0};
+    size_t per_src_cur_size[9] = {0};
+    const IdType* nid_to_block_ptr = nid_to_block->CPtr<IdType>();
+    const uint8_t* block_access_advise_ptr = block_access_advise->CPtr<uint8_t>();
 
     for (size_t i = 0; i < num_blocks; i++) {
       IdType src = block_access_advise->CPtr<uint8_t>()[i];
       per_src_size[src] += (block_density->CPtr<double>()[i] + 0.1) * num_total_item / 100;
     }
 
-    // TensorPtr node_list_of_src[9] = {nullptr};
-    LOG(ERROR) << "detecting key for all source";
-    #pragma omp parallel for
-    for (int dev_id = 0; dev_id < 9; dev_id++) {
-        if (per_src_size[dev_id] == 0) continue;
-        node_list_of_src[dev_id] = Tensor::Empty(kI32, {per_src_size[dev_id]}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
-        size_t next_idx = 0;
-        for (size_t node_id = 0; node_id < num_total_item; node_id++) {
-          IdType block_id = nid_to_block->CPtr<IdType>()[node_id];
-          if (block_access_advise->CPtr<uint8_t>()[block_id] != dev_id) continue;
-          CHECK_LE(next_idx, per_src_size[dev_id]);
-          node_list_of_src[dev_id]->Ptr<IdType>()[next_idx] = node_id;
-          next_idx++;
+    #pragma omp parallel num_threads(RunConfig::solver_omp_thread_num)
+    {
+      std::vector<TensorPtr> local_k_list_of_src(num_gpu);
+      std::vector<IdType*> local_k_list_of_src_ptr(num_gpu);
+      std::vector<size_t> local_k_list_of_src_len(num_gpu, 0);
+      std::vector<size_t> max_per_src_size(num_gpu);
+      for (int dev_id = 0; dev_id < num_gpu; dev_id++) {
+        local_k_list_of_src[dev_id] = Tensor::Empty(kI32, {per_src_size[dev_id] / RunConfig::solver_omp_thread_num}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+        max_per_src_size[dev_id] = per_src_size[dev_id] / RunConfig::solver_omp_thread_num;
+        local_k_list_of_src_ptr[dev_id] = local_k_list_of_src[dev_id]->Ptr<IdType>();
+      }
+      #pragma omp for
+      for (size_t node_id = 0; node_id < num_total_item; node_id++) {
+        IdType block_id = nid_to_block_ptr[node_id];
+        int dev_id = block_access_advise_ptr[block_id];
+        if (dev_id == num_gpu) continue;
+        CHECK_LE(local_k_list_of_src_len[dev_id], max_per_src_size[dev_id]);
+        local_k_list_of_src_ptr[dev_id][local_k_list_of_src_len[dev_id]] = node_id;
+        local_k_list_of_src_len[dev_id]++;
+      }
+      for (int dev_id = 0; dev_id < num_gpu; dev_id++) {
+        local_k_list_of_src[dev_id]->ForceScale(kI32, {local_k_list_of_src_len[dev_id]}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+      }
+      #pragma omp critical
+      {
+        for (int dev_id = 0; dev_id < num_gpu; dev_id++) {
+          auto local_len = local_k_list_of_src_len[dev_id];
+          auto local_arr = local_k_list_of_src_ptr[dev_id];
+          auto & dst_len = per_src_cur_size[dev_id];
+          if (local_len == 0) continue;
+          if (node_list_of_src[dev_id] == nullptr) {
+            node_list_of_src[dev_id] = Tensor::Empty(kI32, {per_src_size[dev_id]}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+          }
+          memcpy(node_list_of_src[dev_id]->Ptr<IdType>() + dst_len, local_arr, local_len * sizeof(IdType));
+          dst_len += local_len;
         }
-        per_src_size[dev_id] = next_idx;
-        node_list_of_src[dev_id]->ForceScale(kI32, {next_idx}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+      }
+      #pragma omp barrier
+      #pragma omp for
+      for (int dev_id = 0; dev_id < num_gpu; dev_id++) {
+        node_list_of_src[dev_id]->ForceScale(kI32, {per_src_cur_size[dev_id]}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+        __gnu_parallel::sort(node_list_of_src[dev_id]->Ptr<IdType>(), node_list_of_src[dev_id]->Ptr<IdType>() + per_src_cur_size[dev_id],
+                            std::less<IdType>());
+      }
     }
+    LOG(ERROR) << "detecting key for all source - done";
   }
   // void DetectEvictKeys(TensorPtr _nid_to_block, TensorPtr _block_placement) {
   //   TensorPtr evicted_node_list_cpu = Tensor::Empty(kI32, {_cached_keys->Shape()[0] - num_preserved_node}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
