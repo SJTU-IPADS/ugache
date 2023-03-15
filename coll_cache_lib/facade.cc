@@ -217,6 +217,7 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
   this->_refresh_session_list[replica_id]->_cache_ctx = cache_ctx;
   this->_refresh_session_list[replica_id]->stream = stream;
   this->_replica_barrier->Wait();
+  RunConfig::solver_omp_thread_num = RunConfig::refresher_omp_thread_num;
 }
 
 void CollCache::refresh(int replica_id, IdType *ranking_nodes_list_ptr,
@@ -249,7 +250,8 @@ void CollCache::refresh(int replica_id, IdType *ranking_nodes_list_ptr,
   }
   AnonymousBarrier::_refresh_instance->Wait();
   if (replica_id == 0) {
-    RunConfig::solver_omp_thread_num = RunConfig::refresher_omp_thread_num;
+    if (replica_id == 0) LOG(ERROR) << "old solution preserved, now solve";
+    // RunConfig::solver_omp_thread_num = RunConfig::refresher_omp_thread_num;
     solve_impl_master(ranking_nodes_list_ptr, ranking_nodes_freq_list_ptr, RunConfig::num_total_item);
     LOG(ERROR) << replica_id << " solved master";
   }
