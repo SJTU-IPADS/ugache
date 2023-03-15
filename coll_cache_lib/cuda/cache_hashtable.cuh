@@ -501,32 +501,46 @@ class CacheEntryManager {
 
     #pragma omp parallel num_threads(RunConfig::solver_omp_thread_num)
     {
-      std::vector<TensorPtr> local_k_list_of_src(num_gpu);
-      std::vector<IdType*> local_k_list_of_src_ptr(num_gpu);
-      std::vector<size_t> local_k_list_of_src_len(num_gpu, 0);
-      std::vector<size_t> max_per_src_size(num_gpu);
+      std::vector<TensorPtr> local_ten_list(num_gpu);
+      std::vector<IdType*> local_ptr_list(num_gpu);
+      std::vector<size_t> local_cur_len_list(num_gpu, 0);
+      std::vector<size_t> local_max_len_list(num_gpu);
       for (int dev_id = 0; dev_id < num_gpu; dev_id++) {
-        max_per_src_size[dev_id] = per_src_size[dev_id] / RunConfig::solver_omp_thread_num;
-        local_k_list_of_src[dev_id] = Tensor::Empty(kI32, {max_per_src_size[dev_id]}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
-        local_k_list_of_src_ptr[dev_id] = local_k_list_of_src[dev_id]->Ptr<IdType>();
+        local_max_len_list[dev_id] = per_src_size[dev_id] / RunConfig::solver_omp_thread_num;
+        local_ten_list[dev_id] = Tensor::Empty(kI32, {local_max_len_list[dev_id]}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+        local_ptr_list[dev_id] = local_ten_list[dev_id]->Ptr<IdType>();
       }
       #pragma omp for
       for (size_t node_id = 0; node_id < num_total_item; node_id++) {
         IdType block_id = nid_to_block_ptr[node_id];
         int dev_id = block_access_advise_ptr[block_id];
         if (dev_id == num_gpu) continue;
-        CHECK_LE(local_k_list_of_src_len[dev_id], max_per_src_size[dev_id]);
-        local_k_list_of_src_ptr[dev_id][local_k_list_of_src_len[dev_id]] = node_id;
-        local_k_list_of_src_len[dev_id]++;
+        auto & local_cur_len = local_cur_len_list[dev_id];
+        auto local_arr = local_ptr_list[dev_id];
+        if (local_cur_len == local_max_len_list[dev_id]) {
+          #pragma omp critical
+          {
+            auto & global_cur_len = per_src_cur_size[dev_id];
+            if (node_list_of_src[dev_id] == nullptr) {
+              node_list_of_src[dev_id] = Tensor::Empty(kI32, {per_src_size[dev_id]}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+            }
+            memcpy(node_list_of_src[dev_id]->Ptr<IdType>() + global_cur_len, local_arr, local_cur_len * sizeof(IdType));
+            global_cur_len += local_cur_len;
+            local_cur_len = 0;
+          }
+        }
+        CHECK_LT(local_cur_len, local_max_len_list[dev_id]);
+        local_arr[local_cur_len] = node_id;
+        local_cur_len++;
       }
       for (int dev_id = 0; dev_id < num_gpu; dev_id++) {
-        local_k_list_of_src[dev_id]->ForceScale(kI32, {local_k_list_of_src_len[dev_id]}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+        local_ten_list[dev_id]->ForceScale(kI32, {local_cur_len_list[dev_id]}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
       }
       #pragma omp critical
       {
         for (int dev_id = 0; dev_id < num_gpu; dev_id++) {
-          auto local_len = local_k_list_of_src_len[dev_id];
-          auto local_arr = local_k_list_of_src_ptr[dev_id];
+          auto local_len = local_cur_len_list[dev_id];
+          auto local_arr = local_ptr_list[dev_id];
           auto & dst_len = per_src_cur_size[dev_id];
           if (local_len == 0) continue;
           if (node_list_of_src[dev_id] == nullptr) {
