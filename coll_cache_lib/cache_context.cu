@@ -3441,10 +3441,11 @@ void RefreshSession::refresh_after_solve_old(bool foreground) {
   }
 
   TensorPtr node_list_of_src[9] = {nullptr};
+  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "making remote node lists";
   #pragma omp parallel for
   for (auto & link : RunConfig::coll_cache_link_desc.link_src[_local_location_id]) {
     for (auto dev_id : link) {
-      if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "making remote node list for " << dev_id;
+      // if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "making remote node list for " << dev_id;
       if (per_src_size[dev_id] == 0) continue;
       node_list_of_src[dev_id] = Tensor::Empty(kI32, {per_src_size[dev_id]}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
       size_t next_idx = 0;
@@ -3768,30 +3769,34 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
 
   // Step.2 Detect new local keys to insert
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "finding preserved node and new insert nodes";
-  TensorPtr _new_insert_keys = _new_hash_table->DetectKeysWithPlacement(
-      key_list_of_each_src[_local_location_id]->CPtr<IdType>(), 
-      num_new_local_key, 
-      _cache_ctx->_coll_cache->_old_nid_to_block, 
-      _cache_ctx->_coll_cache->_old_block_placement, 
-      CacheEntryManager::PlaceOn<false>(_local_location_id)
-    );
+  TensorPtr _new_insert_keys;
+  {
+    auto _old_nid_to_block = _cache_ctx->_coll_cache->_old_nid_to_block->CPtr<IdType>();
+    auto _old_block_placement = _cache_ctx->_coll_cache->_old_block_placement->CPtr<uint8_t>();
+    _new_insert_keys = _new_hash_table->DetectKeysWithCond(key_list_of_each_src[_local_location_id]->CPtr<IdType>(), num_new_local_key, [_old_nid_to_block, _old_block_placement, _local_location_id](const IdType & key){
+      return (_old_block_placement[_old_nid_to_block[key]] & (1 << _local_location_id)) == 0;
+    }, num_new_local_key);
+  }
   LOG(ERROR) << " new hashtable find new local key done";
-  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "preserved node = " << key_list_of_each_src[_local_location_id]->NumItem() - _new_insert_keys->NumItem();
+  size_t num_preserved_key = key_list_of_each_src[_local_location_id]->NumItem() - _new_insert_keys->NumItem();
+  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "preserved node = " << num_preserved_key;
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "new insert node = " << _new_insert_keys->NumItem();
   CUDA_CALL(cudaStreamSynchronize(cu_stream));
   // preserved keys is not necessary when using new hashtable
 
   // Step.3 Detect old local keys to evict, and corresponding cache offset, then evict
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "finding evicted nodes";
-  TensorPtr _new_evict_keys = _new_hash_table->DetectKeysWithPlacement(
-      _new_hash_table->_cached_keys->CPtr<IdType>(), 
-      _new_hash_table->_cached_keys->Shape()[0], 
-      _cache_ctx->_coll_cache->_nid_to_block, 
-      _cache_ctx->_coll_cache->_block_placement, 
-      CacheEntryManager::PlaceOn<false>(_local_location_id)
-    );
+  TensorPtr _new_evict_keys;
+  {
+    auto _nid_to_block = _cache_ctx->_coll_cache->_nid_to_block->CPtr<IdType>();
+    auto _block_placement = _cache_ctx->_coll_cache->_block_placement->CPtr<uint8_t>();
+    _new_evict_keys = _new_hash_table->DetectKeysWithCond(_new_hash_table->_cached_keys->CPtr<IdType>(), _new_hash_table->_cached_keys->Shape()[0], [_nid_to_block, _block_placement, _local_location_id](const IdType & key){
+      return (_block_placement[_nid_to_block[key]] & (1 << _local_location_id)) == 0;
+    }, _new_hash_table->_cached_keys->NumItem() - num_preserved_key);
+  }
   size_t num_eviced_node = _new_evict_keys->NumItem();
-  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "num evicted node = " << num_eviced_node;
+  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "num evicted node = " << num_eviced_node << ", should equal to " << _new_hash_table->_cached_keys->Shape()[0] - (key_list_of_each_src[_local_location_id]->NumItem() - _new_insert_keys->NumItem());
+  CHECK_EQ(num_eviced_node + num_preserved_key, _new_hash_table->_cached_keys->NumItem());
 
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "gathering unused offsets";
   if (num_eviced_node > 0) {

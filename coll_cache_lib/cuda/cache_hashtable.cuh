@@ -421,14 +421,6 @@ class CacheEntryManager {
     matched_keys->ForceScale(kI32, {num_matched_keys}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
     return matched_keys;
   }
-  void DetectNewInsertKeys(
-      TensorPtr old_nid_to_block, TensorPtr old_block_placement,
-      TensorPtr new_nid_to_block, TensorPtr new_block_placement,
-      int local_location) {
-    TensorPtr new_local_keys = DetectKeysWithPlacement(cub::CountingInputIterator<IdType>(0), num_total_key, new_nid_to_block, new_block_placement, PlaceOn<true>(local_location));
-    TensorPtr new_insert_keys = DetectKeysWithPlacement(new_local_keys->CPtr<IdType>(), new_local_keys->Shape()[0], old_nid_to_block, old_block_placement, PlaceOn<false>(local_location));
-    TensorPtr evict_keys = DetectKeysWithPlacement(_cached_keys->CPtr<IdType>(), _cached_keys->Shape()[0], old_nid_to_block, old_block_placement, PlaceOn<false>(local_location));
-  }
   template<typename InputIterator, typename AccessCond>
   TensorPtr DetectKeysWithAccess(InputIterator inputs, IdType num_input, TensorPtr nid_to_block, TensorPtr block_access_advise, AccessCond cond) {
     TensorPtr matched_keys = Tensor::Empty(kI32, {_cache_space_capacity}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
@@ -451,18 +443,44 @@ class CacheEntryManager {
     if (max_result_storage == 0) {
       max_result_storage = _cache_space_capacity;
     }
-    TensorPtr matched_keys = Tensor::Empty(kI32, {max_result_storage}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
-    size_t num_matched_keys = 0;
-    for (IdType idx = 0; idx < num_input; idx++) {
-      auto key = inputs[idx];
-      if (cond(key)) {
-      // if ((block_placement->Ptr<uint8_t>()[block_id] & (1 << local_location_id)) != 0) {
-        CHECK(num_matched_keys < max_result_storage);
-        matched_keys->Ptr<IdType>()[num_matched_keys] = key;
-        num_matched_keys++;
+    TensorPtr matched_keys;
+    size_t global_cur_len = 0;
+    #pragma omp parallel num_threads(RunConfig::solver_omp_thread_num)
+    {
+      size_t local_buffer_len = max_result_storage * 1.1 / RunConfig::solver_omp_thread_num;
+      TensorPtr local_tensor = Tensor::Empty(kI32, {local_buffer_len}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+      auto local_arr = local_tensor->Ptr<IdType>();
+      size_t local_cur_len = 0;
+      #pragma omp for
+      for (IdType idx = 0; idx < num_input; idx++) {
+        auto key = inputs[idx];
+        if (!cond(key)) continue;
+        if (local_cur_len == local_buffer_len) {
+          #pragma omp critical
+          {
+            if (matched_keys == nullptr) matched_keys = Tensor::Empty(kI32, {max_result_storage}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+            memcpy(matched_keys->Ptr<IdType>() + global_cur_len, local_arr, local_cur_len * sizeof(IdType));
+            global_cur_len += local_cur_len;
+            local_cur_len = 0;
+          }
+        }
+        CHECK(local_cur_len < local_buffer_len);
+        local_arr[local_cur_len] = key;
+        local_cur_len++;
+      }
+      local_tensor->ForceScale(kI32, {local_cur_len}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+      #pragma omp critical
+      {
+        if (local_cur_len > 0) {
+          if (matched_keys == nullptr) matched_keys = Tensor::Empty(kI32, {max_result_storage}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+          memcpy(matched_keys->Ptr<IdType>() + global_cur_len, local_arr, local_tensor->NumBytes());
+          global_cur_len += local_cur_len;
+        }
       }
     }
-    matched_keys->ForceScale(kI32, {num_matched_keys}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+    matched_keys->ForceScale(kI32, {global_cur_len}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+    __gnu_parallel::sort(matched_keys->Ptr<IdType>(), matched_keys->Ptr<IdType>() + global_cur_len,
+                        std::less<IdType>());
     return matched_keys;
   }
   static void DetectKeysForAllSource(TensorPtr nid_to_block, TensorPtr block_access_advise, int local_location_id, TensorPtr block_density, size_t num_total_item,
@@ -488,8 +506,8 @@ class CacheEntryManager {
       std::vector<size_t> local_k_list_of_src_len(num_gpu, 0);
       std::vector<size_t> max_per_src_size(num_gpu);
       for (int dev_id = 0; dev_id < num_gpu; dev_id++) {
-        local_k_list_of_src[dev_id] = Tensor::Empty(kI32, {per_src_size[dev_id] / RunConfig::solver_omp_thread_num}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
         max_per_src_size[dev_id] = per_src_size[dev_id] / RunConfig::solver_omp_thread_num;
+        local_k_list_of_src[dev_id] = Tensor::Empty(kI32, {max_per_src_size[dev_id]}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
         local_k_list_of_src_ptr[dev_id] = local_k_list_of_src[dev_id]->Ptr<IdType>();
       }
       #pragma omp for
