@@ -479,13 +479,15 @@ class CacheEntryManager {
       }
     }
     matched_keys->ForceScale(kI32, {global_cur_len}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+#ifdef COLL_HASH_VALID_LEGACY
     __gnu_parallel::sort(matched_keys->Ptr<IdType>(), matched_keys->Ptr<IdType>() + global_cur_len,
                         std::less<IdType>());
+#endif
     return matched_keys;
   }
   static void DetectKeysForAllSource(TensorPtr nid_to_block, TensorPtr block_access_advise, int local_location_id, TensorPtr block_density, size_t num_total_item,
       TensorPtr* node_list_of_src, int num_gpu = 8) {
-    LOG(ERROR) << "detecting key for all source";
+    // LOG(ERROR) << "detecting key for all source";
     CHECK_EQ(block_access_advise->Shape().size(), 1);
     // TensorPtr block_access_advise = Tensor::CopyLine(_cache_ctx->_coll_cache->_block_access_advise, local_location_id, CPU(CPU_CLIB_MALLOC_DEVICE), stream); // small
     size_t num_blocks = block_access_advise->Shape()[0];
@@ -554,11 +556,13 @@ class CacheEntryManager {
       #pragma omp for
       for (int dev_id = 0; dev_id < num_gpu; dev_id++) {
         node_list_of_src[dev_id]->ForceScale(kI32, {per_src_cur_size[dev_id]}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+#ifdef COLL_HASH_VALID_LEGACY
         __gnu_parallel::sort(node_list_of_src[dev_id]->Ptr<IdType>(), node_list_of_src[dev_id]->Ptr<IdType>() + per_src_cur_size[dev_id],
                             std::less<IdType>());
+#endif
       }
     }
-    LOG(ERROR) << "detecting key for all source - done";
+    // LOG(ERROR) << "detecting key for all source - done";
   }
   // void DetectEvictKeys(TensorPtr _nid_to_block, TensorPtr _block_placement) {
   //   TensorPtr evicted_node_list_cpu = Tensor::Empty(kI32, {_cached_keys->Shape()[0] - num_preserved_node}, CPU(CPU_CLIB_MALLOC_DEVICE), "");

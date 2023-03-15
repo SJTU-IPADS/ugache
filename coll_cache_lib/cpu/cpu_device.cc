@@ -39,7 +39,7 @@ void *CPUDevice::AllocDataSpace(Context ctx, size_t nbytes, size_t alignment) {
     LOG(FATAL) << "WORKER[" << RunConfig::worker_id << "] alloc zero host memory, is this intended?";
     return nullptr;
   }
-  if (nbytes >= 10 * 1024 * 1024 && RunConfig::worker_id == 0) {
+  if (nbytes >= 512 * 1024 * 1024 && RunConfig::worker_id == 0) {
     LOG(WARNING) << "WORKER[" << RunConfig::worker_id << "] alloc host memory " << ToReadableSize(nbytes);
   }
   if (ctx.device_id == CPU_CUDA_HOST_MALLOC_DEVICE) {

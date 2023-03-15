@@ -31,6 +31,8 @@
 // #include "logging.h"
 #include "constant.h"
 
+// #define COLL_HASH_VALID_LEGACY
+
 namespace coll_cache_lib {
 namespace common {
 

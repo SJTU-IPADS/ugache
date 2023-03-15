@@ -552,6 +552,7 @@ __global__ void get_src_offset(
 
 };
 
+#ifdef COLL_HASH_VALID_LEGACY
 void ExtractSession::GetMissCacheIndexByCub(DstVal* & output_dst_index,
     const IdType* nodes, const size_t num_nodes,
     IdType * & group_offset,
@@ -592,6 +593,7 @@ void ExtractSession::GetMissCacheIndexByCub(DstVal* & output_dst_index,
     CUDA_CALL(cudaStreamSynchronize(cu_stream));
   }
 }
+#endif
 
 template <size_t BLOCK_SIZE=Constant::kCudaBlockSize, size_t TILE_SIZE=Constant::kCudaTileSize>
 __global__ void check_eq(const uint32_t * a, const uint32_t * b, const size_t n_elem) {
@@ -650,23 +652,26 @@ void ExtractSession::GetMissCacheIndex(
   const dim3 block(Constant::kCudaBlockSize);
   LOG(DEBUG) << "CollCacheManager: GetMissCacheIndex - getting miss/hit index...";
   Timer t0;
-  LocationIter location_iter(output_src_index);
-  SrcOffIter src_offset_iter(output_dst_index);
-  DstOffIter dst_offset_iter(output_dst_index);
+  LocationIter location_iter(output_src_index_alter);
+  SrcOffIter src_offset_iter(output_dst_index_alter);
+  DstOffIter dst_offset_iter(output_dst_index_alter);
   Timer t_flatern;
+
+#ifdef COLL_HASH_VALID_LEGACY
   get_miss_cache_index<Constant::kCudaBlockSize, Constant::kCudaTileSize><<<grid, block, 0, cu_stream>>>(
     location_iter, src_offset_iter, dst_offset_iter, nodes, num_nodes, _cache_ctx->_hash_table_location, _cache_ctx->_hash_table_offset);
   // device->StreamSync(_cache_ctx->_trainer_ctx, stream);
   // std::cout << "coll get index "<< t0.Passed() << "\n";
+#endif
   
   {
     device->StreamSync(_cache_ctx->_trainer_ctx, stream);
     LOG(DEBUG) << "flatern get idx " << t_flatern.Passed();
     Timer t_hash;
     if (RunConfig::option_empty_feat == 0) {
-      _cache_ctx->_new_hash_table->_hash_table->LookupValCustom(nodes, num_nodes, GetIdxHelper(output_src_index_alter, output_dst_index_alter, _cache_ctx->_cpu_location_id), stream);
+      _cache_ctx->_new_hash_table->_hash_table->LookupValCustom(nodes, num_nodes, GetIdxHelper(output_src_index, output_dst_index, _cache_ctx->_cpu_location_id), stream);
     } else {
-      _cache_ctx->_new_hash_table->_hash_table->LookupValCustom(nodes, num_nodes, GetIdxHelperMock(output_src_index_alter, output_dst_index_alter, _cache_ctx->_cpu_location_id), stream);
+      _cache_ctx->_new_hash_table->_hash_table->LookupValCustom(nodes, num_nodes, GetIdxHelperMock(output_src_index, output_dst_index, _cache_ctx->_cpu_location_id), stream);
     }
     device->StreamSync(_cache_ctx->_trainer_ctx, stream);
     LOG(DEBUG) << "hashtable get idx " << t_hash.Passed();
@@ -738,8 +743,15 @@ void ExtractSession::SortByLocation(
   LOG(DEBUG) << "CollCacheManager: SortByGroup - getting miss/hit index...";
   Timer t0;
   LocationIter location_iter(output_src_index);
+
+  // fixme: add validation
+#ifdef COLL_HASH_VALID_LEGACY
   get_location<Constant::kCudaBlockSize, Constant::kCudaTileSize><<<grid, block, 0, cu_stream>>>(
     location_iter, nodes, num_nodes, _cache_ctx->_hash_table_location);
+#endif
+
+  auto helper = HashTableLookupHelper::LocOnly(output_src_index_handle->ptr<IdType>(), _cache_ctx->_cpu_location_id);
+  _cache_ctx->_new_hash_table->_hash_table->LookupValCustom(nodes, num_nodes, helper, stream);
   // device->StreamSync(_cache_ctx->_trainer_ctx, stream);
 
   Timer t1;
@@ -1022,6 +1034,7 @@ void ExtractSession::CombineOneGroupRevised(const SrcKey * src_index, const DstV
   DataIter<const DstOffIter>       dst_data_iter(DstOffIter(dst_index), output, _cache_ctx->_dim);
   CombineRevised<>(src_data_iter, dst_data_iter, num_node, _cache_ctx->_trainer_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream, limit_block, async);
 }
+#ifdef COLL_HASH_VALID_LEGACY
 void ExtractSession::CombineNoGroup(const IdType * nodes, const size_t num_node, void* output, Context _trainer_ctx, DataType _dtype, IdType _dim, StreamHandle stream) {
   if (num_node == 0) return;
   auto device = Device::Get(_trainer_ctx);
@@ -1044,6 +1057,7 @@ void ExtractSession::CombineNoGroup(const IdType * nodes, const size_t num_node,
 
   device->StreamSync(_trainer_ctx, stream);
 }
+#endif
 void ExtractSession::CombineMixGroup(const SrcKey* src_key, const DstVal* dst_val, const size_t num_node, void* output, Context _trainer_ctx, DataType _dtype, IdType _dim, StreamHandle stream) {
   if (num_node == 0) return;
   auto device = Device::Get(_trainer_ctx);
@@ -1769,6 +1783,7 @@ void CollCacheManager::CheckCudaEqual(const void * a, const void* b, const size_
 }
 #endif
 
+#ifdef COLL_HASH_VALID_LEGACY
 void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream) {
   auto hash_table_offset_list = DevicePointerExchanger(_barrier, Constant::kCollCacheHashTableOffsetPtrShmName);
   auto device_cache_data_list = DevicePointerExchanger(_barrier, Constant::kCollCacheDeviceCacheDataPtrShmName);
@@ -1943,7 +1958,9 @@ void CacheContext::build_without_advise(int location_id, std::shared_ptr<CollCac
   std::cout << "test_result:init:feat_nbytes=" << GetTensorBytes(dtype, {num_total_nodes, dim}) << "\n";
   std::cout << "test_result:init:cache_nbytes=" << _cache_nbytes << "\n";
 }
+#endif
 
+#ifdef COLL_HASH_VALID_LEGACY
 void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream) {
   // auto hash_table_list = DevicePointerExchanger(_barrier, Constant::kCollCacheHashTableOffsetPtrShmName + "_hashtable");
   auto hash_table_offset_list = DevicePointerExchanger(_barrier, Constant::kCollCacheHashTableOffsetPtrShmName);
@@ -2185,6 +2202,7 @@ void CacheContext::build_with_advise(int location_id, std::shared_ptr<CollCache>
   std::cout << "test_result:init:feat_nbytes=" << GetTensorBytes(dtype, {num_total_nodes, dim}) << "\n";
   std::cout << "test_result:init:cache_nbytes=" << _cache_nbytes << "\n";
 }
+#endif
 
 class HostWorkspaceHandle : public ExternelGPUMemoryHandler {
  public:
@@ -2369,14 +2387,19 @@ void CacheContext::build(std::function<MemHandle(size_t)> gpu_mem_allocator,
   } else if (_coll_cache->_block_access_advise) {
     build_with_advise_new_hash(location_id, coll_cache_ptr, cpu_data, dtype, dim,
                              gpu_ctx, cache_percentage, stream);
+#ifdef COLL_HASH_VALID_LEGACY
     build_with_advise(location_id, coll_cache_ptr, cpu_data, dtype, dim,
                              gpu_ctx, cache_percentage, stream);
     LOG(ERROR) << "comparing hashtable after construction";
     compare_hashtable(stream);
     LOG(ERROR) << "comparing hashtable after construction - passed";
+#endif
   } else {
+#ifdef COLL_HASH_VALID_LEGACY
     return build_without_advise(location_id, coll_cache_ptr, cpu_data, dtype, dim,
                                 gpu_ctx, cache_percentage, stream);
+#endif
+    LOG(FATAL) << "Unimplemented";
   }
 }
 DevicePointerExchanger::DevicePointerExchanger(BarHandle barrier,
@@ -2870,6 +2893,7 @@ void CheckCpuEqual(const void * a_in, const void* b_in, const size_t nbytes) {
     CHECK_EQ(a[offset], b[offset]) << " at offset " << offset << ", " << a[offset] << "!=" << b[offset] << "\n";
   }
 }
+#ifdef COLL_HASH_VALID_LEGACY
 void CacheContext::compare_hashtable(StreamHandle stream) {
   IdType validate_batch_size = 1 << 19;
   auto keys = Tensor::EmptyExternal(kI32, {validate_batch_size}, this->_eager_gpu_mem_allocator, this->_trainer_ctx, "");
@@ -2911,6 +2935,7 @@ void CacheContext::compare_hashtable(StreamHandle stream) {
     }
   }
 }
+#endif
 
 struct SelectEvictedRemoteKeys {
   TensorPtr old_nid_to_block;
@@ -2947,7 +2972,7 @@ struct SelectEvictedRemoteKeys {
   }
 };
 
-
+#ifdef COLL_HASH_VALID_LEGACY
 void RefreshSession::refresh_after_solve(bool foreground) {
   auto _new_hash_table = _cache_ctx->_new_hash_table;
   Context gpu_ctx = _cache_ctx->_trainer_ctx;
@@ -3410,7 +3435,9 @@ void RefreshSession::refresh_after_solve(bool foreground) {
   _cache_ctx->_local_node_list_tensor = new_local_node_list_cpu;
   _new_hash_table->_cached_keys = node_list_of_src_cmp[_local_location_id];
 }
+#endif
 
+#ifdef COLL_HASH_VALID_LEGACY
 void RefreshSession::refresh_after_solve_old(bool foreground) {
   Context gpu_ctx = _cache_ctx->_trainer_ctx;
   auto _hash_table_location = _cache_ctx->_hash_table_location;
@@ -3749,6 +3776,7 @@ void RefreshSession::refresh_after_solve_old(bool foreground) {
   _cache_ctx->_cache_nodes = num_new_local_node;
   _cache_ctx->_local_node_list_tensor = new_local_node_list_cpu;
 }
+#endif
 
 void RefreshSession::refresh_after_solve_new(bool foreground) {
   auto _new_hash_table = _cache_ctx->_new_hash_table;
@@ -3777,7 +3805,7 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
       return (_old_block_placement[_old_nid_to_block[key]] & (1 << _local_location_id)) == 0;
     }, num_new_local_key);
   }
-  LOG(ERROR) << " new hashtable find new local key done";
+  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << " new hashtable find new local key done";
   size_t num_preserved_key = key_list_of_each_src[_local_location_id]->NumItem() - _new_insert_keys->NumItem();
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "preserved node = " << num_preserved_key;
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "new insert node = " << _new_insert_keys->NumItem();
@@ -3809,7 +3837,9 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
     _new_hash_table->ReturnOffset(_new_evict_offsets_cpu);
   }
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "num no use offset = " << _new_hash_table->_free_offsets->NumItem();
+#ifdef COLL_HASH_VALID_LEGACY
   _new_hash_table->SortFreeOffsets();
+#endif
 
   CHECK(num_eviced_node + key_list_of_each_src[_local_location_id]->NumItem() - _new_insert_keys->NumItem() == _new_hash_table->_cached_keys->NumItem());
   CHECK(num_eviced_node <= _new_hash_table->_free_offsets->NumItem());
@@ -3904,13 +3934,17 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
 
 void RefreshSession::refresh_after_solve_main(bool foreground) {
   auto cu_stream = reinterpret_cast<cudaStream_t>(stream);
+#ifdef COLL_HASH_VALID_LEGACY
   refresh_after_solve_old(foreground);
+#endif
   refresh_after_solve_new(foreground);
 
+#ifdef COLL_HASH_VALID_LEGACY
   LOG(ERROR) << "comparing hashtable after refresh";
   _cache_ctx->compare_hashtable(stream);
   CUDA_CALL(cudaStreamSynchronize(cu_stream));
   LOG(ERROR) << "comparing hashtable after refresh - done";
+#endif
 }
 
 TensorPtr RefreshSession::Empty1DReuse(TensorPtr& preserved_buffer, DataType dtype, std::vector<size_t> shape, Context ctx) {

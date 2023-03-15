@@ -75,7 +75,7 @@ void CollCache::solve_impl_master(IdType *ranking_nodes_list_ptr,
     auto ranking_nodes_freq_list = Tensor::FromBlob(
         ranking_nodes_freq_list_ptr, coll_cache::get_data_type<IdType>(),
         {1, num_node}, CPU(CPU_FOREIGN), "ranking_nodes_freq_list");
-
+    LOG(ERROR) << "creating solver";
     coll_cache::CollCacheSolver *solver = nullptr;
     switch (RunConfig::cache_policy) {
     case kRepCache: {
@@ -224,6 +224,7 @@ void CollCache::refresh(int replica_id, IdType *ranking_nodes_list_ptr,
   AnonymousBarrier::_refresh_instance->Wait();
   int device_id = RunConfig::device_id_list[replica_id];
   if (RunConfig::cross_process || replica_id == 0) {
+    if (replica_id == 0) LOG(ERROR) << "Preserving old solution";
     // one-time call for each process
     size_t num_block = _block_density->Shape()[0];
 
@@ -261,7 +262,7 @@ void CollCache::refresh(int replica_id, IdType *ranking_nodes_list_ptr,
   AnonymousBarrier::_refresh_instance->Wait();
 
   // if (RunConfig::cross_process) return;
-  LOG(ERROR) << "worker " << RunConfig::worker_id << " thread " << replica_id << " refresh device " << device_id;
+  // LOG(ERROR) << "worker " << RunConfig::worker_id << " thread " << replica_id << " refresh device " << device_id;
   this->_refresh_session_list[replica_id]->stream = stream;
   // this->_refresh_session_list[replica_id]->refresh_after_solve(foreground);
   this->_refresh_session_list[replica_id]->refresh_after_solve_main(foreground);
