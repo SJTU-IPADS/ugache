@@ -50,6 +50,17 @@ class CollCacheSolver {
   TensorPtr block_freq_tensor;
   TensorPtr block_placement;
   TensorPtr block_access_from;
+
+  static std::string _shm_name_nid_to_block ; // = Constant::kCollCacheNIdToBlockShmName;
+  static std::string _shm_name_access       ; // = Constant::kCollCacheAccessShmName;
+  static std::string _shm_name_place        ; // = Constant::kCollCachePlacementShmName;
+  static std::string _shm_name_dens         ; // = Constant::kCollCachePlacementShmName + "_density";
+
+  static std::string _shm_name_alter_nid_to_block ; // = Constant::kCollCacheNIdToBlockShmName             + "_old";
+  static std::string _shm_name_alter_access       ; // = Constant::kCollCacheAccessShmName                 + "_old";
+  static std::string _shm_name_alter_place        ; // = Constant::kCollCachePlacementShmName              + "_old";
+  static std::string _shm_name_alter_dens         ; // = Constant::kCollCachePlacementShmName + "_density" + "_old";
+
 };
 
 class OptimalSolver : public CollCacheSolver {

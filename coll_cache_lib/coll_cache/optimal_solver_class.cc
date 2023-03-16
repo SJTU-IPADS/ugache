@@ -23,6 +23,16 @@ namespace coll_cache_lib {
 namespace common {
 namespace coll_cache {
 
+std::string CollCacheSolver::_shm_name_nid_to_block  = std::string("coll_cache_block_nid_to_block_") + GetEnvStrong("USER");
+std::string CollCacheSolver::_shm_name_access        = std::string("coll_cache_block_access_from_") + GetEnvStrong("USER");
+std::string CollCacheSolver::_shm_name_place         = std::string("coll_cache_block_placement_") + GetEnvStrong("USER");
+std::string CollCacheSolver::_shm_name_dens          = std::string("coll_cache_block_placement_") + GetEnvStrong("USER") + "_density";
+
+std::string CollCacheSolver::_shm_name_alter_nid_to_block  = std::string("coll_cache_block_nid_to_block_") + GetEnvStrong("USER")             + "_old";
+std::string CollCacheSolver::_shm_name_alter_access        = std::string("coll_cache_block_access_from_") + GetEnvStrong("USER")                 + "_old";
+std::string CollCacheSolver::_shm_name_alter_place         = std::string("coll_cache_block_placement_") + GetEnvStrong("USER")              + "_old";
+std::string CollCacheSolver::_shm_name_alter_dens          = std::string("coll_cache_block_placement_") + GetEnvStrong("USER") + "_density" + "_old";
+
 void CollCacheSolver::Solve(std::vector<int> device_to_stream,
                             std::vector<PerT> device_to_cache_percent,
                             std::string mode, double T_local, double T_cpu) {
@@ -174,7 +184,7 @@ void OptimalSolver::BuildSingleStream(TensorPtr stream_id_list, TensorPtr stream
    */
   LOG(WARNING) << "counting freq and density...";
   // block_density_tensor = Tensor::Empty(kF64, {total_num_blocks}, cpu_ctx, "coll_cache.block_density_tensor");
-  block_density_tensor = Tensor::CreateShm(Constant::kCollCachePlacementShmName + "_density", kF64, {total_num_blocks}, "");
+  block_density_tensor = Tensor::CreateShm(this->_shm_name_dens, kF64, {total_num_blocks}, "");
   block_freq_tensor    = Tensor::Empty(kF64, {total_num_blocks, num_stream}, cpu_ctx, "coll_cache.block_freq_tensor");
 
   std::memset(block_density_tensor->MutableData(), 0, block_density_tensor->NumBytes());
@@ -232,7 +242,7 @@ void OptimalSolver::BuildSingleStream(TensorPtr stream_id_list, TensorPtr stream
     // std::cout << block_density_array[block_id].ref() << " ";
   }
   // std::cout << "\n";
-  block_placement = Tensor::CreateShm(Constant::kCollCachePlacementShmName, kU8, block_density_tensor->Shape(), "coll_cache_block_placement");
+  block_placement = Tensor::CreateShm(_shm_name_place, kU8, block_density_tensor->Shape(), "coll_cache_block_placement");
 }
 
 void OptimalSolver::Build(TensorPtr stream_id_list, TensorPtr stream_freq_list, std::vector<int> device_to_stream, const IdType num_node, const TensorPtr nid_to_block_tensor) {
@@ -389,7 +399,7 @@ void OptimalSolver::Build(TensorPtr stream_id_list, TensorPtr stream_freq_list, 
    */
   LOG(WARNING) << "counting freq and density...";
   // block_density_tensor = Tensor::Empty(kF64, {total_num_blocks}, cpu_ctx, "coll_cache.block_density_tensor");
-  block_density_tensor = Tensor::CreateShm(Constant::kCollCachePlacementShmName + "_density", kF64, {total_num_blocks}, "");
+  block_density_tensor = Tensor::CreateShm(_shm_name_dens, kF64, {total_num_blocks}, "");
   block_freq_tensor    = Tensor::Empty(kF64, {total_num_blocks, num_stream}, cpu_ctx, "coll_cache.block_freq_tensor");
 
   std::memset(block_density_tensor->MutableData(), 0, block_density_tensor->NumBytes());
@@ -434,7 +444,7 @@ void OptimalSolver::Build(TensorPtr stream_id_list, TensorPtr stream_freq_list, 
     // std::cout << block_density_array[block_id].ref() << " ";
   }
   // std::cout << "\n";
-  block_placement = Tensor::CreateShm(Constant::kCollCachePlacementShmName, kU8, block_density_tensor->Shape(), "coll_cache_block_placement");
+  block_placement = Tensor::CreateShm(_shm_name_place, kU8, block_density_tensor->Shape(), "coll_cache_block_placement");
 }
 
 void OptimalSolver::Solve(std::vector<int> device_to_stream, std::vector<PerT> device_to_cache_percent, std::string mode, double T_local, double T_remote, double T_cpu) {
@@ -842,7 +852,7 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
   CHECK(num_device <= 8);
   CHECK(block_placement->Shape() == std::vector<size_t>{num_block});
   // num_link + local + cpu always <= 8
-  block_access_from = Tensor::CreateShm(Constant::kCollCacheAccessShmName, kU8, {num_device, num_block}, "coll_cache_block_access");
+  block_access_from = Tensor::CreateShm(_shm_name_access, kU8, {num_device, num_block}, "coll_cache_block_access");
   TensorView<uint8_t> block_placement_array(block_placement);
   TensorView<uint8_t> block_access_from_array(block_access_from);
   LOG(WARNING) << "Coll Cache init block placement array";
@@ -1059,7 +1069,7 @@ void IntuitiveSolver::Solve(std::vector<int> device_to_stream,
   std::cout << "coll_cache:optimal_cpu_rate=" << cpu_w / total_w << "\n";
   std::cout << "z=" << local_w * 100 / num_node * T_local + remote_w * 100 / num_node * T_remote + cpu_w * 100 / num_node * T_cpu << "\n";
 
-  block_placement = Tensor::CreateShm(Constant::kCollCachePlacementShmName, kU8, {static_cast<size_t>(num_block)}, "coll_cache_block_placement");
+  block_placement = Tensor::CreateShm(_shm_name_place, kU8, {static_cast<size_t>(num_block)}, "coll_cache_block_placement");
 
   block_placement->Ptr<uint8_t>()[0] = (1 << num_device) - 1;
   for (int i = 0; i < num_device; i++) {
@@ -1114,7 +1124,7 @@ void PartitionSolver::Solve(std::vector<int> device_to_stream,
   std::cout << "coll_cache:optimal_cpu_rate=" << cpu_w / total_w << "\n";
   std::cout << "z=" << local_w * 100 / num_node * T_local + remote_w * 100 / num_node * T_remote + cpu_w * 100 / num_node * T_cpu << "\n";
 
-  block_placement = Tensor::CreateShm(Constant::kCollCachePlacementShmName, kU8, {static_cast<size_t>(num_block)}, "coll_cache_block_placement");
+  block_placement = Tensor::CreateShm(_shm_name_place, kU8, {static_cast<size_t>(num_block)}, "coll_cache_block_placement");
 
   for (int i = 0; i < num_device; i++) {
     block_placement->Ptr<uint8_t>()[i] = (1 << i);
@@ -1175,7 +1185,7 @@ void PartRepSolver::Solve(std::vector<int> device_to_stream,
   std::cout << "coll_cache:optimal_cpu_rate=" << cpu_w / total_w << "\n";
   std::cout << "z=" << local_w * 100 / num_node * T_local + remote_w * 100 / num_node * T_remote + cpu_w * 100 / num_node * T_cpu << "\n";
 
-  block_placement = Tensor::CreateShm(Constant::kCollCachePlacementShmName, kU8, {static_cast<size_t>(num_block)}, "coll_cache_block_placement");
+  block_placement = Tensor::CreateShm(_shm_name_place, kU8, {static_cast<size_t>(num_block)}, "coll_cache_block_placement");
 
   block_placement->Ptr<uint8_t>()[0] = (1 << num_device) - 1;
   for (int i = 0; i < num_device; i++) {
@@ -1227,16 +1237,16 @@ void RepSolver::Solve(std::vector<int> device_to_stream,
   std::cout << "coll_cache:optimal_cpu_rate=" << cpu_w / total_w << "\n";
   std::cout << "z=" << local_w * 100 / num_node * T_local + cpu_w * 100 / num_node * T_cpu << "\n";
 
-  block_placement = Tensor::CreateShm(Constant::kCollCachePlacementShmName, kU8, {static_cast<size_t>(num_block)}, "coll_cache_block_placement");
+  block_placement = Tensor::CreateShm(_shm_name_place, kU8, {static_cast<size_t>(num_block)}, "coll_cache_block_placement");
   block_placement->Ptr<uint8_t>()[0] = (1 << num_device) - 1;
   block_placement->Ptr<uint8_t>()[1] = 0;
-  block_access_from = Tensor::CreateShm(Constant::kCollCacheAccessShmName, kU8, {(size_t)num_device, static_cast<size_t>(num_block)}, "coll_cache_advise");
+  block_access_from = Tensor::CreateShm(_shm_name_access, kU8, {(size_t)num_device, static_cast<size_t>(num_block)}, "coll_cache_advise");
   TensorView<uint8_t> block_access_from_array(block_access_from);
   for (IdType dev_id = 0; dev_id < num_device; dev_id++) {
     block_access_from_array[dev_id][0].ref() = dev_id;
     block_access_from_array[dev_id][1].ref() = num_device;
   }
-  block_density_tensor = Tensor::CreateShm(Constant::kCollCachePlacementShmName + "_density", kF64, {num_block}, "");
+  block_density_tensor = Tensor::CreateShm(_shm_name_dens, kF64, {num_block}, "");
   block_density_tensor->Ptr<double>()[0] = (double)replicate_size * 100 / (double)num_node;
   block_density_tensor->Ptr<double>()[1] = (double)cpu_size * 100 / (double)num_node;
 }
@@ -1323,9 +1333,9 @@ void CliquePartSolver::Solve(std::vector<int> device_to_stream,
     return block_id_to_storage_dev_in_clique(block_id, clique_id);
   };
 
-  block_placement = Tensor::CreateShm(Constant::kCollCachePlacementShmName, kU8, {static_cast<size_t>(num_block)}, "coll_cache_block_placement");
-  block_access_from = Tensor::CreateShm(Constant::kCollCacheAccessShmName, kU8, {num_device, static_cast<size_t>(num_block)}, "coll_cache_advise");
-  block_density_tensor = Tensor::CreateShm(Constant::kCollCachePlacementShmName + "_density", kF64, {(size_t)num_block}, "");
+  block_placement = Tensor::CreateShm(_shm_name_place, kU8, {static_cast<size_t>(num_block)}, "coll_cache_block_placement");
+  block_access_from = Tensor::CreateShm(_shm_name_access, kU8, {num_device, static_cast<size_t>(num_block)}, "coll_cache_advise");
+  block_density_tensor = Tensor::CreateShm(_shm_name_dens, kF64, {(size_t)num_block}, "");
   TensorView<uint8_t> block_access_from_array(block_access_from);
   // there are clique_size + 1 blocks; first clique_size block is clique-partitioned, the last is on cpu
   for (int block_id = 0; block_id < clique_size; block_id++) {
@@ -1459,9 +1469,9 @@ void CliquePartByDegreeSolver::Solve(std::vector<int> device_to_stream,
     return block_id_to_storage_dev_in_clique(block_id, clique_id);
   };
 
-  block_placement = Tensor::CreateShm(Constant::kCollCachePlacementShmName, kU8, {static_cast<size_t>(num_block)}, "coll_cache_block_placement");
-  block_access_from = Tensor::CreateShm(Constant::kCollCacheAccessShmName, kU8, {num_device, static_cast<size_t>(num_block)}, "coll_cache_advise");
-  block_density_tensor = Tensor::CreateShm(Constant::kCollCachePlacementShmName + "_density", kF64, {(size_t)num_block}, "");
+  block_placement = Tensor::CreateShm(_shm_name_place, kU8, {static_cast<size_t>(num_block)}, "coll_cache_block_placement");
+  block_access_from = Tensor::CreateShm(_shm_name_access, kU8, {num_device, static_cast<size_t>(num_block)}, "coll_cache_advise");
+  block_density_tensor = Tensor::CreateShm(_shm_name_dens, kF64, {(size_t)num_block}, "");
   TensorView<uint8_t> block_access_from_array(block_access_from);
   // there are clique_size + 1 blocks; first clique_size block is clique-partitioned, the last is on cpu
   for (int block_id = 0; block_id < clique_size; block_id++) {

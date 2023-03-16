@@ -116,7 +116,7 @@ void CollCache::solve_impl_master(IdType *ranking_nodes_list_ptr,
     }
 
     LOG(ERROR) << "solver created. now build & solve";
-    _nid_to_block = Tensor::CreateShm(Constant::kCollCacheNIdToBlockShmName,
+    _nid_to_block = Tensor::CreateShm(solver->_shm_name_nid_to_block,
                                       kI32, {num_node}, "nid_to_block");
     solver->Build(ranking_nodes_list, ranking_nodes_freq_list,
                   trainer_to_stream, num_node, _nid_to_block);
@@ -131,9 +131,9 @@ void CollCache::solve_impl_master(IdType *ranking_nodes_list_ptr,
     delete solver;
 }
 void CollCache::solve_impl_slave() {
-    _nid_to_block = Tensor::OpenShm(Constant::kCollCacheNIdToBlockShmName, kI32,
+    _nid_to_block = Tensor::OpenShm(coll_cache::CollCacheSolver::_shm_name_nid_to_block, kI32,
                                     {}, "nid_to_block");
-    _block_placement = Tensor::OpenShm(Constant::kCollCachePlacementShmName,
+    _block_placement = Tensor::OpenShm(coll_cache::CollCacheSolver::_shm_name_place,
                                        kU8, {}, "coll_cache_block_placement");
     // if (RunConfig::cache_policy == kCollCacheAsymmLink) {
     //   // for refreshment to know about sizes
@@ -144,11 +144,11 @@ void CollCache::solve_impl_slave() {
         RunConfig::cache_policy == kCliquePartByDegree) {
       size_t num_blocks = _block_placement->Shape()[0];
       _block_access_advise = Tensor::OpenShm(
-          Constant::kCollCacheAccessShmName, kU8,
+          coll_cache::CollCacheSolver::_shm_name_access, kU8,
           {static_cast<decltype(num_blocks)>(RunConfig::num_device),
            num_blocks},
           "block_access_advise");
-      _block_density = Tensor::OpenShm(Constant::kCollCachePlacementShmName + "_density",
+      _block_density = Tensor::OpenShm(coll_cache::CollCacheSolver::_shm_name_dens,
                                         kF64, {}, "coll_cache_block_density");
     }
 }
@@ -229,21 +229,17 @@ void CollCache::refresh(int replica_id, IdType *ranking_nodes_list_ptr,
   if (RunConfig::cross_process || replica_id == 0) {
     if (replica_id == 0) LOG(ERROR) << "Preserving old solution";
     // one-time call for each process
-    size_t num_block = _block_density->Shape()[0];
 
-    auto copy_shm = [replica_id](std::string path, TensorPtr old_t) -> TensorPtr {
-      if (old_t == nullptr) return nullptr;
-      auto ret = Tensor::CreateShm(path, old_t->Type(), old_t->Shape(), "");
-      if (replica_id == 0) {
-        memcpy(ret->MutableData(), old_t->Data(), old_t->NumBytes());
-      }
-      return ret;
-    };
 
-    this->_old_block_access_advise = copy_shm(Constant::kCollCacheAccessShmName + "_old", _block_access_advise);
-    this->_old_block_density = copy_shm(Constant::kCollCachePlacementShmName + "_density" + "_old", _block_density);
-    this->_old_block_placement = copy_shm(Constant::kCollCachePlacementShmName + "_old",            _block_placement);
-    this->_old_nid_to_block = copy_shm(Constant::kCollCacheNIdToBlockShmName + "_old",              _nid_to_block);
+    coll_cache::CollCacheSolver::_shm_name_nid_to_block.swap(coll_cache::CollCacheSolver::_shm_name_alter_nid_to_block);
+    coll_cache::CollCacheSolver::_shm_name_access.swap(coll_cache::CollCacheSolver::_shm_name_alter_access);
+    coll_cache::CollCacheSolver::_shm_name_place.swap(coll_cache::CollCacheSolver::_shm_name_alter_place);
+    coll_cache::CollCacheSolver::_shm_name_dens.swap(coll_cache::CollCacheSolver::_shm_name_alter_dens);
+
+    this->_old_block_access_advise = this->_block_access_advise;
+    this->_old_block_density       = this->_block_density;
+    this->_old_block_placement     = this->_block_placement;
+    this->_old_nid_to_block        = this->_nid_to_block;
 
     this->_block_access_advise = nullptr;
     this->_block_density = nullptr;
