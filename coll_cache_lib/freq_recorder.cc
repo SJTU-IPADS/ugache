@@ -121,7 +121,7 @@ TensorPtr FreqRecorder::GetFreq() {
 
 void FreqRecorder::GetFreq(IdType* ranking_freq_ptr) {
   Id64Type* aggregate_freq_table = global_freq_table_ptr + RunConfig::num_device * _num_nodes;
-#pragma omp parallel for num_threads(RunConfig::omp_thread_num)
+#pragma omp parallel for num_threads(RunConfig::solver_omp_thread_num)
   for (size_t i = 0; i < _num_nodes; i++) {
     auto nid_ptr = reinterpret_cast<IdType*>(&aggregate_freq_table[i]);
     ranking_freq_ptr[i] = *(nid_ptr + 1);
@@ -140,7 +140,7 @@ void FreqRecorder::GetRankNode(TensorPtr& ranking_nodes) {
 void FreqRecorder::GetRankNode(IdType* ranking_nodes_ptr) {
   Timer t_prepare_rank;
   Id64Type* aggregate_freq_table = global_freq_table_ptr + RunConfig::num_device * _num_nodes;
-#pragma omp parallel for num_threads(RunConfig::omp_thread_num)
+#pragma omp parallel for num_threads(RunConfig::solver_omp_thread_num)
   for (size_t i = 0; i < _num_nodes; i++) {
     auto nid_ptr = reinterpret_cast<IdType*>(&aggregate_freq_table[i]);
     ranking_nodes_ptr[i] = *(nid_ptr);

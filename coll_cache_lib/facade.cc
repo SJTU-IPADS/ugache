@@ -191,10 +191,11 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
     this->_cache_ctx_list.resize(RunConfig::num_device);
     this->_session_list.resize(RunConfig::num_device);
     this->_refresh_session_list.resize(RunConfig::num_device);
+    RunConfig::solver_omp_thread_num = RunConfig::omp_thread_num;
+    RunConfig::solver_omp_thread_num_per_gpu = RunConfig::omp_thread_num / RunConfig::num_device;
   }
   bool need_solver = (cache_percentage != 0 && cache_percentage != 1);
   if (replica_id == 0 && need_solver) {
-    RunConfig::solver_omp_thread_num = RunConfig::omp_thread_num;
     solve_impl_master(ranking_nodes_list_ptr, ranking_nodes_freq_list_ptr, num_node);
     LOG(ERROR) << replica_id << " solved master";
   }
@@ -218,6 +219,7 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
   this->_refresh_session_list[replica_id]->stream = stream;
   this->_replica_barrier->Wait();
   RunConfig::solver_omp_thread_num = RunConfig::refresher_omp_thread_num;
+  RunConfig::solver_omp_thread_num_per_gpu = RunConfig::refresher_omp_thread_num_per_gpu;
 }
 
 void CollCache::refresh(int replica_id, IdType *ranking_nodes_list_ptr,

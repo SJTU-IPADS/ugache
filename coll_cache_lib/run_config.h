@@ -59,7 +59,9 @@ struct RunConfig {
 
   static int                  omp_thread_num;
   static int                  solver_omp_thread_num;
+  static int                  solver_omp_thread_num_per_gpu;
   static int                  refresher_omp_thread_num;
+  static int                  refresher_omp_thread_num_per_gpu;
 
   // shared memory meta_data path for data communication acrossing processes
   static std::string          shared_meta_path;

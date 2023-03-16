@@ -3789,7 +3789,7 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
   TensorPtr key_list_of_each_src[9] = {nullptr};
   auto coll_cache = _cache_ctx->_coll_cache;
   TensorPtr block_access_advise_cpu = Tensor::CopyLine(_cache_ctx->_coll_cache->_block_access_advise, _local_location_id, CPU(CPU_CLIB_MALLOC_DEVICE), stream); // small
-  CacheEntryManager::DetectKeysForAllSource(coll_cache->_nid_to_block, block_access_advise_cpu, _local_location_id, coll_cache->_block_density, RunConfig::num_total_item, key_list_of_each_src);
+  CacheEntryManager::DetectKeysForAllSource(coll_cache->_nid_to_block, block_access_advise_cpu, _local_location_id, coll_cache->_block_density, RunConfig::num_total_item, key_list_of_each_src, RunConfig::num_device);
 
   size_t num_new_local_key = key_list_of_each_src[_local_location_id]->NumItem();
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "new local node = " << num_new_local_key;
@@ -3809,7 +3809,7 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
   size_t num_preserved_key = key_list_of_each_src[_local_location_id]->NumItem() - _new_insert_keys->NumItem();
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "preserved node = " << num_preserved_key;
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "new insert node = " << _new_insert_keys->NumItem();
-  CUDA_CALL(cudaStreamSynchronize(cu_stream));
+  // CUDA_CALL(cudaStreamSynchronize(cu_stream));
   // preserved keys is not necessary when using new hashtable
 
   // Step.3 Detect old local keys to evict, and corresponding cache offset, then evict
@@ -3865,7 +3865,7 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
           nullptr, // _cache_ctx->_coll_cache->_block_placement,
           _local_location_id, _cache_ctx->_cpu_location_id
         ),
-      _new_hash_table->_hash_table->max_efficient_size
+      _new_hash_table->_hash_table->max_efficient_size - _new_hash_table->_cached_keys->NumItem()
     );
   if (remote_keys_to_evict->NumItem() > 0) {
     remote_keys_to_evict = CopyTo1DReuse(__keys_buffer, remote_keys_to_evict, gpu_ctx, stream);

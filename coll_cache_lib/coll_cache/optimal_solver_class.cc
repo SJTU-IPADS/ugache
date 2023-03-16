@@ -628,7 +628,8 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
 
   GRBEnv env = GRBEnv(true);
   env.set("LogFile", "cppsolver.log");
-  env.set(GRB_IntParam_Threads, RunConfig::omp_thread_num*2);
+  // env.set(GRB_IntParam_Threads, RunConfig::omp_thread_num*2);
+  env.set(GRB_IntParam_Threads, RunConfig::solver_omp_thread_num);
 
   // env.set(GRB_IntParam_LogToConsole, 0);
 
