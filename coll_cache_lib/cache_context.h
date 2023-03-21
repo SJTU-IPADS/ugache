@@ -16,6 +16,7 @@
 #include <thread>
 #include <cuda_runtime.h>
 #include <cuda.h>
+#include "atomic_barrier.h"
 
 
 #define SAM_CUDA_PREPARE_1D(num_item) \
@@ -70,10 +71,14 @@ struct ExtractionThreadCtx {
   cudaStream_t stream_;
   std::function<void(cudaStream_t)> func_;
   std::atomic<int> todo_steps{0}, done_steps{0};
+  AtomicBarrier * barrier_;
   ExtractionThreadCtx();
   void thread_func();
   void forward_one_step(std::function<void(cudaStream_t)> new_func);
   void wait_one_step();
+  void thread_func_with_bar();
+  void set_func(std::function<void(cudaStream_t)> new_func);
+  void bar_wait();
 };
 
 class CollCache;
@@ -169,6 +174,7 @@ class ExtractSession {
   IdType * _group_offset = nullptr;
   std::vector<StreamHandle> _concurrent_stream_array;
   std::vector<std::shared_ptr<ExtractionThreadCtx>> _extract_ctx;
+  cudaStream_t _local_ext_stream;
   std::vector<std::thread> _extract_threads;
   double accu_cpu_time = 0;
   double accu_local_time = 0;
