@@ -1268,12 +1268,14 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     } else if (RunConfig::concurrent_link_impl == kMPSPhase) {
       auto call_combine = [src_index, group_offset, dst_index, nodes, this, output, num_nodes](int location_id, StreamHandle stream){
         if (num_nodes == 0) return;
+        Timer t;
         CombineOneGroup(src_index + group_offset[location_id], 
                         dst_index + group_offset[location_id], 
                         nodes + group_offset[location_id], 
                         group_offset[location_id+1] - group_offset[location_id], 
                         _cache_ctx->_device_cache_data[location_id], output, stream, 0, true);
         CUDA_CALL(cudaStreamSynchronize(reinterpret_cast<cudaStream_t>(stream)));
+        accu_each_src_time[location_id] += t.Passed();
       };
       // launch cpu extraction
       this->_extract_ctx[_cache_ctx->_cpu_location_id]->forward_one_step([&combine_times, call_combine, loc_id = _cache_ctx->_cpu_location_id](cudaStream_t cu_s){
@@ -1540,6 +1542,34 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheCombineMissTime,combine_times[0]);
       _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheCombineRemoteTime,combine_times[1]);
       _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheCombineCacheTime,combine_times[2]);
+      accu_cpu_time += combine_times[0];
+      accu_remote_time += combine_times[1];
+      accu_local_time += combine_times[2];
+      accu_step ++;
+      if (accu_step % 100 == 0) {
+        // std::stringstream ss;
+        // ss << std::fixed << std::setw(10) << std::setprecision(6) 
+        //    << std::setw(10) << accu_cpu_time / 100 
+        //    << std::setw(10) << accu_remote_time / 100 
+        //    << std::setw(10) << accu_local_time / 100  
+        //    << " | "
+        //    << std::setw(10) << accu_each_src_time[0] / 100
+        //    << std::setw(10) << accu_each_src_time[1] / 100
+        //    << std::setw(10) << accu_each_src_time[2] / 100
+        //    << std::setw(10) << accu_each_src_time[3] / 100
+        //    << std::setw(10) << accu_each_src_time[4] / 100
+        //    << std::setw(10) << accu_each_src_time[5] / 100
+        //    << std::setw(10) << accu_each_src_time[6] / 100
+        //    << std::setw(10) << accu_each_src_time[7] / 100
+        //    << std::setw(10) << accu_each_src_time[8] / 100
+        //    << "\n";
+        // ;
+        // std::cerr << ss.str();
+        // accu_cpu_time = 0;
+        // accu_remote_time = 0;
+        // accu_local_time = 0;
+        // memset(accu_each_src_time, 0, sizeof(accu_each_src_time));
+      }
       // _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochFeatureBytes,GetTensorBytes(_dtype, {num_nodes, _dim}));
       // _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochMissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
     }

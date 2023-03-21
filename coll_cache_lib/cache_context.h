@@ -170,6 +170,11 @@ class ExtractSession {
   std::vector<StreamHandle> _concurrent_stream_array;
   std::vector<std::shared_ptr<ExtractionThreadCtx>> _extract_ctx;
   std::vector<std::thread> _extract_threads;
+  double accu_cpu_time = 0;
+  double accu_local_time = 0;
+  double accu_remote_time = 0;
+  size_t accu_step = 0;
+  double accu_each_src_time[9] = {};
  public:
   ExtractSession(std::shared_ptr<CacheContext> cache_ctx);
  private:
