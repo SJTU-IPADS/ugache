@@ -3918,19 +3918,32 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
   // Step.6 Update cache content, insert new local keys to hashtable
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "inserting new local nodes";
 
+  TensorPtr reserved_offset;
   if (_new_insert_keys->NumItem() > 0) {
     _new_insert_keys = CopyTo1DReuse(__keys_buffer, _new_insert_keys, gpu_ctx, stream);
-    auto reserved_offset = CopyTo1DReuse(__offs_buffer, _new_hash_table->ReserveOffsetFront(_new_insert_keys->NumItem()), gpu_ctx, stream);
-    
+    reserved_offset = CopyTo1DReuse(__offs_buffer, _new_hash_table->ReserveOffsetFront(_new_insert_keys->NumItem()), gpu_ctx, stream);
+    const size_t local_combine_batch_size = 4092; // 4K ~ 0.2ms
     if (RunConfig::option_empty_feat == 0) {
-      const DataIter<const IdType*> src_data_iter(_new_insert_keys->CPtr<IdType>(), _cache_ctx->_device_cache_data[_cache_ctx->_cpu_location_id], _cache_ctx->_dim);
-      DataIter<FreeOffIter> dst_data_iter(FreeOffIter(reserved_offset->Ptr<IdType>()), _cache_ctx->_device_cache_data[_cache_ctx->_local_location_id], _cache_ctx->_dim);
-      Combine(src_data_iter, dst_data_iter, _new_insert_keys->NumItem(), gpu_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
+      for (size_t cur_batch_begin = 0; cur_batch_begin < _new_insert_keys->NumItem(); cur_batch_begin += local_combine_batch_size) {
+        size_t cur_batch_size = (cur_batch_begin + local_combine_batch_size < _new_insert_keys->NumItem()) ? local_combine_batch_size : (_new_insert_keys->NumItem() - cur_batch_begin);
+        const DataIter<const IdType*> src_data_iter(_new_insert_keys->CPtr<IdType>() + cur_batch_begin, _cache_ctx->_device_cache_data[_cache_ctx->_cpu_location_id], _cache_ctx->_dim);
+        DataIter<FreeOffIter> dst_data_iter(FreeOffIter(reserved_offset->Ptr<IdType>() + cur_batch_begin), _cache_ctx->_device_cache_data[_cache_ctx->_local_location_id], _cache_ctx->_dim);
+        Combine(src_data_iter, dst_data_iter, cur_batch_size, gpu_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream, 20);
+        usleep(3000);
+      }
     } else {
-      const DataIter<MockSrcOffIter> src_data_iter(MockSrcOffIter(_new_insert_keys->Ptr<IdType>()), _cache_ctx->_device_cache_data[_cache_ctx->_cpu_location_id], _cache_ctx->_dim);
-      DataIter<FreeOffIter> dst_data_iter(FreeOffIter(reserved_offset->Ptr<IdType>()), _cache_ctx->_device_cache_data[_cache_ctx->_local_location_id], _cache_ctx->_dim);
-      Combine(src_data_iter, dst_data_iter, _new_insert_keys->NumItem(), gpu_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
+      for (size_t cur_batch_begin = 0; cur_batch_begin < _new_insert_keys->NumItem(); cur_batch_begin += local_combine_batch_size) {
+        size_t cur_batch_size = (cur_batch_begin + local_combine_batch_size < _new_insert_keys->NumItem()) ? local_combine_batch_size : (_new_insert_keys->NumItem() - cur_batch_begin);
+        const DataIter<MockSrcOffIter> src_data_iter(MockSrcOffIter(_new_insert_keys->Ptr<IdType>() + cur_batch_begin), _cache_ctx->_device_cache_data[_cache_ctx->_cpu_location_id], _cache_ctx->_dim);
+        DataIter<FreeOffIter> dst_data_iter(FreeOffIter(reserved_offset->Ptr<IdType>() + cur_batch_begin), _cache_ctx->_device_cache_data[_cache_ctx->_local_location_id], _cache_ctx->_dim);
+        Combine(src_data_iter, dst_data_iter, cur_batch_size, gpu_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream, 20);
+        usleep(3000);
+      }
     }
+  }
+
+  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "inserting new local nodes - combine done";
+  if (_new_insert_keys->NumItem() > 0) {
     _new_hash_table->InsertWithLoc(_new_insert_keys, reserved_offset, _local_location_id, stream);
     CUDA_CALL(cudaStreamSynchronize(cu_stream));
   }
@@ -3947,7 +3960,7 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
       auto _remote_new_keys = _new_hash_table->DetectKeysWithCond(key_list_of_each_src[dev_id]->CPtr<IdType>(), key_list_of_each_src[dev_id]->NumItem(), [this, _old_access_view, dev_id](const IdType & key) mutable{
         auto block_id = _cache_ctx->_coll_cache->_old_nid_to_block->CPtr<IdType>()[key];
         return _old_access_view[block_id].ref() != dev_id;
-      });
+      }, key_list_of_each_src[dev_id]->NumItem());
       if (_remote_new_keys->NumItem() > 0) {
         _remote_new_keys = CopyTo1DReuse(__keys_buffer, _remote_new_keys, gpu_ctx, stream);
         auto _remote_offsets = Empty1DReuse(__offs_buffer, kI32, _remote_new_keys->Shape(), gpu_ctx);
