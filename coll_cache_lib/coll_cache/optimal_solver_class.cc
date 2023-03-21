@@ -651,7 +651,8 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
   // env.set(GRB_IntParam_Method, 3);
   // env.set(GRB_DoubleParam_MIPGap, 0.03);
   // env.set(GRB_IntParam_MIPFocus, 2);
-  env.set(GRB_IntParam_ConcurrentMIP, 36);
+  // env.set(GRB_IntParam_ConcurrentMIP, 36);
+  // env.set(GRB_IntParam_ConcurrentMIP, 10);
   // env.set(GRB_IntParam_BranchDir, 1);
   // env.set(GRB_IntParam_AggFill, 100);
   // env.set(GRB_IntParam_NormAdjust, 3);
@@ -669,8 +670,8 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
   // new parameters for [           cpu          ]
   //                    [local][cuncurrent remote]
   env.set(GRB_DoubleParam_MIPGap, 0.05);
-  env.set(GRB_IntParam_Presolve, 2);
-  env.set(GRB_IntParam_AggFill, 100);
+  // env.set(GRB_IntParam_Presolve, 2);
+  // env.set(GRB_IntParam_AggFill, 100);
   // env.set(GRB_IntParam_Aggregate, 0);
   // env.set(GRB_IntParam_GomoryPasses, 0);
   /** todo: the following param seems hurt performance. needs investigation */

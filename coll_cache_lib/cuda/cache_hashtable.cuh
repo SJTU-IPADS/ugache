@@ -441,6 +441,7 @@ class CacheEntryManager {
   template<typename InputIterator, typename CondT>
   TensorPtr DetectKeysWithCond(InputIterator inputs, IdType num_input, CondT cond, size_t max_result_storage = 0) {
     if (max_result_storage == 0) {
+      LOG(ERROR) << "Please set max result storage for efficient mem usage";
       max_result_storage = _cache_space_capacity;
     }
     TensorPtr matched_keys;
@@ -487,7 +488,7 @@ class CacheEntryManager {
   }
   static void DetectKeysForAllSource(TensorPtr nid_to_block, TensorPtr block_access_advise, int local_location_id, TensorPtr block_density, size_t num_total_item,
       TensorPtr* node_list_of_src, int num_gpu = 8) {
-    // LOG(ERROR) << "detecting key for all source";
+    // LOG(ERROR) << "detecting key for all source with nthread " << RunConfig::solver_omp_thread_num_per_gpu ;
     CHECK_EQ(block_access_advise->Shape().size(), 1);
     // TensorPtr block_access_advise = Tensor::CopyLine(_cache_ctx->_coll_cache->_block_access_advise, local_location_id, CPU(CPU_CLIB_MALLOC_DEVICE), stream); // small
     size_t num_blocks = block_access_advise->Shape()[0];
@@ -504,6 +505,7 @@ class CacheEntryManager {
       per_s_s *= 1.1;
     }
 
+    if (local_location_id == 0) LOG(ERROR) << "per src size local is " << per_src_size[local_location_id];
     #pragma omp parallel num_threads(RunConfig::solver_omp_thread_num_per_gpu)
     {
       std::vector<TensorPtr> local_ten_list(num_gpu);

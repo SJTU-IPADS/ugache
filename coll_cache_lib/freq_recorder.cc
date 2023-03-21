@@ -167,6 +167,7 @@ void FreqRecorder::GetRankNode(IdType* ranking_nodes_ptr) {
 //   }
 // }
 void FreqRecorder::Combine() {
+  LOG(ERROR) << "Combining with " << RunConfig::solver_omp_thread_num << " threads";
   Id64Type* aggregate_freq_table = global_freq_table_ptr + RunConfig::num_device * _num_nodes;
   #pragma omp parallel for num_threads(RunConfig::solver_omp_thread_num)
   for (size_t i = 0; i < _num_nodes; i++) {

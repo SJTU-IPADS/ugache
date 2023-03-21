@@ -103,6 +103,9 @@ void Tensor::ForceScale(DataType dt, std::vector<size_t> shape, Context ctx, std
   CHECK(_shape.size() == shape.size());
   if (_external_mem_hanlder) {
     CHECK_LE(GetTensorBytes(dt, shape), _external_mem_hanlder->nbytes());
+    if (GetTensorBytes(dt, shape) < _external_mem_hanlder->nbytes() / 2 && ctx.device_type == kCPU) {
+      LOG(ERROR) << "too many mem allocated for forcescale?" << _shape[0] << "->" << shape[0];
+    }
   } else {
     CHECK_LE(std::accumulate(shape.begin(), shape.end(), 1ul, std::multiplies<size_t>()), NumItem());
   }

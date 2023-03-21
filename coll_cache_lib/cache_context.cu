@@ -2295,8 +2295,8 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
       _new_hash_table->_hash_table = std::make_shared<SimpleHashTable>(_eager_gpu_mem_allocator, (size_t)(num_total_nodes - num_cpu_nodes), _trainer_ctx, stream);
       _new_hash_table->InsertSeqOffWithLoc(cache_node_list, location_id, stream);
       gpu_device->StreamSync(gpu_ctx, stream);
-      _new_hash_table->_hash_table->CountEntries(stream);
-      gpu_device->StreamSync(gpu_ctx, stream);
+      // _new_hash_table->_hash_table->CountEntries(stream);
+      // gpu_device->StreamSync(gpu_ctx, stream);
     }
   }
 
@@ -3867,6 +3867,7 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
         ),
       _new_hash_table->_hash_table->max_efficient_size - _new_hash_table->_cached_keys->NumItem()
     );
+  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "evicting remote nodes - key detected, now evict " << remote_keys_to_evict->NumItem();
   if (remote_keys_to_evict->NumItem() > 0) {
     remote_keys_to_evict = CopyTo1DReuse(__keys_buffer, remote_keys_to_evict, gpu_ctx, stream);
     CUDA_CALL(cudaStreamSynchronize(cu_stream));
@@ -3905,6 +3906,7 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
   }
 
   AnonymousBarrier::_refresh_instance->Wait();
+  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "inserting new local nodes done";
 
   // Step.7 Update remote keys to hashtable
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "inserting new remote nodes";
