@@ -18,6 +18,8 @@
 #pragma once
 
 #include <cstdint>
+#include <iostream>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -153,6 +155,13 @@ struct SharedLogData {
   SharedLogData() {}
 };
 
+struct SortedLogData {
+  double* vals;
+  size_t cnt;
+
+  SortedLogData() {}
+};
+
 #define TRACE_TYPES( F ) \
   F(kL0Event_Train_Step) \
   F(kL1Event_Sample) \
@@ -199,6 +208,7 @@ class Profiler {
   void LogStep(uint64_t key, LogStepItem item, double val);
   void LogStepAdd(uint64_t key, LogStepItem item, double val);
   void LogEpochAdd(uint64_t key, LogEpochItem item, double val);
+  inline void LogHPSAdd(const std::vector<double> &ratios) {_hps_cache_ratios = ratios;}
 
   inline void TraceStepBegin(uint64_t key, TraceItem item, uint64_t us) { _step_trace[item].events[key].begin = us; }
   inline void TraceStepEnd(uint64_t key, TraceItem item, uint64_t us) { _step_trace[item].events[key].end = us; }
@@ -213,6 +223,9 @@ class Profiler {
   void ReportStepAverageLastEpoch(uint64_t epoch, uint64_t step);
   void ReportStepMax(uint64_t epoch, uint64_t step);
   void ReportStepMin(uint64_t epoch, uint64_t step);
+  void ReportStepPercentile(uint64_t epoch, uint64_t step, double percentage);
+  void ReportStepItemPercentiles(uint64_t epoch, uint64_t step, LogStepItem item, std::vector<double> percentages, const char* type);
+  void ReportSequentialAverage(uint64_t bucket_size, std::ostream &out);
   void ReportEpoch(uint64_t epoch);
   void ReportEpochAverage(uint64_t epoch);
 
@@ -227,11 +240,13 @@ class Profiler {
  private:
   template<typename ReduceOp>
   void PrepareStepReduce(uint64_t epoch, uint64_t step, const double init, ReduceOp op, const double default_val = 0);
-  void OutputStep(uint64_t key, std::string type);
+  void StepSort(uint64_t epoch, uint64_t step);
+  void OutputStep(uint64_t key, std::string type, std::ostream &out = std::cout);
   void OutputEpoch(uint64_t epoch, std::string type);
 
   std::vector<LogData> _init_data;
   std::vector<SharedLogData> _step_data;
+  std::vector<SortedLogData> _sorted_step_data;
   std::vector<double> _step_buf;
   std::vector<LogData> _epoch_data;
   std::vector<double> _epoch_buf;
@@ -251,6 +266,13 @@ class Profiler {
   std::vector<int> _epoch_last_visit;
   std::vector<int> _epoch_cur_visit;
   std::vector<double> _epoch_similarity;
+
+  // for HPS: 
+  // cache intersect ratio; 
+  // cache hit ratio;
+  // access hit overlap ratio; 
+  // access miss overlap ratio;
+  std::vector<double> _hps_cache_ratios;
 };
 
 }  // namespace common

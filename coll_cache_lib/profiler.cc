@@ -23,6 +23,7 @@
 #include <fstream>
 #include <limits>
 #include <numeric>
+#include <string>
 #include <unordered_map>
 
 #ifdef __linux__
@@ -395,6 +396,91 @@ void Profiler::ReportStepMin(uint64_t epoch, uint64_t step) {
   OutputStep(key, "Step(min)");
 }
 
+void Profiler::StepSort(uint64_t epoch, uint64_t step){
+  uint64_t key = RunConfig::GetBatchKey(epoch, step);
+  size_t num_items = static_cast<size_t>(kNumLogStepItems);
+  if (!_sorted_step_data.empty()) {CHECK_EQ(_sorted_step_data.size(), num_items);}
+  else {
+    _sorted_step_data.resize(num_items, SortedLogData());
+    for (size_t i = 0; i < num_items; i++) {
+      // get non-empty value cnt
+      size_t cnt = 0;
+      for (size_t current_key = RunConfig::num_global_step_per_epoch; current_key < key; current_key++)
+        if (_step_data[i].bitmap[current_key]) cnt ++;
+      _sorted_step_data[i].cnt = cnt;
+      if (!cnt) continue;
+      // alloc sorted data array and fill in non-empty values
+      size_t iter = 0;
+      _sorted_step_data[i].vals = new double[cnt];
+      for (size_t current_key = RunConfig::num_global_step_per_epoch; current_key < key; current_key++)
+        if (_step_data[i].bitmap[current_key]) {_sorted_step_data[i].vals[iter] = _step_data[i].vals[iter]; iter++;}
+      // sort
+      std::sort(_sorted_step_data[i].vals, _sorted_step_data[i].vals + cnt);
+    }
+  } 
+}
+
+void Profiler::ReportStepPercentile(uint64_t epoch, uint64_t step, double percentage) {
+  uint64_t key = RunConfig::GetBatchKey(epoch, step);
+  size_t num_items = static_cast<size_t>(kNumLogStepItems);
+  StepSort(epoch, step);
+  for (size_t i = 0; i < num_items; i++) {
+    if (_sorted_step_data[i].cnt == 0) {
+      _step_buf[i] = 0;
+      continue;
+    }
+    size_t pos = static_cast<size_t>(static_cast<double>(_sorted_step_data[i].cnt) * (percentage / 100));
+    if (pos >= _sorted_step_data[i].cnt) pos = _sorted_step_data[i].cnt - 1;
+    _step_buf[i] = _sorted_step_data[i].vals[pos];
+  }
+  OutputStep(key, "Step(Percentile" + std::to_string(static_cast<int>(percentage)) + ")");
+}
+
+void Profiler::ReportStepItemPercentiles(uint64_t epoch, uint64_t step, LogStepItem item, 
+                                        std::vector<double> percentages, const char* type) {
+  StepSort(epoch, step);
+  printf("    [Profiler Level Percentiles E%lu S%lu]\n", epoch, step);
+  auto sorted_data = _sorted_step_data[item];
+  for (size_t i = 0; i < percentages.size(); i++) {
+    double value = 0, percentage = percentages[i];
+    if (sorted_data.cnt != 0) {
+      size_t pos = static_cast<size_t>(static_cast<double>(sorted_data.cnt) * (percentage / 100));
+      if (pos >= sorted_data.cnt) pos = sorted_data.cnt - 1;
+      value = sorted_data.vals[pos];
+    }
+    printf("        p%.2lf_%s=%.6lf\n", percentage, type, value);
+  }
+  std::cout.flush();
+}
+
+void Profiler::ReportSequentialAverage(size_t bucket_size, std::ostream &out) {
+  size_t total_global_steps = RunConfig::num_epoch * RunConfig::num_global_step_per_epoch;
+  size_t num_items = static_cast<size_t>(kNumLogStepItems);
+  auto BSTART = [bucket_size] (size_t bucket_num) {
+    return RunConfig::num_global_step_per_epoch + bucket_num * bucket_size;}; // skip first epoch
+  for (size_t b = 0; BSTART(b) < total_global_steps; b++) {
+    for (size_t i = 0; i < num_items; i++) {
+      double sum = 0;
+      size_t cnt = 0;
+      for (size_t current_key = BSTART(b); current_key < std::min(BSTART(b+1), total_global_steps); current_key++) {
+        if (_step_data[i].bitmap[current_key] == false) continue;
+        sum += _step_data[i].vals[current_key];
+        cnt ++;
+      }
+      if (cnt <= 1) {
+        _step_buf[i] = 0;
+        continue;
+      }
+      if (cnt == 0) {
+        CHECK_LE(std::abs(sum), 1e-8) << " sum is " << sum;
+        cnt = 1;
+      }
+      _step_buf[i] = sum / cnt;
+    }
+    OutputStep(total_global_steps - 1, "Sequence " + std::to_string(b) + "(Average)", out);
+  }
+}
+
 void Profiler::ReportEpoch(uint64_t epoch) {
   size_t num_items = static_cast<size_t>(kNumLogEpochItems);
   for (size_t i = 0; i < num_items; i++) {
@@ -453,11 +539,12 @@ void Profiler::DumpTrace(std::ostream &of) {
 //   return inst;
 // }
 
-void Profiler::OutputStep(uint64_t key, std::string type) {
+void Profiler::OutputStep(uint64_t key, std::string type, std::ostream &out) {
   uint32_t epoch = RunConfig::GetEpochFromKey(key);
   uint32_t step = RunConfig::GetStepFromKey(key);
 
   std::string env_level = GetEnv(Constant::kEnvProfileLevel);
+  char output_buffer[1024];
 
   int level = 0;
   if (env_level == "1") {
@@ -487,7 +574,8 @@ void Profiler::OutputStep(uint64_t key, std::string type) {
         ToReadableSize(_step_buf[kLogL1GraphBytes]).c_str(),
         _step_buf[kLogL1NumNode],_step_buf[kLogL1NumSample]);
   } else */ if (level >= 1 && RunConfig::UseDynamicGPUCache()) {
-    printf(
+    memset(output_buffer, 0, 1024); 
+    sprintf(output_buffer,
         "    [%s Profiler Level 1 E%u S%u]\n"
         "        L1  sample         %10.6lf | send         %10.6lf\n"
         "        L1  recv           %10.6lf | copy         %10.6lf | "
@@ -510,8 +598,10 @@ void Profiler::OutputStep(uint64_t key, std::string type) {
         _step_buf[kLogL1NumNode],
         ToPercentage(_step_buf[kLogL1NumNode] / RunConfig::num_total_item).c_str(),
         _step_buf[kLogL1PrefetchAdvanced], _step_buf[kLogL1GetNeighbourTime]);
+    out << output_buffer;
   } else if (level >= 1) {
-    printf(
+    memset(output_buffer, 0, 1024); 
+    sprintf(output_buffer,
         "    [%s Profiler Level 1 E%u S%u]\n"
         "        L1  sample         %10.6lf | send         %10.6lf\n"
         "        L1  recv           %10.6lf | copy         %10.6lf | "
@@ -531,6 +621,7 @@ void Profiler::OutputStep(uint64_t key, std::string type) {
         ToReadableSize(_step_buf[kLogL1MissBytes]).c_str(),
         ToReadableSize(_step_buf[kLogL1RemoteBytes]).c_str(),
         _step_buf[kLogL1NumNode],_step_buf[kLogL1NumSample]);
+    out << output_buffer;
   }
 
   /*if (level >= 2 && !RunConfig::UseGPUCache()) {
@@ -546,7 +637,8 @@ void Profiler::OutputStep(uint64_t key, std::string type) {
         _step_buf[kLogL2ExtractTime], _step_buf[kLogL2FeatCopyTime],
         _step_buf[kLogL2LastLayerTime], _step_buf[kLogL2LastLayerSize]);
   } else */if (level >= 2) {
-    printf(
+    memset(output_buffer, 0, 1024); 
+    sprintf(output_buffer,
         "    [%s Profiler Level 2 E%u S%u]\n"
         "        L2  shuffle     %.6lf | core sample  %.6lf | "
         "id remap        %.6lf\n"
@@ -558,6 +650,7 @@ void Profiler::OutputStep(uint64_t key, std::string type) {
         _step_buf[kLogL2GraphCopyTime], _step_buf[kLogL2IdCopyTime],
         _step_buf[kLogL2CacheCopyTime],
         _step_buf[kLogL2LastLayerTime], _step_buf[kLogL2LastLayerSize]);
+    out << output_buffer;
   }
 
   /*if (level >= 3 && !RunConfig::UseGPUCache()) {
@@ -589,7 +682,8 @@ void Profiler::OutputStep(uint64_t key, std::string type) {
         _step_buf[kLogL3RemapPopulateTime], _step_buf[kLogL3RemapMapNodeTime],
         _step_buf[kLogL3RemapMapEdgeTime]);
   } else */if (level >= 3) {
-    printf(
+    memset(output_buffer, 0, 1024); 
+    sprintf(output_buffer,
         "    [%s Profiler Level 3 E%u S%u]\n"
         "        L3  khop sample coo  %.6lf | khop sort coo      %.6lf | "
         "khop count edge     %.6lf | khop compact edge %.6lf\n"
@@ -628,6 +722,21 @@ void Profiler::OutputStep(uint64_t key, std::string type) {
         _step_buf[kLogL3CacheCombineCacheTime],
         _step_buf[kLogL3CacheCombineRemoteTime],
         _step_buf[kLogL3LabelExtractTime]);
+    out << output_buffer;
+  }
+
+  if (_hps_cache_ratios.size() == 4) {
+    memset(output_buffer, 0, 1024); 
+    sprintf(output_buffer,
+        "    [%s Profiler Level 4 E%u S%u]\n"
+        "        L4  cache intersect ratio %.6lf | cache hit ratio %.6lf\n"
+        "        L4  cache hit overlap ratio %.6lf | cache miss overlap ratio %.6lf\n",
+        type.c_str(), epoch, step, 
+        _hps_cache_ratios[0],
+        _hps_cache_ratios[1],
+        _hps_cache_ratios[2],
+        _hps_cache_ratios[3]);
+    out << output_buffer;
   }
 }
 

@@ -151,6 +151,16 @@ TensorPtr Tensor::OpenShm(std::string shm_path, DataType dtype,
   return tensor;
 }
 
+TensorPtr Tensor::CreateShm(const char* shm_path, DataType dtype,
+                          std::vector<size_t> shape, const char* name) {
+  return CreateShm(std::string(shm_path), dtype, shape, std::string(name));
+}
+
+TensorPtr Tensor::OpenShm(const char* shm_path, DataType dtype,
+                          std::vector<size_t> shape, const char* name) {
+  return OpenShm(std::string(shm_path), dtype, shape, std::string(name));
+}
+
 TensorPtr Tensor::FromMmap(std::string filepath, DataType dtype,
                            std::vector<size_t> shape, Context ctx,
                            std::string name, StreamHandle stream) {
@@ -215,6 +225,9 @@ TensorPtr Tensor::FromMmap(std::string filepath, DataType dtype,
 
   return tensor;
 }
+
+TensorPtr Tensor::Empty(DataType dtype, std::vector<size_t> shape, Context ctx,
+                        const char* name) {return Tensor::Empty(dtype, shape, ctx, std::string(name));}
 
 TensorPtr Tensor::Empty(DataType dtype, std::vector<size_t> shape, Context ctx,
                         std::string name) {
@@ -312,6 +325,9 @@ TensorPtr Tensor::CopyBlob(const void * data, DataType dtype,
   return tensor;
 }
 
+TensorPtr Tensor::EmptyExternal(DataType dtype, std::vector<size_t> shape, const std::function<MemHandle(size_t)> & allocator, Context ctx, const char* name) {
+  return EmptyExternal(dtype, shape, allocator, ctx, std::string(name));
+}
 TensorPtr Tensor::EmptyExternal(DataType dtype, std::vector<size_t> shape, const std::function<MemHandle(size_t)> & allocator, Context ctx, std::string name) {
   CHECK_GT(shape.size(), 0);
 
@@ -409,6 +425,7 @@ template Id64Type* Tensor::Ptr<Id64Type>();
 template char* Tensor::Ptr<char>();
 template uint8_t* Tensor::Ptr<uint8_t>();
 template int* Tensor::Ptr<int>();
+template long long* Tensor::Ptr<long long>();
 
 std::ostream& operator<<(std::ostream& os, const Context& ctx) {
   switch (ctx.device_type)

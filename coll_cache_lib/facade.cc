@@ -259,6 +259,8 @@ void CollCache::report_last_epoch(uint64_t epoch) {
 }
 void CollCache::report_avg() {
   _profiler->ReportStepAverage(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1);
+  _profiler->ReportStepItemPercentiles(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1,
+        kLogL2CacheCopyTime, {50, 90, 95, 99, 99.9}, "tail_logl2featcopy");
   // // _profiler->ReportStepMax(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1);
   // // _profiler->ReportStepMin(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1);
   // for (size_t epoch = 1; epoch < RunConfig::num_epoch; epoch ++) {
