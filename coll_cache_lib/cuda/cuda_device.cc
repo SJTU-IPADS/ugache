@@ -39,7 +39,7 @@ void GPUDevice::SetDevice(Context ctx) {
 }
 
 void *GPUDevice::AllocDataSpace(Context ctx, size_t nbytes, size_t alignment) {
-  // LOG(FATAL) << "no standalone allocation of cache space is allowed";
+  LOG(FATAL) << "no standalone allocation of cache space is allowed";
   void *ret = nullptr;
   CHECK_EQ(256 % alignment, 0U);
   CUDA_CALL(cudaSetDevice(ctx.device_id));
@@ -57,7 +57,7 @@ void *GPUDevice::AllocDataSpace(Context ctx, size_t nbytes, size_t alignment) {
 }
 
 void GPUDevice::FreeDataSpace(Context ctx, void *ptr) {
-  // LOG(FATAL) << "no standalone allocation of cache space is allowed";
+  LOG(FATAL) << "no standalone allocation of cache space is allowed";
   CUDA_CALL(cudaSetDevice(ctx.device_id));
   CUDA_CALL(cudaFree(ptr));
   /** data space is only allocated during init phase
