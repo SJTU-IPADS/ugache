@@ -325,6 +325,9 @@ TensorPtr Tensor::CopyBlob(const void * data, DataType dtype,
   return tensor;
 }
 
+TensorPtr Tensor::EmptyExternal(DataType dtype, std::vector<size_t> shape, const std::function<MemHandle(size_t)> & allocator, Context ctx, const char* name) {
+  return EmptyExternal(dtype, shape, allocator, ctx, std::string(name));
+}
 TensorPtr Tensor::EmptyExternal(DataType dtype, std::vector<size_t> shape, const std::function<MemHandle(size_t)> & allocator, Context ctx, std::string name) {
   CHECK_GT(shape.size(), 0);
 
