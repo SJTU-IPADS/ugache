@@ -1107,8 +1107,8 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochFeatureBytes,nbytes);
       _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochMissBytes, nbytes);
     }
-#ifdef DEAD_CODE
   } else if (IsLegacy()) {
+#ifdef DEAD_CODE
     auto trainer_gpu_device = Device::Get(_trainer_ctx);
     auto cpu_device = Device::Get(CPU(CPU_CUDA_HOST_MALLOC_DEVICE));
     SrcKey * src_index = nullptr;
@@ -2501,6 +2501,13 @@ ExtractSession::ExtractSession(std::shared_ptr<CacheContext> cache_ctx) : _cache
   if (cache_ctx->IsDirectMapping()) return;
   auto cpu_ctx = CPU(CPU_CUDA_HOST_MALLOC_DEVICE);
   _group_offset = (IdType*)Device::Get(cpu_ctx)->AllocWorkspace(cpu_ctx, sizeof(IdType) * (_cache_ctx->_num_location + 1));
+  auto log_mem_usage = [](int dev_id, std::string msg){
+    if (dev_id == 0) {
+      size_t free = 0, total = 0;
+      cudaMemGetInfo(&free, &total);
+      LOG(WARNING) << msg << ToReadableSize(total - free);
+    }
+  };
   // _cache_ctx->ctx_injector_ = [](){};
   if (RunConfig::concurrent_link_impl == common::kMPS) {
     this->_extract_threads.resize(_cache_ctx->_num_location);
@@ -2558,25 +2565,17 @@ ExtractSession::ExtractSession(std::shared_ptr<CacheContext> cache_ctx) : _cache
     auto & link_desc = RunConfig::coll_cache_link_desc;
     auto & link_src = link_desc.link_src[cache_ctx->_local_location_id];
 
-    auto stream_creation_lambda = [gpu_ctx, this](int src_location_id){
+    auto stream_creation_lambda = [gpu_ctx, this, log_mem_usage](int src_location_id){
       auto ext_ctx_ptr = std::make_shared<ExtractionThreadCtx>();
       this->_extract_ctx[src_location_id] = ext_ctx_ptr;
       this->_extract_threads[src_location_id] = std::thread([ext_ctx_ptr](){
         ext_ctx_ptr->thread_func();
       });
-      ext_ctx_ptr->forward_one_step([ext_ctx_ptr, dev_id=gpu_ctx.device_id](cudaStream_t s){
+      ext_ctx_ptr->forward_one_step([ext_ctx_ptr, dev_id=gpu_ctx.device_id, log_mem_usage](cudaStream_t s){
         CUDA_CALL(cudaSetDevice(dev_id));
-        if (dev_id == 0) {
-          size_t free = 0, total = 0;
-          cudaMemGetInfo(&free, &total);
-          LOG(WARNING) << "before create stream, mem is " << ToReadableSize(total - free);
-        }
+        log_mem_usage(dev_id, "before create stream, mem is ");
         CUDA_CALL(cudaStreamCreate(&ext_ctx_ptr->stream_));
-        if (dev_id == 0) {
-          size_t free = 0, total = 0;
-          cudaMemGetInfo(&free, &total);
-          LOG(WARNING) << "after create stream, mem is " << ToReadableSize(total - free);
-        }
+        log_mem_usage(dev_id, "after create stream, mem is ");
       });
       ext_ctx_ptr->wait_one_step();
     };
@@ -2596,54 +2595,34 @@ ExtractSession::ExtractSession(std::shared_ptr<CacheContext> cache_ctx) : _cache
     auto & link_src = link_desc.link_src[cache_ctx->_local_location_id];
 
 
-    auto ctx_creation_lambda = [gpu_ctx, this](int num_sm, int src_location_id){
+    auto ctx_creation_lambda = [gpu_ctx, this, log_mem_usage](int num_sm, int src_location_id){
       auto ext_ctx_ptr = std::make_shared<ExtractionThreadCtx>();
       this->_extract_ctx[src_location_id] = ext_ctx_ptr;
       this->_extract_threads[src_location_id] = std::thread([ext_ctx_ptr](){
         ext_ctx_ptr->thread_func();
       });
-      ext_ctx_ptr->forward_one_step([ext_ctx_ptr, dev_id=gpu_ctx.device_id, num_sm](cudaStream_t s){
-        if (dev_id == 0) {
-          size_t free = 0, total = 0;
-          cudaMemGetInfo(&free, &total);
-          LOG(WARNING) << "before create ctx, mem is " << ToReadableSize(total - free);
-        }
+      ext_ctx_ptr->forward_one_step([ext_ctx_ptr, dev_id=gpu_ctx.device_id, num_sm, log_mem_usage](cudaStream_t s){
+        log_mem_usage(dev_id, "before create ctx, mem is ");
         ext_ctx_ptr->cu_ctx_ = cuda::create_ctx_with_sm_count(dev_id, num_sm);
-        if (dev_id == 0) {
-          size_t free = 0, total = 0;
-          cudaMemGetInfo(&free, &total);
-          LOG(WARNING) << "after create ctx, mem is " << ToReadableSize(total - free);
-        }
+        log_mem_usage(dev_id, "after create ctx, mem is ");
         check_current_ctx_is(ext_ctx_ptr->cu_ctx_);
         CUDA_CALL(cudaStreamCreate(&ext_ctx_ptr->stream_));
-        if (dev_id == 0) {
-          size_t free = 0, total = 0;
-          cudaMemGetInfo(&free, &total);
-          LOG(WARNING) << "after create stream, mem is " << ToReadableSize(total - free);
-        }
+        log_mem_usage(dev_id, "after create stream, mem is ");
       });
       ext_ctx_ptr->wait_one_step();
     };
 
-    auto stream_creation_lambda = [gpu_ctx, this](int src_location_id){
+    auto stream_creation_lambda = [gpu_ctx, this, log_mem_usage](int src_location_id){
       auto ext_ctx_ptr = std::make_shared<ExtractionThreadCtx>();
       this->_extract_ctx[src_location_id] = ext_ctx_ptr;
       this->_extract_threads[src_location_id] = std::thread([ext_ctx_ptr](){
         ext_ctx_ptr->thread_func();
       });
-      ext_ctx_ptr->forward_one_step([ext_ctx_ptr, dev_id=gpu_ctx.device_id](cudaStream_t s){
+      ext_ctx_ptr->forward_one_step([ext_ctx_ptr, dev_id=gpu_ctx.device_id, log_mem_usage](cudaStream_t s){
         CUDA_CALL(cudaSetDevice(dev_id));
-        if (dev_id == 0) {
-          size_t free = 0, total = 0;
-          cudaMemGetInfo(&free, &total);
-          LOG(WARNING) << "before create stream, mem is " << ToReadableSize(total - free);
-        }
+        log_mem_usage(dev_id, "before create stream, mem is ");
         CUDA_CALL(cudaStreamCreate(&ext_ctx_ptr->stream_));
-        if (dev_id == 0) {
-          size_t free = 0, total = 0;
-          cudaMemGetInfo(&free, &total);
-          LOG(WARNING) << "after create stream, mem is " << ToReadableSize(total - free);
-        }
+        log_mem_usage(dev_id, "after create stream, mem is ");
       });
       ext_ctx_ptr->wait_one_step();
     };
@@ -2663,7 +2642,7 @@ ExtractSession::ExtractSession(std::shared_ptr<CacheContext> cache_ctx) : _cache
     auto & link_desc = RunConfig::coll_cache_link_desc;
     auto & link_src = link_desc.link_src[cache_ctx->_local_location_id];
 
-    auto ctx_creation_lambda = [gpu_ctx, this](int num_sm, int src_location_id, AtomicBarrier* bar){
+    auto ctx_creation_lambda = [gpu_ctx, this, log_mem_usage](int num_sm, int src_location_id, AtomicBarrier* bar){
       auto ext_ctx_ptr = std::make_shared<ExtractionThreadCtx>();
       this->_extract_ctx[src_location_id] = ext_ctx_ptr;
       if (bar) {
@@ -2676,25 +2655,13 @@ ExtractSession::ExtractSession(std::shared_ptr<CacheContext> cache_ctx) : _cache
           ext_ctx_ptr->thread_func();
         });
       }
-      ext_ctx_ptr->set_func([ext_ctx_ptr, dev_id=gpu_ctx.device_id, num_sm](cudaStream_t s){
-        if (dev_id == 0) {
-          size_t free = 0, total = 0;
-          cudaMemGetInfo(&free, &total);
-          LOG(WARNING) << "before create ctx, mem is " << ToReadableSize(total - free);
-        }
+      ext_ctx_ptr->set_func([ext_ctx_ptr, dev_id=gpu_ctx.device_id, num_sm, log_mem_usage](cudaStream_t s){
+        log_mem_usage(dev_id, "before create ctx, mem is ");
         ext_ctx_ptr->cu_ctx_ = cuda::create_ctx_with_sm_count(dev_id, num_sm);
-        if (dev_id == 0) {
-          size_t free = 0, total = 0;
-          cudaMemGetInfo(&free, &total);
-          LOG(WARNING) << "after create ctx, mem is " << ToReadableSize(total - free);
-        }
+        log_mem_usage(dev_id, "after create ctx, mem is ");
         check_current_ctx_is(ext_ctx_ptr->cu_ctx_);
         CUDA_CALL(cudaStreamCreateWithPriority(&ext_ctx_ptr->stream_, cudaStreamNonBlocking, -5));
-        if (dev_id == 0) {
-          size_t free = 0, total = 0;
-          cudaMemGetInfo(&free, &total);
-          LOG(WARNING) << "after create stream, mem is " << ToReadableSize(total - free);
-        }
+        log_mem_usage(dev_id, "after create stream, mem is ");
       });
       if (bar == nullptr) {
         ext_ctx_ptr->todo_steps.fetch_add(1);
@@ -2702,25 +2669,17 @@ ExtractSession::ExtractSession(std::shared_ptr<CacheContext> cache_ctx) : _cache
       }
     };
 
-    auto stream_creation_lambda = [gpu_ctx, this](int src_location_id){
+    auto stream_creation_lambda = [gpu_ctx, this, log_mem_usage](int src_location_id){
       auto ext_ctx_ptr = std::make_shared<ExtractionThreadCtx>();
       this->_extract_ctx[src_location_id] = ext_ctx_ptr;
       this->_extract_threads[src_location_id] = std::thread([ext_ctx_ptr](){
         ext_ctx_ptr->thread_func();
       });
-      ext_ctx_ptr->forward_one_step([ext_ctx_ptr, dev_id=gpu_ctx.device_id](cudaStream_t s){
+      ext_ctx_ptr->forward_one_step([ext_ctx_ptr, dev_id=gpu_ctx.device_id, log_mem_usage](cudaStream_t s){
         CUDA_CALL(cudaSetDevice(dev_id));
-        if (dev_id == 0) {
-          size_t free = 0, total = 0;
-          cudaMemGetInfo(&free, &total);
-          LOG(WARNING) << "before create stream, mem is " << ToReadableSize(total - free);
-        }
+        log_mem_usage(dev_id, "before create stream, mem is ");
         CUDA_CALL(cudaStreamCreate(&ext_ctx_ptr->stream_));
-        if (dev_id == 0) {
-          size_t free = 0, total = 0;
-          cudaMemGetInfo(&free, &total);
-          LOG(WARNING) << "after create stream, mem is " << ToReadableSize(total - free);
-        }
+        log_mem_usage(dev_id, "after create stream, mem is ");
       });
       ext_ctx_ptr->wait_one_step();
     };
