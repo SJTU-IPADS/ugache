@@ -219,8 +219,6 @@ class ExtractSession {
  public:
   void ExtractFeat(const IdType* nodes, const size_t num_nodes, void* output, StreamHandle stream, uint64_t task_key);
   inline constexpr bool IsLegacy() { return false; }
-
-  inline constexpr bool IsLegacy() { return false; }
 };
 
 class RefreshSession {
