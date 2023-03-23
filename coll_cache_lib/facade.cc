@@ -75,7 +75,7 @@ void CollCache::solve_impl_master(IdType *ranking_nodes_list_ptr,
     auto ranking_nodes_freq_list = Tensor::FromBlob(
         ranking_nodes_freq_list_ptr, coll_cache::get_data_type<IdType>(),
         {1, num_node}, CPU(CPU_FOREIGN), "ranking_nodes_freq_list");
-
+    LOG(ERROR) << "creating solver";
     coll_cache::CollCacheSolver *solver = nullptr;
     switch (RunConfig::cache_policy) {
     case kRepCache: {
@@ -116,7 +116,7 @@ void CollCache::solve_impl_master(IdType *ranking_nodes_list_ptr,
     }
 
     LOG(ERROR) << "solver created. now build & solve";
-    _nid_to_block = Tensor::CreateShm(Constant::kCollCacheNIdToBlockShmName,
+    _nid_to_block = Tensor::CreateShm(solver->_shm_name_nid_to_block,
                                       kI32, {num_node}, "nid_to_block");
     solver->Build(ranking_nodes_list, ranking_nodes_freq_list,
                   trainer_to_stream, num_node, _nid_to_block);
@@ -131,24 +131,25 @@ void CollCache::solve_impl_master(IdType *ranking_nodes_list_ptr,
     delete solver;
 }
 void CollCache::solve_impl_slave() {
-    _nid_to_block = Tensor::OpenShm(Constant::kCollCacheNIdToBlockShmName, kI32,
+    _nid_to_block = Tensor::OpenShm(coll_cache::CollCacheSolver::_shm_name_nid_to_block, kI32,
                                     {}, "nid_to_block");
-    _block_placement = Tensor::OpenShm(Constant::kCollCachePlacementShmName,
+    _block_placement = Tensor::OpenShm(coll_cache::CollCacheSolver::_shm_name_place,
                                        kU8, {}, "coll_cache_block_placement");
-    if (RunConfig::cache_policy == kCollCacheAsymmLink) {
-      // for refreshment to know about sizes
-      _block_density = Tensor::OpenShm(Constant::kCollCachePlacementShmName + "_density",
-                                        kF64, {}, "coll_cache_block_density");
-    }
+    // if (RunConfig::cache_policy == kCollCacheAsymmLink) {
+    //   // for refreshment to know about sizes
+    // }
     if (RunConfig::cache_policy == kCollCacheAsymmLink ||
+        RunConfig::cache_policy == kRepCache ||
         RunConfig::cache_policy == kCliquePart ||
         RunConfig::cache_policy == kCliquePartByDegree) {
       size_t num_blocks = _block_placement->Shape()[0];
       _block_access_advise = Tensor::OpenShm(
-          Constant::kCollCacheAccessShmName, kU8,
+          coll_cache::CollCacheSolver::_shm_name_access, kU8,
           {static_cast<decltype(num_blocks)>(RunConfig::num_device),
            num_blocks},
           "block_access_advise");
+      _block_density = Tensor::OpenShm(coll_cache::CollCacheSolver::_shm_name_dens,
+                                        kF64, {}, "coll_cache_block_density");
     }
 }
 
@@ -190,6 +191,8 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
     this->_cache_ctx_list.resize(RunConfig::num_device);
     this->_session_list.resize(RunConfig::num_device);
     this->_refresh_session_list.resize(RunConfig::num_device);
+    RunConfig::solver_omp_thread_num = RunConfig::omp_thread_num;
+    RunConfig::solver_omp_thread_num_per_gpu = RunConfig::omp_thread_num / RunConfig::num_device;
   }
   bool need_solver = (cache_percentage != 0 && cache_percentage != 1);
   if (replica_id == 0 && need_solver) {
@@ -215,19 +218,38 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
   this->_refresh_session_list[replica_id]->_cache_ctx = cache_ctx;
   this->_refresh_session_list[replica_id]->stream = stream;
   this->_replica_barrier->Wait();
+  RunConfig::solver_omp_thread_num = RunConfig::refresher_omp_thread_num;
+  RunConfig::solver_omp_thread_num_per_gpu = RunConfig::refresher_omp_thread_num_per_gpu;
 }
 
 void CollCache::refresh(int replica_id, IdType *ranking_nodes_list_ptr,
-                         IdType *ranking_nodes_freq_list_ptr, StreamHandle stream) {
+                         IdType *ranking_nodes_freq_list_ptr, StreamHandle stream, bool foreground) {
+  AnonymousBarrier::_refresh_instance->Wait();
   int device_id = RunConfig::device_id_list[replica_id];
   if (RunConfig::cross_process || replica_id == 0) {
+    if (replica_id == 0) LOG(ERROR) << "Preserving old solution";
     // one-time call for each process
+
+
+    coll_cache::CollCacheSolver::_shm_name_nid_to_block.swap(coll_cache::CollCacheSolver::_shm_name_alter_nid_to_block);
+    coll_cache::CollCacheSolver::_shm_name_access.swap(coll_cache::CollCacheSolver::_shm_name_alter_access);
+    coll_cache::CollCacheSolver::_shm_name_place.swap(coll_cache::CollCacheSolver::_shm_name_alter_place);
+    coll_cache::CollCacheSolver::_shm_name_dens.swap(coll_cache::CollCacheSolver::_shm_name_alter_dens);
+
+    this->_old_block_access_advise = this->_block_access_advise;
+    this->_old_block_density       = this->_block_density;
+    this->_old_block_placement     = this->_block_placement;
+    this->_old_nid_to_block        = this->_nid_to_block;
+
     this->_block_access_advise = nullptr;
     this->_block_density = nullptr;
     this->_block_placement = nullptr;
     this->_nid_to_block = nullptr;
   }
+  AnonymousBarrier::_refresh_instance->Wait();
   if (replica_id == 0) {
+    if (replica_id == 0) LOG(ERROR) << "old solution preserved, now solve";
+    // RunConfig::solver_omp_thread_num = RunConfig::refresher_omp_thread_num;
     solve_impl_master(ranking_nodes_list_ptr, ranking_nodes_freq_list_ptr, RunConfig::num_total_item);
     LOG(ERROR) << replica_id << " solved master";
   }
@@ -240,9 +262,10 @@ void CollCache::refresh(int replica_id, IdType *ranking_nodes_list_ptr,
   AnonymousBarrier::_refresh_instance->Wait();
 
   // if (RunConfig::cross_process) return;
-  LOG(ERROR) << "worker " << RunConfig::worker_id << " thread " << replica_id << " refresh device " << device_id;
+  // LOG(ERROR) << "worker " << RunConfig::worker_id << " thread " << replica_id << " refresh device " << device_id;
   this->_refresh_session_list[replica_id]->stream = stream;
-  this->_refresh_session_list[replica_id]->refresh_after_solve();
+  // this->_refresh_session_list[replica_id]->refresh_after_solve(foreground);
+  this->_refresh_session_list[replica_id]->refresh_after_solve_main(foreground);
   AnonymousBarrier::_refresh_instance->Wait();
 }
 

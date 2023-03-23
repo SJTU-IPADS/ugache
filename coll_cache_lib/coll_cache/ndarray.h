@@ -135,11 +135,14 @@ template<> inline DataType get_data_type<uint8_t>() {return kU8;}
 template<typename T>
 struct TensorView {
   const size_t* _shape;
-  uint32_t* _len_of_each_dim;
-  uint32_t _num_shape;
+  const size_t* _len_of_each_dim;
+  size_t _num_shape;
   T* _data;
-  std::vector<uint32_t> _len_of_each_dim_storage;
-  std::vector<size_t> _shape_storage;
+  // std::shared_ptr<std::vector<size_t>> _len_of_each_dim_storage;
+  // std::shared_ptr<std::vector<size_t>> _shape_storage;
+
+  std::vector<size_t> __len_of_each_dim_storage;
+  std::vector<size_t> __shape_storage;
   TensorView() {}
   TensorView(TensorPtr tensor) {
     rebuild(tensor);
@@ -154,38 +157,34 @@ struct TensorView {
     // }
     // _len_of_each_dim = _len_of_each_dim_storage.data();
   }
-  TensorView(T* raw_data, std::vector<size_t> shape) {
-    rebuild(raw_data, shape);
-  }
+  // TensorView(T* raw_data, std::vector<size_t> shape) {
+  //   rebuild(raw_data, shape);
+  // }
   TensorView(const TensorView<T> & view, const uint32_t first_idx) {
     _data = view._data + first_idx * view._len_of_each_dim[0];
     _shape = view._shape + 1;
     _len_of_each_dim = view._len_of_each_dim + 1;
     _num_shape = view._num_shape - 1;
+    // _len_of_each_dim_storage = view._len_of_each_dim_storage;
+    // _shape_storage = view._shape_storage;
   }
-  void rebuild(T* raw_data, std::vector<size_t> shape) {
+  void rebuild(T* raw_data, const std::vector<size_t> &shape, const std::vector<size_t> &len_of_each_dim) {
     _data = raw_data;
-    _shape_storage = shape;
-    _shape =  _shape_storage.data();
-    _num_shape = _shape_storage.size();
-    _len_of_each_dim_storage.resize(_num_shape);
-    _len_of_each_dim_storage.back() = 1;
+    __shape_storage = shape;
+    _shape =  shape.data();
+    _num_shape = __shape_storage.size();
+    __len_of_each_dim_storage.resize(_num_shape);
+    __len_of_each_dim_storage.back() = 1;
     for (int i = _num_shape - 1; i > 0; i--) {
-      _len_of_each_dim_storage[i - 1] = _len_of_each_dim_storage[i] * _shape[i];
+      __len_of_each_dim_storage[i - 1] = __len_of_each_dim_storage[i] * _shape[i];
     }
-    _len_of_each_dim = _len_of_each_dim_storage.data();
+    _len_of_each_dim = len_of_each_dim.data();
   }
   void rebuild(TensorPtr tensor) {
     CHECK(sizeof(T) == GetDataTypeBytes(tensor->Type()));
-    _data = reinterpret_cast<T*>(tensor->MutableData());
-    _shape =  tensor->Shape().data();
-    _num_shape = tensor->Shape().size();
-    _len_of_each_dim_storage.resize(_num_shape);
-    _len_of_each_dim_storage.back() = 1;
-    for (int i = _num_shape - 1; i > 0; i--) {
-      _len_of_each_dim_storage[i - 1] = _len_of_each_dim_storage[i] * _shape[i];
-    }
-    _len_of_each_dim = _len_of_each_dim_storage.data();
+    rebuild(tensor->Ptr<T>(), tensor->Shape(), tensor->LenOfEachShape());
+    CHECK(tensor->LenOfEachShape() == (this->__len_of_each_dim_storage));
+    CHECK(tensor->Shape() == (this->__shape_storage));
   }
   TensorView<T> operator[](const uint32_t idx) {
     CHECK(idx < _shape[0]);
@@ -211,6 +210,8 @@ struct TensorView {
   template<typename IDX_T>
   TensorView<T> _sub_array(const IDX_T * const idx_array, const uint32_t num_idx) {
     TensorView<T> ret;
+    // ret._len_of_each_dim_storage = this->_len_of_each_dim_storage;
+    // ret._shape_storage   = this->_shape_storage;
     ret._shape           = this->_shape + num_idx;
     ret._len_of_each_dim = this->_len_of_each_dim + num_idx;
     ret._num_shape       = this->_num_shape - num_idx;

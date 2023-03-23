@@ -39,6 +39,7 @@ class FreqRecorder {
   // void Combine(FreqRecorder* other);
   // void Combine(int other_local_id);
   void Combine();
+  inline size_t NumNodes() const { return _num_nodes; }
  private:
   Id64Type * freq_table;
   Id64Type * global_freq_table_ptr;

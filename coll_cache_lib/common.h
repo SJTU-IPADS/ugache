@@ -31,6 +31,8 @@
 // #include "logging.h"
 #include "constant.h"
 
+// #define COLL_HASH_VALID_LEGACY
+
 namespace coll_cache_lib {
 namespace common {
 
@@ -166,7 +168,8 @@ class AnonymousBarrier : public ExternalBarrierHandler {
 };
 
 size_t GetDataTypeBytes(DataType dtype);
-class Tensor {
+size_t GetTensorBytes(DataType dtype, const std::vector<size_t> shape);
+class Tensor : public std::enable_shared_from_this<Tensor> {
  public:
   Tensor();
   ~Tensor();
@@ -175,8 +178,9 @@ class Tensor {
   bool Defined() const { return _data; }
   DataType Type() const { return _dtype; }
   const std::vector<size_t>& Shape() const { return _shape; }
+  const std::vector<size_t>& LenOfEachShape() const { return _len_of_each_dim; }
   const void* Data() const { return _data; }
-  template<typename T> T* Ptr();
+  template<typename T> T* Ptr() { check_elem_size(sizeof(T)); return static_cast<T*>(_data); }
   template<typename T> const T* CPtr() const { return const_cast<Tensor*>(this)->Ptr<T>(); }
   void* MutableData() { return _data; }
   void ReplaceData(void* data);
@@ -184,6 +188,10 @@ class Tensor {
   size_t NumBytes() const { return _nbytes; }
   Context Ctx() const { return _ctx; }
   inline size_t NumItem() const { return std::accumulate(_shape.begin(), _shape.end(), 1ul, std::multiplies<size_t>()); }
+  bool CanForceScale(DataType dt, std::vector<size_t> shape) {
+    return GetTensorBytes(dt, shape) <= _external_mem_hanlder->nbytes();
+  }
+  void ForceScale(DataType dt, std::vector<size_t> shape, Context ctx, std::string name);
   void ReShape(std::vector<size_t> new_shape);
 
   static TensorPtr Null();
@@ -229,17 +237,35 @@ class Tensor {
                             std::vector<size_t> shape, Context from_ctx,
                             Context to_ctx, std::string name, StreamHandle stream = nullptr);
 
+  inline TensorPtr CopyToExternal(const std::function<MemHandle(size_t)> & allocator, Context ctx, StreamHandle stream = nullptr, double scale = Constant::kAllocScale) {
+    return Tensor::CopyToExternal(this->shared_from_this(), allocator, ctx, stream, scale);
+  }
+  inline TensorPtr CopyTo(Context ctx, StreamHandle stream, std::string name, double scale = Constant::kAllocScale) {
+    return Tensor::CopyTo(shared_from_this(), ctx, stream, name, scale);
+  }
+
  private:
   void* _data;
   DataType _dtype;
   Context _ctx;
 
+  void BuildLenOfEachShape() {
+    auto _num_shape = _shape.size();
+    _len_of_each_dim.resize(_num_shape);
+    _len_of_each_dim.back() = 1;
+    for (int i = _num_shape - 1; i > 0; i--) {
+      _len_of_each_dim[i - 1] = _len_of_each_dim[i] * _shape[i];
+    }
+  }
+
   size_t _nbytes;
   std::vector<size_t> _shape;
+  std::vector<size_t> _len_of_each_dim;
 
   std::string _name;
 
   MemHandle _external_mem_hanlder;
+  void check_elem_size(size_t nbyte);
 };
 
 

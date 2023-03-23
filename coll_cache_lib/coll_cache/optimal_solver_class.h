@@ -50,6 +50,17 @@ class CollCacheSolver {
   TensorPtr block_freq_tensor;
   TensorPtr block_placement;
   TensorPtr block_access_from;
+
+  static std::string _shm_name_nid_to_block ; // = Constant::kCollCacheNIdToBlockShmName;
+  static std::string _shm_name_access       ; // = Constant::kCollCacheAccessShmName;
+  static std::string _shm_name_place        ; // = Constant::kCollCachePlacementShmName;
+  static std::string _shm_name_dens         ; // = Constant::kCollCachePlacementShmName + "_density";
+
+  static std::string _shm_name_alter_nid_to_block ; // = Constant::kCollCacheNIdToBlockShmName             + "_old";
+  static std::string _shm_name_alter_access       ; // = Constant::kCollCacheAccessShmName                 + "_old";
+  static std::string _shm_name_alter_place        ; // = Constant::kCollCachePlacementShmName              + "_old";
+  static std::string _shm_name_alter_dens         ; // = Constant::kCollCachePlacementShmName + "_density" + "_old";
+
 };
 
 class OptimalSolver : public CollCacheSolver {
@@ -59,6 +70,10 @@ public:
              std::vector<int> device_to_stream,
              const IdType num_node,
              const TensorPtr nid_to_block_tensor) override;
+  void BuildSingleStream(TensorPtr stream_id_list, TensorPtr stream_freq_list,
+             std::vector<int> device_to_stream,
+             const IdType num_node,
+             const TensorPtr nid_to_block_tensor);
   using CollCacheSolver::Solve;
   void Solve(std::vector<int> device_to_stream,
              std::vector<PerT> device_to_cache_percent, std::string mode,
@@ -109,13 +124,16 @@ protected:
     std::atomic_uint32_t _done_node{0};
     std::atomic_uint32_t _total_nodes{0};
     volatile uint32_t max_size_this_block = 0;
+    uint32_t num_slices = 0;
+    uint32_t slice_begin = 0;
 
     void measure_total_node() {
       _total_nodes.fetch_add(1);
     }
     void set_max_size(int num_worker, uint32_t min_boundary) {
       // this->max_size_this_block = std::min<uint32_t>(RoundUpDiv<uint32_t>(_total_nodes, num_worker*2), min_boundary);
-      this->max_size_this_block = std::min<uint32_t>(RoundUpDiv<uint32_t>(_total_nodes, num_worker), min_boundary);
+      // this->max_size_this_block = std::min<uint32_t>(RoundUpDiv<uint32_t>(_total_nodes, num_worker), min_boundary);
+      this->max_size_this_block = min_boundary;
     }
 
     uint32_t add_node(OptimalSolver * solver) {
@@ -148,8 +166,14 @@ protected:
     tbb::atomic<uint32_t> size{0};
     size_t orig_seq_slot;
   };
+  struct full_slot_single_thread {
+    uint32_t remmaped_slot = 0xffffffff;
+    uint32_t size = 0;
+    size_t orig_seq_slot;
+  };
 
   struct concurrent_full_slot_map {
+    #ifdef DEAD_CODE
     const size_t _place_holder = 0xffffffffffffffff;
     std::atomic_uint32_t next_free_slot{0};
     // tbb::concurrent_unordered_map<size_t, volatile size_t> the_map;
@@ -167,6 +191,25 @@ protected:
       }
       rst.first->second.size.fetch_and_increment();
       return rst.first->second.remmaped_slot;
+    }
+    #endif
+    // const size_t _place_holder = 0xffffffffffffffff;
+    std::atomic_uint32_t next_free_slot{0};
+    uint32_t __next_free_slot = 0;
+    std::unordered_map<size_t, full_slot_single_thread> the_map;
+    uint32_t register_bucket(size_t slot_array_seq_id) {
+      auto iter = the_map.find(slot_array_seq_id);
+      if (iter == the_map.end()) {
+        auto val = full_slot_single_thread();
+        val.orig_seq_slot = slot_array_seq_id;
+        val.remmaped_slot = __next_free_slot++;
+        val.size = 1;
+        auto rst = the_map.insert({slot_array_seq_id, val});
+        return val.remmaped_slot;
+      } else {
+        iter->second.size++;
+        return iter->second.remmaped_slot;
+      }
     }
   };
 

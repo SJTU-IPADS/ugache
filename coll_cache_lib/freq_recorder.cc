@@ -56,15 +56,16 @@ FreqRecorder::~FreqRecorder() {
 }
 
 void FreqRecorder::Record(const Id64Type* input, size_t num_inputs){
-  auto cpu_device = Device::Get(CPU());
-  Timer t2;
+  // auto cpu_device = Device::Get(CPU());
+  // Timer t2;
   // #pragma omp parallel for num_threads(RunConfig::omp_thread_num)
+  // #pragma omp parallel for num_threads(10)
   for (size_t i = 0; i < num_inputs; i++) {
-    CHECK(input[i] < _num_nodes);
+    // CHECK(input[i] < _num_nodes);
     auto freq_ptr = reinterpret_cast<IdType*>(&freq_table[input[i]]);
     *(freq_ptr+1) += 1;
   }
-  double count_time = t2.Passed();
+  // double count_time = t2.Passed();
   // Profiler::Get().LogInitAdd(kLogInitL3PresampleSample, sample_time);
   // Profiler::Get().LogInitAdd(kLogInitL3PresampleCopy, copy_time);
   // Profiler::Get().LogInitAdd(kLogInitL3PresampleCount, count_time);
@@ -75,15 +76,15 @@ void FreqRecorder::Record(const Id64Type* input, size_t num_inputs){
 }
 
 void FreqRecorder::Record(const IdType* input, size_t num_inputs){
-  auto cpu_device = Device::Get(CPU());
-  Timer t2;
-  // #pragma omp parallel for num_threads(RunConfig::omp_thread_num)
+  // auto cpu_device = Device::Get(CPU());
+  // Timer t2;
+  // #pragma omp parallel for num_threads(10)
   for (size_t i = 0; i < num_inputs; i++) {
-    CHECK(input[i] < _num_nodes) << input[i] << " greater than " << _num_nodes;
+    // CHECK(input[i] < _num_nodes) << input[i] << " greater than " << _num_nodes;
     auto freq_ptr = reinterpret_cast<IdType*>(&freq_table[input[i]]);
     *(freq_ptr+1) += 1;
   }
-  double count_time = t2.Passed();
+  // double count_time = t2.Passed();
   // Profiler::Get().LogInitAdd(kLogInitL3PresampleSample, sample_time);
   // Profiler::Get().LogInitAdd(kLogInitL3PresampleCopy, copy_time);
   // Profiler::Get().LogInitAdd(kLogInitL3PresampleCount, count_time);
@@ -98,7 +99,7 @@ void FreqRecorder::Sort() {
   Id64Type* aggregate_freq_table = global_freq_table_ptr + RunConfig::num_device * _num_nodes;
 #ifdef __linux__
   __gnu_parallel::sort(aggregate_freq_table, &aggregate_freq_table[_num_nodes],
-                       std::greater<Id64Type>());
+                       std::greater<Id64Type>(), __gnu_parallel::default_parallel_tag(RunConfig::solver_omp_thread_num));
 #else
   std::sort(freq_table, &freq_table[_num_nodes],
             std::greater<Id64Type>());
@@ -120,7 +121,7 @@ TensorPtr FreqRecorder::GetFreq() {
 
 void FreqRecorder::GetFreq(IdType* ranking_freq_ptr) {
   Id64Type* aggregate_freq_table = global_freq_table_ptr + RunConfig::num_device * _num_nodes;
-#pragma omp parallel for num_threads(RunConfig::omp_thread_num)
+#pragma omp parallel for num_threads(RunConfig::solver_omp_thread_num)
   for (size_t i = 0; i < _num_nodes; i++) {
     auto nid_ptr = reinterpret_cast<IdType*>(&aggregate_freq_table[i]);
     ranking_freq_ptr[i] = *(nid_ptr + 1);
@@ -139,7 +140,7 @@ void FreqRecorder::GetRankNode(TensorPtr& ranking_nodes) {
 void FreqRecorder::GetRankNode(IdType* ranking_nodes_ptr) {
   Timer t_prepare_rank;
   Id64Type* aggregate_freq_table = global_freq_table_ptr + RunConfig::num_device * _num_nodes;
-#pragma omp parallel for num_threads(RunConfig::omp_thread_num)
+#pragma omp parallel for num_threads(RunConfig::solver_omp_thread_num)
   for (size_t i = 0; i < _num_nodes; i++) {
     auto nid_ptr = reinterpret_cast<IdType*>(&aggregate_freq_table[i]);
     ranking_nodes_ptr[i] = *(nid_ptr);
@@ -166,8 +167,9 @@ void FreqRecorder::GetRankNode(IdType* ranking_nodes_ptr) {
 //   }
 // }
 void FreqRecorder::Combine() {
+  LOG(ERROR) << "Combining with " << RunConfig::solver_omp_thread_num << " threads";
   Id64Type* aggregate_freq_table = global_freq_table_ptr + RunConfig::num_device * _num_nodes;
-  #pragma omp parallel for num_threads(RunConfig::omp_thread_num)
+  #pragma omp parallel for num_threads(RunConfig::solver_omp_thread_num)
   for (size_t i = 0; i < _num_nodes; i++) {
     auto nid_ptr = reinterpret_cast<IdType*>(&aggregate_freq_table[i]);
     *nid_ptr = i;
@@ -176,7 +178,7 @@ void FreqRecorder::Combine() {
 
   for (int other_local_id = 0; other_local_id < RunConfig::num_device; other_local_id++) {
     Id64Type* other_freq_table = global_freq_table_ptr + other_local_id * _num_nodes;
-    #pragma omp parallel for num_threads(RunConfig::omp_thread_num)
+    #pragma omp parallel for num_threads(RunConfig::solver_omp_thread_num)
     for (size_t i = 0; i < _num_nodes; i++) {
       auto agg_nid_ptr = reinterpret_cast<IdType*>(&aggregate_freq_table[i]);
       auto other_nid_ptr = reinterpret_cast<IdType*>(&other_freq_table[i]);

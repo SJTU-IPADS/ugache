@@ -9,6 +9,7 @@
 // #include "facade.h"
 // #include "timer.h"
 // #include "atomic_barrier.h"
+#include "cuda/cache_hashtable.h"
 #include <atomic>
 #include <mutex>
 #include <condition_variable>
@@ -99,14 +100,21 @@ class CacheContext {
   size_t _cache_space_capacity = 0;
 
   // HashTableEntry* _hash_table = nullptr;
+#ifdef COLL_HASH_VALID_LEGACY
   HashTableEntryLocation* _hash_table_location = nullptr;
   HashTableEntryOffset* _hash_table_offset = nullptr;
   MemHandle _hash_table_location_handle;
   MemHandle _hash_table_offset_handle;
+#endif
   std::vector<void*> _device_cache_data;
   MemHandle _device_cache_data_local_handle;
+  std::vector<BucketO2N*> _remote_hash_table;
+  CacheEntryManager* _new_hash_table;
+#ifdef COLL_HASH_VALID_LEGACY
   std::vector<HashTableEntryLocation*> _remote_hash_table_location;
   std::vector<HashTableEntryOffset*> _remote_hash_table_offset;
+#endif
+  std::vector<CacheEntryManager*> _remote_new_hash_table;
   size_t * d_num_selected_out = nullptr;
 
   // MemHandle _local_node_list_handle;
@@ -121,18 +129,26 @@ class CacheContext {
   friend class ExtractSession;
   friend class RefreshSession;
   inline bool IsDirectMapping() {
-    return _hash_table_location == nullptr;
+    // return _hash_table_location == nullptr;
+    return _new_hash_table == nullptr;
     // if (_hash_table_location == nullptr) {
     //   CHECK(_num_location == 1);
     //   return true;
     // }
     // return false;
   }
+#ifdef COLL_HASH_VALID_LEGACY
+  void compare_hashtable(StreamHandle stream);
+#endif
 
   void build_no_cache(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, StreamHandle stream = nullptr);
   void build_full_cache(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, size_t num_total_nodes, StreamHandle stream = nullptr);
+
+#ifdef COLL_HASH_VALID_LEGACY
   void build_without_advise(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream = nullptr);
   void build_with_advise(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream = nullptr);
+#endif
+  void build_with_advise_new_hash(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream = nullptr);
  public:
   CacheContext(BarHandle barrier) : _barrier(barrier) {}
   void build(std::function<MemHandle(size_t)> gpu_mem_allocator,
@@ -154,16 +170,23 @@ class ExtractSession {
   std::vector<StreamHandle> _concurrent_stream_array;
   std::vector<std::shared_ptr<ExtractionThreadCtx>> _extract_ctx;
   std::vector<std::thread> _extract_threads;
+  double accu_cpu_time = 0;
+  double accu_local_time = 0;
+  double accu_remote_time = 0;
+  size_t accu_step = 0;
+  double accu_each_src_time[9] = {};
  public:
   ExtractSession(std::shared_ptr<CacheContext> cache_ctx);
  private:
 
   void SplitGroup(const SrcKey * src_index, const size_t len, IdType * & group_offset, StreamHandle stream);
 
+#ifdef COLL_HASH_VALID_LEGACY
   void GetMissCacheIndexByCub(DstVal* & output_dst_index,
     const IdType* nodes, const size_t num_nodes,
     IdType * & group_offset,
     StreamHandle stream);
+#endif
 
   void GetMissCacheIndex(
     SrcKey* & output_src_index, DstVal* & output_dst_index,
@@ -178,7 +201,10 @@ class ExtractSession {
   void CombineOneGroup(const SrcKey * src_index, const DstVal * dst_index, const IdType* nodes, const size_t num_node, const void* src_data, void* output, StreamHandle stream, IdType limit_block = 0, bool async = false);
   void CombineOneGroupRevised(const SrcKey * src_index, const DstVal * dst_index, const IdType* nodes, const size_t num_node, const void* src_data, void* output, StreamHandle stream, IdType limit_block = 0, bool async = false);
 
+#ifdef COLL_HASH_VALID_LEGACY
   void CombineNoGroup(const IdType* nodes, const size_t num_nodes, void* output, Context ctx, DataType _dtype, IdType _dim, StreamHandle stream);
+#endif
+  void CombineMixGroup(const SrcKey* src_key, const DstVal* dst_val, const size_t num_nodes, void* output, Context ctx, DataType _dtype, IdType _dim, StreamHandle stream);
   template<int NUM_LINK>
   void CombineConcurrent(const SrcKey * src_index, const DstVal * dst_index, const IdType * group_offset, void* output, StreamHandle stream);
   template<int NUM_LINK>
@@ -193,7 +219,19 @@ class RefreshSession {
  public:
   StreamHandle stream;
   std::shared_ptr<CacheContext> _cache_ctx;
-  void refresh_after_solve();
+#ifdef COLL_HASH_VALID_LEGACY
+  void refresh_after_solve(bool foreground);
+  void refresh_after_solve_old(bool foreground);
+#endif
+  void refresh_after_solve_new(bool foreground);
+  void refresh_after_solve_main(bool foreground);
+  // preserved allocation for new hashtable allocation
+  TensorPtr __keys_buffer       = nullptr;
+  TensorPtr __offs_buffer       = nullptr;
+  TensorPtr Empty1DReuse(TensorPtr& preserved_buffer, DataType dtype, std::vector<size_t> shape,
+                         Context ctx);
+  TensorPtr CopyTo1DReuse(TensorPtr& preserved_buffer, TensorPtr src, Context ctx,
+                          StreamHandle stream);
 };
 
 }

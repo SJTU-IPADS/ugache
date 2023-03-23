@@ -35,7 +35,6 @@
 #include <sstream>  // stringstream
 #include <string>   // string
 
-#include "atomic_barrier.h"
 #include "constant.h"
 #include "run_config.h"
 #include "device.h"
@@ -43,7 +42,7 @@
 #include "logging.h"
 #include "run_config.h"
 
-namespace coll_cache_lib {
+namespace samgraph {
 namespace common {
 
 Context::Context(std::string name) {
@@ -74,12 +73,6 @@ Tensor::~Tensor() {
     return;
   }
 
-  if (_external_mem_hanlder != nullptr) {
-    _external_mem_hanlder = nullptr;
-    LOG(DEBUG) << "Tensor " << _name << " has been freed";
-    return;
-  }
-
   Device::Get(_ctx)->FreeWorkspace(_ctx, _data, _nbytes);
   LOG(DEBUG) << "Tensor " << _name << " has been freed";
 }
@@ -96,24 +89,39 @@ void Tensor::Swap(TensorPtr tensor) {
   std::swap(this->_data, tensor->_data);
 }
 
-void Tensor::ForceScale(DataType dt, std::vector<size_t> shape, Context ctx, std::string name) {
-  CHECK(Defined());
+void Tensor::Scale(DataType dt, std::vector<size_t> shape, Context ctx, std::string name) {
+  if (!Defined()) {
+    CHECK_GT(shape.size(), 0);
+    size_t nbytes = GetTensorBytes(dt, shape.begin(), shape.end());
+
+    _dtype = dt;
+    _shape = shape;
+    _nbytes = nbytes;
+    _data = Device::Get(ctx)->AllocWorkspace(ctx, nbytes);
+    _ctx = ctx;
+    _name = name;
+    return;
+  } 
   CHECK(_dtype == dt);
   CHECK(_ctx == ctx);
   CHECK(_shape.size() == shape.size());
-  if (_external_mem_hanlder) {
-    CHECK_LE(GetTensorBytes(dt, shape), _external_mem_hanlder->nbytes());
-    if (GetTensorBytes(dt, shape) < _external_mem_hanlder->nbytes() / 2 && ctx.device_type == kCPU) {
-      LOG(ERROR) << "too many mem allocated for forcescale?" << _shape[0] << "->" << shape[0];
-    }
-  } else {
-    CHECK_LE(std::accumulate(shape.begin(), shape.end(), 1ul, std::multiplies<size_t>()), NumItem());
+  if (Device::Get(ctx)->WorkspaceActualSize(ctx, _data) < GetTensorBytes(dt, shape)) {
+    Device::Get(ctx)->FreeWorkspace(ctx, _data);
+    _data = Device::Get(ctx)->AllocWorkspace(ctx, GetTensorBytes(dt, shape));
   }
   _name = name;
   _shape = shape;
   _nbytes = GetTensorBytes(dt, shape.begin(), shape.end());
 }
-
+void Tensor::ForceScale(DataType dt, std::vector<size_t> shape, Context ctx, std::string name) {
+  CHECK(Defined());
+  CHECK(_dtype == dt);
+  CHECK(_ctx == ctx);
+  CHECK(_shape.size() == shape.size());
+  _name = name;
+  _shape = shape;
+  _nbytes = GetTensorBytes(dt, shape.begin(), shape.end());
+}
 void Tensor::ReShape(std::vector<size_t> new_shape) {
   CHECK(Defined());
   CHECK(GetTensorBytes(kI8, _shape) == GetTensorBytes(kI8, new_shape));
@@ -135,7 +143,6 @@ TensorPtr Tensor::CreateShm(std::string shm_path, DataType dtype,
   tensor->_data = data;
   tensor->_ctx = MMAP(MMAP_RW_DEVICE);
   tensor->_name = name;
-  tensor->BuildLenOfEachShape();
 
   return tensor;
 }
@@ -166,19 +173,8 @@ TensorPtr Tensor::OpenShm(std::string shm_path, DataType dtype,
   tensor->_data = data;
   tensor->_ctx = MMAP(MMAP_RW_DEVICE);
   tensor->_name = name;
-  tensor->BuildLenOfEachShape();
 
   return tensor;
-}
-
-TensorPtr Tensor::CreateShm(const char* shm_path, DataType dtype,
-                          std::vector<size_t> shape, const char* name) {
-  return CreateShm(std::string(shm_path), dtype, shape, std::string(name));
-}
-
-TensorPtr Tensor::OpenShm(const char* shm_path, DataType dtype,
-                          std::vector<size_t> shape, const char* name) {
-  return OpenShm(std::string(shm_path), dtype, shape, std::string(name));
 }
 
 TensorPtr Tensor::FromMmap(std::string filepath, DataType dtype,
@@ -242,13 +238,64 @@ TensorPtr Tensor::FromMmap(std::string filepath, DataType dtype,
     default:
       CHECK(0);
   }
-  tensor->BuildLenOfEachShape();
 
   return tensor;
 }
 
-TensorPtr Tensor::Empty(DataType dtype, std::vector<size_t> shape, Context ctx,
-                        const char* name) {return Tensor::Empty(dtype, shape, ctx, std::string(name));}
+TensorPtr Tensor::UMFromMmap(std::string filepath, DataType dtype,
+                             std::vector<size_t> shape, std::vector<Context> ctxes,
+                             std::string name, std::vector<StreamHandle> streams) {
+  CHECK(FileExist(filepath));
+
+  TensorPtr tensor = std::make_shared<Tensor>();
+  size_t nbytes = GetTensorBytes(dtype, shape.begin(), shape.end());
+
+  struct stat st;
+  stat(filepath.c_str(), &st);
+  size_t file_nbytes = st.st_size;
+  CHECK_EQ(nbytes, file_nbytes);
+
+  int fd = open(filepath.c_str(), O_RDONLY, 0);
+  void *data = mmap(NULL, nbytes, PROT_READ, MAP_SHARED | MAP_FILE | MAP_LOCKED, fd, 0);
+  CHECK_NE(data, (void *)-1);
+  close(fd);
+
+  Context ctx = ctxes[0];
+  if (ctx.device_type == DeviceType::kGPU) {
+    ctx.device_type = DeviceType::kGPU_UM;
+  }
+  CHECK(ctx.device_type == DeviceType::kGPU_UM);
+
+  tensor->_dtype = dtype;
+  tensor->_nbytes = nbytes;
+  tensor->_shape = shape;
+  tensor->_ctx = ctx;
+  tensor->_name = name;
+
+  // if the device is cuda, we have to copy the data from host memory to cuda
+  // memory
+  switch (ctx.device_type) {
+    case kCPU:
+    case kGPU:
+    case kMMAP:
+      LOG(FATAL) << "CPU, GPU, MMAP device should use `FromMmap`";
+      break;
+    case kGPU_UM: {
+      tensor->_data = Device::Get(ctx)->AllocWorkspace(ctx, nbytes, Constant::kAllocNoScale);
+      for (auto &ctx : ctxes) {
+        if(ctx.device_type == DeviceType::kGPU || ctx.device_type == DeviceType::kGPU_UM) {
+          Device::Get(ctx)->CopyDataFromTo(data, 0, tensor->_data, 0, tensor->NumBytes(), CPU(), ctx);
+        }
+      }
+      munmap(data, tensor->NumBytes());
+    }
+      break;
+    default:
+      CHECK(0);
+  }
+
+  return tensor;
+}
 
 TensorPtr Tensor::Empty(DataType dtype, std::vector<size_t> shape, Context ctx,
                         std::string name) {
@@ -262,7 +309,6 @@ TensorPtr Tensor::Empty(DataType dtype, std::vector<size_t> shape, Context ctx,
   tensor->_data = Device::Get(ctx)->AllocWorkspace(ctx, nbytes);
   tensor->_ctx = ctx;
   tensor->_name = name;
-  tensor->BuildLenOfEachShape();
 
   return tensor;
 }
@@ -279,11 +325,43 @@ TensorPtr Tensor::EmptyNoScale(DataType dtype, std::vector<size_t> shape,
     AllocWorkspace(ctx, nbytes, Constant::kAllocNoScale);
   tensor->_ctx = ctx;
   tensor->_name = name;
-  tensor->BuildLenOfEachShape();
 
   return tensor;
 }
 
+TensorPtr Tensor::Copy1D(TensorPtr source, size_t item_offset,
+                         std::vector<size_t> shape, std::string name,
+                         StreamHandle stream) {
+  CHECK(source && source->Defined());
+  CHECK_GT(shape.size(), 0);
+
+  TensorPtr output = std::make_shared<Tensor>();
+  size_t nbytes = GetTensorBytes(source->_dtype, shape.begin(), shape.end());
+
+  Context output_ctx = source->_ctx;
+
+  size_t copy_start_offset =
+      item_offset *
+      GetTensorBytes(source->_dtype, shape.begin() + 1, shape.end());
+
+  CHECK_LE(copy_start_offset + nbytes, source->_nbytes);
+
+  output->_dtype = source->_dtype;
+  output->_shape = shape;
+  output->_nbytes = nbytes;
+  output->_ctx = output_ctx;
+  output->_data =
+      Device::Get(output->_ctx)->AllocWorkspace(output->_ctx, nbytes);
+  output->_name = name;
+
+  Device::Get(output->_ctx)
+      ->CopyDataFromTo(source->_data, copy_start_offset, output->_data, 0,
+                       nbytes, source->_ctx, output->_ctx, stream);
+
+  Device::Get(output->_ctx)->StreamSync(output->_ctx, stream);
+
+  return output;
+}
 
 Context CPU(int device_id) { return {kCPU, device_id}; }
 Context CPU_CLIB(int device_id) { return {kCPU, device_id}; }
@@ -303,11 +381,40 @@ TensorPtr Tensor::FromBlob(void *data, DataType dtype,
   tensor->_data = data;
   tensor->_ctx = ctx;
   tensor->_name = name;
-  tensor->BuildLenOfEachShape();
+
+  return tensor;
+}
+TensorPtr Tensor::CopyBlob(const void *data, DataType dtype,
+                           std::vector<size_t> shape,
+                           Context from_ctx, Context to_ctx,
+                           std::string name, StreamHandle stream) {
+  TensorPtr tensor = std::make_shared<Tensor>();
+  size_t nbytes = GetTensorBytes(dtype, shape.begin(), shape.end());
+  if (to_ctx.device_type == kMMAP && to_ctx.device_id == MMAP_RO_DEVICE) {
+    to_ctx.device_id = MMAP_RW_DEVICE;
+  }
+  tensor->_data = Device::Get(to_ctx)->AllocWorkspace(to_ctx, nbytes);
+  if (to_ctx.device_type == kGPU) {
+    Device::Get(to_ctx)
+      ->CopyDataFromTo(data, 0, tensor->_data, 0,
+                       nbytes, from_ctx, to_ctx, stream);
+  } else {
+    Device::Get(from_ctx)
+      ->CopyDataFromTo(data, 0, tensor->_data, 0,
+                       nbytes, from_ctx, to_ctx, stream);
+  }
+  tensor->_dtype = dtype;
+  tensor->_shape = shape;
+  tensor->_nbytes = nbytes;
+  tensor->_ctx = to_ctx;
+  tensor->_name = name;
 
   return tensor;
 }
 
+TensorPtr Tensor::CopyTo(TensorPtr source, Context ctx, StreamHandle stream, double scale) {
+  return CopyTo(source, ctx, stream, source->_name, scale);
+}
 TensorPtr Tensor::CopyTo(TensorPtr source, Context ctx, StreamHandle stream, std::string name, double scale) {
   CHECK(source && source->Defined());
   std::vector<size_t> shape = source->Shape();
@@ -320,104 +427,26 @@ TensorPtr Tensor::CopyTo(TensorPtr source, Context ctx, StreamHandle stream, std
   tensor->_shape = shape;
   tensor->_nbytes = source->_nbytes;
   tensor->_ctx = ctx;
-  tensor->_data = Device::Get(ctx)->AllocWorkspace(ctx, nbytes);
-  tensor->_name = source->_name;
-  Context working_ctx = Priority(source->Ctx(), ctx);
-  Device::Get(working_ctx)->CopyDataFromTo(source->_data, 0, tensor->_data, 0,
-                                                nbytes, source->_ctx, tensor->_ctx, stream);
-  Device::Get(working_ctx)->StreamSync(working_ctx, stream);
-  tensor->BuildLenOfEachShape();
-  return tensor;
-}
-TensorPtr Tensor::CopyBlob(const void * data, DataType dtype,
-                            std::vector<size_t> shape, Context from_ctx,
-                            Context to_ctx, std::string name, StreamHandle stream) {
-  CHECK_GT(shape.size(), 0);
-
-  TensorPtr tensor = std::make_shared<Tensor>();
-  size_t nbytes = GetTensorBytes(dtype, shape.begin(), shape.end());
-
-  tensor->_dtype = dtype;
-  tensor->_shape = shape;
-  tensor->_nbytes = nbytes;
-  tensor->_ctx = to_ctx;
-  tensor->_data = Device::Get(to_ctx)->AllocWorkspace(to_ctx, nbytes);
+  tensor->_data = Device::Get(ctx)->AllocWorkspace(ctx, nbytes, scale);
   tensor->_name = name;
-  Context working_ctx = Priority(from_ctx, to_ctx);
-  Device::Get(working_ctx)->CopyDataFromTo(data, 0, tensor->_data, 0,
-                                                nbytes, from_ctx, tensor->_ctx, stream);
-  Device::Get(working_ctx)->StreamSync(working_ctx, stream);
-  tensor->BuildLenOfEachShape();
+  if (RunConfig::run_arch == kArch9 && ctx.device_type == DeviceType::kGPU_UM) {
+    for (auto um_ctx : RunConfig::unified_memory_ctxes) {
+        Device::Get(um_ctx)->CopyDataFromTo(source->_data, 0, tensor->_data, 0, nbytes, source->_ctx, um_ctx);
+    }
+    Device::Get(ctx)->StreamSync(ctx, stream);
+  } else {
+    if ((source->Ctx().device_type == kGPU || source->Ctx().device_type == kGPU_UM) && ctx.device_type != kGPU) {
+      Device::Get(source->Ctx())->CopyDataFromTo(source->_data, 0, tensor->_data, 0, nbytes, source->_ctx, tensor->_ctx, stream);
+      Device::Get(source->Ctx())->StreamSync(source->Ctx(), stream);
+    } else {
+      Device::Get(ctx)->CopyDataFromTo(source->_data, 0, tensor->_data, 0,
+                                      nbytes, source->_ctx, tensor->_ctx, stream);
+      Device::Get(ctx)->StreamSync(ctx, stream);
+    }
+  }
+
   return tensor;
 }
-
-TensorPtr Tensor::EmptyExternal(DataType dtype, std::vector<size_t> shape, const std::function<MemHandle(size_t)> & allocator, Context ctx, const char* name) {
-  return EmptyExternal(dtype, shape, allocator, ctx, std::string(name));
-}
-TensorPtr Tensor::EmptyExternal(DataType dtype, std::vector<size_t> shape, const std::function<MemHandle(size_t)> & allocator, Context ctx, std::string name) {
-  CHECK_GT(shape.size(), 0);
-
-  TensorPtr tensor = std::make_shared<Tensor>();
-  size_t nbytes = GetTensorBytes(dtype, shape.begin(), shape.end());
-
-  tensor->_dtype = dtype;
-  tensor->_shape = shape;
-  tensor->_nbytes = nbytes;
-  tensor->_ctx = ctx;
-  tensor->_external_mem_hanlder = allocator(nbytes);
-  tensor->_data = tensor->_external_mem_hanlder->ptr();
-  tensor->_name = name;
-  tensor->BuildLenOfEachShape();
-  return tensor;
-}
-
-
-TensorPtr Tensor::CopyToExternal(TensorPtr source, const std::function<MemHandle(size_t)> & allocator, Context ctx, StreamHandle stream, double scale) {
-  CHECK(source && source->Defined());
-  std::vector<size_t> shape = source->Shape();
-  CHECK_GT(shape.size(), 0);
-
-  TensorPtr tensor = std::make_shared<Tensor>();
-  size_t nbytes = GetTensorBytes(source->_dtype, shape.begin(), shape.end());
-
-  tensor->_dtype = source->_dtype;
-  tensor->_shape = shape;
-  tensor->_nbytes = source->_nbytes;
-  tensor->_ctx = ctx;
-  tensor->_external_mem_hanlder = allocator(nbytes);
-  tensor->_data = tensor->_external_mem_hanlder->ptr();
-  tensor->_name = source->_name;
-  Context working_ctx = Priority(source->Ctx(), ctx);
-  Device::Get(working_ctx)->CopyDataFromTo(source->_data, 0, tensor->_data, 0,
-                                                nbytes, source->_ctx, tensor->_ctx, stream);
-  Device::Get(working_ctx)->StreamSync(working_ctx, stream);
-  tensor->BuildLenOfEachShape();
-  return tensor;
-}
-TensorPtr Tensor::CopyLineToExternel(TensorPtr source, size_t line_idx, std::function<MemHandle(size_t)> & allocator, Context ctx, StreamHandle stream, double scale) {
-  CHECK(source && source->Defined());
-  const std::vector<size_t> & shape = source->_shape;
-  CHECK_GT(shape.size(), 0);
-  CHECK_LT(line_idx, shape[0]);
-
-  TensorPtr tensor = std::make_shared<Tensor>();
-  size_t nbytes = GetTensorBytes(source->_dtype, shape.begin() + 1, shape.end());
-
-  tensor->_dtype = source->_dtype;
-  tensor->_shape = std::vector<size_t>(shape.begin() + 1, shape.end());
-  tensor->_nbytes = nbytes;
-  tensor->_ctx = ctx;
-  tensor->_external_mem_hanlder = allocator(nbytes);
-  tensor->_data = tensor->_external_mem_hanlder->ptr();
-  tensor->_name = source->_name;
-  Context working_ctx = Priority(source->Ctx(), ctx);
-  Device::Get(working_ctx)->CopyDataFromTo(source->_data, nbytes * line_idx, tensor->_data, 0, nbytes, source->_ctx, tensor->_ctx, stream);
-  Device::Get(working_ctx)->StreamSync(working_ctx, stream);
-
-  tensor->BuildLenOfEachShape();
-  return tensor;
-}
-
 TensorPtr Tensor::CopyLine(TensorPtr source, size_t line_idx, Context ctx, StreamHandle stream, double scale) {
   CHECK(source && source->Defined());
   const std::vector<size_t> & shape = source->_shape;
@@ -431,42 +460,55 @@ TensorPtr Tensor::CopyLine(TensorPtr source, size_t line_idx, Context ctx, Strea
   tensor->_shape = std::vector<size_t>(shape.begin() + 1, shape.end());
   tensor->_nbytes = nbytes;
   tensor->_ctx = ctx;
-  tensor->_data = Device::Get(ctx)->AllocWorkspace(ctx, nbytes);
+  tensor->_data = Device::Get(ctx)->AllocWorkspace(ctx, nbytes, scale);
   tensor->_name = source->_name;
-  Context working_ctx = Priority(source->Ctx(), ctx);
-  Device::Get(working_ctx)->CopyDataFromTo(source->_data, nbytes * line_idx, tensor->_data, 0, nbytes, source->_ctx, tensor->_ctx, stream);
-  Device::Get(working_ctx)->StreamSync(working_ctx, stream);
+  if (RunConfig::run_arch == kArch9 && ctx.device_type == DeviceType::kGPU_UM) {
+    for (auto um_ctx : RunConfig::unified_memory_ctxes) {
+        Device::Get(um_ctx)->CopyDataFromTo(source->_data, nbytes * line_idx, tensor->_data, 0, nbytes, source->_ctx, um_ctx);
+    }
+    Device::Get(ctx)->StreamSync(ctx, stream);
+  } else {
+    Context work_ctx = ctx;
+    if ((source->Ctx().device_type == kGPU || source->Ctx().device_type == kGPU_UM) && ctx.device_type != kGPU) {
+      work_ctx = source->Ctx();
+    }
+    Device::Get(work_ctx)->CopyDataFromTo(source->_data, nbytes * line_idx, tensor->_data, 0, nbytes, source->_ctx, tensor->_ctx, stream);
+    Device::Get(work_ctx)->StreamSync(work_ctx, stream);
+  }
 
-  tensor->BuildLenOfEachShape();
   return tensor;
 }
 
-
-void Tensor::check_elem_size(size_t nbyte) {
-  CHECK(_data == nullptr || (nbyte == GetDataTypeBytes(_dtype))); 
+TensorPtr Tensor::UMCopyTo(TensorPtr source, std::vector<Context> ctxes, std::vector<StreamHandle> streams) {
+  return UMCopyTo(source, ctxes, streams, source->_name);
 }
+TensorPtr Tensor::UMCopyTo(TensorPtr source, std::vector<Context> ctxes, std::vector<StreamHandle> streams, std::string name) {
+  CHECK(source && source->Defined());
+  std::vector<size_t> shape = source->Shape();
+  auto dtype = source->_dtype;
+  CHECK_GT(shape.size(), 0);
 
-std::ostream& operator<<(std::ostream& os, const Context& ctx) {
-  switch (ctx.device_type)
-  {
-  case DeviceType::kMMAP:
-    os << "mmap:" << ctx.device_id;
-    return os;
-  case DeviceType::kCPU:
-    os << "cpu:" << ctx.device_id;    
-    return os;
-  case DeviceType::kGPU:
-    os << "gpu:" << ctx.device_id;
-    return os;
-  case DeviceType::kGPU_UM:
-    os << "gpu_um:" << ctx.device_id;
-    return os;
-  default:
-    LOG(FATAL) << "not support device type "
-               << static_cast<int>(ctx.device_type) << ":" << ctx.device_id;
-    // os << "not supprt:" << static_cast<int>(ctx.device_type) << ":" << ctx.device_id;
-    return os;
+  TensorPtr tensor = std::make_shared<Tensor>();
+  size_t nbytes = GetTensorBytes(dtype, shape.begin(), shape.end());
+
+  Context ctx = ctxes[0];
+  if (ctx.device_type == DeviceType::kGPU) {
+    ctx.device_type = DeviceType::kGPU_UM;
   }
+  CHECK(ctx.device_type == DeviceType::kGPU_UM);
+ 
+  tensor->_dtype = source->_dtype;
+  tensor->_shape = shape;
+  tensor->_nbytes = source->_nbytes;
+  tensor->_ctx = ctx;
+  tensor->_data =
+      Device::Get(ctx)->AllocWorkspace(ctx, nbytes, Constant::kAllocNoScale);
+  tensor->_name = name;
+  for (auto um_ctx : ctxes) {
+      Device::Get(um_ctx)->CopyDataFromTo(source->_data, 0, tensor->_data, 0, nbytes, source->_ctx, um_ctx);
+  }
+
+  return tensor;
 }
 
 std::string ToReadableSize(size_t nbytes) {
@@ -512,23 +554,6 @@ DataType DataTypeParseName(std::string name) {
   return _map[name];
 }
 
-std::ostream& operator<<(std::ostream& os, const DataType& dtype) {
-  switch (dtype) {
-    case kF32   : os << "kF32";   return os;
-    case kF64   : os << "kF64";   return os;
-    case kF16   : os << "kF16";   return os;
-    case kU8    : os << "kU8";    return os;
-    case kI32   : os << "kI32";   return os;
-    case kI8    : os << "kI8";    return os;
-    case kI64   : os << "kI64";   return os;
-    case kF64_2 : os << "kF64_2"; return os;
-    case kF64_4 : os << "kF64_4"; return os;
-    default:
-      LOG(FATAL) << "not data type " << static_cast<int>(dtype) ;
-      return os;
-  }
-}
-
 size_t GetDataTypeBytes(DataType dtype) {
   switch (dtype) {
     case kI8:
@@ -542,10 +567,6 @@ size_t GetDataTypeBytes(DataType dtype) {
     case kI64:
     case kF64:
       return 8ul;
-    case kF64_2:
-      return 16ul;
-    case kF64_4:
-      return 32ul;
     default:
       CHECK(0) << "Unsupported data type: " << dtype;
   }
@@ -566,6 +587,33 @@ size_t GetTensorBytes(DataType dtype,
          GetDataTypeBytes(dtype);
 }
 
+size_t PredictNumNodes(size_t batch_size, const std::vector<size_t> &fanout,
+                       size_t num_fanout_to_comp) {
+  CHECK_LE(num_fanout_to_comp, fanout.size());
+  size_t count = batch_size;
+  if (RunConfig::unsupervised_sample) {
+    if (RunConfig::RunConfig::negative_sample_reuse_src) {
+      count *= 2 + RunConfig::negative_sample_K;
+    } else {
+      count *= 2 * (1 + RunConfig::negative_sample_K);
+    }
+  }
+  for (int i = num_fanout_to_comp - 1; i >= 0; i--) {
+    count += (count * fanout[i]);
+  }
+
+  return count;
+}
+
+size_t PredictNumRandomWalkEdges(size_t batch_size,
+                                 const std::vector<size_t> &fanout,
+                                 size_t num_fanout_to_comp,
+                                 size_t num_random_walk,
+                                 size_t random_walk_length) {
+  size_t num_nodes = PredictNumNodes(batch_size, fanout, num_fanout_to_comp);
+  return num_nodes * num_random_walk * random_walk_length;
+}
+
 std::string GetEnv(std::string key) {
   const char *env_var_val = getenv(key.c_str());
   if (env_var_val != nullptr) {
@@ -573,12 +621,6 @@ std::string GetEnv(std::string key) {
   } else {
     return "";
   }
-}
-
-std::string GetEnvStrong(std::string key) {
-  const char *env_var_val = getenv(key.c_str());
-  CHECK(env_var_val != nullptr) << "Env " << key << " is required before loading coll cache lib";
-  return std::string(env_var_val);
 }
 
 bool IsEnvSet(std::string key) {
@@ -603,6 +645,39 @@ std::string GetTimeString() {
 bool FileExist(const std::string &filepath) {
   std::ifstream f(filepath);
   return f.good();
+}
+
+std::ostream &operator<<(std::ostream &os, const SampleType type) {
+  switch (type) {
+    case kKHop0:
+      os << "KHop0";
+      break;
+    case kKHop1:
+      os << "KHop1";
+      break;
+    case kWeightedKHop:
+      os << "WeightedKHop";
+      break;
+    case kRandomWalk:
+      os << "RandomWalk";
+      break;
+    case kWeightedKHopPrefix:
+      os << "WeightedKHopPrefix";
+      break;
+    case kKHop2:
+      os << "KHop2";
+      break;
+    case kWeightedKHopHashDedup:
+      os << "WeightedKHopHashDedup";
+      break;
+    case kSaint:
+      os << "Saint";
+      break;
+    default:
+      CHECK(false);
+  }
+
+  return os;
 }
 
 std::ostream& operator<<(std::ostream& os, const CachePolicy policy) {
@@ -660,19 +735,5 @@ std::ostream& operator<<(std::ostream& os, const CachePolicy policy) {
   return os;
 }
 
-AnonymousBarrier::AnonymousBarrier(int worker) {
-  auto mmap_ctx = MMAP(MMAP_RW_DEVICE);
-  auto dev = Device::Get(mmap_ctx);
-  this->_barrier_buffer = dev->AllocDataSpace(mmap_ctx, sizeof(AtomicBarrier));
-  new (this->_barrier_buffer) AtomicBarrier(worker);
-}
-void AnonymousBarrier::Wait() { (reinterpret_cast<AtomicBarrier*>(this->_barrier_buffer))->Wait(); }
-std::shared_ptr<AnonymousBarrier> AnonymousBarrier::_global_instance = std::make_shared<AnonymousBarrier>(std::stoi(GetEnvStrong("COLL_NUM_REPLICA")));
-std::shared_ptr<AnonymousBarrier> AnonymousBarrier::_refresh_instance = std::make_shared<AnonymousBarrier>(std::stoi(GetEnvStrong("COLL_NUM_REPLICA")));
-EagerGPUMemoryHandler::EagerGPUMemoryHandler() {}
-EagerGPUMemoryHandler::~EagerGPUMemoryHandler() {
-  CUDA_CALL(cudaSetDevice(dev_id_));
-  CUDA_CALL(cudaFree(ptr_));
-}
 }  // namespace common
-}  // namespace coll_cache_lib
+}  // namespace samgraph

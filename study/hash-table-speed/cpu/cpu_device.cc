@@ -24,22 +24,18 @@
 #include <memory>
 
 #include "../logging.h"
-// #include "../workspace_pool.h"
+#include "../workspace_pool.h"
 #include "../run_config.h"
 
-namespace coll_cache_lib {
+namespace samgraph {
 namespace common {
 namespace cpu {
 
 void CPUDevice::SetDevice(Context ctx) {}
 
 void *CPUDevice::AllocDataSpace(Context ctx, size_t nbytes, size_t alignment) {
-  void *ptr = nullptr;
-  if (nbytes == 0) {
-    LOG(FATAL) << "WORKER[" << RunConfig::worker_id << "] alloc zero host memory, is this intended?";
-    return nullptr;
-  }
-  if (nbytes >= 512 * 1024 * 1024 && RunConfig::worker_id == 0) {
+  void *ptr;
+  if (nbytes >= 10 * 1024 * 1024 && RunConfig::worker_id == 0) {
     LOG(WARNING) << "WORKER[" << RunConfig::worker_id << "] alloc host memory " << ToReadableSize(nbytes);
   }
   if (ctx.device_id == CPU_CUDA_HOST_MALLOC_DEVICE) {
@@ -47,8 +43,6 @@ void *CPUDevice::AllocDataSpace(Context ctx, size_t nbytes, size_t alignment) {
   } else if (ctx.device_id == CPU_CLIB_MALLOC_DEVICE) {
     int ret = posix_memalign(&ptr, alignment, nbytes);
     CHECK_EQ(ret, 0);
-  } else if (ctx.device_id == CPU_FOREIGN) {
-    CHECK(false);
   } else {
     CHECK(false);
   }
@@ -61,8 +55,6 @@ void CPUDevice::FreeDataSpace(Context ctx, void *ptr) {
     CUDA_CALL(cudaFreeHost(ptr));
   } else if (ctx.device_id == CPU_CLIB_MALLOC_DEVICE) {
     free(ptr);
-  } else if (ctx.device_id == CPU_FOREIGN) {
-    // outsider handles this pointer
   } else {
     CHECK(false);
   }
@@ -85,32 +77,28 @@ const std::shared_ptr<CPUDevice> &CPUDevice::Global() {
   return inst;
 }
 
-// struct CPUMemoryPool : public WorkspacePool {
-//   CPUMemoryPool() : WorkspacePool(kCPU, CPUDevice::Global()) {}
-// };
+struct CPUMemoryPool : public WorkspacePool {
+  CPUMemoryPool() : WorkspacePool(kCPU, CPUDevice::Global()) {}
+};
 
-// std::shared_ptr<WorkspacePool> &CPUWorkspacePool() {
-//   static std::shared_ptr<WorkspacePool> inst =
-//       std::make_shared<WorkspacePool>(kCPU, CPUDevice::Global());
-//   return inst;
-// }
+std::shared_ptr<WorkspacePool> &CPUWorkspacePool() {
+  static std::shared_ptr<WorkspacePool> inst =
+      std::make_shared<WorkspacePool>(kCPU, CPUDevice::Global());
+  return inst;
+}
 
 void *CPUDevice::AllocWorkspace(Context ctx, size_t nbytes, double scale) {
-  return AllocDataSpace(ctx, nbytes);
-  // return CPUWorkspacePool()->AllocWorkspace(ctx, nbytes, scale);
+  return CPUWorkspacePool()->AllocWorkspace(ctx, nbytes, scale);
 }
 
 void CPUDevice::FreeWorkspace(Context ctx, void *data, size_t nbytes) {
-  return FreeDataSpace(ctx, data);
-  // CPUWorkspacePool()->FreeWorkspace(ctx, data);
+  CPUWorkspacePool()->FreeWorkspace(ctx, data);
 }
 
 size_t CPUDevice::WorkspaceActualSize(Context ctx, void *ptr) {
-  LOG(FATAL) << "Device does not support WorkspaceActualSize api";
-  return 0;
-  // return CPUWorkspacePool()->WorkspaceActualSize(ctx, ptr);
+  return CPUWorkspacePool()->WorkspaceActualSize(ctx, ptr);
 }
 
 }  // namespace cpu
 }  // namespace common
-}  // namespace coll_cache_lib
+}  // namespace samgraph
