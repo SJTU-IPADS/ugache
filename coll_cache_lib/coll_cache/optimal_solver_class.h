@@ -7,6 +7,8 @@
 #include "gurobi_c++.h"
 // #include "ndarray.h"
 #include "asymm_link_desc.h"
+#include "../freq_recorder.h"
+#include "ndarray.h"
 #include <bitset>
 #include <cstring>
 #include <iomanip>
@@ -36,6 +38,10 @@ class CollCacheSolver {
                      std::vector<int> device_to_stream,
                      const IdType num_node,
                      const TensorPtr nid_to_block_tensor) = 0;
+  virtual void BuildSingleStream(ContFreqBuf* freq_rank,
+                     std::vector<int> device_to_stream,
+                     const IdType num_node,
+                     const TensorPtr nid_to_block_tensor) { CHECK(false) << "Unimplemented"; };
   virtual void Solve(std::vector<int> device_to_stream,
                      std::vector<PerT> device_to_cache_percent, std::string mode,
                      double T_local, double T_cpu);
@@ -70,6 +76,10 @@ public:
              std::vector<int> device_to_stream,
              const IdType num_node,
              const TensorPtr nid_to_block_tensor) override;
+  void BuildSingleStream(ContFreqBuf* freq_rank,
+                     std::vector<int> device_to_stream,
+                     const IdType num_node,
+                     const TensorPtr nid_to_block_tensor) override;
   void BuildSingleStream(TensorPtr stream_id_list, TensorPtr stream_freq_list,
              std::vector<int> device_to_stream,
              const IdType num_node,
@@ -94,7 +104,7 @@ protected:
   std::atomic_uint32_t next_free_block{0};
   uint32_t max_size_per_block = 10000;
 
-  int freq_to_slot_1(float freq, uint32_t rank, IdType num_node) {
+  int freq_to_slot_1(float freq, IdType num_node) {
     if (freq == 0)
       return RunConfig::coll_cache_num_slot - 1;
     if (freq >= alpha)
@@ -244,9 +254,23 @@ class SingleStreamSolverBase : public CollCacheSolver {
   void Build(TensorPtr stream_id_list, TensorPtr stream_freq_list,
              std::vector<int> device_to_stream,
              const IdType num_node, const TensorPtr nid_to_block_tensor) override;
+  void BuildSingleStream(ContFreqBuf* freq_rank,
+                     std::vector<int> device_to_stream,
+                     const IdType num_node,
+                     const TensorPtr nid_to_block_tensor) override {
+    freq_rank->GetLegacyFreqRank(&freq_buf, num_node);
+    auto ranking_nodes_list = Tensor::FromBlob(
+        freq_buf.rank_vec.data(), coll_cache::get_data_type<IdType>(),
+        {1, num_node}, CPU(CPU_FOREIGN), "ranking_nodes_list");
+    auto ranking_nodes_freq_list = Tensor::FromBlob(
+        freq_buf.freq_vec.data(), coll_cache::get_data_type<IdType>(),
+        {1, num_node}, CPU(CPU_FOREIGN), "ranking_nodes_freq_list");
+    Build(ranking_nodes_list, ranking_nodes_freq_list, device_to_stream, num_node, nid_to_block_tensor);
+  }
   TensorPtr stream_id_list;
   TensorPtr stream_freq_list;
   TensorPtr nid_to_block;
+  LegacyFreqBuf freq_buf;
 };
 
 class IntuitiveSolver : public SingleStreamSolverBase {
