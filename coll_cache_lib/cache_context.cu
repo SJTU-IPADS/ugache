@@ -2230,6 +2230,24 @@ class HostWorkspaceHandle : public ExternelGPUMemoryHandler {
   }
 };
 
+TensorPtr ConcatAllRemote(TensorPtr* key_list, int num_gpu, int local_id) {
+  size_t total_len = 0;
+  for (int i = 0; i < num_gpu; i++) {
+    if (i == local_id) continue;
+    if (key_list[i] == nullptr) continue;
+    total_len += key_list[i]->NumItem();
+  }
+  TensorPtr rst = Tensor::Empty(kI32, {total_len}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+  total_len = 0;
+  for (int i = 0; i < num_gpu; i++) {
+    if (i == local_id) continue;
+    if (key_list[i] == nullptr) continue;
+    memcpy(rst->Ptr<IdType>() + total_len, key_list[i]->CPtr<IdType>(), key_list[i]->NumBytes());
+    total_len += key_list[i]->NumItem();
+  }
+  return rst;
+}
+
 void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<CollCache> coll_cache_ptr, void* cpu_data, DataType dtype, size_t dim, Context gpu_ctx, double cache_percentage, StreamHandle stream) {
   auto hash_table_list = DevicePointerExchanger(_barrier, Constant::kCollCacheHashTableOffsetPtrShmName);
   auto device_cache_data_list = DevicePointerExchanger(_barrier, Constant::kCollCacheDeviceCacheDataPtrShmName);
@@ -2345,6 +2363,7 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
     }
   }
   _new_hash_table->_cached_keys = keys_for_each_source[location_id];
+  _new_hash_table->_remote_keys = ConcatAllRemote(keys_for_each_source, RunConfig::num_device, location_id);
   _new_hash_table->_cache_space_capacity = _cache_space_capacity;
   _new_hash_table->cpu_location_id = _cpu_location_id;
   _new_hash_table->num_total_key = num_total_nodes;
@@ -3682,6 +3701,8 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
   auto coll_cache = _cache_ctx->_coll_cache;
   TensorPtr block_access_advise_cpu = Tensor::CopyLine(_cache_ctx->_coll_cache->_block_access_advise, _local_location_id, CPU(CPU_CLIB_MALLOC_DEVICE), stream); // small
   CacheEntryManager::DetectKeysForAllSource(coll_cache->_nid_to_block, block_access_advise_cpu, _local_location_id, coll_cache->_block_density, RunConfig::num_total_item, key_list_of_each_src, RunConfig::num_device);
+  TensorPtr old_rkeys = _new_hash_table->_remote_keys;
+  TensorPtr new_rkeys = ConcatAllRemote(key_list_of_each_src, RunConfig::num_device, _local_location_id);
 
   size_t num_new_local_key = key_list_of_each_src[_local_location_id]->NumItem();
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "new local node = " << num_new_local_key;
@@ -3747,8 +3768,8 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
   // Step.4 Evict remote keys
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "evicting remote nodes";
   auto remote_keys_to_evict = _new_hash_table->DetectKeysWithCond(
-      cub::CountingInputIterator<IdType>(0), 
-      RunConfig::num_total_item, 
+      old_rkeys->CPtr<IdType>(),
+      old_rkeys->NumItem(), 
       SelectEvictedRemoteKeys(
           _cache_ctx->_coll_cache->_old_nid_to_block,
           _cache_ctx->_coll_cache->_old_block_access_advise,
@@ -3837,6 +3858,7 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "refresh done";
 
   _new_hash_table->_cached_keys = key_list_of_each_src[_local_location_id];
+  _new_hash_table->_remote_keys = new_rkeys;
 }
 
 void RefreshSession::refresh_after_solve_main(bool foreground) {

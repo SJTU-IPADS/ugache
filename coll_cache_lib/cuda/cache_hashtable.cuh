@@ -321,6 +321,7 @@ class CacheEntryManager {
     }
   };
   TensorPtr _cached_keys;
+  TensorPtr _remote_keys;
   TensorPtr _free_offsets;
   std::shared_ptr<SimpleHashTable> _hash_table;
   IdType _cache_space_capacity;
@@ -503,6 +504,10 @@ class CacheEntryManager {
     }
     for (auto & per_s_s : per_src_size) {
       per_s_s *= 1.1;
+      per_s_s += 100;
+    }
+    for (int dev_id = 0; dev_id < num_gpu; dev_id++) {
+      node_list_of_src[dev_id] = Tensor::Empty(kI32, {per_src_size[dev_id]}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
     }
 
     if (local_location_id == 0) LOG(ERROR) << "per src size local is " << per_src_size[local_location_id];
