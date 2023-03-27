@@ -201,6 +201,7 @@ void FreqRecorder::Combine() {
 namespace {
 const std::string FreqRecorderShmV2 = std::string("coll_cache_freq_recorder_shm_v2_") + GetEnvStrong("USER");
 const size_t BufMaxLen = 100'000'000;
+size_t GlobalBuxMaxLen = 0;
 };
 
 FreqRecorder::FreqRecorder(size_t num_nodes, int local_id)
@@ -212,9 +213,10 @@ FreqRecorder::FreqRecorder(size_t num_nodes, int local_id)
   _cpu_device_holder = cpu::CPUDevice::Global();
   sem_init(&local_freq_buf_sem, 0, 1);
   {
-    size_t nbytes = BufMaxLen * sizeof(FreqEntry) + sizeof(DupFreqBuf);
+    GlobalBuxMaxLen = BufMaxLen * std::stoi(GetEnvStrong("COLL_NUM_REPLICA"));
+    size_t nbytes = GlobalBuxMaxLen * sizeof(FreqEntry) + sizeof(DupFreqBuf);
     int fd = cpu::MmapCPUDevice::CreateShm(nbytes, FreqRecorderShmV2 + "_v2");
-    global_dup_freq_buf = (DupFreqBuf*)cpu::MmapCPUDevice::MapFd(MMAP(MMAP_RW_DEVICE), nbytes, fd);
+    global_dup_freq_buf = new (cpu::MmapCPUDevice::MapFd(MMAP(MMAP_RW_DEVICE), nbytes, fd)) DupFreqBuf;
     local_freq_buf = new MapFreqBuf;
     local_freq_buf_alter = new MapFreqBuf;
     global_cont_freq_buf = new ContFreqBuf;
@@ -314,7 +316,9 @@ void ContFreqBuf::GetLegacyFreqRank(LegacyFreqBuf* output, size_t total_num_node
   CHECK(cur_global_len == total_num_node) << cur_global_len << " != " << total_num_node;
 }
 void DupFreqBuf::bulk_append(const MapFreqBuf* input) {
-  CHECK(cur_len + input->mapping.size() < BufMaxLen);
+  LOG(ERROR) << "bulk append " << input->mapping.size() << " into " << cur_len;
+  CHECK(input->mapping.size() <= BufMaxLen) << input->mapping.size() << ">" << BufMaxLen;
+  CHECK(cur_len + input->mapping.size() <= GlobalBuxMaxLen) << cur_len << "+" << input->mapping.size() << ">" << GlobalBuxMaxLen;
   size_t len = cur_len;
   IdType total_freq = 0;
   for (auto& iter : input->mapping) {
