@@ -259,7 +259,12 @@ TensorPtr Tensor::Empty(DataType dtype, std::vector<size_t> shape, Context ctx,
   tensor->_dtype = dtype;
   tensor->_shape = shape;
   tensor->_nbytes = nbytes;
-  tensor->_data = Device::Get(ctx)->AllocWorkspace(ctx, nbytes);
+  if (nbytes == 0) {
+    LOG(ERROR) << "making a tensor with 0 num item";
+    tensor->_data = nullptr;
+  } else {
+    tensor->_data = Device::Get(ctx)->AllocWorkspace(ctx, nbytes);
+  }
   tensor->_ctx = ctx;
   tensor->_name = name;
   tensor->BuildLenOfEachShape();
