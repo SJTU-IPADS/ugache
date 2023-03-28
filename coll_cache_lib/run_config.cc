@@ -25,7 +25,6 @@
 namespace coll_cache_lib {
 namespace common {
 
-std::unordered_map<std::string, std::string> RunConfig::raw_configs;
 
 // clang-format off
 CachePolicy          RunConfig::cache_policy                   = kCollCacheAsymmLink;
