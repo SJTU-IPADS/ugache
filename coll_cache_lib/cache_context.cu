@@ -1262,7 +1262,7 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       combine_times[1] = t_remote.Passed();
       _cpu_syncer->on_wait_job_done();
     } else if (RunConfig::concurrent_link_impl == kMPSPhase) {
-      auto call_combine = [src_index, group_offset, dst_index, nodes, this, output, num_nodes](int location_id, StreamHandle stream){
+      auto call_combine = [src_index, group_offset, dst_index, nodes, this, output, num_nodes](int location_id, StreamHandle stream, bool sync=true){
         if (group_offset[location_id+1] - group_offset[location_id] == 0) return;
         Timer t;
         CombineOneGroup(src_index + group_offset[location_id], 
@@ -1270,7 +1270,9 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
                         nodes + group_offset[location_id], 
                         group_offset[location_id+1] - group_offset[location_id], 
                         _cache_ctx->_device_cache_data[location_id], output, stream, 0, true);
-        CUDA_CALL(cudaStreamSynchronize(reinterpret_cast<cudaStream_t>(stream)));
+        if (sync) {
+          CUDA_CALL(cudaStreamSynchronize(reinterpret_cast<cudaStream_t>(stream)));
+        }
         accu_each_src_time[location_id] += t.Passed();
       };
       // launch cpu extraction
@@ -1284,6 +1286,7 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       auto num_link = link_src.size();
 
       Timer t_remote;
+      Timer t_local;
       // set remote extraction lambda
       for (int i = 0; i < num_link; i++) {
         CHECK(link_src[i].size() == 1);
@@ -1296,12 +1299,12 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       _remote_syncer->on_send_job();
 
       // launch local extraction using this thread
-      Timer t_local;
-      call_combine(_cache_ctx->_local_location_id, _local_ext_stream);
+      call_combine(_cache_ctx->_local_location_id, _local_ext_stream, false);
 
       _remote_syncer->on_wait_job_done();
       combine_times[1] = t_remote.Passed();
 
+      CUDA_CALL(cudaStreamSynchronize(reinterpret_cast<cudaStream_t>(_local_ext_stream)));
       combine_times[2] = t_local.Passed();
 
       _cpu_syncer->on_wait_job_done();
