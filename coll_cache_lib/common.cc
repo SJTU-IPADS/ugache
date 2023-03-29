@@ -144,11 +144,9 @@ TensorPtr Tensor::OpenShm(std::string shm_path, DataType dtype,
                           std::vector<size_t> shape, std::string name) {
   TensorPtr tensor = std::make_shared<Tensor>();
   size_t nbytes = GetTensorBytes(dtype, shape.begin(), shape.end());
-  int fd = cpu::MmapCPUDevice::OpenShm(shm_path);
 
-  struct stat st;
-  fstat(fd, &st);
-  size_t file_nbytes = st.st_size;
+  size_t file_nbytes;
+  int fd = cpu::MmapCPUDevice::OpenShm(shm_path, &file_nbytes);
 
   if (shape.size() == 0) {
     // auto infer shape, 1-D only
