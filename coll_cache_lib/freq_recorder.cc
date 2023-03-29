@@ -217,8 +217,8 @@ FreqRecorder::FreqRecorder(size_t num_nodes, int local_id)
     size_t nbytes = GlobalBuxMaxLen * sizeof(FreqEntry) + sizeof(DupFreqBuf);
     int fd = cpu::MmapCPUDevice::CreateShm(nbytes, FreqRecorderShmV2 + "_v2");
     global_dup_freq_buf = new (cpu::MmapCPUDevice::MapFd(MMAP(MMAP_RW_DEVICE), nbytes, fd)) DupFreqBuf;
-    local_freq_buf = new MapFreqBuf;
-    local_freq_buf_alter = new MapFreqBuf;
+    local_freq_buf = new MapFreqBuf[RunConfig::solver_omp_thread_num_per_gpu];
+    local_freq_buf_alter = new MapFreqBuf[RunConfig::solver_omp_thread_num_per_gpu];
     global_cont_freq_buf = new ContFreqBuf;
   }
 }
@@ -227,11 +227,27 @@ template<typename KeyT>
 void FreqRecorder::Record(const KeyT* input, size_t num_inputs){
   // std::lock_guard<std::mutex> guard(this->local_freq_buf_mutex);
   sem_wait(&local_freq_buf_sem);
-  for (size_t i = 0; i < num_inputs; i++) {
-    // CHECK(input[i] < _num_nodes) << input[i] << " greater than " << _num_nodes;
-    // CHECK(local_freq_buf->mapping.size() < BufMaxLen);
-    local_freq_buf->add(input[i], 1);
+  if (RunConfig::solver_omp_thread_num_per_gpu == 1) {
+    for (size_t i = 0; i < num_inputs; i++) {
+      // CHECK(input[i] < _num_nodes) << input[i] << " greater than " << _num_nodes;
+      // CHECK(local_freq_buf->mapping.size() < BufMaxLen);
+      local_freq_buf->add(input[i], 1);
+    }
+  } else {
+    #pragma omp parallel num_threads(RunConfig::solver_omp_thread_num_per_gpu)
+    {
+      MapFreqBuf * thread_local_buf = local_freq_buf + omp_get_thread_num();
+      for (size_t i = 0; i < num_inputs; i++) {
+        if (input[i] % RunConfig::solver_omp_thread_num_per_gpu != omp_get_thread_num()) continue;
+        thread_local_buf->add(input[i], 1);
+      }
+    }
   }
+  // for (size_t i = 0; i < num_inputs; i++) {
+  //   // CHECK(input[i] < _num_nodes) << input[i] << " greater than " << _num_nodes;
+  //   // CHECK(local_freq_buf->mapping.size() < BufMaxLen);
+  //   local_freq_buf->add(input[i], 1);
+  // }
   sem_post(&local_freq_buf_sem);
 }
 template void FreqRecorder::Record<Id64Type>(const Id64Type* input, size_t num_inputs);
@@ -241,8 +257,10 @@ template void FreqRecorder::Record<IdType>(const IdType* input, size_t num_input
 void FreqRecorder::LocalCombineToShared(){
   // fixme: atomic alter freq_table
   auto local_buf = this->AlterLocalBuf();
-  global_dup_freq_buf->bulk_append(local_buf);
-  local_buf->mapping.clear();
+  for (int thd_idx = 0; thd_idx < RunConfig::solver_omp_thread_num_per_gpu; thd_idx++) {
+    global_dup_freq_buf->bulk_append(local_buf + thd_idx);
+    local_buf[thd_idx].mapping.clear();
+  }
 }
 void FreqRecorder::GlobalCombine(){
   LOG(ERROR) << "freq recorder global combining";
