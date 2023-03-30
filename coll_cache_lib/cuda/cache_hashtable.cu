@@ -285,12 +285,15 @@ __global__ void lookup_hashmap_with_def(const IdType *const items,
 
 // DeviceSimpleHashTable implementation
 DeviceSimpleHashTable::DeviceSimpleHashTable(const BucketO2N *const o2n_table,
+                                              MurmurHash3_32<IdType> hasher,
                                                const size_t o2n_size)
     : _o2n_table(o2n_table),
+      _hasher(hasher),
       _o2n_size(o2n_size) {}
 
 DeviceSimpleHashTable SimpleHashTable::DeviceHandle() const {
   return DeviceSimpleHashTable(_o2n_table,
+      _hasher,
       _o2n_size);
 }
 
@@ -298,6 +301,7 @@ DeviceSimpleHashTable SimpleHashTable::DeviceHandle() const {
 SimpleHashTable::SimpleHashTable(const size_t size, Context ctx,
                                    StreamHandle stream, const size_t scale)
     : _o2n_table(nullptr),
+      _hasher(),
       max_efficient_size(size),
 #ifndef SXN_NAIVE_HASHMAP
       _o2n_size(TableSize(size, scale)),
@@ -324,6 +328,7 @@ SimpleHashTable::SimpleHashTable(const size_t size, Context ctx,
 SimpleHashTable::SimpleHashTable(BucketO2N* table, const size_t size, Context ctx,
                                    StreamHandle stream, const size_t scale)
     : _o2n_table(table),
+      _hasher(),
       max_efficient_size(size),
 #ifndef SXN_NAIVE_HASHMAP
       _o2n_size(TableSize(size, scale)),
@@ -339,6 +344,7 @@ SimpleHashTable::SimpleHashTable(BucketO2N* table, const size_t size, Context ct
 SimpleHashTable::SimpleHashTable(std::function<MemHandle(size_t)> allocator, const size_t size, Context ctx,
                                    StreamHandle stream, const size_t scale)
     : _o2n_table(nullptr),
+      _hasher(),
       max_efficient_size(size),
 #ifndef SXN_NAIVE_HASHMAP
       _o2n_size(TableSize(size, scale)),
@@ -346,11 +352,12 @@ SimpleHashTable::SimpleHashTable(std::function<MemHandle(size_t)> allocator, con
       _o2n_size(size),
 #endif
       _ctx(ctx) {
+  LOG(ERROR) << "create a hashtable with " << max_efficient_size << " possible elem, scale to " << _o2n_size;
   // make sure we will at least as many buckets as items.
   auto device = Device::Get(_ctx);
   auto cu_stream = static_cast<cudaStream_t>(stream);
 
-  LOG(INFO) << "SimpleHashTable allocating " << ToReadableSize(sizeof(BucketO2N) * _o2n_size);
+  LOG(ERROR) << "SimpleHashTable allocating " << ToReadableSize(sizeof(BucketO2N) * _o2n_size);
   _o2n_table_handle = (allocator(sizeof(BucketO2N) * _o2n_size));
   _o2n_table = _o2n_table_handle->ptr<BucketO2N>();
 
