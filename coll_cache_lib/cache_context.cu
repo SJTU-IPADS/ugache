@@ -2298,11 +2298,13 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
   CHECK(coll_cache_ptr->_block_access_advise != nullptr);
   CHECK(coll_cache_ptr->_block_density != nullptr);
   CacheEntryManager::DetectKeysForAllSource(
-      coll_cache_ptr->_nid_to_block, Tensor::CopyLine(coll_cache_ptr->_block_access_advise, location_id, CPU(), stream), location_id, coll_cache_ptr->_block_density, num_total_nodes, keys_for_each_source);
+      coll_cache_ptr->_nid_to_block, Tensor::CopyLine(coll_cache_ptr->_block_access_advise, location_id, CPU(), stream), location_id, coll_cache_ptr->_block_density, num_total_nodes, keys_for_each_source, RunConfig::num_device);
   gpu_device->StreamSync(gpu_ctx, stream);
   LOG(INFO) << "CollCacheManager: grouping node of same location done";
   size_t num_cached_nodes = keys_for_each_source[location_id]->NumItem();
-  size_t num_cpu_nodes = (keys_for_each_source[_cpu_location_id] == nullptr) ? 0 : keys_for_each_source[_cpu_location_id]->NumItem();
+  _new_hash_table->_remote_keys = ConcatAllRemote(keys_for_each_source, RunConfig::num_device, location_id);
+  size_t num_cpu_nodes = num_total_nodes - _new_hash_table->_remote_keys->NumItem() - num_cached_nodes;
+  LOG(ERROR) << "num cpu nodes is " << num_cpu_nodes;
 
   {
     // CHECK_NE(num_cached_nodes, 0);
@@ -2366,7 +2368,6 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
     }
   }
   _new_hash_table->_cached_keys = keys_for_each_source[location_id];
-  _new_hash_table->_remote_keys = ConcatAllRemote(keys_for_each_source, RunConfig::num_device, location_id);
   _new_hash_table->_cache_space_capacity = _cache_space_capacity;
   _new_hash_table->cpu_location_id = _cpu_location_id;
   _new_hash_table->num_total_key = num_total_nodes;
