@@ -287,6 +287,7 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
   this->_replica_barrier->Wait();
   RunConfig::solver_omp_thread_num = RunConfig::refresher_omp_thread_num;
   RunConfig::solver_omp_thread_num_per_gpu = RunConfig::refresher_omp_thread_num_per_gpu;
+  CUDA_CALL(cudaGetLastError());
 }
 
 void CollCache::refresh(int replica_id, IdType *ranking_nodes_list_ptr,
@@ -384,6 +385,7 @@ void CollCache::build_v2(int replica_id, ContFreqBuf* freq_rank, IdType num_node
   this->_replica_barrier->Wait();
   RunConfig::solver_omp_thread_num = RunConfig::refresher_omp_thread_num;
   RunConfig::solver_omp_thread_num_per_gpu = RunConfig::refresher_omp_thread_num_per_gpu;
+  CUDA_CALL(cudaGetLastError());
 }
 
 void CollCache::refresh(int replica_id, ContFreqBuf* freq_rank, StreamHandle stream, bool foreground) {

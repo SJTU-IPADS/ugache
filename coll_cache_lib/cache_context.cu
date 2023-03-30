@@ -2359,7 +2359,7 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
       _remote_new_hash_table[dev_id] = new CacheEntryManager;
       CacheEntryManager &remote_cache_manager = *_remote_new_hash_table[dev_id];
       remote_cache_manager._hash_table = std::make_shared<SimpleHashTable>(_remote_hash_table[dev_id], (size_t)(num_total_nodes - num_cpu_nodes), _trainer_ctx, stream);
-      if (keys_for_each_source[dev_id] == nullptr || dev_id == _local_location_id) continue;
+      if (keys_for_each_source[dev_id] == nullptr || keys_for_each_source[dev_id]->NumItem() == 0 || dev_id == _local_location_id) continue;
       auto keys = Tensor::CopyToExternal(keys_for_each_source[dev_id], _eager_gpu_mem_allocator, _trainer_ctx, stream);
       auto off = Tensor::EmptyExternal(kI32, keys->Shape(), _eager_gpu_mem_allocator, _trainer_ctx, "");
       remote_cache_manager.LookupOffset(keys, off, stream);
