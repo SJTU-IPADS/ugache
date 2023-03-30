@@ -137,18 +137,22 @@ void OptimalSolver::BuildSingleStream(TensorPtr stream_id_list, TensorPtr stream
   // zero block
   size_t accumulate_size = 0;
   size_t accumulate_num_slice = 0;
+  bool found_bound = false;
   for (size_t seq_slot_id = 0; seq_slot_id <= max_seq_slot; seq_slot_id++) {
     auto iter = slot_array_to_full_block.the_map.find(seq_slot_id);
     if (iter == slot_array_to_full_block.the_map.end()) continue;
     accumulate_size += iter->second.size;
     auto & bucket = buckets[iter->second.remmaped_slot];
-    if (accumulate_size / (double)num_node < RunConfig::cache_percentage * device_to_stream.size()) {
+    if (found_bound == false) {
       auto slice_size = std::min(max_size_per_block, RoundUpDiv<uint32_t>(iter->second.size, device_to_stream.size()));
       bucket.set_max_size(device_to_stream.size(), slice_size);
       bucket.num_slices = RoundUpDiv(iter->second.size, slice_size);
     } else {
       bucket.set_max_size(1, iter->second.size);
       bucket.num_slices = 1;
+    }
+    if (accumulate_size / (double)num_node >= RunConfig::cache_percentage * device_to_stream.size()) {
+      found_bound = true;
     }
     bucket.slice_begin = accumulate_num_slice;
     accumulate_num_slice += bucket.num_slices;
@@ -348,18 +352,22 @@ void OptimalSolver::BuildSingleStream(ContFreqBuf* freq_rank, std::vector<int> d
   // zero block
   size_t accumulate_size = 0;
   size_t accumulate_num_slice = 0;
+  bool found_bound = false;
   for (size_t seq_slot_id = 0; seq_slot_id <= max_seq_slot; seq_slot_id++) {
     auto iter = slot_array_to_full_block.the_map.find(seq_slot_id);
     if (iter == slot_array_to_full_block.the_map.end()) continue;
     accumulate_size += iter->second.size;
     auto & bucket = buckets[iter->second.remmaped_slot];
-    if (accumulate_size / (double)num_node < RunConfig::cache_percentage * device_to_stream.size()) {
+    if (found_bound == false) {
       auto slice_size = std::min(max_size_per_block, RoundUpDiv<uint32_t>(iter->second.size, device_to_stream.size()));
       bucket.set_max_size(device_to_stream.size(), slice_size);
       bucket.num_slices = RoundUpDiv(iter->second.size, slice_size);
     } else {
       bucket.set_max_size(1, iter->second.size);
       bucket.num_slices = 1;
+    }
+    if (accumulate_size / (double)num_node >= RunConfig::cache_percentage * device_to_stream.size()) {
+      found_bound = true;
     }
     bucket.slice_begin = accumulate_num_slice;
     accumulate_num_slice += bucket.num_slices;
