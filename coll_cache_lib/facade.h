@@ -2,6 +2,7 @@
 #include "common.h"
 // #include "logging.h"
 #include "cache_context.h"
+#include "freq_recorder.h"
 #include "profiler.h"
 #include <cuda_runtime.h>
 
@@ -33,6 +34,7 @@ class CollCache : public std::enable_shared_from_this<CollCache> {
   std::vector<std::shared_ptr<RefreshSession>> _refresh_session_list;
   void solve_impl_master(IdType *ranking_nodes_list_ptr,
              IdType *ranking_nodes_freq_list_ptr, IdType num_node);
+  void solve_impl_master(ContFreqBuf* freq_rank, IdType num_node);
   void solve_impl_slave();
  public:
   CollCache(BarHandle process_barrier, BarHandle replica_barrier) : _process_barrier(process_barrier), _replica_barrier(replica_barrier), _profiler(std::make_shared<Profiler>()) {}
@@ -41,8 +43,10 @@ class CollCache : public std::enable_shared_from_this<CollCache> {
   //   return &instance;
   // }
 
+#ifdef DEAD_CODE
   void solve(IdType *ranking_nodes_list_ptr,
              IdType *ranking_nodes_freq_list_ptr, IdType num_node);
+#endif
 
   void build(std::function<std::function<MemHandle(size_t)>(int)> allocator_builder,
              void *cpu_data, DataType dtype, size_t dim,
@@ -58,6 +62,11 @@ class CollCache : public std::enable_shared_from_this<CollCache> {
 
   void refresh(int replica_id, IdType *ranking_nodes_list_ptr,
                 IdType *ranking_nodes_freq_list_ptr, StreamHandle stream = nullptr, bool foreground=false);
+  void build_v2(int replica_id, ContFreqBuf* freq_rank, IdType num_node,
+                std::function<MemHandle(size_t)> gpu_mem_allocator,
+                void *cpu_data, DataType dtype, size_t dim,
+                double cache_percentage, StreamHandle stream = nullptr);
+  void refresh(int replica_id, ContFreqBuf* freq_rank, StreamHandle stream = nullptr, bool foreground=false);
   void report_avg();
   void report_last_epoch(uint64_t epoch);
   void report(uint64_t key);

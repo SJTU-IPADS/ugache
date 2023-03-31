@@ -38,6 +38,102 @@
 namespace coll_cache_lib {
 namespace common {
 
+/**
+ * @brief A `MurmurHash3_32` hash function to hash the given argument on host and device.
+ *
+ * MurmurHash3_32 implementation from
+ * https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp
+ * -----------------------------------------------------------------------------
+ * MurmurHash3 was written by Austin Appleby, and is placed in the public domain. The author
+ * hereby disclaims copyright to this source code.
+ *
+ * Note - The x86 and x64 versions do _not_ produce the same results, as the algorithms are
+ * optimized for their respective platforms. You can still compile and run any of them on any
+ * platform, but your performance with the non-native version will be less than optimal.
+ *
+ * @tparam Key The type of the values to hash
+ */
+template <typename Key>
+struct MurmurHash3_32 {
+  using argument_type = Key;       ///< The type of the values taken as argument
+  using result_type   = uint32_t;  ///< The type of the hash values produced
+
+  /// Default constructor
+  __host__ __device__ constexpr MurmurHash3_32() : MurmurHash3_32{0} {}
+
+  /**
+   * @brief Constructs a MurmurHash3_32 hash function with the given `seed`.
+   *
+   * @param seed A custom number to randomize the resulting hash value
+   */
+  __host__ __device__ constexpr MurmurHash3_32(uint32_t seed) : m_seed(seed) {}
+
+  /**
+   * @brief Returns a hash value for its argument, as a value of type `result_type`.
+   *
+   * @param key The input argument to hash
+   * @return A resulting hash value for `key`
+   */
+  constexpr result_type __host__ __device__ operator()(Key const& key) const noexcept
+  {
+    constexpr int len         = sizeof(argument_type);
+    const uint8_t* const data = (const uint8_t*)&key;
+    constexpr int nblocks     = len / 4;
+
+    uint32_t h1           = m_seed;
+    constexpr uint32_t c1 = 0xcc9e2d51;
+    constexpr uint32_t c2 = 0x1b873593;
+    //----------
+    // body
+    const uint32_t* const blocks = (const uint32_t*)(data + nblocks * 4);
+    for (int i = -nblocks; i; i++) {
+      uint32_t k1 = blocks[i];  // getblock32(blocks,i);
+      k1 *= c1;
+      k1 = rotl32(k1, 15);
+      k1 *= c2;
+      h1 ^= k1;
+      h1 = rotl32(h1, 13);
+      h1 = h1 * 5 + 0xe6546b64;
+    }
+    //----------
+    // tail
+    const uint8_t* tail = (const uint8_t*)(data + nblocks * 4);
+    uint32_t k1         = 0;
+    switch (len & 3) {
+      case 3: k1 ^= tail[2] << 16;
+      case 2: k1 ^= tail[1] << 8;
+      case 1:
+        k1 ^= tail[0];
+        k1 *= c1;
+        k1 = rotl32(k1, 15);
+        k1 *= c2;
+        h1 ^= k1;
+    };
+    //----------
+    // finalization
+    h1 ^= len;
+    h1 = fmix32(h1);
+    return h1;
+  }
+
+ private:
+  constexpr __host__ __device__ uint32_t rotl32(uint32_t x, int8_t r) const noexcept
+  {
+    return (x << r) | (x >> (32 - r));
+  }
+
+  constexpr __host__ __device__ uint32_t fmix32(uint32_t h) const noexcept
+  {
+    h ^= h >> 16;
+    h *= 0x85ebca6b;
+    h ^= h >> 13;
+    h *= 0xc2b2ae35;
+    h ^= h >> 16;
+    return h;
+  }
+  uint32_t m_seed;
+};
+
 
 class DeviceSimpleHashTable {
  public:
@@ -92,18 +188,19 @@ class DeviceSimpleHashTable {
     if (_o2n_table[pos].state_key & 0x80000000) return nullptr;
     return &_o2n_table[pos];
   }
-
+  MurmurHash3_32<IdType> _hasher;
   const BucketO2N *_o2n_table;
  protected:
   const size_t _o2n_size;
 
   explicit DeviceSimpleHashTable(const BucketO2N *const o2n_table,
+                                 MurmurHash3_32<IdType> hasher,
                                   const size_t o2n_size);
 
 
   inline __device__ IdType HashO2N(const IdType id) const {
 #ifndef SXN_NAIVE_HASHMAP
-    return id % _o2n_size;
+    return _hasher(id) % _o2n_size;
 #else
     return id;
 #endif
@@ -185,6 +282,7 @@ class SimpleHashTable {
 
   BucketO2N *_o2n_table;
   size_t max_efficient_size;
+  MurmurHash3_32<IdType> _hasher;
  private:
   Context _ctx;
 
@@ -321,6 +419,7 @@ class CacheEntryManager {
     }
   };
   TensorPtr _cached_keys;
+  TensorPtr _remote_keys;
   TensorPtr _free_offsets;
   std::shared_ptr<SimpleHashTable> _hash_table;
   IdType _cache_space_capacity;
@@ -503,6 +602,10 @@ class CacheEntryManager {
     }
     for (auto & per_s_s : per_src_size) {
       per_s_s *= 1.1;
+      per_s_s += 100;
+    }
+    for (int dev_id = 0; dev_id < num_gpu; dev_id++) {
+      node_list_of_src[dev_id] = Tensor::Empty(kI32, {per_src_size[dev_id]}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
     }
 
     if (local_location_id == 0) LOG(ERROR) << "per src size local is " << per_src_size[local_location_id];

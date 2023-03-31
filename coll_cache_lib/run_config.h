@@ -28,7 +28,6 @@ namespace coll_cache_lib {
 namespace common {
 
 struct RunConfig {
-  static std::unordered_map<std::string, std::string> raw_configs;
 
   // Configs passed from application
   // clang-format off

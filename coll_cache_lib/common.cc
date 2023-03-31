@@ -144,11 +144,9 @@ TensorPtr Tensor::OpenShm(std::string shm_path, DataType dtype,
                           std::vector<size_t> shape, std::string name) {
   TensorPtr tensor = std::make_shared<Tensor>();
   size_t nbytes = GetTensorBytes(dtype, shape.begin(), shape.end());
-  int fd = cpu::MmapCPUDevice::OpenShm(shm_path);
 
-  struct stat st;
-  fstat(fd, &st);
-  size_t file_nbytes = st.st_size;
+  size_t file_nbytes;
+  int fd = cpu::MmapCPUDevice::OpenShm(shm_path, &file_nbytes);
 
   if (shape.size() == 0) {
     // auto infer shape, 1-D only
@@ -259,7 +257,12 @@ TensorPtr Tensor::Empty(DataType dtype, std::vector<size_t> shape, Context ctx,
   tensor->_dtype = dtype;
   tensor->_shape = shape;
   tensor->_nbytes = nbytes;
-  tensor->_data = Device::Get(ctx)->AllocWorkspace(ctx, nbytes);
+  if (nbytes == 0) {
+    LOG(ERROR) << "making a tensor with 0 num item";
+    tensor->_data = nullptr;
+  } else {
+    tensor->_data = Device::Get(ctx)->AllocWorkspace(ctx, nbytes);
+  }
   tensor->_ctx = ctx;
   tensor->_name = name;
   tensor->BuildLenOfEachShape();

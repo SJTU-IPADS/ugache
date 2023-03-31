@@ -14,8 +14,11 @@
 #include <mutex>
 #include <condition_variable>
 #include <thread>
+#include <iostream>
 #include <cuda_runtime.h>
 #include <cuda.h>
+#include "atomic_barrier.h"
+#include <semaphore.h>
 
 
 #define SAM_CUDA_PREPARE_1D(num_item) \
@@ -65,15 +68,180 @@ struct HostPointerExchanger {
   void close(void* ptr);
 };
 
+class JobSyncerWorkerHandle {
+ public:
+  virtual void on_wait_next_job() = 0;
+  virtual void on_job_done() = 0;
+  virtual void on_send_job() = 0;
+};
+class JobSyncer{
+ public:
+  virtual JobSyncerWorkerHandle* get_worker_handle(int idx = 0) = 0;
+  virtual JobSyncer* on_wait_job_done() = 0;
+  virtual JobSyncer* on_send_job() = 0;
+};
+
+class SpinJobSync:public JobSyncer{
+  std::atomic<int> todo_steps{0}, done_steps{0};
+ public:
+  class WorkerHandle : public JobSyncerWorkerHandle {
+   public:
+    WorkerHandle(SpinJobSync* base) : syncer(base) {}
+    SpinJobSync* syncer;
+    void on_wait_next_job() override {
+      int local_done_steps = syncer->done_steps.load();
+      while (syncer->todo_steps.load() == local_done_steps) {}
+    };
+    void on_job_done() override { syncer->done_steps.fetch_add(1); };
+    void on_send_job() override { syncer->todo_steps.fetch_add(1); }
+  };
+  JobSyncerWorkerHandle* get_worker_handle(int idx = 0) override {
+    assert(idx == 0);
+    return new WorkerHandle(this);
+  };
+  JobSyncer* on_wait_job_done() override {
+    int local_todo_steps = todo_steps.load();
+    while(local_todo_steps > done_steps.load()) {}
+    return this;
+  };
+  JobSyncer* on_send_job() override {
+    // todo_steps.fetch_add(1);
+    return this;
+  };
+};
+class ParallelJobSync:public JobSyncer{
+  std::vector<JobSyncer*> sync_array;
+ public:
+  template<typename SingleSyncer>
+  static ParallelJobSync* create(int num_syncer) {
+    auto ret = new ParallelJobSync;
+    ret->sync_array.resize(num_syncer);
+    for (auto & syncer : ret->sync_array) {
+      syncer = new SingleSyncer;
+    }
+    return ret;
+  }
+  JobSyncer* on_wait_job_done() override {
+    for (JobSyncer* syncer : sync_array) {
+      syncer->on_wait_job_done();
+    }
+    return this;
+  };
+  JobSyncer* on_send_job() override {
+    for (JobSyncer* syncer : sync_array) {
+      syncer->on_send_job();
+    }
+    return this;
+  };
+  JobSyncerWorkerHandle* get_worker_handle(int idx) override {
+    return sync_array[idx]->get_worker_handle(0);
+  };
+};
+
+class BarJobSync : public JobSyncer{
+ public:
+  class WorkerHandle : public JobSyncerWorkerHandle {
+   public:
+    WorkerHandle(AtomicBarrier* bar) : barrier_(bar) {}
+    AtomicBarrier * barrier_;
+    // call by thread
+    void on_wait_next_job() override {barrier_->Wait();};
+    void on_job_done() override {barrier_->Wait();};
+    // call by sender
+    void on_send_job() override {};
+  };
+  AtomicBarrier * barrier_;
+  BarJobSync(int num_worker) : barrier_(new AtomicBarrier(num_worker + 1)) {}
+  JobSyncer* on_wait_job_done() override {barrier_->Wait(); return this; }
+  JobSyncer* on_send_job() override {barrier_->Wait(); return this; }
+  JobSyncerWorkerHandle* get_worker_handle(int idx = 0) override {
+    return new WorkerHandle(barrier_);
+  };
+};
+
+class SemJobSync : public JobSyncer{
+ public:
+  class WorkerHandle : public JobSyncerWorkerHandle {
+    SemJobSync* base;
+   public:
+    WorkerHandle(SemJobSync* base) : base(base) {}
+    // call by thread
+    void on_wait_next_job() override {sem_wait(&base->launch);};
+    void on_job_done() override {sem_post(&base->done);}
+    // call by sender
+    void on_send_job() override {
+      sem_post(&base->launch);
+    }
+  };
+  sem_t launch;
+  sem_t done;
+  SemJobSync() {
+    sem_init(&launch, 0, 0);
+    sem_init(&done, 0, 0);
+  }
+  JobSyncer* on_wait_job_done() override {
+    sem_wait(&done);
+    return this;
+  }
+  JobSyncer* on_send_job() override {
+    // sem_post(&launch);
+    return this;
+  }
+  JobSyncerWorkerHandle* get_worker_handle(int idx = 0) override {
+    assert(idx == 0);
+    return new WorkerHandle(this);
+  };
+};
+class SemBarJobSync : public JobSyncer{
+ public:
+  class WorkerHandle : public JobSyncerWorkerHandle {
+    SemBarJobSync* base;
+   public:
+    WorkerHandle(SemBarJobSync* base) : base(base) {}
+    // call by thread
+    void on_wait_next_job() override { sem_wait(&base->launch); }
+    void on_job_done() override { base->bar->Wait(); }
+    // call by sender
+    void on_send_job() override {
+      // sem_post(&base->launch);
+    }
+  };
+  sem_t launch;
+  AtomicBarrier * bar;
+  int num_worker;
+  SemBarJobSync(int num_worker) : num_worker(num_worker) {
+    sem_init(&launch, 0, 0);
+    bar = new AtomicBarrier(num_worker + 1);
+  }
+  JobSyncer* on_wait_job_done() override {
+    bar->Wait();
+    return this;
+  }
+  JobSyncer* on_send_job() override {
+    for (int i = 0; i < num_worker; i++) {
+      sem_post(&launch);
+    }
+    return this;
+  }
+  JobSyncerWorkerHandle* get_worker_handle(int idx = 0) override {
+    return new WorkerHandle(this);
+  };
+};
+
 struct ExtractionThreadCtx {
   CUcontext cu_ctx_ = nullptr;
   cudaStream_t stream_;
+  int id = 0;
+  int local_id = 0;
   std::function<void(cudaStream_t)> func_;
-  std::atomic<int> todo_steps{0}, done_steps{0};
   ExtractionThreadCtx();
-  void thread_func();
-  void forward_one_step(std::function<void(cudaStream_t)> new_func);
-  void wait_one_step();
+  JobSyncerWorkerHandle* syncer_;
+  void v2_thread_func();
+  void v2_forward_one_step(std::function<void(cudaStream_t)> new_func);
+  void v2_forward_nop();
+  std::thread v2_launch();
+  void create_ctx(int dev_id, int num_sm, int priority = 0);
+  void create_stream(int dev_id, int priority = 0);
 };
 
 class CollCache;
@@ -109,7 +277,7 @@ class CacheContext {
   std::vector<void*> _device_cache_data;
   MemHandle _device_cache_data_local_handle;
   std::vector<BucketO2N*> _remote_hash_table;
-  CacheEntryManager* _new_hash_table;
+  CacheEntryManager* _new_hash_table = nullptr;
 #ifdef COLL_HASH_VALID_LEGACY
   std::vector<HashTableEntryLocation*> _remote_hash_table_location;
   std::vector<HashTableEntryOffset*> _remote_hash_table_offset;
@@ -169,15 +337,41 @@ class ExtractSession {
   IdType * _group_offset = nullptr;
   std::vector<StreamHandle> _concurrent_stream_array;
   std::vector<std::shared_ptr<ExtractionThreadCtx>> _extract_ctx;
+  ExtractionThreadCtx* launch_thread(int src_location_id, JobSyncerWorkerHandle* syncer, std::function<void(ExtractionThreadCtx* ctx)> init_func) {
+    auto ext_ctx = std::make_shared<ExtractionThreadCtx>();
+    ext_ctx->id = src_location_id;
+    ext_ctx->local_id = _local_location_id;
+    ext_ctx->syncer_ = syncer;
+    this->_extract_ctx[src_location_id] = ext_ctx;
+    this->_extract_threads[src_location_id] = ext_ctx->v2_launch();
+    ext_ctx->v2_forward_one_step([init_func, ext_ctx](cudaStream_t){
+      init_func(ext_ctx.get());
+    });
+    return ext_ctx.get();
+  }
+  JobSyncer *_local_syncer = nullptr, *_remote_syncer = nullptr, *_cpu_syncer = nullptr;
+  cudaStream_t _local_ext_stream;
   std::vector<std::thread> _extract_threads;
   double accu_cpu_time = 0;
   double accu_local_time = 0;
   double accu_remote_time = 0;
   size_t accu_step = 0;
   double accu_each_src_time[9] = {};
+
+  int _local_location_id;
+  int _cpu_location_id;
  public:
   ExtractSession(std::shared_ptr<CacheContext> cache_ctx);
  private:
+
+  void LaunchWaitAllSyncer() {
+    if (_remote_syncer) _remote_syncer->on_send_job();
+    if (   _cpu_syncer)    _cpu_syncer->on_send_job();
+    if ( _local_syncer)  _local_syncer->on_send_job();
+    if (_remote_syncer) _remote_syncer->on_wait_job_done();
+    if (   _cpu_syncer)    _cpu_syncer->on_wait_job_done();
+    if ( _local_syncer)  _local_syncer->on_wait_job_done();
+  }
 
   void SplitGroup(const SrcKey * src_index, const size_t len, IdType * & group_offset, StreamHandle stream);
 
@@ -212,7 +406,7 @@ class ExtractSession {
 
  public:
   void ExtractFeat(const IdType* nodes, const size_t num_nodes, void* output, StreamHandle stream, uint64_t task_key);
-
+  inline constexpr bool IsLegacy() { return false; }
 };
 
 class RefreshSession {
