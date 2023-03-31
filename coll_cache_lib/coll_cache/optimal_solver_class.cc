@@ -147,6 +147,7 @@ void OptimalSolver::BuildSingleStream(TensorPtr stream_id_list, TensorPtr stream
       auto slice_size = std::min(max_size_per_block, RoundUpDiv<uint32_t>(iter->second.size, device_to_stream.size()));
       bucket.set_max_size(device_to_stream.size(), slice_size);
       bucket.num_slices = RoundUpDiv(iter->second.size, slice_size);
+      bucket.num_slices = RoundUp<uint32_t>(bucket.num_slices, device_to_stream.size());
     } else {
       bucket.set_max_size(1, iter->second.size);
       bucket.num_slices = 1;
@@ -156,7 +157,8 @@ void OptimalSolver::BuildSingleStream(TensorPtr stream_id_list, TensorPtr stream
     }
     bucket.slice_begin = accumulate_num_slice;
     accumulate_num_slice += bucket.num_slices;
-    LOG(ERROR) << "slot " << iter->first << " has " << iter->second.size << " nodes, max_size set to " << buckets[iter->second.remmaped_slot].max_size_this_block;
+    LOG(ERROR) << "slot " << iter->first << " has " << iter->second.size << " nodes, max_size set to " << buckets[iter->second.remmaped_slot].max_size_this_block
+               << ", #slice=" << bucket.num_slices;
   }
 
   next_free_block.store(accumulate_num_slice);
@@ -362,6 +364,7 @@ void OptimalSolver::BuildSingleStream(ContFreqBuf* freq_rank, std::vector<int> d
       auto slice_size = std::min(max_size_per_block, RoundUpDiv<uint32_t>(iter->second.size, device_to_stream.size()));
       bucket.set_max_size(device_to_stream.size(), slice_size);
       bucket.num_slices = RoundUpDiv(iter->second.size, slice_size);
+      bucket.num_slices = RoundUp<uint32_t>(bucket.num_slices, device_to_stream.size());
     } else {
       bucket.set_max_size(1, iter->second.size);
       bucket.num_slices = 1;
@@ -371,7 +374,8 @@ void OptimalSolver::BuildSingleStream(ContFreqBuf* freq_rank, std::vector<int> d
     }
     bucket.slice_begin = accumulate_num_slice;
     accumulate_num_slice += bucket.num_slices;
-    LOG(ERROR) << "slot " << iter->first << " has " << iter->second.size << " nodes, max_size set to " << buckets[iter->second.remmaped_slot].max_size_this_block;
+    LOG(ERROR) << "slot " << iter->first << " has " << iter->second.size << " nodes, max_size set to " << buckets[iter->second.remmaped_slot].max_size_this_block
+               << ", #slice=" << bucket.num_slices;
   }
 
   next_free_block.store(accumulate_num_slice);
