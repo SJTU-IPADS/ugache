@@ -244,6 +244,15 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
                          void *cpu_data, DataType dtype, size_t dim,
                          double cache_percentage, StreamHandle stream) {
   int device_id = RunConfig::device_id_list[replica_id];
+  if (GetDataTypeBytes(dtype) < 16) {
+    LOG(ERROR) << "before scale, dtype is " << dtype << ", dim is " << dim;
+    size_t scale = 16 / GetDataTypeBytes(dtype);
+    if (scale <= dim) {
+      dim /= scale;
+      dtype = kF64_2;
+    }
+    LOG(ERROR) << "after scale=" << scale << ", dtype is " << dtype << ", new dim is " << dim;
+  }
   if (RunConfig::cross_process || replica_id == 0) {
     // one-time call for each process
     RunConfig::LoadConfigFromEnv();
