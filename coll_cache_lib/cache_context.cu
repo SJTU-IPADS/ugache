@@ -102,7 +102,7 @@ struct DataIterMultiLocation {
     memcpy(_device_cache_data, cache_data.data(), sizeof(void*) * cache_data.size());
   }
   template<typename T>
-  __host__ __device__ T* operator[](const size_t & idx) const {
+  __forceinline__ __host__ __device__ T* operator[](const size_t & idx) const {
     const size_t src_offset = _offset_iter[idx];
     const int location = _hash_table_location[src_offset];
     const auto _remote_raw_data = (T*)_device_cache_data[location];
@@ -124,7 +124,7 @@ struct DataIterMixLocation {
     memcpy(_device_cache_data, cache_data.data(), sizeof(void*) * cache_data.size());
   }
   template<typename T>
-  __host__ __device__ T* operator[](const size_t & idx) const {
+  __forceinline__ __host__ __device__ T* operator[](const size_t & idx) const {
     const int location = _loc_iter[idx];
     const auto _remote_raw_data = (T*)_device_cache_data[location];
     const auto offset = _off_iter[idx];
@@ -142,12 +142,12 @@ struct DataIter {
   DataIter(OffsetIter_T offset_iter, const void* output, size_t dim) : 
     offset_iter(offset_iter), output(const_cast<void*>(output)), dim(dim) {}
   template<typename T>
-  __host__ __device__ T* operator[](const size_t & idx) {
+  __forceinline__ __host__ __device__ T* operator[](const size_t & idx) {
     size_t offset = offset_iter[idx];
     return ((T*)output) + offset * dim;
   }
   template<typename T>
-  __host__ __device__ const T* operator[](const size_t & idx) const {
+  __forceinline__ __host__ __device__ const T* operator[](const size_t & idx) const {
     size_t offset = offset_iter[idx];
     return ((T*)output) + offset * dim;
   }
@@ -225,24 +225,24 @@ struct LocationIter {
   LocationIter() {}
   LocationIter(SrcKey* src_key) : src_key(src_key) {}
   LocationIter(const SrcKey* src_key) : src_key(const_cast<SrcKey*>(src_key)) {}
-  __host__ __device__ int & operator[](const size_t & idx) { return src_key[idx]._location_id; }
-  __host__ __device__ const int & operator[](const size_t & idx) const { return src_key[idx]._location_id; }
+  __forceinline__ __host__ __device__ int & operator[](const size_t & idx) { return src_key[idx]._location_id; }
+  __forceinline__ __host__ __device__ const int & operator[](const size_t & idx) const { return src_key[idx]._location_id; }
 };
 struct SrcOffIter {
   DstVal* dst_val;
   SrcOffIter() {}
   SrcOffIter(DstVal* dst_val) : dst_val(dst_val) {}
   SrcOffIter(const DstVal* dst_val) : dst_val(const_cast<DstVal*>(dst_val)) {}
-  __host__ __device__ IdType & operator[](const size_t & idx) { return dst_val[idx]._src_offset; }
-  __host__ __device__ const IdType & operator[](const size_t & idx) const { return dst_val[idx]._src_offset; }
+  __forceinline__ __host__ __device__ IdType & operator[](const size_t & idx) { return dst_val[idx]._src_offset; }
+  __forceinline__ __host__ __device__ const IdType & operator[](const size_t & idx) const { return dst_val[idx]._src_offset; }
 };
 struct FreeOffIter {
   IdType* off_list;
   FreeOffIter() {}
   FreeOffIter(IdType* off_list) : off_list(off_list) {}
   FreeOffIter(const IdType* off_list) : off_list(const_cast<IdType*>(off_list)) {}
-  __host__ __device__ IdType & operator[](const size_t & idx) { return off_list[idx]; }
-  __host__ __device__ const IdType & operator[](const size_t & idx) const { return off_list[idx]; }
+  __forceinline__ __host__ __device__ IdType & operator[](const size_t & idx) { return off_list[idx]; }
+  __forceinline__ __host__ __device__ const IdType & operator[](const size_t & idx) const { return off_list[idx]; }
 };
 
 struct DstOffIter {
@@ -250,24 +250,24 @@ struct DstOffIter {
   DstOffIter() {}
   DstOffIter(DstVal* dst_val) : dst_val(dst_val) {}
   DstOffIter(const DstVal* dst_val) : dst_val(const_cast<DstVal*>(dst_val)) {}
-  __host__ __device__ IdType & operator[](const size_t & idx) { return dst_val[idx]._dst_offset; }
-  __host__ __device__ const IdType & operator[](const size_t & idx) const { return dst_val[idx]._dst_offset; }
+  __forceinline__ __host__ __device__ IdType & operator[](const size_t & idx) { return dst_val[idx]._dst_offset; }
+  __forceinline__ __host__ __device__ const IdType & operator[](const size_t & idx) const { return dst_val[idx]._dst_offset; }
 };
 struct DirectOffIter {
-  __host__ __device__ size_t operator[](const size_t & idx) const { return idx; }
+  __forceinline__ __host__ __device__ size_t operator[](const size_t & idx) const { return idx; }
 };
 
 // used when building cache with empty_feat
 struct MockOffIter {
   size_t empty_feat;
   MockOffIter() { empty_feat = RunConfig::option_empty_feat; }
-  __host__ __device__ size_t operator[](const size_t & idx) const { return idx % (1 << empty_feat); }
+  __forceinline__ __host__ __device__ size_t operator[](const size_t & idx) const { return idx % (1 << empty_feat); }
 };
 struct MockSrcOffIter {
   size_t empty_feat;
   IdType* idx_list;
   MockSrcOffIter(IdType* idx_list) : idx_list(idx_list) { empty_feat = RunConfig::option_empty_feat; }
-  __host__ __device__ size_t operator[](const size_t & idx) const { return idx_list[idx] % (1 << empty_feat); }
+  __forceinline__ __host__ __device__ size_t operator[](const size_t & idx) const { return idx_list[idx] % (1 << empty_feat); }
 };
 
 template <size_t BLOCK_SIZE, size_t TILE_SIZE, typename LocIter_T, typename SrcOffIter_T, typename DstOffIter_T>
