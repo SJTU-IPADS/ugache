@@ -175,11 +175,11 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
       remote_sm_decision = 56;
     }
   } else if (gpu_model.find("V100") != std::string::npos) {
-    RunConfig::coll_cache_hyperparam_T_remote = 330 / (double)38;
-    RunConfig::coll_cache_hyperparam_T_cpu    = 330 / (double)11;
+    RunConfig::coll_cache_hyperparam_T_remote = 350 / (double)38;
+    RunConfig::coll_cache_hyperparam_T_cpu    = 350 / (double)11;
     if (total_gpu > 4) {
       LOG(ERROR) << "v100x8, slow pcie";
-      RunConfig::coll_cache_hyperparam_T_cpu    = 330 / (double)3.4;
+      RunConfig::coll_cache_hyperparam_T_cpu    = 350 / (double)3.4;
     }
     if (RunConfig::concurrent_link_impl == kMPS || 
         RunConfig::concurrent_link_impl == kMPSPhase || 
@@ -187,6 +187,7 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
         RunConfig::concurrent_link_impl == kMultiKernelNumBlock || 
         RunConfig::concurrent_link_impl == kMultiKernelNumBlockOld) {
       cpu_sm_decision = 8;
+      remote_sm_decision = 72;
       // CHECK(false) << "not supported now";
     }
   } else {
