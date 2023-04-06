@@ -228,6 +228,13 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(Context ctx) {
   desc.local_sm.resize(desc.cpu_sm.size(), prop.multiProcessorCount - desc.cpu_sm[0]);
   // desc.SMPercentToNum(prop.multiProcessorCount - desc.cpu_sm[0]);
   desc.SMPercentToNum(desc.total_sm_for_remote[0]);
+  for (int dst_dev = 0; dst_dev < RunConfig::num_device; dst_dev++) {
+    std::cout << dst_dev << " : local " << desc.local_sm[dst_dev] << ", cpu " << desc.cpu_sm[dst_dev];
+    for (int src_link = 0; src_link < desc.link_src[dst_dev].size(); src_link++) {
+      std::cout << " {link #" << src_link << " : g" << desc.link_src[dst_dev][src_link][0] << " " << desc.link_sm[dst_dev][src_link] << "},";
+    }
+    std::cout << "\n";
+  }
   return desc;
 }
 void AsymmLinkDesc::SMPercentToNum(int total_sm) {
