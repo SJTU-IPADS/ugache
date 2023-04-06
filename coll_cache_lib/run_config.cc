@@ -65,6 +65,7 @@ double               RunConfig::coll_cache_hyperparam_T_local  = 1;
 double               RunConfig::coll_cache_hyperparam_T_remote = 438 / (double)213;  // performance on A100
 double               RunConfig::coll_cache_hyperparam_T_cpu    = 438 / (double)11.8; // performance on A100
 double               RunConfig::coll_cache_cpu_addup = 0.02;
+size_t               RunConfig::coll_cache_scale_nb = 0;
 
 size_t               RunConfig::seed  = 1;
 
@@ -140,6 +141,9 @@ void RunConfig::LoadConfigFromEnv() {
   }
   if (GetEnv("COLL_CACHE_CPU_ADDUP") != "") {
     RunConfig::coll_cache_cpu_addup = std::stod(GetEnv("COLL_CACHE_CPU_ADDUP"));
+  }
+  if (GetEnv("COLL_CACHE_SCALE") != "") {
+    RunConfig::coll_cache_scale_nb = std::stod(GetEnv("COLL_CACHE_SCALE"));
   }
 }
 
