@@ -50,6 +50,14 @@ void CollCache::build(std::function<std::function<MemHandle(size_t)>(int)> alloc
 void CollCache::lookup(int replica_id, const IdType *nodes,
                        const size_t num_nodes, void *output,
                        StreamHandle stream, uint64_t step_key) {
+  // if (step_key >= RunConfig::num_device && step_key < 2 * RunConfig::num_device) {
+  //   auto cpu_t = Tensor::Empty(common::kI32, {num_nodes}, CPU(), "");
+  //   CUDA_CALL(cudaMemcpy(cpu_t->MutableData(), nodes, cpu_t->NumBytes(), cudaMemcpyDefault));
+  //   LOG(ERROR) << "replica " << replica_id << " saving step " << step_key << " with " << num_nodes << " keys";
+  //   std::ofstream f("/tmp/coll.lookup." + std::to_string(replica_id));
+  //   f.write((char*)cpu_t->Data(), cpu_t->NumBytes());
+  //   f.close();
+  // }
   Timer t;
   _session_list[replica_id]->ExtractFeat(nodes, num_nodes, output, stream, step_key);
   _profiler->LogStep(step_key, common::kLogL2CacheCopyTime, t.Passed());
@@ -244,6 +252,12 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
                          void *cpu_data, DataType dtype, size_t dim,
                          double cache_percentage, StreamHandle stream) {
   int device_id = RunConfig::device_id_list[replica_id];
+  // if (replica_id == 0) {
+  //   std::ofstream f("/tmp/coll.rank");
+  //   f.write((char*)ranking_nodes_list_ptr, sizeof(IdType) * num_node);
+  //   f.write((char*)ranking_nodes_freq_list_ptr, sizeof(IdType) * num_node);
+  //   f.close();
+  // }
   if (GetDataTypeBytes(dtype) < 16) {
     LOG(ERROR) << "before scale, dtype is " << dtype << ", dim is " << dim;
     size_t scale = 16 / GetDataTypeBytes(dtype);

@@ -49,7 +49,7 @@ size_t               RunConfig::option_fake_feat_dim = 0;
 
 int                  RunConfig::omp_thread_num                   = 40;
 int                  RunConfig::solver_omp_thread_num            = 40;
-int                  RunConfig::solver_omp_thread_num_per_gpu    = 5;
+int                  RunConfig::solver_omp_thread_num_per_gpu    = 10;
 int                  RunConfig::refresher_omp_thread_num         = 8;
 int                  RunConfig::refresher_omp_thread_num_per_gpu = 1;
 

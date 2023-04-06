@@ -1001,6 +1001,37 @@ void CombineRevised(const SrcDataIter_T src_data_iter, DstDataIter_T dst_data_it
   }
 }
 
+template <typename T, typename SrcDataIter_T, typename DstDataIter_T>
+__global__ void extract_data_wg(
+      const SrcDataIter_T full_src, DstDataIter_T dst_index,
+      const size_t num_item, const size_t feat_dim) {
+  size_t item_id = blockIdx.x;
+  size_t col = threadIdx.x;
+  T* dst = dst_index.template operator[]<T>(item_id);
+  const T* src = full_src.template operator[]<T>(item_id);
+  dst[col] = src[col];
+}
+
+template <typename SrcDataIter_T, typename DstDataIter_T>
+void CombineWG(const SrcDataIter_T src_data_iter, DstDataIter_T dst_data_iter,
+    const size_t num_node, Context _trainer_ctx, DataType _dtype, IdType _dim, StreamHandle stream, bool async) {
+  if (num_node == 0) return;
+  auto device = Device::Get(_trainer_ctx);
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+
+  const dim3 block(_dim);
+  dim3 grid(num_node);
+
+  SWITCH_TYPE(_dtype, type, {
+      extract_data_wg<type><<<grid, block, 0, cu_stream>>>(
+          src_data_iter, dst_data_iter, num_node, _dim);
+  });
+
+  if (async == false) {
+    device->StreamSync(_trainer_ctx, stream);
+  }
+}
+
 template <typename SrcDataIter_T, typename DstDataIter_T>
 void Combine(const SrcDataIter_T src_data_iter, DstDataIter_T dst_data_iter,
     const size_t num_node, Context _trainer_ctx, DataType _dtype, IdType _dim, StreamHandle stream, IdType limit_block, bool async) {
@@ -1071,11 +1102,15 @@ void ExtractSession::CombineMixGroup(const SrcKey* src_key, const DstVal* dst_va
   }
   const dim3 grid(RoundUpDiv(num_node, static_cast<size_t>(block.y * 4)));
 
+  // const dim3 block(_dim);
+  // const dim3 grid(num_node);
+
   const DataIterMixLocation<LocationIter, SrcOffIter> src_iter(LocationIter(src_key), SrcOffIter(dst_val), _cache_ctx->_device_cache_data, _dim);
   DataIter<DirectOffIter> dst_iter(DirectOffIter(), output, _dim);
 
   SWITCH_TYPE(_dtype, type, {
       extract_data<type><<<grid, block, 0, cu_stream>>>(src_iter, dst_iter, num_node, _dim);
+      // extract_data_wg<type><<<grid, block, 0, cu_stream>>>(src_iter, dst_iter, num_node, _dim);
   });
 
   device->StreamSync(_trainer_ctx, stream);
@@ -2305,6 +2340,7 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
   _new_hash_table->_remote_keys = ConcatAllRemote(keys_for_each_source, RunConfig::num_device, location_id);
   size_t num_cpu_nodes = num_total_nodes - _new_hash_table->_remote_keys->NumItem() - num_cached_nodes;
   LOG(ERROR) << "num cpu nodes is " << num_cpu_nodes;
+  CUDA_CALL(cudaGetLastError());
 
   {
     // CHECK_NE(num_cached_nodes, 0);
@@ -2324,6 +2360,7 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
         DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), _device_cache_data[_local_location_id], dim);
         Combine(src_data_iter, dst_data_iter, num_cached_nodes, gpu_ctx, dtype, dim, stream);
       }
+      CUDA_CALL(cudaGetLastError());
 
       LOG(INFO) << "CollCacheManager: fix offset of local nodes in hash table";
       _new_hash_table->_hash_table = std::make_shared<SimpleHashTable>(_eager_gpu_mem_allocator, (size_t)(num_total_nodes - num_cpu_nodes), _trainer_ctx, stream);

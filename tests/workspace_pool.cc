@@ -171,6 +171,7 @@ MemHandle WorkspacePool::AllocWorkspace(size_t size, double scale) {
   std::shared_ptr<WorkspacePoolMemHandle> ret = std::make_shared<WorkspacePoolMemHandle>();
   ret->pool_ = _pool;
   ret->data_ = _pool->Alloc(size, scale);
+  ret->nbytes_ = size;
   return ret;
 }
 
