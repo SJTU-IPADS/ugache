@@ -100,6 +100,27 @@ void coll_cache_config_from_map(std::unordered_map<std::string, std::string>& co
   _coll_cache->_profiler = _profiler;
 }
 
+std::string ToReadableSizePrivate(size_t nbytes) {
+  char buf[Constant::kBufferSize];
+  if (nbytes > Constant::kGigabytes) {
+    double new_size = (float)nbytes / Constant::kGigabytes;
+    sprintf(buf, "%.2lf GB", new_size);
+    return std::string(buf);
+  } else if (nbytes > Constant::kMegabytes) {
+    double new_size = (float)nbytes / Constant::kMegabytes;
+    sprintf(buf, "%.2lf MB", new_size);
+    return std::string(buf);
+  } else if (nbytes > Constant::kKilobytes) {
+    double new_size = (float)nbytes / Constant::kKilobytes;
+    sprintf(buf, "%.2lf KB", new_size);
+    return std::string(buf);
+  } else {
+    double new_size = (float)nbytes;
+    sprintf(buf, "%.2lf Bytes", new_size);
+    return std::string(buf);
+  }
+}
+
 };
 
 void coll_cache_init(int replica_id, size_t key_space_size, std::function<MemHandle(size_t)> allocator, void *cpu_data, DataType dtype, size_t dim, double cache_percentage, StreamHandle stream) {
@@ -231,7 +252,7 @@ size_t get_cuda_used() {
 }
 
 void coll_cache_print_memory_usage() {
-  // std::cout << "[CUDA] cuda" << /*ctx.device_id << */ ": usage: " << ToReadableSize(get_cuda_used()) << "\n";
+  std::cout << "[CUDA] cuda" << /*ctx.device_id << */ ": usage: " << ToReadableSizePrivate(get_cuda_used()) << "\n";
   std::cout.flush();
 }
 
