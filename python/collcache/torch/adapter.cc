@@ -144,7 +144,7 @@ void coll_torch_init_t(int replica_id, int dev_id, ::torch::Tensor emb, double c
   cudaStreamCreate(&_stream);
 
   size_t dim = emb.size(1);
-  size_t key_space_size = emb.size(0);
+  size_t key_space_size = common::RunConfig::num_total_item;
   bool use_fp16 = (emb.scalar_type() == ::torch::kF16);
 
   external_feat_dim = dim;
