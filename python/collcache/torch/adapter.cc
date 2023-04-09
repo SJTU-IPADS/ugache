@@ -53,6 +53,19 @@ namespace {
     case coll_cache_lib::common::kI8:  return ::torch::kI8;
     case coll_cache_lib::common::kI64: return ::torch::kI64;
   }
+  abort();
+}
+coll_cache_lib::common::DataType to_coll_data_type(::torch::Dtype dt) {
+  switch (dt) {
+    case ::torch::kF32: return coll_cache_lib::common::kF32;
+    case ::torch::kF64: return coll_cache_lib::common::kF64;
+    case ::torch::kF16: return coll_cache_lib::common::kF16;
+    case ::torch::kU8:  return coll_cache_lib::common::kU8;
+    case ::torch::kI32: return coll_cache_lib::common::kI32;
+    case ::torch::kI8:  return coll_cache_lib::common::kI8;
+    case ::torch::kI64: return coll_cache_lib::common::kI64;
+  }
+  abort();
 }
 
 size_t internal_feat_dim = 0;
@@ -62,10 +75,34 @@ c10::ScalarType external_dtype;
 bool _use_fp16 = false;
 cudaStream_t _stream = nullptr;
 
+std::string GetEnv(std::string key) {
+  const char *env_var_val = getenv(key.c_str());
+  if (env_var_val != nullptr) {
+    return std::string(env_var_val);
+  } else {
+    return "";
+  }
+}
+
 };
 
 namespace coll_cache_lib {
 namespace torch {
+
+namespace {
+
+common::DataType nb_to_dt(size_t nbyte_in) { 
+  switch (nbyte_in) { 
+    case 2:  { return common::kF16;   break; }
+    case 4:  { return common::kF32;   break; }
+    case 8:  { return common::kF64;   break; }
+    case 16: { return common::kF64_2; break; }
+    case 32: { return common::kF64_4; break; }
+    default: abort();
+  };
+};
+
+}
 
 extern "C" {
 
@@ -148,6 +185,24 @@ void coll_torch_init_t(int replica_id, int dev_id, ::torch::Tensor emb, double c
   return tensor;
 }
 
+::torch::Tensor coll_torch_create_emb_shm(int replica_id, size_t num_key, size_t dim, py::object dtype) {
+  ::torch::ScalarType torch_dtype = ::torch::python::detail::py_object_to_dtype(dtype);
+  if (GetEnv("SAMGRAPH_EMPTY_FEAT") != "") {
+    size_t option_empty_feat = std::stoul(GetEnv("SAMGRAPH_EMPTY_FEAT"));
+    num_key = 1 << option_empty_feat;
+  }
+
+  auto shm = common::Tensor::CreateShm("SAMG_FEAT_SHM", to_coll_data_type(torch_dtype), {num_key, dim}, "");
+
+  ::torch::Tensor tensor = ::torch::from_blob(
+      shm->MutableData(),
+      {(long)num_key, (long)dim},
+      [shm](void* data) {},
+      ::torch::TensorOptions().dtype(torch_dtype).device("cpu"));
+
+  return tensor;
+}
+
 void coll_torch_record(int replica_id, ::torch::Tensor key) {
   common::coll_cache_record(replica_id, (uint32_t*)key.data_ptr(), key.size(0));
 }
@@ -158,6 +213,7 @@ PYBIND11_MODULE(c_lib, m) {
   m.def("coll_torch_test", &coll_torch_test);
   m.def("coll_torch_record", &coll_torch_record);
   m.def("coll_torch_lookup_key_t_val_ret", &coll_torch_lookup_key_t_val_ret);
+  m.def("coll_torch_create_emb_shm", &coll_torch_create_emb_shm);
 }
 
 }
