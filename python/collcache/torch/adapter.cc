@@ -121,7 +121,7 @@ void coll_torch_init(int replica_id, size_t key_space_size, int dev_id, void *cp
   external_feat_dim = dim;
   if (use_fp16) {
     _use_fp16 = true;
-    if (dim % 2 == 0) { std::cerr << "dimension must be even\n"; abort(); }
+    if (dim % 2 != 0) { std::cerr << "dimension must be even\n"; abort(); }
     dim /= 2;
     external_dtype = ::torch::kF16;
   } else {
@@ -150,7 +150,7 @@ void coll_torch_init_t(int replica_id, int dev_id, ::torch::Tensor emb, double c
   external_feat_dim = dim;
   if (use_fp16) {
     _use_fp16 = true;
-    if (dim % 2 == 0) { std::cerr << "dimension must be even\n"; abort(); }
+    if (dim % 2 != 0) { std::cerr << "dimension must be even\n"; abort(); }
     dim /= 2;
     external_dtype = ::torch::kF16;
   } else {
