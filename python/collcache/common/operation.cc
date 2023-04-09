@@ -46,6 +46,7 @@ namespace coll_cache_lib {
 namespace common {
 
 std::shared_ptr<CollCache> _coll_cache = nullptr;
+std::shared_ptr<Profiler> _profiler = nullptr;
 size_t internal_feat_dim = 0;
 
 size_t outside_feat_dim = 0;
@@ -94,7 +95,9 @@ void coll_cache_config_from_map(std::unordered_map<std::string, std::string>& co
   // RC::dataset_path = configs["dataset_path"];
   CRC::is_configured = true;
 
+  _profiler = std::make_shared<Profiler>();
   _coll_cache = std::make_shared<CollCache>(nullptr, AnonymousBarrier::_global_instance);
+  _coll_cache->_profiler = _profiler;
 }
 
 };
@@ -151,16 +154,26 @@ void coll_cache_config(const char **config_keys, const char **config_values,
 
 void coll_cache_log_step_by_key(uint64_t key, int item, double val) {
   CHECK_LT(item, kNumLogStepItems);
-  _coll_cache->set_step_profile_value(key, static_cast<LogStepItem>(item), val);
+  _profiler->LogStep(key, static_cast<LogStepItem>(item), val);
 }
 
 void coll_cache_report_step_by_key(uint64_t key) {
-  _coll_cache->report(key);
+  _profiler->ReportStep(RunConfig::GetEpochFromKey(key), RunConfig::GetStepFromKey(key));
+  // _coll_cache->report(key);
   std::cout.flush();
 }
 
 void coll_cache_report_step_average_by_key(uint64_t key) {
-  _coll_cache->report_avg();
+  _profiler->ReportStepAverage(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1);
+  _profiler->ReportStepItemPercentiles(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1,
+        kLogL2CacheCopyTime, {50, 90, 95, 99, 99.9}, "tail_logl2featcopy");
+  // // _profiler->ReportStepMax(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1);
+  // // _profiler->ReportStepMin(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1);
+  // for (size_t epoch = 1; epoch < RunConfig::num_epoch; epoch ++) {
+  //   _profiler->ReportStepAverage(epoch, RunConfig::num_global_step_per_epoch - 1);
+  //   _profiler->ReportStepMax(epoch, RunConfig::num_global_step_per_epoch - 1);
+  //   _profiler->ReportStepMin(epoch, RunConfig::num_global_step_per_epoch - 1);
+  // }
   std::cout.flush();
 }
 
