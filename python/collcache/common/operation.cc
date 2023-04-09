@@ -54,6 +54,7 @@ size_t outside_feat_dim = 0;
 size_t steps[9] = {0};
 
 std::vector<std::shared_ptr<FreqRecorder>> _freq_recorder;
+size_t max_num_keys = 0;
 
 namespace {
 
@@ -237,6 +238,7 @@ void coll_cache_lookup(int replica_id, uint32_t* key, size_t num_keys, void* out
 
 void coll_cache_record(int replica_id, uint32_t* key, size_t num_keys) {
   _freq_recorder[replica_id]->Record(key, num_keys);
+  max_num_keys = std::max(max_num_keys, num_keys);
 }
 
 namespace {

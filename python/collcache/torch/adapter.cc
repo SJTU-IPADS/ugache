@@ -41,6 +41,15 @@
 
 // Use the torch built-in CHECK macros
 // #include "../common/logging.h"
+#define COLL_CUDA_CALL(func)                                      \
+  {                                                          \
+    cudaError_t e = (func);                                  \
+    if (e != cudaSuccess && e == cudaErrorCudartUnloading) { \
+      std::stringstream ss;\
+      ss << "[" << getpid() << "]CUDA: " << cudaGetErrorString(e) << "\n";\
+      std::cerr << ss.str(); \
+    }\
+  }
 
 namespace {
 ::torch::Dtype to_torch_data_type(coll_cache_lib::common::DataType dt) {
@@ -87,6 +96,11 @@ std::string GetEnv(std::string key) {
 };
 
 namespace coll_cache_lib {
+namespace common {
+
+std::function<common::MemHandle(size_t)> _torch_eager_gpu_mem_allocator;
+
+}
 namespace torch {
 
 namespace {
@@ -101,6 +115,9 @@ common::DataType nb_to_dt(size_t nbyte_in) {
     default: abort();
   };
 };
+
+common::TensorPtr batch_emb_reuse = nullptr;
+
 
 }
 
@@ -143,6 +160,18 @@ void coll_torch_init_t(int replica_id, int dev_id, ::torch::Tensor emb, double c
   cudaSetDevice(dev_id);
   cudaStreamCreate(&_stream);
 
+  common::_torch_eager_gpu_mem_allocator = [dev_id](size_t nbytes)-> common::MemHandle{
+    std::shared_ptr<common::EagerGPUMemoryHandler> ret = std::make_shared<common::EagerGPUMemoryHandler>();
+    ret->dev_id_ = dev_id;
+    ret->nbytes_ = nbytes;
+    COLL_CUDA_CALL(cudaSetDevice(dev_id));
+    if (nbytes > 1<<21) {
+      nbytes = common::RoundUp(nbytes, (size_t)(1<<21));
+    }
+    COLL_CUDA_CALL(cudaMalloc(&ret->ptr_, nbytes));
+    return ret;
+  };
+
   size_t dim = emb.size(1);
   size_t key_space_size = common::RunConfig::num_total_item;
   bool use_fp16 = (emb.scalar_type() == ::torch::kF16);
@@ -176,11 +205,29 @@ void coll_torch_init_t(int replica_id, int dev_id, ::torch::Tensor emb, double c
                                                 ::torch::Tensor key) {
   auto device = "cuda:" + std::to_string(common::RunConfig::device_id_list[replica_id]);
   auto padded_len = common::RoundUp<long>(key.size(0), 8);
-  ::torch::Tensor tensor = ::torch::empty(
+
+  if (padded_len > common::max_num_keys) {
+    std::cerr << "Warning, found a larger batch, re allocating emb output now" << padded_len << common::max_num_keys << "\n";
+    common::max_num_keys = std::max<size_t>(common::max_num_keys, padded_len);
+    batch_emb_reuse = nullptr;
+  }
+  if (batch_emb_reuse == nullptr) {
+    common::max_num_keys *= 1.05;
+  }
+
+  if (batch_emb_reuse == nullptr) {
+    batch_emb_reuse = common::Tensor::EmptyExternal(common::kF32, {common::max_num_keys, internal_feat_dim}, common::_torch_eager_gpu_mem_allocator, common::GPU(common::RunConfig::device_id_list[replica_id]), "");
+  }
+  ::torch::Tensor tensor = ::torch::from_blob(batch_emb_reuse->MutableData(), 
       {padded_len, (long)external_feat_dim},
-      ::torch::TensorOptions()
-          .dtype(external_dtype)
-          .device(device));
+      [](void* data){},
+      ::torch::TensorOptions().dtype(external_dtype).device(device));
+
+  // ::torch::Tensor tensor = ::torch::empty(
+  //     {padded_len, (long)external_feat_dim},
+  //     ::torch::TensorOptions()
+  //         .dtype(external_dtype)
+  //         .device(device));
   common::coll_cache_lookup(replica_id, (uint32_t*)key.data_ptr(), key.size(0), tensor.data_ptr(), _stream);
   return tensor;
 }
