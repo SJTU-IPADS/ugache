@@ -187,6 +187,7 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
         RunConfig::concurrent_link_impl == kMultiKernelNumBlock || 
         RunConfig::concurrent_link_impl == kMultiKernelNumBlockOld) {
       cpu_sm_decision = 8;
+      // remote_sm_decision = 60;
       remote_sm_decision = 72;
       // CHECK(false) << "not supported now";
     }

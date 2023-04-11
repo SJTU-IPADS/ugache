@@ -29,7 +29,7 @@
     case kU8:  { typedef uint8_t Type; { __VA_ARGS__ }; break; } \
     case kI32: { typedef int32_t Type; { __VA_ARGS__ }; break; } \
     case kI64: { typedef int64_t Type; { __VA_ARGS__ }; break; } \
-    case kF64_2: { typedef double2 Type; { __VA_ARGS__ }; break; } \
+    case kF64_2: { typedef int4 Type; { __VA_ARGS__ }; break; } \
     case kF64_4: { typedef double4 Type; { __VA_ARGS__ }; break; } \
     default: CHECK(false);           \
   }
@@ -1300,6 +1300,7 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       auto call_combine = [src_index, group_offset, dst_index, nodes, this, output, num_nodes](int location_id, StreamHandle stream, bool sync=true){
         if (group_offset[location_id+1] - group_offset[location_id] == 0) return;
         Timer t;
+        // CombineOneGroupRevised
         CombineOneGroup(src_index + group_offset[location_id], 
                         dst_index + group_offset[location_id], 
                         nodes + group_offset[location_id], 
@@ -1332,7 +1333,7 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       }
       // launch remote extraction
       _remote_syncer->on_send_job();
-
+      usleep(60);
       // launch local extraction using this thread
       call_combine(_cache_ctx->_local_location_id, _local_ext_stream, false);
 
@@ -2641,7 +2642,7 @@ ExtractSession::ExtractSession(std::shared_ptr<CacheContext> cache_ctx) : _cache
       });
     }
     this->launch_thread(_cpu_location_id, _cpu_syncer->get_worker_handle(), [this, link_desc](ExtractionThreadCtx* ctx){
-      ctx->create_ctx(_local_location_id, link_desc.cpu_sm[_local_location_id]);
+      ctx->create_ctx(_local_location_id, link_desc.cpu_sm[_local_location_id], -5);
     });
     this->LaunchWaitAllSyncer();
     CUDA_CALL(cudaStreamCreate(&_local_ext_stream));
