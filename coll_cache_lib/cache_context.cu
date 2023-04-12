@@ -1309,6 +1309,7 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
         if (sync) {
           CUDA_CALL(cudaStreamSynchronize(reinterpret_cast<cudaStream_t>(stream)));
         }
+        phase_time_record[location_id] = t.Passed();
         accu_each_src_time[location_id] += t.Passed();
       };
       // launch cpu extraction
@@ -1338,10 +1339,16 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       call_combine(_cache_ctx->_local_location_id, _local_ext_stream, false);
 
       _remote_syncer->on_wait_job_done();
-      combine_times[1] = t_remote.Passed();
+      // combine_times[1] = t_remote.Passed();
 
       CUDA_CALL(cudaStreamSynchronize(reinterpret_cast<cudaStream_t>(_local_ext_stream)));
       combine_times[2] = t_local.Passed();
+      for (int i = 0; i < num_link; i++) {
+        int loc_id = link_src[i][0];
+        combine_times[1] += phase_time_record[loc_id];
+      }
+      combine_times[1] /= num_link;
+      combine_times[2] -= combine_times[1];
 
       _cpu_syncer->on_wait_job_done();
     } else if (RunConfig::concurrent_link_impl == kMPSForLandC) {
