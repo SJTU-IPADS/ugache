@@ -84,6 +84,11 @@ public:
              std::vector<int> device_to_stream,
              const IdType num_node,
              const TensorPtr nid_to_block_tensor);
+  using IdTypeMapper = std::function<IdType(IdType)>;
+  void BuildSingleStream(IdTypeMapper nid_iter, IdTypeMapper freq_iter, IdTypeMapper rnk_iter, IdType max_freq,
+             std::vector<int> device_to_stream,
+             const IdType num_node,
+             const TensorPtr nid_to_block_tensor);
   using CollCacheSolver::Solve;
   void Solve(std::vector<int> device_to_stream,
              std::vector<PerT> device_to_cache_percent, std::string mode,
