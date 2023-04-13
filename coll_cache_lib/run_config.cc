@@ -72,6 +72,7 @@ size_t               RunConfig::seed  = 1;
 uint64_t             RunConfig::num_global_step_per_epoch = 0;
 uint64_t             RunConfig::num_epoch = 0;
 uint64_t             RunConfig::num_total_item = 0;
+uint64_t             RunConfig::num_bucket_step = 0;
 
 coll_cache::AsymmLinkDesc RunConfig::coll_cache_link_desc;
 
@@ -144,6 +145,10 @@ void RunConfig::LoadConfigFromEnv() {
   }
   if (GetEnv("COLL_CACHE_SCALE") != "") {
     RunConfig::coll_cache_scale_nb = std::stod(GetEnv("COLL_CACHE_SCALE"));
+  }
+
+  if (GetEnv("PROFILE_SEQ_BUCKET_SZ") != "") {
+    RunConfig::num_bucket_step = std::stod(GetEnv("PROFILE_SEQ_BUCKET_SZ"));
   }
 }
 

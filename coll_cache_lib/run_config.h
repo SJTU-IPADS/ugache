@@ -80,6 +80,7 @@ struct RunConfig {
   static uint64_t             num_global_step_per_epoch;
   static uint64_t             num_epoch;
   static uint64_t             num_total_item;
+  static uint64_t             num_bucket_step;
 
   static coll_cache::AsymmLinkDesc coll_cache_link_desc;
 

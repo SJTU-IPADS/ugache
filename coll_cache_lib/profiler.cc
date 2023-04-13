@@ -457,7 +457,8 @@ void Profiler::ReportSequentialAverage(size_t bucket_size, std::ostream &out) {
   size_t total_global_steps = RunConfig::num_epoch * RunConfig::num_global_step_per_epoch;
   size_t num_items = static_cast<size_t>(kNumLogStepItems);
   auto BSTART = [bucket_size] (size_t bucket_num) {
-    return RunConfig::num_global_step_per_epoch + bucket_num * bucket_size;}; // skip first epoch
+    return bucket_num * bucket_size;}; // do not skip first epoch
+    // return RunConfig::num_global_step_per_epoch + bucket_num * bucket_size;}; // skip first epoch
   for (size_t b = 0; BSTART(b) < total_global_steps; b++) {
     for (size_t i = 0; i < num_items; i++) {
       double sum = 0;
@@ -477,7 +478,7 @@ void Profiler::ReportSequentialAverage(size_t bucket_size, std::ostream &out) {
       }
       _step_buf[i] = sum / cnt;
     }
-    OutputStep(total_global_steps - 1, "Sequence " + std::to_string(b) + "(Average)", out);
+    OutputStep(total_global_steps - 1, "Step(Seq_" + std::to_string(b) + ")", out);
   }
 }
 
