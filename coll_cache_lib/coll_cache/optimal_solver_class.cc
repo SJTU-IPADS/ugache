@@ -938,6 +938,13 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
   // env.set(GRB_IntParam_PrePasses, 5);
   // env.set(GRB_IntParam_NormAdjust, 0);
   // env.set(GRB_IntParam_FlowCoverCuts, 2);
+
+  if (GetEnv("COLL_GUROBI_EXP_PARAM") == "1") {
+    env.set(GRB_IntParam_Cuts, 2);
+    env.set(GRB_IntParam_DegenMoves, 2);
+    env.set(GRB_IntParam_ScaleFlag, 1);
+  }
+
   env.start();
 
   GRBModel model = GRBModel(env);
