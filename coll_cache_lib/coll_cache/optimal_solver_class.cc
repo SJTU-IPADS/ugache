@@ -281,7 +281,9 @@ void OptimalSolver::BuildSingleStream(IdTypeMapper nid_iter, IdTypeMapper freq_i
   // coarse-grained slice to reduce asymm solve time
   // symmetric & switch's precision still holds
   max_size_per_block = num_node / 1000;
-  if (GetEnv("COLL_BLOCK_SLICE_GRAIN") != "") {
+  if (GetEnv("COLL_BLOCK_SLICE_GRAIN_BY_CACHE") != "") {
+    max_size_per_block = num_node * RunConfig::cache_percentage / std::stod(GetEnv("COLL_BLOCK_SLICE_GRAIN_BY_CACHE"));
+  } else if (GetEnv("COLL_BLOCK_SLICE_GRAIN") != "") {
     max_size_per_block = num_node / std::stod(GetEnv("COLL_BLOCK_SLICE_GRAIN"));
   }
   auto freq_to_slot = [this](float freq, IdType num_node){ return this->freq_to_slot_1(freq, num_node);};

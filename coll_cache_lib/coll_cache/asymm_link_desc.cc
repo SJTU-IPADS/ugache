@@ -181,6 +181,12 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
       LOG(ERROR) << "v100x8, slow pcie";
       RunConfig::coll_cache_hyperparam_T_cpu    = 350 / (double)3.4;
     }
+    if (GetEnv("COLL_CPU_TIME_OVERRIDE") != "") {
+      RunConfig::coll_cache_hyperparam_T_cpu    = 350 / std::stod(GetEnv("COLL_CPU_TIME_OVERRIDE"));
+    }
+    if (GetEnv("COLL_REMOTE_TIME_OVERRIDE") != "") {
+      RunConfig::coll_cache_hyperparam_T_remote    = 350 / std::stod(GetEnv("COLL_REMOTE_TIME_OVERRIDE"));
+    }
     if (RunConfig::concurrent_link_impl == kMPS || 
         RunConfig::concurrent_link_impl == kMPSPhase || 
         RunConfig::concurrent_link_impl == kMPSForLandC || 
