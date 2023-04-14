@@ -1311,6 +1311,7 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
         }
         phase_time_record[location_id] = t.Passed();
         accu_each_src_time[location_id] += t.Passed();
+        accu_each_src_nkey[location_id] += group_offset[location_id+1] - group_offset[location_id];
       };
       // launch cpu extraction
       this->_extract_ctx[_cache_ctx->_cpu_location_id]->v2_forward_one_step([&combine_times, call_combine, loc_id = _cache_ctx->_cpu_location_id](cudaStream_t cu_s){
@@ -1575,7 +1576,7 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       accu_step ++;
       if (accu_step % 100 == 0) {
         // std::stringstream ss;
-        // ss << std::fixed << std::setw(10) << std::setprecision(6) 
+        // ss << _local_location_id << ":" << std::fixed << std::setw(10) << std::setprecision(6) 
         //    << std::setw(10) << accu_cpu_time / 100 
         //    << std::setw(10) << accu_remote_time / 100 
         //    << std::setw(10) << accu_local_time / 100  
@@ -1589,6 +1590,16 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
         //    << std::setw(10) << accu_each_src_time[6] / 100
         //    << std::setw(10) << accu_each_src_time[7] / 100
         //    << std::setw(10) << accu_each_src_time[8] / 100
+        //    << " | "
+        //    << std::setw(10) << (int)(accu_each_src_nkey[0] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[1] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[2] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[3] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[4] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[5] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[6] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[7] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[8] / 100)
         //    << "\n";
         // ;
         // std::cerr << ss.str();
@@ -1596,6 +1607,7 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
         // accu_remote_time = 0;
         // accu_local_time = 0;
         // memset(accu_each_src_time, 0, sizeof(accu_each_src_time));
+        // memset(accu_each_src_nkey, 0, sizeof(accu_each_src_nkey));
       }
       // _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochFeatureBytes,GetTensorBytes(_dtype, {num_nodes, _dim}));
       // _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochMissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
