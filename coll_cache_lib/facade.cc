@@ -343,6 +343,7 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
   this->_refresh_session_list[replica_id] = std::make_shared<RefreshSession>();
   this->_refresh_session_list[replica_id]->_cache_ctx = cache_ctx;
   this->_refresh_session_list[replica_id]->stream = stream;
+  CUDA_CALL(cudaStreamCreateWithPriority((cudaStream_t*)&_refresh_session_list[replica_id]->low_pri_stream, cudaStreamNonBlocking, 0));
   this->_replica_barrier->Wait();
   RunConfig::solver_omp_thread_num = RunConfig::refresher_omp_thread_num;
   RunConfig::solver_omp_thread_num_per_gpu = RunConfig::refresher_omp_thread_num_per_gpu;

@@ -414,6 +414,7 @@ class ExtractSession {
 class RefreshSession {
  public:
   StreamHandle stream;
+  StreamHandle low_pri_stream;
   std::shared_ptr<CacheContext> _cache_ctx;
 #ifdef COLL_HASH_VALID_LEGACY
   void refresh_after_solve(bool foreground);
