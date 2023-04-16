@@ -265,8 +265,8 @@ struct MockOffIter {
 };
 struct MockSrcOffIter {
   size_t empty_feat;
-  IdType* idx_list;
-  MockSrcOffIter(IdType* idx_list) : idx_list(idx_list) { empty_feat = RunConfig::option_empty_feat; }
+  const IdType* idx_list;
+  MockSrcOffIter(const IdType* idx_list) : idx_list(idx_list) { empty_feat = RunConfig::option_empty_feat; }
   __forceinline__ __host__ __device__ size_t operator[](const size_t & idx) const { return idx_list[idx] % (1 << empty_feat); }
 };
 
@@ -1124,6 +1124,16 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     // direct mapping from node id to freature, no need to go through hashtable
     LOG(DEBUG) << "CollCache: ExtractFeat: Direct mapping, going fast path... ";
     Timer t0;
+
+    if (RunConfig::option_empty_feat == 0 || RunConfig::cache_percentage != 0) {
+      const DataIter<const IdType*> src_data_iter(nodes, _cache_ctx->_device_cache_data[0], _cache_ctx->_dim);
+      DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), output, _cache_ctx->_dim);
+      Combine(src_data_iter, dst_data_iter, num_nodes, _cache_ctx->_trainer_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
+    } else {
+      const DataIter<MockSrcOffIter> src_data_iter(MockSrcOffIter(nodes), _cache_ctx->_device_cache_data[0], _cache_ctx->_dim);
+      DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), output, _cache_ctx->_dim);
+      Combine(src_data_iter, dst_data_iter, num_nodes, _cache_ctx->_trainer_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
+    }
     const DataIter<const IdType*> src_data_iter(nodes, _cache_ctx->_device_cache_data[0], _cache_ctx->_dim);
     DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), output, _cache_ctx->_dim);
     Combine(src_data_iter, dst_data_iter, num_nodes, _cache_ctx->_trainer_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
@@ -1813,13 +1823,18 @@ void CacheContext::build_full_cache(int location_id, std::shared_ptr<CollCache> 
   Timer t;
 
   _cache_nbytes = GetTensorBytes(_dtype, {num_total_nodes, _dim});
+  _cache_space_capacity = _cache_nbytes;
 
   auto trainer_gpu_device = Device::Get(gpu_ctx);
 
   _device_cache_data_local_handle = _eager_gpu_mem_allocator(_cache_nbytes);
   void* local_cache = _device_cache_data_local_handle->ptr();
 
-  trainer_gpu_device->CopyDataFromTo(cpu_src_data, 0, local_cache, 0, _cache_nbytes, CPU(), gpu_ctx, stream);
+  size_t cache_init_nbytes = _cache_nbytes;
+  if (RunConfig::option_empty_feat != 0) {
+    cache_init_nbytes = GetTensorBytes(_dtype, {(size_t)1 << RunConfig::option_empty_feat, _dim});
+  }
+  trainer_gpu_device->CopyDataFromTo(cpu_src_data, 0, local_cache, 0, cache_init_nbytes, CPU(), gpu_ctx, stream);
   trainer_gpu_device->StreamSync(gpu_ctx, stream);
 
   _device_cache_data.resize(1);

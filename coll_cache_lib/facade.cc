@@ -308,7 +308,7 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
     // RunConfig::LoadConfigFromEnv();
     RunConfig::coll_cache_link_desc = coll_cache::AsymmLinkDesc::AutoBuild(GPU(device_id));
     size_t num_node_host_mem = num_node;
-    if (RunConfig::option_empty_feat != 0 && cache_percentage != 0) {
+    if (RunConfig::option_empty_feat != 0) {
       num_node_host_mem = 1 << RunConfig::option_empty_feat;
     }
     LOG(ERROR) << "registering cpu data with " << ToReadableSize(RoundUp<size_t>(num_node_host_mem * dim * GetDataTypeBytes(dtype), 1 << 21));
@@ -419,7 +419,7 @@ void CollCache::build_v2(int replica_id, ContFreqBuf* freq_rank, IdType num_node
     // RunConfig::LoadConfigFromEnv();
     RunConfig::coll_cache_link_desc = coll_cache::AsymmLinkDesc::AutoBuild(GPU(device_id));
     size_t num_node_host_mem = num_node;
-    if (RunConfig::option_empty_feat != 0 && cache_percentage != 0) {
+    if (RunConfig::option_empty_feat != 0) {
       num_node_host_mem = 1 << RunConfig::option_empty_feat;
     }
     LOG(ERROR) << "registering cpu data with " << ToReadableSize(RoundUp<size_t>(num_node_host_mem * dim * GetDataTypeBytes(dtype), 1 << 21));
