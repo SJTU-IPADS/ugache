@@ -1125,7 +1125,10 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     LOG(DEBUG) << "CollCache: ExtractFeat: Direct mapping, going fast path... ";
     Timer t0;
 
-    if (RunConfig::option_empty_feat == 0 || RunConfig::cache_percentage != 0) {
+    /**
+     * need to distinguish 0% or 100%. for host, we expect empty feat to work. for local, we expect to ignore empty feat.
+     */
+    if (RunConfig::option_empty_feat == 0 || _cache_ctx->_cache_space_capacity != 0) {
       const DataIter<const IdType*> src_data_iter(nodes, _cache_ctx->_device_cache_data[0], _cache_ctx->_dim);
       DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), output, _cache_ctx->_dim);
       Combine(src_data_iter, dst_data_iter, num_nodes, _cache_ctx->_trainer_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
@@ -1134,9 +1137,6 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), output, _cache_ctx->_dim);
       Combine(src_data_iter, dst_data_iter, num_nodes, _cache_ctx->_trainer_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
     }
-    // const DataIter<const IdType*> src_data_iter(nodes, _cache_ctx->_device_cache_data[0], _cache_ctx->_dim);
-    // DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), output, _cache_ctx->_dim);
-    // Combine(src_data_iter, dst_data_iter, num_nodes, _cache_ctx->_trainer_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
     double combine_time = t0.Passed();
     if (task_key != 0xffffffffffffffff) {
       size_t nbytes = GetTensorBytes(_cache_ctx->_dtype, {num_nodes, _cache_ctx->_dim});
