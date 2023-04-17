@@ -259,7 +259,7 @@ class Profiler {
   
   // timestamp for sequence report
   Timer *_seq_ts;
-  double _refresh_duration; 
+  double _refresh_duration = 0; 
   std::vector<double> _seq_duration; 
 
   // for trace
