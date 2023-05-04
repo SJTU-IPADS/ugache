@@ -29,7 +29,7 @@
     case kU8:  { typedef uint8_t Type; { __VA_ARGS__ }; break; } \
     case kI32: { typedef int32_t Type; { __VA_ARGS__ }; break; } \
     case kI64: { typedef int64_t Type; { __VA_ARGS__ }; break; } \
-    case kF64_2: { typedef double2 Type; { __VA_ARGS__ }; break; } \
+    case kF64_2: { typedef int4 Type; { __VA_ARGS__ }; break; } \
     case kF64_4: { typedef double4 Type; { __VA_ARGS__ }; break; } \
     default: CHECK(false);           \
   }
@@ -102,7 +102,7 @@ struct DataIterMultiLocation {
     memcpy(_device_cache_data, cache_data.data(), sizeof(void*) * cache_data.size());
   }
   template<typename T>
-  __host__ __device__ T* operator[](const size_t & idx) const {
+  __forceinline__ __host__ __device__ T* operator[](const size_t & idx) const {
     const size_t src_offset = _offset_iter[idx];
     const int location = _hash_table_location[src_offset];
     const auto _remote_raw_data = (T*)_device_cache_data[location];
@@ -124,7 +124,7 @@ struct DataIterMixLocation {
     memcpy(_device_cache_data, cache_data.data(), sizeof(void*) * cache_data.size());
   }
   template<typename T>
-  __host__ __device__ T* operator[](const size_t & idx) const {
+  __forceinline__ __host__ __device__ T* operator[](const size_t & idx) const {
     const int location = _loc_iter[idx];
     const auto _remote_raw_data = (T*)_device_cache_data[location];
     const auto offset = _off_iter[idx];
@@ -142,12 +142,12 @@ struct DataIter {
   DataIter(OffsetIter_T offset_iter, const void* output, size_t dim) : 
     offset_iter(offset_iter), output(const_cast<void*>(output)), dim(dim) {}
   template<typename T>
-  __host__ __device__ T* operator[](const size_t & idx) {
+  __forceinline__ __host__ __device__ T* operator[](const size_t & idx) {
     size_t offset = offset_iter[idx];
     return ((T*)output) + offset * dim;
   }
   template<typename T>
-  __host__ __device__ const T* operator[](const size_t & idx) const {
+  __forceinline__ __host__ __device__ const T* operator[](const size_t & idx) const {
     size_t offset = offset_iter[idx];
     return ((T*)output) + offset * dim;
   }
@@ -225,24 +225,24 @@ struct LocationIter {
   LocationIter() {}
   LocationIter(SrcKey* src_key) : src_key(src_key) {}
   LocationIter(const SrcKey* src_key) : src_key(const_cast<SrcKey*>(src_key)) {}
-  __host__ __device__ int & operator[](const size_t & idx) { return src_key[idx]._location_id; }
-  __host__ __device__ const int & operator[](const size_t & idx) const { return src_key[idx]._location_id; }
+  __forceinline__ __host__ __device__ int & operator[](const size_t & idx) { return src_key[idx]._location_id; }
+  __forceinline__ __host__ __device__ const int & operator[](const size_t & idx) const { return src_key[idx]._location_id; }
 };
 struct SrcOffIter {
   DstVal* dst_val;
   SrcOffIter() {}
   SrcOffIter(DstVal* dst_val) : dst_val(dst_val) {}
   SrcOffIter(const DstVal* dst_val) : dst_val(const_cast<DstVal*>(dst_val)) {}
-  __host__ __device__ IdType & operator[](const size_t & idx) { return dst_val[idx]._src_offset; }
-  __host__ __device__ const IdType & operator[](const size_t & idx) const { return dst_val[idx]._src_offset; }
+  __forceinline__ __host__ __device__ IdType & operator[](const size_t & idx) { return dst_val[idx]._src_offset; }
+  __forceinline__ __host__ __device__ const IdType & operator[](const size_t & idx) const { return dst_val[idx]._src_offset; }
 };
 struct FreeOffIter {
   IdType* off_list;
   FreeOffIter() {}
   FreeOffIter(IdType* off_list) : off_list(off_list) {}
   FreeOffIter(const IdType* off_list) : off_list(const_cast<IdType*>(off_list)) {}
-  __host__ __device__ IdType & operator[](const size_t & idx) { return off_list[idx]; }
-  __host__ __device__ const IdType & operator[](const size_t & idx) const { return off_list[idx]; }
+  __forceinline__ __host__ __device__ IdType & operator[](const size_t & idx) { return off_list[idx]; }
+  __forceinline__ __host__ __device__ const IdType & operator[](const size_t & idx) const { return off_list[idx]; }
 };
 
 struct DstOffIter {
@@ -250,24 +250,24 @@ struct DstOffIter {
   DstOffIter() {}
   DstOffIter(DstVal* dst_val) : dst_val(dst_val) {}
   DstOffIter(const DstVal* dst_val) : dst_val(const_cast<DstVal*>(dst_val)) {}
-  __host__ __device__ IdType & operator[](const size_t & idx) { return dst_val[idx]._dst_offset; }
-  __host__ __device__ const IdType & operator[](const size_t & idx) const { return dst_val[idx]._dst_offset; }
+  __forceinline__ __host__ __device__ IdType & operator[](const size_t & idx) { return dst_val[idx]._dst_offset; }
+  __forceinline__ __host__ __device__ const IdType & operator[](const size_t & idx) const { return dst_val[idx]._dst_offset; }
 };
 struct DirectOffIter {
-  __host__ __device__ size_t operator[](const size_t & idx) const { return idx; }
+  __forceinline__ __host__ __device__ size_t operator[](const size_t & idx) const { return idx; }
 };
 
 // used when building cache with empty_feat
 struct MockOffIter {
   size_t empty_feat;
   MockOffIter() { empty_feat = RunConfig::option_empty_feat; }
-  __host__ __device__ size_t operator[](const size_t & idx) const { return idx % (1 << empty_feat); }
+  __forceinline__ __host__ __device__ size_t operator[](const size_t & idx) const { return idx % (1 << empty_feat); }
 };
 struct MockSrcOffIter {
   size_t empty_feat;
-  IdType* idx_list;
-  MockSrcOffIter(IdType* idx_list) : idx_list(idx_list) { empty_feat = RunConfig::option_empty_feat; }
-  __host__ __device__ size_t operator[](const size_t & idx) const { return idx_list[idx] % (1 << empty_feat); }
+  const IdType* idx_list;
+  MockSrcOffIter(const IdType* idx_list) : idx_list(idx_list) { empty_feat = RunConfig::option_empty_feat; }
+  __forceinline__ __host__ __device__ size_t operator[](const size_t & idx) const { return idx_list[idx] % (1 << empty_feat); }
 };
 
 template <size_t BLOCK_SIZE, size_t TILE_SIZE, typename LocIter_T, typename SrcOffIter_T, typename DstOffIter_T>
@@ -1001,6 +1001,37 @@ void CombineRevised(const SrcDataIter_T src_data_iter, DstDataIter_T dst_data_it
   }
 }
 
+template <typename T, typename SrcDataIter_T, typename DstDataIter_T>
+__global__ void extract_data_wg(
+      const SrcDataIter_T full_src, DstDataIter_T dst_index,
+      const size_t num_item, const size_t feat_dim) {
+  size_t item_id = blockIdx.x;
+  size_t col = threadIdx.x;
+  T* dst = dst_index.template operator[]<T>(item_id);
+  const T* src = full_src.template operator[]<T>(item_id);
+  dst[col] = src[col];
+}
+
+template <typename SrcDataIter_T, typename DstDataIter_T>
+void CombineWG(const SrcDataIter_T src_data_iter, DstDataIter_T dst_data_iter,
+    const size_t num_node, Context _trainer_ctx, DataType _dtype, IdType _dim, StreamHandle stream, bool async) {
+  if (num_node == 0) return;
+  auto device = Device::Get(_trainer_ctx);
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+
+  const dim3 block(_dim);
+  dim3 grid(num_node);
+
+  SWITCH_TYPE(_dtype, type, {
+      extract_data_wg<type><<<grid, block, 0, cu_stream>>>(
+          src_data_iter, dst_data_iter, num_node, _dim);
+  });
+
+  if (async == false) {
+    device->StreamSync(_trainer_ctx, stream);
+  }
+}
+
 template <typename SrcDataIter_T, typename DstDataIter_T>
 void Combine(const SrcDataIter_T src_data_iter, DstDataIter_T dst_data_iter,
     const size_t num_node, Context _trainer_ctx, DataType _dtype, IdType _dim, StreamHandle stream, IdType limit_block, bool async) {
@@ -1071,11 +1102,15 @@ void ExtractSession::CombineMixGroup(const SrcKey* src_key, const DstVal* dst_va
   }
   const dim3 grid(RoundUpDiv(num_node, static_cast<size_t>(block.y * 4)));
 
+  // const dim3 block(_dim);
+  // const dim3 grid(num_node);
+
   const DataIterMixLocation<LocationIter, SrcOffIter> src_iter(LocationIter(src_key), SrcOffIter(dst_val), _cache_ctx->_device_cache_data, _dim);
   DataIter<DirectOffIter> dst_iter(DirectOffIter(), output, _dim);
 
   SWITCH_TYPE(_dtype, type, {
       extract_data<type><<<grid, block, 0, cu_stream>>>(src_iter, dst_iter, num_node, _dim);
+      // extract_data_wg<type><<<grid, block, 0, cu_stream>>>(src_iter, dst_iter, num_node, _dim);
   });
 
   device->StreamSync(_trainer_ctx, stream);
@@ -1089,9 +1124,19 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     // direct mapping from node id to freature, no need to go through hashtable
     LOG(DEBUG) << "CollCache: ExtractFeat: Direct mapping, going fast path... ";
     Timer t0;
-    const DataIter<const IdType*> src_data_iter(nodes, _cache_ctx->_device_cache_data[0], _cache_ctx->_dim);
-    DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), output, _cache_ctx->_dim);
-    Combine(src_data_iter, dst_data_iter, num_nodes, _cache_ctx->_trainer_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
+
+    /**
+     * need to distinguish 0% or 100%. for host, we expect empty feat to work. for local, we expect to ignore empty feat.
+     */
+    if (RunConfig::option_empty_feat == 0 || _cache_ctx->_cache_space_capacity != 0) {
+      const DataIter<const IdType*> src_data_iter(nodes, _cache_ctx->_device_cache_data[0], _cache_ctx->_dim);
+      DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), output, _cache_ctx->_dim);
+      Combine(src_data_iter, dst_data_iter, num_nodes, _cache_ctx->_trainer_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
+    } else {
+      const DataIter<MockSrcOffIter> src_data_iter(MockSrcOffIter(nodes), _cache_ctx->_device_cache_data[0], _cache_ctx->_dim);
+      DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), output, _cache_ctx->_dim);
+      Combine(src_data_iter, dst_data_iter, num_nodes, _cache_ctx->_trainer_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
+    }
     double combine_time = t0.Passed();
     if (task_key != 0xffffffffffffffff) {
       size_t nbytes = GetTensorBytes(_cache_ctx->_dtype, {num_nodes, _cache_ctx->_dim});
@@ -1265,6 +1310,7 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       auto call_combine = [src_index, group_offset, dst_index, nodes, this, output, num_nodes](int location_id, StreamHandle stream, bool sync=true){
         if (group_offset[location_id+1] - group_offset[location_id] == 0) return;
         Timer t;
+        // CombineOneGroupRevised
         CombineOneGroup(src_index + group_offset[location_id], 
                         dst_index + group_offset[location_id], 
                         nodes + group_offset[location_id], 
@@ -1273,7 +1319,9 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
         if (sync) {
           CUDA_CALL(cudaStreamSynchronize(reinterpret_cast<cudaStream_t>(stream)));
         }
+        phase_time_record[location_id] = t.Passed();
         accu_each_src_time[location_id] += t.Passed();
+        accu_each_src_nkey[location_id] += group_offset[location_id+1] - group_offset[location_id];
       };
       // launch cpu extraction
       this->_extract_ctx[_cache_ctx->_cpu_location_id]->v2_forward_one_step([&combine_times, call_combine, loc_id = _cache_ctx->_cpu_location_id](cudaStream_t cu_s){
@@ -1297,15 +1345,21 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       }
       // launch remote extraction
       _remote_syncer->on_send_job();
-
+      usleep(60);
       // launch local extraction using this thread
       call_combine(_cache_ctx->_local_location_id, _local_ext_stream, false);
 
       _remote_syncer->on_wait_job_done();
-      combine_times[1] = t_remote.Passed();
+      // combine_times[1] = t_remote.Passed();
 
       CUDA_CALL(cudaStreamSynchronize(reinterpret_cast<cudaStream_t>(_local_ext_stream)));
       combine_times[2] = t_local.Passed();
+      for (int i = 0; i < num_link; i++) {
+        int loc_id = link_src[i][0];
+        combine_times[1] += phase_time_record[loc_id];
+      }
+      combine_times[1] /= num_link;
+      combine_times[2] -= combine_times[1];
 
       _cpu_syncer->on_wait_job_done();
     } else if (RunConfig::concurrent_link_impl == kMPSForLandC) {
@@ -1532,7 +1586,7 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       accu_step ++;
       if (accu_step % 100 == 0) {
         // std::stringstream ss;
-        // ss << std::fixed << std::setw(10) << std::setprecision(6) 
+        // ss << _local_location_id << ":" << std::fixed << std::setw(10) << std::setprecision(6) 
         //    << std::setw(10) << accu_cpu_time / 100 
         //    << std::setw(10) << accu_remote_time / 100 
         //    << std::setw(10) << accu_local_time / 100  
@@ -1546,6 +1600,16 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
         //    << std::setw(10) << accu_each_src_time[6] / 100
         //    << std::setw(10) << accu_each_src_time[7] / 100
         //    << std::setw(10) << accu_each_src_time[8] / 100
+        //    << " | "
+        //    << std::setw(10) << (int)(accu_each_src_nkey[0] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[1] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[2] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[3] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[4] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[5] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[6] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[7] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[8] / 100)
         //    << "\n";
         // ;
         // std::cerr << ss.str();
@@ -1553,6 +1617,7 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
         // accu_remote_time = 0;
         // accu_local_time = 0;
         // memset(accu_each_src_time, 0, sizeof(accu_each_src_time));
+        // memset(accu_each_src_nkey, 0, sizeof(accu_each_src_nkey));
       }
       // _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochFeatureBytes,GetTensorBytes(_dtype, {num_nodes, _dim}));
       // _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochMissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
@@ -1758,13 +1823,18 @@ void CacheContext::build_full_cache(int location_id, std::shared_ptr<CollCache> 
   Timer t;
 
   _cache_nbytes = GetTensorBytes(_dtype, {num_total_nodes, _dim});
+  _cache_space_capacity = _cache_nbytes;
 
   auto trainer_gpu_device = Device::Get(gpu_ctx);
 
   _device_cache_data_local_handle = _eager_gpu_mem_allocator(_cache_nbytes);
   void* local_cache = _device_cache_data_local_handle->ptr();
 
-  trainer_gpu_device->CopyDataFromTo(cpu_src_data, 0, local_cache, 0, _cache_nbytes, CPU(), gpu_ctx, stream);
+  size_t cache_init_nbytes = _cache_nbytes;
+  if (RunConfig::option_empty_feat != 0) {
+    cache_init_nbytes = GetTensorBytes(_dtype, {(size_t)1 << RunConfig::option_empty_feat, _dim});
+  }
+  trainer_gpu_device->CopyDataFromTo(cpu_src_data, 0, local_cache, 0, cache_init_nbytes, CPU(), gpu_ctx, stream);
   trainer_gpu_device->StreamSync(gpu_ctx, stream);
 
   _device_cache_data.resize(1);
@@ -2305,6 +2375,7 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
   _new_hash_table->_remote_keys = ConcatAllRemote(keys_for_each_source, RunConfig::num_device, location_id);
   size_t num_cpu_nodes = num_total_nodes - _new_hash_table->_remote_keys->NumItem() - num_cached_nodes;
   LOG(ERROR) << "num cpu nodes is " << num_cpu_nodes;
+  CUDA_CALL(cudaGetLastError());
 
   {
     // CHECK_NE(num_cached_nodes, 0);
@@ -2324,6 +2395,7 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
         DataIter<DirectOffIter> dst_data_iter(DirectOffIter(), _device_cache_data[_local_location_id], dim);
         Combine(src_data_iter, dst_data_iter, num_cached_nodes, gpu_ctx, dtype, dim, stream);
       }
+      CUDA_CALL(cudaGetLastError());
 
       LOG(INFO) << "CollCacheManager: fix offset of local nodes in hash table";
       _new_hash_table->_hash_table = std::make_shared<SimpleHashTable>(_eager_gpu_mem_allocator, (size_t)(num_total_nodes - num_cpu_nodes), _trainer_ctx, stream);
@@ -2604,7 +2676,7 @@ ExtractSession::ExtractSession(std::shared_ptr<CacheContext> cache_ctx) : _cache
       });
     }
     this->launch_thread(_cpu_location_id, _cpu_syncer->get_worker_handle(), [this, link_desc](ExtractionThreadCtx* ctx){
-      ctx->create_ctx(_local_location_id, link_desc.cpu_sm[_local_location_id]);
+      ctx->create_ctx(_local_location_id, link_desc.cpu_sm[_local_location_id], -5);
     });
     this->LaunchWaitAllSyncer();
     CUDA_CALL(cudaStreamCreate(&_local_ext_stream));
@@ -3807,15 +3879,15 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
 
   TensorPtr reserved_offset;
   if (_new_insert_keys->NumItem() > 0) {
-    _new_insert_keys = CopyTo1DReuse(__keys_buffer, _new_insert_keys, gpu_ctx, stream);
-    reserved_offset = CopyTo1DReuse(__offs_buffer, _new_hash_table->ReserveOffsetFront(_new_insert_keys->NumItem()), gpu_ctx, stream);
+    _new_insert_keys = CopyTo1DReuse(__keys_buffer, _new_insert_keys, gpu_ctx, low_pri_stream);
+    reserved_offset = CopyTo1DReuse(__offs_buffer, _new_hash_table->ReserveOffsetFront(_new_insert_keys->NumItem()), gpu_ctx, low_pri_stream);
     const size_t local_combine_batch_size = 4092; // 4K ~ 0.2ms
     if (RunConfig::option_empty_feat == 0) {
       for (size_t cur_batch_begin = 0; cur_batch_begin < _new_insert_keys->NumItem(); cur_batch_begin += local_combine_batch_size) {
         size_t cur_batch_size = (cur_batch_begin + local_combine_batch_size < _new_insert_keys->NumItem()) ? local_combine_batch_size : (_new_insert_keys->NumItem() - cur_batch_begin);
         const DataIter<const IdType*> src_data_iter(_new_insert_keys->CPtr<IdType>() + cur_batch_begin, _cache_ctx->_device_cache_data[_cache_ctx->_cpu_location_id], _cache_ctx->_dim);
         DataIter<FreeOffIter> dst_data_iter(FreeOffIter(reserved_offset->Ptr<IdType>() + cur_batch_begin), _cache_ctx->_device_cache_data[_cache_ctx->_local_location_id], _cache_ctx->_dim);
-        Combine(src_data_iter, dst_data_iter, cur_batch_size, gpu_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream, 20);
+        Combine(src_data_iter, dst_data_iter, cur_batch_size, gpu_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, low_pri_stream, 20);
         usleep(3000);
       }
     } else {
@@ -3823,7 +3895,7 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
         size_t cur_batch_size = (cur_batch_begin + local_combine_batch_size < _new_insert_keys->NumItem()) ? local_combine_batch_size : (_new_insert_keys->NumItem() - cur_batch_begin);
         const DataIter<MockSrcOffIter> src_data_iter(MockSrcOffIter(_new_insert_keys->Ptr<IdType>() + cur_batch_begin), _cache_ctx->_device_cache_data[_cache_ctx->_cpu_location_id], _cache_ctx->_dim);
         DataIter<FreeOffIter> dst_data_iter(FreeOffIter(reserved_offset->Ptr<IdType>() + cur_batch_begin), _cache_ctx->_device_cache_data[_cache_ctx->_local_location_id], _cache_ctx->_dim);
-        Combine(src_data_iter, dst_data_iter, cur_batch_size, gpu_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream, 20);
+        Combine(src_data_iter, dst_data_iter, cur_batch_size, gpu_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, low_pri_stream, 20);
         usleep(3000);
       }
     }

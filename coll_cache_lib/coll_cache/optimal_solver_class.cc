@@ -46,6 +46,16 @@ void OptimalSolver::BuildSingleStream(TensorPtr stream_id_list, TensorPtr stream
   CHECK_EQ(stream_id_list->Shape()[1], num_node);
   IdType num_stream = stream_id_list->Shape()[0];
   CHECK(num_stream == 1);
+  {
+    const IdType *stream_id_ptr = stream_id_list->CPtr<IdType>();
+    const IdType *stream_freq_ptr = stream_freq_list->CPtr<IdType>();
+    return BuildSingleStream(
+      [stream_id_ptr, stream_freq_ptr](IdType rnk){return stream_id_ptr[rnk]; },
+      [stream_id_ptr, stream_freq_ptr](IdType rnk){return stream_freq_ptr[rnk]; },
+      [stream_id_ptr, stream_freq_ptr](IdType rnk){return rnk; },
+      stream_freq_list->CPtr<IdType>()[0], device_to_stream, num_node, nid_to_block_tensor);
+  }
+#ifdef DEAD_CODE
   auto cpu_ctx = CPU(CPU_CLIB_MALLOC_DEVICE);
   // coarse-grained slice to reduce asymm solve time
   // symmetric & switch's precision still holds
@@ -249,9 +259,10 @@ void OptimalSolver::BuildSingleStream(TensorPtr stream_id_list, TensorPtr stream
   }
   // std::cout << "\n";
   block_placement = Tensor::CreateShm(_shm_name_place, kU8, block_density_tensor->Shape(), "coll_cache_block_placement");
+#endif
 }
 
-void OptimalSolver::BuildSingleStream(ContFreqBuf* freq_rank, std::vector<int> device_to_stream, const IdType num_node, const TensorPtr nid_to_block_tensor) {
+void OptimalSolver::BuildSingleStream(IdTypeMapper nid_iter, IdTypeMapper freq_iter, IdTypeMapper rnk_iter, IdType max_freq, std::vector<int> device_to_stream, const IdType num_node, const TensorPtr nid_to_block_tensor) {
   // {
   //   LegacyFreqBuf freq_buf;
   //   freq_rank->GetLegacyFreqRank(&freq_buf, num_node);
@@ -270,7 +281,9 @@ void OptimalSolver::BuildSingleStream(ContFreqBuf* freq_rank, std::vector<int> d
   // coarse-grained slice to reduce asymm solve time
   // symmetric & switch's precision still holds
   max_size_per_block = num_node / 1000;
-  if (GetEnv("COLL_BLOCK_SLICE_GRAIN") != "") {
+  if (GetEnv("COLL_BLOCK_SLICE_GRAIN_BY_CACHE") != "") {
+    max_size_per_block = num_node * RunConfig::cache_percentage / std::stod(GetEnv("COLL_BLOCK_SLICE_GRAIN_BY_CACHE"));
+  } else if (GetEnv("COLL_BLOCK_SLICE_GRAIN") != "") {
     max_size_per_block = num_node / std::stod(GetEnv("COLL_BLOCK_SLICE_GRAIN"));
   }
   auto freq_to_slot = [this](float freq, IdType num_node){ return this->freq_to_slot_1(freq, num_node);};
@@ -287,8 +300,8 @@ void OptimalSolver::BuildSingleStream(ContFreqBuf* freq_rank, std::vector<int> d
 
   // identify freq boundary of first slot
   // when cache rate is extremely small, better use the largest val as alpha
-  if (alpha < freq_rank->buf[0].cnt) {
-    alpha = freq_rank->buf[0].cnt;
+  if (alpha < max_freq) {
+    alpha = max_freq;
   }
   if (GetEnv("COLL_BLOCK_SLICE_BASE") != "") {
     RunConfig::coll_cache_coefficient = std::stod(GetEnv("COLL_BLOCK_SLICE_BASE"));
@@ -308,11 +321,20 @@ void OptimalSolver::BuildSingleStream(ContFreqBuf* freq_rank, std::vector<int> d
   {
     uint32_t * nid_to_freq = nid_to_freq_tensor->Ptr<uint32_t>();
     std::unordered_map<size_t, full_slot_single_thread> the_map;
+    std::uniform_int_distribution<IdType> dist(0, 9);
+    std::mt19937 gen(omp_get_thread_num() + 0x789f);
     #pragma omp for
-    for (uint32_t nid = 0; nid < num_node; nid++) {
-      auto freq = freq_rank->get(nid);
+    for (uint32_t iter = 0; iter < num_node; iter++) {
+      IdType nid = nid_iter(iter);
+      IdType freq = freq_iter(iter);
       nid_to_freq[nid] = freq;
       size_t seq_slot_id = freq_to_slot(freq, num_node);
+      if (freq == 0) {
+        IdType rnd_rst = dist(gen);
+        if (rnd_rst == 0) {rnd_rst = dist(gen);}
+        else {rnd_rst += 9;}
+        seq_slot_id += rnd_rst;
+      }
       nid_to_block[nid] = seq_slot_id;
       {
         auto iter = the_map.find(seq_slot_id);
@@ -417,7 +439,7 @@ void OptimalSolver::BuildSingleStream(ContFreqBuf* freq_rank, std::vector<int> d
   // TensorView<double> block_freq_array(block_freq_tensor);
   double* block_density_array = block_density_tensor->Ptr<double>();
   double* block_freq_array    = block_freq_tensor->Ptr<double>();
-  double min_freq = 1e-2;
+  double min_freq = 5e-3;
   if (GetEnv("COLL_MIN_FREQ") != "") {
     min_freq = std::stod(GetEnv("COLL_MIN_FREQ"));
   }
@@ -440,7 +462,6 @@ void OptimalSolver::BuildSingleStream(ContFreqBuf* freq_rank, std::vector<int> d
       uint32_t block_id = nid_to_block[nid];
       local_block_density[block_id]++;
       double freq = nid_to_freq[nid];
-      freq = std::max(freq, min_freq);
       local_block_freq[block_id] += freq;
     }
     #pragma omp critical
@@ -460,12 +481,26 @@ void OptimalSolver::BuildSingleStream(ContFreqBuf* freq_rank, std::vector<int> d
 // #pragma omp parallel for num_threads(RunConfig::solver_omp_thread_num)
   for (uint32_t block_id = 0; block_id < block_density_tensor->NumItem(); block_id++) {
     if (block_density_array[block_id] == 0) continue; 
+    if (block_freq_array[block_id] == 0) {
+      block_freq_array[block_id] = min_freq;
+    }
     block_freq_array[block_id] /= block_density_array[block_id];
     block_density_array[block_id] *= 100/(double)num_node ;
     // std::cout << block_density_array[block_id].ref() << " ";
   }
   // std::cout << "\n";
   block_placement = Tensor::CreateShm(_shm_name_place, kU8, block_density_tensor->Shape(), "coll_cache_block_placement");
+}
+
+void OptimalSolver::BuildSingleStream(ContFreqBuf* freq_rank, std::vector<int> device_to_stream, const IdType num_node, const TensorPtr nid_to_block_tensor) {
+  IdType num_stream = 1;
+  {
+    return BuildSingleStream(
+      [](IdType nid){return nid; },
+      [freq_rank](IdType nid){return freq_rank->get(nid); },
+      [](IdType nid){ CHECK(false); return IdType(0); },
+      freq_rank->buf[0].cnt, device_to_stream, num_node, nid_to_block_tensor);
+  }
 }
 
 void OptimalSolver::Build(TensorPtr stream_id_list, TensorPtr stream_freq_list, std::vector<int> device_to_stream, const IdType num_node, const TensorPtr nid_to_block_tensor) {
@@ -903,6 +938,13 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
   // env.set(GRB_IntParam_PrePasses, 5);
   // env.set(GRB_IntParam_NormAdjust, 0);
   // env.set(GRB_IntParam_FlowCoverCuts, 2);
+
+  if (GetEnv("COLL_GUROBI_EXP_PARAM") == "1") {
+    env.set(GRB_IntParam_Cuts, 2);
+    env.set(GRB_IntParam_DegenMoves, 2);
+    env.set(GRB_IntParam_ScaleFlag, 1);
+  }
+
   env.start();
 
   GRBModel model = GRBModel(env);

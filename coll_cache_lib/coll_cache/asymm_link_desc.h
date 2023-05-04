@@ -27,6 +27,7 @@ struct AsymmLinkDesc {
   vec<vec<double>> compute_percent;
   vec<vec<int>> link_sm;
   vec<int> cpu_sm;
+  vec<int> total_sm_for_remote;
   vec<int> local_sm;
   vec<double> aggregated_time;
   AsymmLinkDesc() {}

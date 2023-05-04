@@ -74,11 +74,13 @@ struct RunConfig {
   static double               coll_cache_hyperparam_T_remote;
   static double               coll_cache_hyperparam_T_cpu;
   static double               coll_cache_cpu_addup;
+  static size_t               coll_cache_scale_nb;
   static uint64_t             seed;
 
   static uint64_t             num_global_step_per_epoch;
   static uint64_t             num_epoch;
   static uint64_t             num_total_item;
+  static uint64_t             num_bucket_step;
 
   static coll_cache::AsymmLinkDesc coll_cache_link_desc;
 

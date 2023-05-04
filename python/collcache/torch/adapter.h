@@ -26,6 +26,9 @@
 
 #include <cuda_runtime.h>
 #include <cuda_runtime_api.h>
+#include <torch/extension.h>
+#include <torch/torch.h>
+#include "torch/types.h"
 
 namespace coll_cache_lib {
 namespace torch {
@@ -78,6 +81,8 @@ void coll_torch_init(int replica_id, size_t key_space_size, int dev_id, void *cp
                                                 ::torch::Tensor key);
 
 ::torch::Tensor coll_torch_test(int replica_id, ::torch::Tensor key);
+
+::torch::Tensor coll_torch_create_emb_shm(int replica_id, size_t num_key, size_t dim, py::object dtype);
 
 void coll_torch_record(int replica_id, ::torch::Tensor key);
 }

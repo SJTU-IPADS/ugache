@@ -41,6 +41,15 @@
 
 // Use the torch built-in CHECK macros
 // #include "../common/logging.h"
+#define COLL_CUDA_CALL(func)                                      \
+  {                                                          \
+    cudaError_t e = (func);                                  \
+    if (e != cudaSuccess && e == cudaErrorCudartUnloading) { \
+      std::stringstream ss;\
+      ss << "[" << getpid() << "]CUDA: " << cudaGetErrorString(e) << "\n";\
+      std::cerr << ss.str(); \
+    }\
+  }
 
 namespace {
 ::torch::Dtype to_torch_data_type(coll_cache_lib::common::DataType dt) {
@@ -53,6 +62,19 @@ namespace {
     case coll_cache_lib::common::kI8:  return ::torch::kI8;
     case coll_cache_lib::common::kI64: return ::torch::kI64;
   }
+  abort();
+}
+coll_cache_lib::common::DataType to_coll_data_type(::torch::Dtype dt) {
+  switch (dt) {
+    case ::torch::kF32: return coll_cache_lib::common::kF32;
+    case ::torch::kF64: return coll_cache_lib::common::kF64;
+    case ::torch::kF16: return coll_cache_lib::common::kF16;
+    case ::torch::kU8:  return coll_cache_lib::common::kU8;
+    case ::torch::kI32: return coll_cache_lib::common::kI32;
+    case ::torch::kI8:  return coll_cache_lib::common::kI8;
+    case ::torch::kI64: return coll_cache_lib::common::kI64;
+  }
+  abort();
 }
 
 size_t internal_feat_dim = 0;
@@ -62,10 +84,42 @@ c10::ScalarType external_dtype;
 bool _use_fp16 = false;
 cudaStream_t _stream = nullptr;
 
+std::string GetEnv(std::string key) {
+  const char *env_var_val = getenv(key.c_str());
+  if (env_var_val != nullptr) {
+    return std::string(env_var_val);
+  } else {
+    return "";
+  }
+}
+
 };
 
 namespace coll_cache_lib {
+namespace common {
+
+std::function<common::MemHandle(size_t)> _torch_eager_gpu_mem_allocator;
+
+}
 namespace torch {
+
+namespace {
+
+common::DataType nb_to_dt(size_t nbyte_in) { 
+  switch (nbyte_in) { 
+    case 2:  { return common::kF16;   break; }
+    case 4:  { return common::kF32;   break; }
+    case 8:  { return common::kF64;   break; }
+    case 16: { return common::kF64_2; break; }
+    case 32: { return common::kF64_4; break; }
+    default: abort();
+  };
+};
+
+common::TensorPtr batch_emb_reuse = nullptr;
+
+
+}
 
 extern "C" {
 
@@ -84,7 +138,7 @@ void coll_torch_init(int replica_id, size_t key_space_size, int dev_id, void *cp
   external_feat_dim = dim;
   if (use_fp16) {
     _use_fp16 = true;
-    if (dim % 2 == 0) { std::cerr << "dimension must be even\n"; abort(); }
+    if (dim % 2 != 0) { std::cerr << "dimension must be even\n"; abort(); }
     dim /= 2;
     external_dtype = ::torch::kF16;
   } else {
@@ -106,14 +160,26 @@ void coll_torch_init_t(int replica_id, int dev_id, ::torch::Tensor emb, double c
   cudaSetDevice(dev_id);
   cudaStreamCreate(&_stream);
 
+  common::_torch_eager_gpu_mem_allocator = [dev_id](size_t nbytes)-> common::MemHandle{
+    std::shared_ptr<common::EagerGPUMemoryHandler> ret = std::make_shared<common::EagerGPUMemoryHandler>();
+    ret->dev_id_ = dev_id;
+    ret->nbytes_ = nbytes;
+    COLL_CUDA_CALL(cudaSetDevice(dev_id));
+    if (nbytes > 1<<21) {
+      nbytes = common::RoundUp(nbytes, (size_t)(1<<21));
+    }
+    COLL_CUDA_CALL(cudaMalloc(&ret->ptr_, nbytes));
+    return ret;
+  };
+
   size_t dim = emb.size(1);
-  size_t key_space_size = emb.size(0);
+  size_t key_space_size = common::RunConfig::num_total_item;
   bool use_fp16 = (emb.scalar_type() == ::torch::kF16);
 
   external_feat_dim = dim;
   if (use_fp16) {
     _use_fp16 = true;
-    if (dim % 2 == 0) { std::cerr << "dimension must be even\n"; abort(); }
+    if (dim % 2 != 0) { std::cerr << "dimension must be even\n"; abort(); }
     dim /= 2;
     external_dtype = ::torch::kF16;
   } else {
@@ -139,12 +205,48 @@ void coll_torch_init_t(int replica_id, int dev_id, ::torch::Tensor emb, double c
                                                 ::torch::Tensor key) {
   auto device = "cuda:" + std::to_string(common::RunConfig::device_id_list[replica_id]);
   auto padded_len = common::RoundUp<long>(key.size(0), 8);
-  ::torch::Tensor tensor = ::torch::empty(
+
+  if (padded_len > common::max_num_keys) {
+    std::cerr << "Warning, found a larger batch, re allocating emb output now" << padded_len << common::max_num_keys << "\n";
+    common::max_num_keys = std::max<size_t>(common::max_num_keys, padded_len);
+    batch_emb_reuse = nullptr;
+  }
+  if (batch_emb_reuse == nullptr) {
+    common::max_num_keys *= 1.05;
+  }
+
+  if (batch_emb_reuse == nullptr) {
+    batch_emb_reuse = common::Tensor::EmptyExternal(common::kF32, {common::max_num_keys, internal_feat_dim}, common::_torch_eager_gpu_mem_allocator, common::GPU(common::RunConfig::device_id_list[replica_id]), "");
+  }
+  ::torch::Tensor tensor = ::torch::from_blob(batch_emb_reuse->MutableData(), 
       {padded_len, (long)external_feat_dim},
-      ::torch::TensorOptions()
-          .dtype(external_dtype)
-          .device(device));
+      [](void* data){},
+      ::torch::TensorOptions().dtype(external_dtype).device(device));
+
+  // ::torch::Tensor tensor = ::torch::empty(
+  //     {padded_len, (long)external_feat_dim},
+  //     ::torch::TensorOptions()
+  //         .dtype(external_dtype)
+  //         .device(device));
   common::coll_cache_lookup(replica_id, (uint32_t*)key.data_ptr(), key.size(0), tensor.data_ptr(), _stream);
+  return tensor;
+}
+
+::torch::Tensor coll_torch_create_emb_shm(int replica_id, size_t num_key, size_t dim, py::object dtype) {
+  ::torch::ScalarType torch_dtype = ::torch::python::detail::py_object_to_dtype(dtype);
+  if (GetEnv("SAMGRAPH_EMPTY_FEAT") != "") {
+    size_t option_empty_feat = std::stoul(GetEnv("SAMGRAPH_EMPTY_FEAT"));
+    num_key = 1 << option_empty_feat;
+  }
+
+  auto shm = common::Tensor::CreateShm("SAMG_FEAT_SHM", to_coll_data_type(torch_dtype), {num_key, dim}, "");
+
+  ::torch::Tensor tensor = ::torch::from_blob(
+      shm->MutableData(),
+      {(long)num_key, (long)dim},
+      [shm](void* data) {},
+      ::torch::TensorOptions().dtype(torch_dtype).device("cpu"));
+
   return tensor;
 }
 
@@ -158,6 +260,7 @@ PYBIND11_MODULE(c_lib, m) {
   m.def("coll_torch_test", &coll_torch_test);
   m.def("coll_torch_record", &coll_torch_record);
   m.def("coll_torch_lookup_key_t_val_ret", &coll_torch_lookup_key_t_val_ret);
+  m.def("coll_torch_create_emb_shm", &coll_torch_create_emb_shm);
 }
 
 }

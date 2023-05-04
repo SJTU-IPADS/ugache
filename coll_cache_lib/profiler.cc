@@ -199,6 +199,19 @@ void Profiler::LogInitAdd(LogInitItem item, double val) {
   _init_data[item].bitmap[key] = true;
 }
 
+void Profiler::SetSeqTimeStamp(uint64_t key) {
+  if (key % RunConfig::num_bucket_step != 0) return; 
+  uint64_t bucket_idx = key / RunConfig::num_bucket_step;
+
+  if (bucket_idx == 0) {
+    uint64_t total_bucket_num = (RunConfig::num_epoch * RunConfig::num_global_step_per_epoch) / RunConfig::num_bucket_step;
+    _seq_ts = new Timer();
+    _seq_duration.resize(total_bucket_num);  
+  }
+  _seq_duration[bucket_idx] = _seq_ts->Passed();
+}
+
+
 void Profiler::LogStep(uint64_t key, LogStepItem item, double val) {
   size_t item_idx = static_cast<size_t>(item);
   _step_data[item_idx].vals[key] = val;
@@ -207,6 +220,8 @@ void Profiler::LogStep(uint64_t key, LogStepItem item, double val) {
   //                                ? _step_data[item_idx].cnt
   //                                : _step_data[item_idx].cnt + 1;
   _step_data[item_idx].bitmap[key] = true;
+  if (RunConfig::num_bucket_step && item == common::kLogL1TrainTime)
+    SetSeqTimeStamp(key);
 }
 
 void Profiler::LogStepAdd(uint64_t key, LogStepItem item, double val) {
@@ -454,10 +469,12 @@ void Profiler::ReportStepItemPercentiles(uint64_t epoch, uint64_t step, LogStepI
 }
 
 void Profiler::ReportSequentialAverage(size_t bucket_size, std::ostream &out) {
+  CHECK_GT(RunConfig::num_bucket_step, 0);
   size_t total_global_steps = RunConfig::num_epoch * RunConfig::num_global_step_per_epoch;
   size_t num_items = static_cast<size_t>(kNumLogStepItems);
   auto BSTART = [bucket_size] (size_t bucket_num) {
-    return RunConfig::num_global_step_per_epoch + bucket_num * bucket_size;}; // skip first epoch
+    return bucket_num * bucket_size;}; // do not skip first epoch
+    // return RunConfig::num_global_step_per_epoch + bucket_num * bucket_size;}; // skip first epoch
   for (size_t b = 0; BSTART(b) < total_global_steps; b++) {
     for (size_t i = 0; i < num_items; i++) {
       double sum = 0;
@@ -477,7 +494,7 @@ void Profiler::ReportSequentialAverage(size_t bucket_size, std::ostream &out) {
       }
       _step_buf[i] = sum / cnt;
     }
-    OutputStep(total_global_steps - 1, "Sequence " + std::to_string(b) + "(Average)", out);
+    OutputStep(total_global_steps - 1, "Step(Seq_" + std::to_string(b) + ")", out, _seq_duration[b]);
   }
 }
 
@@ -539,7 +556,7 @@ void Profiler::DumpTrace(std::ostream &of) {
 //   return inst;
 // }
 
-void Profiler::OutputStep(uint64_t key, std::string type, std::ostream &out) {
+void Profiler::OutputStep(uint64_t key, std::string type, std::ostream &out, double ts) {
   uint32_t epoch = RunConfig::GetEpochFromKey(key);
   uint32_t step = RunConfig::GetStepFromKey(key);
 
@@ -609,7 +626,8 @@ void Profiler::OutputStep(uint64_t key, std::string type, std::ostream &out) {
         "        L1  feature nbytes %10s | label nbytes %10s\n"
         "        L1  id nbytes      %10s | graph nbytes %10s\n"
         "        L1  miss nbytes    %10s | remote nbytes %10s\n"
-        "        L1  num nodes      %10.0lf | num samples  %10.0lf\n",
+        "        L1  num nodes      %10.0lf | num samples  %10.0lf\n"
+        "        L1  seq duration   %10.6lf | refresh duration %10.6lf\n",
         type.c_str(), epoch, step, _step_buf[kLogL1SampleTime],
         _step_buf[kLogL1SendTime], _step_buf[kLogL1RecvTime],
         _step_buf[kLogL1CopyTime], _step_buf[kLogL1ConvertTime],
@@ -620,7 +638,8 @@ void Profiler::OutputStep(uint64_t key, std::string type, std::ostream &out) {
         ToReadableSize(_step_buf[kLogL1GraphBytes]).c_str(),
         ToReadableSize(_step_buf[kLogL1MissBytes]).c_str(),
         ToReadableSize(_step_buf[kLogL1RemoteBytes]).c_str(),
-        _step_buf[kLogL1NumNode],_step_buf[kLogL1NumSample]);
+        _step_buf[kLogL1NumNode],_step_buf[kLogL1NumSample], 
+        ts, _refresh_duration);
     out << output_buffer;
   }
 

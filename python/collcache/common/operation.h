@@ -27,6 +27,7 @@ namespace coll_cache_lib {
 namespace common {
 
 void coll_cache_init(int replica_id, size_t key_space_size, std::function<MemHandle(size_t)> allocator, void *cpu_data, DataType dtype, size_t dim, double cache_percentage, StreamHandle stream);
+extern size_t max_num_keys;
 
 extern "C" {
 

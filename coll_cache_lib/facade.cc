@@ -10,6 +10,29 @@
 
 namespace coll_cache_lib {
 
+#define COLL_SWITCH_NBYTE(nbyte_in, DTypeName, ...) \
+  { \
+    switch (nbyte_in) { \
+      case 2:  { typedef short   DTypeName; {__VA_ARGS__}; break; }\
+      case 4:  { typedef float   DTypeName; {__VA_ARGS__}; break; }\
+      case 8:  { typedef double  DTypeName; {__VA_ARGS__}; break; }\
+      case 16: { typedef int4    DTypeName; {__VA_ARGS__}; break; }\
+      case 32: { typedef double4 DTypeName; {__VA_ARGS__}; break; }\
+      \
+    };\
+  };
+
+DataType nb_to_dt(size_t nbyte_in) { 
+  switch (nbyte_in) { 
+    case 2:  { return kF16;   break; }
+    case 4:  { return kF32;   break; }
+    case 8:  { return kF64;   break; }
+    case 16: { return kF64_2; break; }
+    case 32: { return kF64_4; break; }
+    default: CHECK(false);
+  };
+};
+
 // fixme : build function should not create thread internal. instead, provide function and let app call it from multiple threads/processes.
 void CollCache::build(std::function<std::function<MemHandle(size_t)>(int)> allocator_builder,
                       void *cpu_data, DataType dtype, size_t dim, double cache_percentage,
@@ -50,6 +73,14 @@ void CollCache::build(std::function<std::function<MemHandle(size_t)>(int)> alloc
 void CollCache::lookup(int replica_id, const IdType *nodes,
                        const size_t num_nodes, void *output,
                        StreamHandle stream, uint64_t step_key) {
+  // if (step_key >= RunConfig::num_device && step_key < 2 * RunConfig::num_device) {
+  //   auto cpu_t = Tensor::Empty(common::kI32, {num_nodes}, CPU(), "");
+  //   CUDA_CALL(cudaMemcpy(cpu_t->MutableData(), nodes, cpu_t->NumBytes(), cudaMemcpyDefault));
+  //   LOG(ERROR) << "replica " << replica_id << " saving step " << step_key << " with " << num_nodes << " keys";
+  //   std::ofstream f("/tmp/coll.lookup." + std::to_string(replica_id));
+  //   f.write((char*)cpu_t->Data(), cpu_t->NumBytes());
+  //   f.close();
+  // }
   Timer t;
   _session_list[replica_id]->ExtractFeat(nodes, num_nodes, output, stream, step_key);
   _profiler->LogStep(step_key, common::kLogL2CacheCopyTime, t.Passed());
@@ -247,9 +278,37 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
   if (RunConfig::cross_process || replica_id == 0) {
     // one-time call for each process
     RunConfig::LoadConfigFromEnv();
+  }
+  // if (replica_id == 0) {
+  //   std::ofstream f("/tmp/coll.rank");
+  //   f.write((char*)ranking_nodes_list_ptr, sizeof(IdType) * num_node);
+  //   f.write((char*)ranking_nodes_freq_list_ptr, sizeof(IdType) * num_node);
+  //   f.close();
+  // }
+  // if (GetDataTypeBytes(dtype) < 16) {
+  //   LOG(ERROR) << "before scale, dtype is " << dtype << ", dim is " << dim;
+  //   size_t scale = 16 / GetDataTypeBytes(dtype);
+  //   if (scale <= dim) {
+  //     dim /= scale;
+  //     dtype = kF64_2;
+  //   }
+  //   LOG(ERROR) << "after scale=" << scale << ", dtype is " << dtype << ", new dim is " << dim;
+  // }
+  if (RunConfig::coll_cache_scale_nb != 0) {
+    LOG(ERROR) << "before scale, dtype is " << dtype << ", dim is " << dim;
+    size_t emb_vec_nb = GetDataTypeBytes(dtype) * dim;
+    if (emb_vec_nb >= RunConfig::coll_cache_scale_nb && emb_vec_nb % RunConfig::coll_cache_scale_nb == 0) {
+      dim = emb_vec_nb / RunConfig::coll_cache_scale_nb;
+      dtype = nb_to_dt(RunConfig::coll_cache_scale_nb);
+    }
+    LOG(ERROR) << "after scale, dtype is " << dtype << ", new dim is " << dim;
+  }
+  if (RunConfig::cross_process || replica_id == 0) {
+    // one-time call for each process
+    // RunConfig::LoadConfigFromEnv();
     RunConfig::coll_cache_link_desc = coll_cache::AsymmLinkDesc::AutoBuild(GPU(device_id));
     size_t num_node_host_mem = num_node;
-    if (RunConfig::option_empty_feat != 0 && cache_percentage != 0) {
+    if (RunConfig::option_empty_feat != 0) {
       num_node_host_mem = 1 << RunConfig::option_empty_feat;
     }
     LOG(ERROR) << "registering cpu data with " << ToReadableSize(RoundUp<size_t>(num_node_host_mem * dim * GetDataTypeBytes(dtype), 1 << 21));
@@ -284,6 +343,7 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
   this->_refresh_session_list[replica_id] = std::make_shared<RefreshSession>();
   this->_refresh_session_list[replica_id]->_cache_ctx = cache_ctx;
   this->_refresh_session_list[replica_id]->stream = stream;
+  CUDA_CALL(cudaStreamCreateWithPriority((cudaStream_t*)&_refresh_session_list[replica_id]->low_pri_stream, cudaStreamNonBlocking, 0));
   this->_replica_barrier->Wait();
   RunConfig::solver_omp_thread_num = RunConfig::refresher_omp_thread_num;
   RunConfig::solver_omp_thread_num_per_gpu = RunConfig::refresher_omp_thread_num_per_gpu;
@@ -345,9 +405,22 @@ void CollCache::build_v2(int replica_id, ContFreqBuf* freq_rank, IdType num_node
   if (RunConfig::cross_process || replica_id == 0) {
     // one-time call for each process
     RunConfig::LoadConfigFromEnv();
+  }
+  if (RunConfig::coll_cache_scale_nb != 0) {
+    LOG(ERROR) << "before scale, dtype is " << dtype << ", dim is " << dim;
+    size_t emb_vec_nb = GetDataTypeBytes(dtype) * dim;
+    if (emb_vec_nb >= RunConfig::coll_cache_scale_nb && emb_vec_nb % RunConfig::coll_cache_scale_nb == 0) {
+      dim = emb_vec_nb / RunConfig::coll_cache_scale_nb;
+      dtype = nb_to_dt(RunConfig::coll_cache_scale_nb);
+    }
+    LOG(ERROR) << "after scale, dtype is " << dtype << ", new dim is " << dim;
+  }
+  if (RunConfig::cross_process || replica_id == 0) {
+    // one-time call for each process
+    // RunConfig::LoadConfigFromEnv();
     RunConfig::coll_cache_link_desc = coll_cache::AsymmLinkDesc::AutoBuild(GPU(device_id));
     size_t num_node_host_mem = num_node;
-    if (RunConfig::option_empty_feat != 0 && cache_percentage != 0) {
+    if (RunConfig::option_empty_feat != 0) {
       num_node_host_mem = 1 << RunConfig::option_empty_feat;
     }
     LOG(ERROR) << "registering cpu data with " << ToReadableSize(RoundUp<size_t>(num_node_host_mem * dim * GetDataTypeBytes(dtype), 1 << 21));
@@ -449,6 +522,8 @@ void CollCache::report_avg() {
   _profiler->ReportStepAverage(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1);
   _profiler->ReportStepItemPercentiles(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1,
         kLogL2CacheCopyTime, {50, 90, 95, 99, 99.9}, "tail_logl2featcopy");
+  if (RunConfig::num_bucket_step)
+    _profiler->ReportSequentialAverage(RunConfig::num_bucket_step, std::cout);
   // // _profiler->ReportStepMax(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1);
   // // _profiler->ReportStepMin(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1);
   // for (size_t epoch = 1; epoch < RunConfig::num_epoch; epoch ++) {

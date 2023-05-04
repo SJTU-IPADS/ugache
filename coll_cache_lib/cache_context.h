@@ -357,6 +357,8 @@ class ExtractSession {
   double accu_remote_time = 0;
   size_t accu_step = 0;
   double accu_each_src_time[9] = {};
+  double accu_each_src_nkey[9] = {};
+  double phase_time_record[9] = {};
 
   int _local_location_id;
   int _cpu_location_id;
@@ -412,6 +414,7 @@ class ExtractSession {
 class RefreshSession {
  public:
   StreamHandle stream;
+  StreamHandle low_pri_stream;
   std::shared_ptr<CacheContext> _cache_ctx;
 #ifdef COLL_HASH_VALID_LEGACY
   void refresh_after_solve(bool foreground);

@@ -50,3 +50,6 @@ def coll_torch_record(local_id, keys):
 
 def coll_torch_init_t(replica_id, dev_id, emb, cache_percentage):
   c_lib.coll_torch_init_t(replica_id, dev_id, emb, cache_percentage)
+
+def coll_torch_create_emb_shm(replica_id, n_keys, dim, dtype):
+  return c_lib.coll_torch_create_emb_shm(replica_id, n_keys, dim, dtype)

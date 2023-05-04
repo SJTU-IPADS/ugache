@@ -154,15 +154,17 @@ void AsymmLinkDesc::BuildAsymmHardWire(int num_trainer) {
 AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
                                        std::string gpu_model) {
   int cpu_sm_decision = 0;
+  int remote_sm_decision = 0;
   AsymmLinkDesc desc;
   if (gpu_model.find("A100") != std::string::npos) {
-    RunConfig::coll_cache_hyperparam_T_remote = 370 / (double)34;
-    RunConfig::coll_cache_hyperparam_T_cpu    = 370 / (double)9;
+    // 730;30;9;
+    RunConfig::coll_cache_hyperparam_T_remote = 730 / (double)30;
+    RunConfig::coll_cache_hyperparam_T_cpu    = 730 / (double)8;
     if (GetEnv("COLL_CPU_TIME_OVERRIDE") != "") {
-      RunConfig::coll_cache_hyperparam_T_cpu    = 370 / std::stod(GetEnv("COLL_CPU_TIME_OVERRIDE"));
+      RunConfig::coll_cache_hyperparam_T_cpu    = 730 / std::stod(GetEnv("COLL_CPU_TIME_OVERRIDE"));
     }
     if (GetEnv("COLL_REMOTE_TIME_OVERRIDE") != "") {
-      RunConfig::coll_cache_hyperparam_T_remote    = 370 / std::stod(GetEnv("COLL_REMOTE_TIME_OVERRIDE"));
+      RunConfig::coll_cache_hyperparam_T_remote    = 730 / std::stod(GetEnv("COLL_REMOTE_TIME_OVERRIDE"));
     }
     if (RunConfig::concurrent_link_impl == kMPS || 
         RunConfig::concurrent_link_impl == kMPSPhase || 
@@ -170,13 +172,20 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
         RunConfig::concurrent_link_impl == kMultiKernelNumBlock || 
         RunConfig::concurrent_link_impl == kMultiKernelNumBlockOld) {
       cpu_sm_decision = 10;
+      remote_sm_decision = 56;
     }
   } else if (gpu_model.find("V100") != std::string::npos) {
-    RunConfig::coll_cache_hyperparam_T_remote = 330 / (double)38;
-    RunConfig::coll_cache_hyperparam_T_cpu    = 330 / (double)11;
+    RunConfig::coll_cache_hyperparam_T_remote = 350 / (double)38;
+    RunConfig::coll_cache_hyperparam_T_cpu    = 350 / (double)11;
     if (total_gpu > 4) {
       LOG(ERROR) << "v100x8, slow pcie";
-      RunConfig::coll_cache_hyperparam_T_cpu    = 330 / (double)3.4;
+      RunConfig::coll_cache_hyperparam_T_cpu    = 350 / (double)3.4;
+    }
+    if (GetEnv("COLL_CPU_TIME_OVERRIDE") != "") {
+      RunConfig::coll_cache_hyperparam_T_cpu    = 350 / std::stod(GetEnv("COLL_CPU_TIME_OVERRIDE"));
+    }
+    if (GetEnv("COLL_REMOTE_TIME_OVERRIDE") != "") {
+      RunConfig::coll_cache_hyperparam_T_remote    = 350 / std::stod(GetEnv("COLL_REMOTE_TIME_OVERRIDE"));
     }
     if (RunConfig::concurrent_link_impl == kMPS || 
         RunConfig::concurrent_link_impl == kMPSPhase || 
@@ -184,6 +193,8 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
         RunConfig::concurrent_link_impl == kMultiKernelNumBlock || 
         RunConfig::concurrent_link_impl == kMultiKernelNumBlockOld) {
       cpu_sm_decision = 8;
+      // remote_sm_decision = 60;
+      remote_sm_decision = 72;
       // CHECK(false) << "not supported now";
     }
   } else {
@@ -195,6 +206,7 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
   }
   LOG(ERROR) << "assigning " << cpu_sm_decision << " to cpu";
   desc.cpu_sm.resize(num_trainer, cpu_sm_decision);
+  desc.total_sm_for_remote.resize(num_trainer, remote_sm_decision);
 
   std::string topo_name;
   if (total_gpu <= 4) {
@@ -222,7 +234,15 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(Context ctx) {
   // fixme
   auto desc = AutoBuild(RunConfig::num_device, total_gpu, prop.name);
   desc.local_sm.resize(desc.cpu_sm.size(), prop.multiProcessorCount - desc.cpu_sm[0]);
-  desc.SMPercentToNum(prop.multiProcessorCount - desc.cpu_sm[0]);
+  // desc.SMPercentToNum(prop.multiProcessorCount - desc.cpu_sm[0]);
+  desc.SMPercentToNum(desc.total_sm_for_remote[0]);
+  for (int dst_dev = 0; dst_dev < RunConfig::num_device; dst_dev++) {
+    std::cout << dst_dev << " : local " << desc.local_sm[dst_dev] << ", cpu " << desc.cpu_sm[dst_dev];
+    for (int src_link = 0; src_link < desc.link_src[dst_dev].size(); src_link++) {
+      std::cout << " {link #" << src_link << " : g" << desc.link_src[dst_dev][src_link][0] << " " << desc.link_sm[dst_dev][src_link] << "},";
+    }
+    std::cout << "\n";
+  }
   return desc;
 }
 void AsymmLinkDesc::SMPercentToNum(int total_sm) {

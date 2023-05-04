@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "common.h"
+#include "timer.h"
 
 namespace coll_cache_lib {
 namespace common {
@@ -209,6 +210,7 @@ class Profiler {
   void LogStepAdd(uint64_t key, LogStepItem item, double val);
   void LogEpochAdd(uint64_t key, LogEpochItem item, double val);
   inline void LogHPSAdd(const std::vector<double> &ratios) {_hps_cache_ratios = ratios;}
+  inline void LogRefreshEnd() {_refresh_duration = _seq_ts->Passed();}
 
   inline void TraceStepBegin(uint64_t key, TraceItem item, uint64_t us) { _step_trace[item].events[key].begin = us; }
   inline void TraceStepEnd(uint64_t key, TraceItem item, uint64_t us) { _step_trace[item].events[key].end = us; }
@@ -241,7 +243,8 @@ class Profiler {
   template<typename ReduceOp>
   void PrepareStepReduce(uint64_t epoch, uint64_t step, const double init, ReduceOp op, const double default_val = 0);
   void StepSort(uint64_t epoch, uint64_t step);
-  void OutputStep(uint64_t key, std::string type, std::ostream &out = std::cout);
+  void SetSeqTimeStamp(uint64_t key);
+  void OutputStep(uint64_t key, std::string type, std::ostream &out = std::cout, double ts = 0);
   void OutputEpoch(uint64_t epoch, std::string type);
 
   std::vector<LogData> _init_data;
@@ -253,6 +256,11 @@ class Profiler {
   // SharedLogData* _step_data;
   TensorPtr _step_data_val_buf;
   TensorPtr _step_data_bitmap_buf;
+  
+  // timestamp for sequence report
+  Timer *_seq_ts;
+  double _refresh_duration = 0; 
+  std::vector<double> _seq_duration; 
 
   // for trace
   std::vector<TraceData> _step_trace;

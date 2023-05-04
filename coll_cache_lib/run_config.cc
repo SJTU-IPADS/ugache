@@ -49,7 +49,7 @@ size_t               RunConfig::option_fake_feat_dim = 0;
 
 int                  RunConfig::omp_thread_num                   = 40;
 int                  RunConfig::solver_omp_thread_num            = 40;
-int                  RunConfig::solver_omp_thread_num_per_gpu    = 5;
+int                  RunConfig::solver_omp_thread_num_per_gpu    = 10;
 int                  RunConfig::refresher_omp_thread_num         = 8;
 int                  RunConfig::refresher_omp_thread_num_per_gpu = 1;
 
@@ -65,12 +65,14 @@ double               RunConfig::coll_cache_hyperparam_T_local  = 1;
 double               RunConfig::coll_cache_hyperparam_T_remote = 438 / (double)213;  // performance on A100
 double               RunConfig::coll_cache_hyperparam_T_cpu    = 438 / (double)11.8; // performance on A100
 double               RunConfig::coll_cache_cpu_addup = 0.02;
+size_t               RunConfig::coll_cache_scale_nb = 0;
 
 size_t               RunConfig::seed  = 1;
 
 uint64_t             RunConfig::num_global_step_per_epoch = 0;
 uint64_t             RunConfig::num_epoch = 0;
 uint64_t             RunConfig::num_total_item = 0;
+uint64_t             RunConfig::num_bucket_step = 0;
 
 coll_cache::AsymmLinkDesc RunConfig::coll_cache_link_desc;
 
@@ -140,6 +142,13 @@ void RunConfig::LoadConfigFromEnv() {
   }
   if (GetEnv("COLL_CACHE_CPU_ADDUP") != "") {
     RunConfig::coll_cache_cpu_addup = std::stod(GetEnv("COLL_CACHE_CPU_ADDUP"));
+  }
+  if (GetEnv("COLL_CACHE_SCALE") != "") {
+    RunConfig::coll_cache_scale_nb = std::stod(GetEnv("COLL_CACHE_SCALE"));
+  }
+
+  if (GetEnv("PROFILE_SEQ_BUCKET_SZ") != "") {
+    RunConfig::num_bucket_step = std::stod(GetEnv("PROFILE_SEQ_BUCKET_SZ"));
   }
 }
 

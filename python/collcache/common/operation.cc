@@ -46,6 +46,7 @@ namespace coll_cache_lib {
 namespace common {
 
 std::shared_ptr<CollCache> _coll_cache = nullptr;
+std::shared_ptr<Profiler> _profiler = nullptr;
 size_t internal_feat_dim = 0;
 
 size_t outside_feat_dim = 0;
@@ -53,6 +54,7 @@ size_t outside_feat_dim = 0;
 size_t steps[9] = {0};
 
 std::vector<std::shared_ptr<FreqRecorder>> _freq_recorder;
+size_t max_num_keys = 0;
 
 namespace {
 
@@ -94,7 +96,30 @@ void coll_cache_config_from_map(std::unordered_map<std::string, std::string>& co
   // RC::dataset_path = configs["dataset_path"];
   CRC::is_configured = true;
 
+  _profiler = std::make_shared<Profiler>();
   _coll_cache = std::make_shared<CollCache>(nullptr, AnonymousBarrier::_global_instance);
+  _coll_cache->_profiler = _profiler;
+}
+
+std::string ToReadableSizePrivate(size_t nbytes) {
+  char buf[Constant::kBufferSize];
+  if (nbytes > Constant::kGigabytes) {
+    double new_size = (float)nbytes / Constant::kGigabytes;
+    sprintf(buf, "%.2lf GB", new_size);
+    return std::string(buf);
+  } else if (nbytes > Constant::kMegabytes) {
+    double new_size = (float)nbytes / Constant::kMegabytes;
+    sprintf(buf, "%.2lf MB", new_size);
+    return std::string(buf);
+  } else if (nbytes > Constant::kKilobytes) {
+    double new_size = (float)nbytes / Constant::kKilobytes;
+    sprintf(buf, "%.2lf KB", new_size);
+    return std::string(buf);
+  } else {
+    double new_size = (float)nbytes;
+    sprintf(buf, "%.2lf Bytes", new_size);
+    return std::string(buf);
+  }
 }
 
 };
@@ -151,16 +176,26 @@ void coll_cache_config(const char **config_keys, const char **config_values,
 
 void coll_cache_log_step_by_key(uint64_t key, int item, double val) {
   CHECK_LT(item, kNumLogStepItems);
-  _coll_cache->set_step_profile_value(key, static_cast<LogStepItem>(item), val);
+  _profiler->LogStep(key, static_cast<LogStepItem>(item), val);
 }
 
 void coll_cache_report_step_by_key(uint64_t key) {
-  _coll_cache->report(key);
+  _profiler->ReportStep(RunConfig::GetEpochFromKey(key), RunConfig::GetStepFromKey(key));
+  // _coll_cache->report(key);
   std::cout.flush();
 }
 
 void coll_cache_report_step_average_by_key(uint64_t key) {
-  _coll_cache->report_avg();
+  _profiler->ReportStepAverage(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1);
+  _profiler->ReportStepItemPercentiles(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1,
+        kLogL2CacheCopyTime, {50, 90, 95, 99, 99.9}, "tail_logl2featcopy");
+  // // _profiler->ReportStepMax(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1);
+  // // _profiler->ReportStepMin(RunConfig::num_epoch - 1, RunConfig::num_global_step_per_epoch - 1);
+  // for (size_t epoch = 1; epoch < RunConfig::num_epoch; epoch ++) {
+  //   _profiler->ReportStepAverage(epoch, RunConfig::num_global_step_per_epoch - 1);
+  //   _profiler->ReportStepMax(epoch, RunConfig::num_global_step_per_epoch - 1);
+  //   _profiler->ReportStepMin(epoch, RunConfig::num_global_step_per_epoch - 1);
+  // }
   std::cout.flush();
 }
 
@@ -203,6 +238,7 @@ void coll_cache_lookup(int replica_id, uint32_t* key, size_t num_keys, void* out
 
 void coll_cache_record(int replica_id, uint32_t* key, size_t num_keys) {
   _freq_recorder[replica_id]->Record(key, num_keys);
+  max_num_keys = std::max(max_num_keys, num_keys);
 }
 
 namespace {
@@ -218,7 +254,7 @@ size_t get_cuda_used() {
 }
 
 void coll_cache_print_memory_usage() {
-  // std::cout << "[CUDA] cuda" << /*ctx.device_id << */ ": usage: " << ToReadableSize(get_cuda_used()) << "\n";
+  std::cout << "[CUDA] cuda" << /*ctx.device_id << */ ": usage: " << ToReadableSizePrivate(get_cuda_used()) << "\n";
   std::cout.flush();
 }
 
