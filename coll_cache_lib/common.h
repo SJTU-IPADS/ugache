@@ -96,6 +96,7 @@ enum NoGroupImpl {
   kAlwaysGroup = 0,
   kDirectNoGroup,
   kOrderedNoGroup,
+  kNoGroupSkipHash,
 };
 
 struct Context {

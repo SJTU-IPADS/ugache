@@ -108,6 +108,8 @@ void RunConfig::LoadConfigFromEnv() {
       RunConfig::coll_cache_no_group = kDirectNoGroup;
     } else if (GetEnv("SAMGRAPH_COLL_CACHE_NO_GROUP") == "ORDERED") {
       RunConfig::coll_cache_no_group = kOrderedNoGroup;
+    } else if (GetEnv("SAMGRAPH_COLL_CACHE_NO_GROUP") == "NO_HASH") {
+      RunConfig::coll_cache_no_group = kNoGroupSkipHash;
     } else {
       CHECK(false) << "Unknown nogroup impl " << GetEnv("SAMGRAPH_COLL_CACHE_NO_GROUP");
     }
