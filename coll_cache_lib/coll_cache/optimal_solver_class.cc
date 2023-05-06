@@ -1541,7 +1541,8 @@ void CliquePartSolver::Solve(std::vector<int> device_to_stream,
 
   double cpu_w = 0, total_w = 0;
 
-  if (RunConfig::coll_cache_no_group == kNoGroupSkipHash) {
+  if (RunConfig::coll_hash_impl == kRR || RunConfig::coll_hash_impl == kChunk) {
+    CHECK(RunConfig::coll_hash_impl != kDefault);
     CHECK(partition_size * clique_size >= num_node);
   }
 
@@ -1550,11 +1551,15 @@ void CliquePartSolver::Solve(std::vector<int> device_to_stream,
     IdType node_id = stream_id_list->Ptr<IdType>()[rank];
     IdType block_id = clique_size;
     auto hash_base = rank;
-    if (RunConfig::coll_cache_no_group == kNoGroupSkipHash) {
-      hash_base = node_id;
-    }
     if (rank < partition_size * clique_size) {
-      block_id = hash_base % clique_size;
+      if (RunConfig::coll_hash_impl == kRR) {
+        block_id = node_id % clique_size;
+      } else if (RunConfig::coll_hash_impl == kChunk) {
+        block_id = node_id / partition_size;
+      } else {
+        CHECK(RunConfig::coll_hash_impl == kDefault);
+        block_id = rank % clique_size;
+      }
     } else {
       block_id = clique_size;
       cpu_w += freq_array[rank];

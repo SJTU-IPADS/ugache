@@ -402,7 +402,7 @@ class ExtractSession {
   void CombineNoGroup(const IdType* nodes, const size_t num_nodes, void* output, Context ctx, DataType _dtype, IdType _dim, StreamHandle stream);
 #endif
   void CombineMixGroup(const SrcKey* src_key, const DstVal* dst_val, const size_t num_nodes, void* output, Context ctx, DataType _dtype, IdType _dim, StreamHandle stream);
-  void CombineRRCliq(const IdType* keys, const size_t num_keys, void* output, Context ctx, DataType _dtype, IdType _dim, StreamHandle stream);
+  void CombineCliq(const IdType* keys, const size_t num_keys, void* output, Context ctx, DataType _dtype, IdType _dim, StreamHandle stream);
   template<int NUM_LINK>
   void CombineConcurrent(const SrcKey * src_index, const DstVal * dst_index, const IdType * group_offset, void* output, StreamHandle stream);
   template<int NUM_LINK>

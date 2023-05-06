@@ -66,6 +66,8 @@ double               RunConfig::coll_cache_hyperparam_T_remote = 438 / (double)2
 double               RunConfig::coll_cache_hyperparam_T_cpu    = 438 / (double)11.8; // performance on A100
 double               RunConfig::coll_cache_cpu_addup = 0.02;
 size_t               RunConfig::coll_cache_scale_nb = 0;
+HashImpl             RunConfig::coll_hash_impl = kDefault;
+bool                 RunConfig::coll_skip_hash = false;
 
 size_t               RunConfig::seed  = 1;
 
@@ -108,11 +110,23 @@ void RunConfig::LoadConfigFromEnv() {
       RunConfig::coll_cache_no_group = kDirectNoGroup;
     } else if (GetEnv("SAMGRAPH_COLL_CACHE_NO_GROUP") == "ORDERED") {
       RunConfig::coll_cache_no_group = kOrderedNoGroup;
-    } else if (GetEnv("SAMGRAPH_COLL_CACHE_NO_GROUP") == "NO_HASH") {
-      RunConfig::coll_cache_no_group = kNoGroupSkipHash;
     } else {
       CHECK(false) << "Unknown nogroup impl " << GetEnv("SAMGRAPH_COLL_CACHE_NO_GROUP");
     }
+  }
+  if (GetEnv("COLL_HASH_IMPL") != "") {
+    if (GetEnv("COLL_HASH_IMPL") == "DEFAULT") {
+      RunConfig::coll_hash_impl = kDefault;
+    } else if (GetEnv("COLL_HASH_IMPL") == "RR") {
+      RunConfig::coll_hash_impl = kRR;
+    } else if (GetEnv("COLL_HASH_IMPL") == "CHUNK") {
+      RunConfig::coll_hash_impl = kChunk;
+    } else {
+      CHECK(false) << "Unknown hash impl " << GetEnv("COLL_HASH_IMPL");
+    }
+  }
+  if (GetEnv("COLL_SKIP_HASH") != "") {
+    RunConfig::coll_skip_hash = ture_values.find(GetEnv("COLL_SKIP_HASH")) != ture_values.end();
   }
   if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK") != "") {
     RunConfig::coll_cache_concurrent_link = ture_values.find(GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK")) != ture_values.end();

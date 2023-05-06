@@ -138,46 +138,40 @@ struct DataIterMixLocation {
     return _remote_raw_data + offset * dim;
   }
 };
-struct DataIterRRSrc {
-  const int clique_size;
-  void* _device_cache_data[8] = {nullptr};
-  size_t dim;
-  DataIterRRSrc(int clique_size, std::vector<void*> & cache_data, size_t dim) :
-      clique_size(clique_size), dim(dim) {
+template<int clique_size>
+struct DataIterCliqSrcRR {
+  void* _device_cache_data[clique_size] = {nullptr};
+  const IdType chunk_size;
+  DataIterCliqSrcRR(int _, std::vector<void*> & cache_data, size_t dim, IdType chunk_size)
+   : chunk_size(chunk_size) {
     memcpy(_device_cache_data, cache_data.data(), sizeof(void*) * cache_data.size());
   }
   template<typename T>
-  __forceinline__ __host__ __device__ T* operator[](const size_t & key) const {
-    const int location = key % clique_size;
-    const auto _remote_raw_data = (T*)_device_cache_data[location];
-    const auto offset = key / clique_size;
-    return _remote_raw_data + offset * dim;
+  __forceinline__ __host__ __device__ T* call(const size_t & key, size_t dim) const {
+    return (T*)_device_cache_data[key % clique_size] + (key / clique_size) * dim;
   }
 };
-struct DataIterRRDst {
-  size_t dim;
-  void* data;
-  DataIterRRDst(void* data, size_t dim) : data(data), dim(dim) {}
+template<int clique_size>
+struct DataIterCliqSrcChunk {
+  void* _device_cache_data[clique_size] = {nullptr};
+  const IdType chunk_size;
+  DataIterCliqSrcChunk(int _, std::vector<void*> & cache_data, size_t dim, IdType chunk_size)
+   : chunk_size(chunk_size) {
+    memcpy(_device_cache_data, cache_data.data(), sizeof(void*) * cache_data.size());
+  }
+
   template<typename T>
-  __forceinline__ __host__ __device__ T* operator[](const size_t & idx) const {
+  __forceinline__ __host__ __device__ T* call(const size_t & key, size_t dim) const {
+    return (T*)_device_cache_data[key / chunk_size] + (key % chunk_size) * dim;
+  }
+};
+struct DataIterCliqDst {
+  void* data;
+  DataIterCliqDst(void* data, size_t dim) : data(data) {}
+  template<typename T>
+  __forceinline__ __host__ __device__ T* call(const size_t & idx, size_t dim) const {
     return ((T*)data) + idx * dim;
   }
-};
-struct RRLocIter {
-  const IdType* key_list;
-  const int clique_size;
-  RRLocIter(const IdType* key_list, int clique_size) : key_list(const_cast<IdType*>(key_list)), clique_size(clique_size) {}
-  __forceinline__ __host__ __device__ int operator[](const size_t & idx) { return (int)(key_list[idx] % clique_size); }
-  __forceinline__ __host__ __device__ const int operator[](const size_t & idx) const { return (int)(key_list[idx] % clique_size); }
-};
-struct RROffIter {
-  const IdType* key_list;
-  const int clique_size;
-  // RROffIter() {}
-  // RROffIter(IdType* key_list) : key_list(key_list) {}
-  RROffIter(const IdType* key_list, int clique_size) : key_list(const_cast<IdType*>(key_list)), clique_size(clique_size) {}
-  __forceinline__ __host__ __device__ IdType operator[](const size_t & idx) { return key_list[idx] / clique_size; }
-  __forceinline__ __host__ __device__ const IdType operator[](const size_t & idx) const { return key_list[idx] / clique_size; }
 };
 template<typename OffsetIter_T>
 struct DataIter {
@@ -1059,16 +1053,13 @@ __global__ void extract_data_wg(
   const T* src = full_src.template operator[]<T>(item_id);
   dst[col] = src[col];
 }
-template <typename T>
-__global__ void extract_data_rr(
-      DataIterRRSrc src, DataIterRRDst dst, const IdType* key_list,
+template <typename T, typename DataIterRRSrc_T>
+__global__ void extract_data_cliq(
+      DataIterRRSrc_T src, DataIterCliqDst dst, const IdType* key_list,
       const size_t num_item, const size_t feat_dim) {
-  IdType idx = blockIdx.x;
-  auto key = key_list[idx];
-  IdType col = threadIdx.x;
-  T* dst_entry =  dst.template operator[]<T>(idx);
-  const T* src_entry = src.template operator[]<T>(key);
-  dst_entry[col] = src_entry[col];
+  T* dst_entry =  dst.call<T>(blockIdx.x, feat_dim);
+  const T* src_entry = src.template call<T>(key_list[blockIdx.x], feat_dim);
+  dst_entry[threadIdx.x] = src_entry[threadIdx.x];
 }
 
 template <typename SrcDataIter_T, typename DstDataIter_T>
@@ -1174,7 +1165,7 @@ void ExtractSession::CombineMixGroup(const SrcKey* src_key, const DstVal* dst_va
 
   device->StreamSync(_trainer_ctx, stream);
 }
-void ExtractSession::CombineRRCliq(const IdType* key_list, const size_t num_node, void* output, Context _trainer_ctx, DataType _dtype, IdType _dim, StreamHandle stream) {
+void ExtractSession::CombineCliq(const IdType* key_list, const size_t num_node, void* output, Context _trainer_ctx, DataType _dtype, IdType _dim, StreamHandle stream) {
   if (num_node == 0) return;
   auto device = Device::Get(_trainer_ctx);
   auto cu_stream = static_cast<cudaStream_t>(stream);
@@ -1183,15 +1174,31 @@ void ExtractSession::CombineRRCliq(const IdType* key_list, const size_t num_node
   const dim3 grid(num_node);
 
   auto clique_size = RunConfig::coll_cache_link_desc.CliqueSize();
-  const DataIterMixLocation<RRLocIter, RROffIter> src_iter(RRLocIter(key_list, clique_size), RROffIter(key_list, clique_size), _cache_ctx->_device_cache_data_clique, _dim);
-  DataIter<DirectOffIter> dst_iter(DirectOffIter(), output, _dim);
+  IdType chunk_size = RoundUpDiv<size_t>(RunConfig::num_total_item, clique_size);
 
-  DataIterRRSrc src(clique_size, _cache_ctx->_device_cache_data_clique, _dim);
-  DataIterRRDst dst(output, _dim);
+  #define SWITCH_CLIQ_SIZE(val, alias, ...) \
+    switch(val) {                     \
+      case 4: { constexpr int alias = 4; { __VA_ARGS__ }; break; } \
+      case 8: { constexpr int alias = 8; { __VA_ARGS__ }; break; } \
+      default: CHECK(false);           \
+    }
 
-  SWITCH_TYPE(_dtype, type, {
-      // extract_data_wg<type><<<grid, block, 0, cu_stream>>>(src_iter, dst_iter, num_node, _dim);
-      extract_data_rr<type><<<grid, block, 0, cu_stream>>>(src, dst, key_list, num_node, _dim);
+  #define SWITCH_CLIQ_HASH(val, alias, cliq_size, ...) \
+    switch(val) {                     \
+      case kRR:    { using alias= DataIterCliqSrcRR<cliq_size>       ; { __VA_ARGS__ }; break; } \
+      case kChunk: { using alias= DataIterCliqSrcChunk<cliq_size>    ; { __VA_ARGS__ }; break; } \
+      case kDefault: \
+      default: CHECK(false);           \
+    }
+
+  SWITCH_CLIQ_SIZE(clique_size, cliq_size, {
+    SWITCH_CLIQ_HASH(RunConfig::coll_hash_impl, DATA_ITER_T, cliq_size, {
+      DATA_ITER_T src(clique_size, _cache_ctx->_device_cache_data_clique, _dim, chunk_size);
+      DataIterCliqDst dst(output, _dim);
+      SWITCH_TYPE(_dtype, type, {
+          extract_data_cliq<type><<<grid, block, 0, cu_stream>>>(src, dst, key_list, num_node, _dim);
+      });
+    });
   });
 
   device->StreamSync(_trainer_ctx, stream);
@@ -1275,13 +1282,13 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     }
     cpu_device->FreeWorkspace(CPU(CPU_CUDA_HOST_MALLOC_DEVICE), group_offset);
 #endif
-  } else if (RunConfig::coll_cache_no_group == common::kNoGroupSkipHash) {
+  } else if (RunConfig::coll_skip_hash) {
     auto trainer_gpu_device = Device::Get(_cache_ctx->_trainer_ctx);
     auto cpu_device = Device::Get(CPU(CPU_CUDA_HOST_MALLOC_DEVICE));
     // Timer t0;
     // double get_index_time = t0.Passed();
     Timer t1;
-    CombineRRCliq(nodes, num_nodes, output, _cache_ctx->_trainer_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
+    CombineCliq(nodes, num_nodes, output, _cache_ctx->_trainer_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
     double combine_time = t1.Passed();
     if (task_key != 0xffffffffffffffff) {
       // size_t num_hit = group_offset[1];
@@ -2500,9 +2507,11 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
       CUDA_CALL(cudaGetLastError());
 
       LOG(INFO) << "CollCacheManager: fix offset of local nodes in hash table";
-      _new_hash_table->_hash_table = std::make_shared<SimpleHashTable>(_eager_gpu_mem_allocator, (size_t)(num_total_nodes - num_cpu_nodes), _trainer_ctx, stream);
-      _new_hash_table->InsertSeqOffWithLoc(cache_node_list, location_id, stream);
-      gpu_device->StreamSync(gpu_ctx, stream);
+      if (RunConfig::coll_skip_hash == false) {
+        _new_hash_table->_hash_table = std::make_shared<SimpleHashTable>(_eager_gpu_mem_allocator, (size_t)(num_total_nodes - num_cpu_nodes), _trainer_ctx, stream);
+        _new_hash_table->InsertSeqOffWithLoc(cache_node_list, location_id, stream);
+        gpu_device->StreamSync(gpu_ctx, stream);
+      }
       // _new_hash_table->_hash_table->CountEntries(stream);
       // gpu_device->StreamSync(gpu_ctx, stream);
     }
@@ -2511,7 +2520,9 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
   LOG(INFO) << "CollCacheManager: waiting for remotes, here is " << _local_location_id;
 
   // wait until all device's hashtable is ready
-  hash_table_list.signin(_local_location_id, _new_hash_table->_hash_table->_o2n_table);
+  if (RunConfig::coll_skip_hash == false) {
+    hash_table_list.signin(_local_location_id, _new_hash_table->_hash_table->_o2n_table);
+  }
   if (num_cached_nodes > 0) {
     device_cache_data_list.signin(_local_location_id, _device_cache_data[_local_location_id]);
   }
@@ -2529,6 +2540,9 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
         }
       }
       _device_cache_data[dev_id] = device_cache_data_list.extract(dev_id);
+      if (RunConfig::coll_skip_hash) {
+        continue;
+      }
       _remote_hash_table[dev_id] = (BucketO2N * )hash_table_list.extract(dev_id);
       _remote_new_hash_table[dev_id] = new CacheEntryManager;
       CacheEntryManager &remote_cache_manager = *_remote_new_hash_table[dev_id];
@@ -2551,20 +2565,22 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
       gpu_device->StreamSync(gpu_ctx, stream);
     }
   }
-  if (RunConfig::coll_cache_no_group == common::kNoGroupSkipHash) {
+  if (RunConfig::coll_skip_hash) {
     auto clique_size = RunConfig::coll_cache_link_desc.CliqueSize();
     auto clique_master = RoundUp(_local_location_id + 1, clique_size) - clique_size;
     _device_cache_data_clique = std::vector<void*>(_device_cache_data.begin() + clique_master, _device_cache_data.begin() + clique_master + clique_size);
   }
-  _new_hash_table->_cached_keys = keys_for_each_source[location_id];
-  _new_hash_table->_cache_space_capacity = _cache_space_capacity;
-  _new_hash_table->cpu_location_id = _cpu_location_id;
-  _new_hash_table->num_total_key = num_total_nodes;
-  _new_hash_table->_free_offsets = Tensor::EmptyExternal(kI32, {_cache_space_capacity}, [](size_t nb){
-    return std::make_shared<HostWorkspaceHandle>(CPU(CPU_CLIB_MALLOC_DEVICE), nb);
-  }, CPU(CPU_CLIB_MALLOC_DEVICE), "");
-  _new_hash_table->_free_offsets->ForceScale(kI32, {_cache_space_capacity - num_cached_nodes}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
-  cpu::ArrangeArray<IdType>(_new_hash_table->_free_offsets->Ptr<IdType>(), _cache_space_capacity - num_cached_nodes, num_cached_nodes);
+  if (RunConfig::coll_skip_hash == false) {
+    _new_hash_table->_cached_keys = keys_for_each_source[location_id];
+    _new_hash_table->_cache_space_capacity = _cache_space_capacity;
+    _new_hash_table->cpu_location_id = _cpu_location_id;
+    _new_hash_table->num_total_key = num_total_nodes;
+    _new_hash_table->_free_offsets = Tensor::EmptyExternal(kI32, {_cache_space_capacity}, [](size_t nb){
+      return std::make_shared<HostWorkspaceHandle>(CPU(CPU_CLIB_MALLOC_DEVICE), nb);
+    }, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+    _new_hash_table->_free_offsets->ForceScale(kI32, {_cache_space_capacity - num_cached_nodes}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+    cpu::ArrangeArray<IdType>(_new_hash_table->_free_offsets->Ptr<IdType>(), _cache_space_capacity - num_cached_nodes, num_cached_nodes);
+  }
   // 4. Free index 
   size_t num_remote_nodes = num_total_nodes - num_cached_nodes - num_cpu_nodes;
 
