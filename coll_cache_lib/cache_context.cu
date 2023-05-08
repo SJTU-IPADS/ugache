@@ -84,6 +84,28 @@ struct GetIdxHelperMock {
   }
 };
 
+template<bool use_empty_feat = false>
+struct GetIdxHelperNew {
+  SrcKeyDstVal* src_key_dst_val;
+  int fallback_loc;
+  size_t empty_feat = 0;
+  GetIdxHelperNew(SrcKeyDstVal* src_key_dst_val, int fallback_loc) : src_key_dst_val(src_key_dst_val), fallback_loc(fallback_loc) {
+    empty_feat = RunConfig::option_empty_feat;
+  }
+  inline __host__ __device__ void operator()(const IdType & idx, const IdType & key, const DeviceSimpleHashTable::BucketO2N* val) {
+    if (val) {
+      src_key_dst_val[idx]._dst_offset__ = idx;
+      src_key_dst_val[idx]._src = val->val;
+    } else if (use_empty_feat) {
+      src_key_dst_val[idx]._dst_offset__ = idx;
+      src_key_dst_val[idx]._src = EmbCacheOff(fallback_loc, key % (1 << empty_feat));
+    } else {
+      src_key_dst_val[idx]._dst_offset__ = idx;
+      src_key_dst_val[idx]._src = EmbCacheOff(fallback_loc, key);
+    };
+  }
+};
+
 namespace {
 
 /**
@@ -195,6 +217,25 @@ struct DataIter {
   }
 };
 
+template<typename OffsetIter_T = SrcKeyDstVal*>
+struct NewDataIter {
+  SrcKeyDstVal* offset_iter;
+  const void* src_data;
+  void* output;
+  size_t dim;
+  NewDataIter() {}
+  NewDataIter(OffsetIter_T offset_iter, const void* src_data, void* output, size_t dim) : 
+    offset_iter(offset_iter), src_data(src_data), output(output), dim(dim) {}
+  template<typename T>
+  __forceinline__ __host__ __device__ T* src(const size_t & idx) {
+    return ((T*)src_data) + offset_iter[idx]._src.off() * dim;
+  }
+  template<typename T>
+  __forceinline__ __host__ __device__ T* dst(const size_t & idx) {
+    return ((T*)output) + offset_iter[idx]._dst_offset__ * dim;
+  }
+};
+
 template <typename T, typename SrcDataIter_T, typename DstDataIter_T>
 __global__ void extract_data(const SrcDataIter_T full_src, DstDataIter_T dst_index,
                              const size_t num_node,
@@ -206,6 +247,25 @@ __global__ void extract_data(const SrcDataIter_T full_src, DstDataIter_T dst_ind
     size_t col = threadIdx.x;
     T* dst = dst_index.template operator[]<T>(i);
     const T* src = full_src.template operator[]<T>(i);
+    while (col < dim) {
+      dst[col] = src[col];
+      col += blockDim.x;
+    }
+    i += stride;
+  }
+}
+
+template <typename T, typename DataIter_T>
+__global__ void extract_data_new(DataIter_T ptrs,
+                             const size_t num_node,
+                             size_t dim) {
+  size_t i = blockIdx.x * blockDim.y + threadIdx.y;
+  const size_t stride = blockDim.y * gridDim.x;
+
+  while (i < num_node) {
+    size_t col = threadIdx.x;
+    T* dst = ptrs.template dst<T>(i);
+    const T* src = ptrs.template src<T>(i);
     while (col < dim) {
       dst[col] = src[col];
       col += blockDim.x;
@@ -269,6 +329,15 @@ struct LocationIter {
   LocationIter(const SrcKey* src_key) : src_key(const_cast<SrcKey*>(src_key)) {}
   __forceinline__ __host__ __device__ int & operator[](const size_t & idx) { return src_key[idx]._location_id; }
   __forceinline__ __host__ __device__ const int & operator[](const size_t & idx) const { return src_key[idx]._location_id; }
+};
+
+struct LocationIterNew {
+  SrcKeyDstVal* index;
+  LocationIterNew() {}
+  LocationIterNew(SrcKeyDstVal* index) : index(index) {}
+  LocationIterNew(const SrcKeyDstVal* index) : index(const_cast<SrcKeyDstVal*>(index)) {}
+  __forceinline__ __host__ __device__ int operator[](const size_t & idx) { return index[idx]._src.loc(); }
+  __forceinline__ __host__ __device__ const int operator[](const size_t & idx) const { return index[idx]._src.loc(); }
 };
 struct SrcOffIter {
   DstVal* dst_val;
@@ -680,6 +749,8 @@ void ExtractSession::GetMissCacheIndex(
     output_dst_index_handle = _cache_ctx->_gpu_mem_allocator(num_nodes * sizeof(DstVal));
     output_src_index_alter_handle = _cache_ctx->_gpu_mem_allocator(num_nodes * sizeof(SrcKey));
     output_dst_index_alter_handle = _cache_ctx->_gpu_mem_allocator(num_nodes * sizeof(DstVal));
+    output_src_dst_index_handle = _cache_ctx->_gpu_mem_allocator(num_nodes * sizeof(SrcKeyDstVal));
+    output_src_dst_index_alter_handle = _cache_ctx->_gpu_mem_allocator(num_nodes * sizeof(SrcKeyDstVal));
   }
 
   output_src_index = output_src_index_handle->ptr<SrcKey>();
@@ -688,6 +759,9 @@ void ExtractSession::GetMissCacheIndex(
 
   SrcKey * output_src_index_alter = output_src_index_alter_handle->ptr<SrcKey>();
   DstVal * output_dst_index_alter = output_dst_index_alter_handle->ptr<DstVal>();
+
+  output_index = output_src_dst_index_handle->ptr<SrcKeyDstVal>();
+  SrcKeyDstVal* output_index_alter = output_src_dst_index_alter_handle->ptr<SrcKeyDstVal>();
 
   const size_t num_tiles = RoundUpDiv(num_nodes, Constant::kCudaTileSize);
   const dim3 grid(num_tiles);
@@ -711,9 +785,11 @@ void ExtractSession::GetMissCacheIndex(
     LOG(DEBUG) << "flatern get idx " << t_flatern.Passed();
     Timer t_hash;
     if (RunConfig::option_empty_feat == 0) {
-      _cache_ctx->_new_hash_table->_hash_table->LookupValCustom(nodes, num_nodes, GetIdxHelper(output_src_index, output_dst_index, _cache_ctx->_cpu_location_id), stream);
+      // _cache_ctx->_new_hash_table->_hash_table->LookupValCustom(nodes, num_nodes, GetIdxHelper(output_src_index, output_dst_index, _cache_ctx->_cpu_location_id), stream);
+      _cache_ctx->_new_hash_table->_hash_table->LookupValCustom(nodes, num_nodes, GetIdxHelperNew<false>(output_index, _cache_ctx->_cpu_location_id), stream);
     } else {
-      _cache_ctx->_new_hash_table->_hash_table->LookupValCustom(nodes, num_nodes, GetIdxHelperMock(output_src_index, output_dst_index, _cache_ctx->_cpu_location_id), stream);
+      // _cache_ctx->_new_hash_table->_hash_table->LookupValCustom(nodes, num_nodes, GetIdxHelperMock(output_src_index, output_dst_index, _cache_ctx->_cpu_location_id), stream);
+      _cache_ctx->_new_hash_table->_hash_table->LookupValCustom(nodes, num_nodes, GetIdxHelperNew<true>(output_index, _cache_ctx->_cpu_location_id), stream);
     }
     device->StreamSync(_cache_ctx->_trainer_ctx, stream);
     LOG(DEBUG) << "hashtable get idx " << t_hash.Passed();
@@ -726,22 +802,29 @@ void ExtractSession::GetMissCacheIndex(
   }
 
   Timer t1;
-  cub::DoubleBuffer<int> keys(reinterpret_cast<int*>(output_src_index), reinterpret_cast<int*>(output_src_index_alter));
-  cub::DoubleBuffer<Id64Type> vals(reinterpret_cast<Id64Type*>(output_dst_index), reinterpret_cast<Id64Type*>(output_dst_index_alter));
+  // cub::DoubleBuffer<int> keys(reinterpret_cast<int*>(output_src_index), reinterpret_cast<int*>(output_src_index_alter));
+  // cub::DoubleBuffer<Id64Type> vals(reinterpret_cast<Id64Type*>(output_dst_index), reinterpret_cast<Id64Type*>(output_dst_index_alter));
+  cub::DoubleBuffer<Id64Type> new_keys(reinterpret_cast<Id64Type*>(output_index), reinterpret_cast<Id64Type*>(output_index_alter));
 
-  size_t workspace_bytes;
+  size_t workspace_bytes = 0, workspace_bytes1 = 0;
   LOG(DEBUG) << "CollCacheManager: GetMissCacheIndex - sorting according to group...";
-  CUDA_CALL(cub::DeviceRadixSort::SortPairs(
-      nullptr, workspace_bytes, keys, vals, num_nodes, 0, sizeof(SrcKey) * 8,
+  // CUDA_CALL(cub::DeviceRadixSort::SortPairs(
+  //     nullptr, workspace_bytes, keys, vals, num_nodes, 0, sizeof(SrcKey) * 8,
+  //     cu_stream));
+  CUDA_CALL(cub::DeviceRadixSort::SortKeys(
+      nullptr, workspace_bytes1, new_keys, num_nodes, 0, sizeof(SrcKeyDstVal) * 8,
       cu_stream));
 
-  if (workspace_handle == nullptr || workspace_handle->nbytes() < workspace_bytes) {
-    workspace_handle = _cache_ctx->_gpu_mem_allocator(workspace_bytes);
+  if (workspace_handle == nullptr || workspace_handle->nbytes() < std::max(workspace_bytes, workspace_bytes1)) {
+    workspace_handle = _cache_ctx->_gpu_mem_allocator(std::max(workspace_bytes, workspace_bytes1));
   }
   void *workspace = workspace_handle->ptr();
 
-  CUDA_CALL(cub::DeviceRadixSort::SortPairs(
-      workspace, workspace_bytes, keys, vals, num_nodes, 0, sizeof(SrcKey) * 8,
+  // CUDA_CALL(cub::DeviceRadixSort::SortPairs(
+  //     workspace, workspace_bytes, keys, vals, num_nodes, 0, sizeof(SrcKey) * 8,
+  //     cu_stream));
+  CUDA_CALL(cub::DeviceRadixSort::SortKeys(
+      workspace, workspace_bytes1, new_keys, num_nodes, 0, sizeof(SrcKeyDstVal) * 8,
       cu_stream));
   {
     std::memset(_group_offset, 0, sizeof(IdType) * (_cache_ctx->_num_location + 1));
@@ -751,11 +834,14 @@ void ExtractSession::GetMissCacheIndex(
   // std::cout << "coll sort index "<< t1.Passed() << "\n";
 
   Timer t2;
-  if (reinterpret_cast<SrcKey*>(keys.Current()) != output_src_index) {
-    output_src_index = reinterpret_cast<SrcKey*>(keys.Current());
-    output_dst_index = reinterpret_cast<DstVal*>(vals.Current());
-    // output_src_index_handle = output_src_index_alter_handle;
-    // output_dst_index_handle = output_dst_index_alter_handle;
+  // if (reinterpret_cast<SrcKey*>(keys.Current()) != output_src_index) {
+  //   output_src_index = reinterpret_cast<SrcKey*>(keys.Current());
+  //   output_dst_index = reinterpret_cast<DstVal*>(vals.Current());
+  //   // output_src_index_handle = output_src_index_alter_handle;
+  //   // output_dst_index_handle = output_dst_index_alter_handle;
+  // }
+  if (reinterpret_cast<SrcKeyDstVal*>(new_keys.Current()) != output_index) {
+    output_index = reinterpret_cast<SrcKeyDstVal*>(new_keys.Current());
   }
 
   // std::cout << "coll free workspace "<< t2.Passed() << "\n";
@@ -820,7 +906,7 @@ void ExtractSession::SortByLocation(
   LOG(DEBUG) << "CollCacheManager: SortByGroup - sorting according to group - done...";
 }
 
-void ExtractSession::SplitGroup(const SrcKey * src_index, const size_t len, IdType * & group_offset, StreamHandle stream){
+void ExtractSession::SplitGroup(const SrcKey * _, const size_t len, IdType * & group_offset, StreamHandle stream){
   auto cu_stream = static_cast<cudaStream_t>(stream);
   auto device = Device::Get(_cache_ctx->_trainer_ctx);
   auto cpu_ctx = CPU(CPU_CUDA_HOST_MALLOC_DEVICE);
@@ -835,7 +921,8 @@ void ExtractSession::SplitGroup(const SrcKey * src_index, const size_t len, IdTy
   group_offset[_cache_ctx->_num_location] = len;
   if (len == 0) return;
   LOG(DEBUG) << "CollCache: SplitGroup: legacy finding offset...";
-  const LocationIter loc_iter(src_index);
+  // const LocationIter loc_iter(src_index);
+  const LocationIterNew loc_iter(output_index);
   find_boundary<><<<grid, block, 0, cu_stream>>>(loc_iter, len, group_offset);
   device->StreamSync(_cache_ctx->_trainer_ctx, stream);
   LOG(DEBUG) << "CollCache: SplitGroup: legacy fixing offset...";
@@ -857,6 +944,9 @@ void ExtractSession::SplitGroup(const SrcKey * src_index, const size_t len, IdTy
 namespace {
 template <typename SrcDataIter_T, typename DstDataIter_T>
 void Combine(const SrcDataIter_T src_data_iter, DstDataIter_T dst_data_iter,
+    const size_t num_node, Context _trainer_ctx, DataType _dtype, IdType _dim, StreamHandle stream, IdType limit_block=0, bool async=false);
+template <typename DataIter_T>
+void CombineNew(const DataIter_T data_iter,
     const size_t num_node, Context _trainer_ctx, DataType _dtype, IdType _dim, StreamHandle stream, IdType limit_block=0, bool async=false);
 }
 
@@ -1102,6 +1192,31 @@ void Combine(const SrcDataIter_T src_data_iter, DstDataIter_T dst_data_iter,
   SWITCH_TYPE(_dtype, type, {
       extract_data<type><<<grid, block, 0, cu_stream>>>(
           src_data_iter, dst_data_iter, num_node, _dim);
+  });
+
+  if (async == false) {
+    device->StreamSync(_trainer_ctx, stream);
+  }
+}
+template <typename DataIter_T>
+void CombineNew(const DataIter_T data_iter,
+    const size_t num_node, Context _trainer_ctx, DataType _dtype, IdType _dim, StreamHandle stream, IdType limit_block, bool async) {
+  if (num_node == 0) return;
+  auto device = Device::Get(_trainer_ctx);
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+
+  dim3 block(1024, 1);
+  while (static_cast<size_t>(block.x) >= 2 * _dim) {
+    block.x /= 2;
+    block.y *= 2;
+  }
+  dim3 grid(RoundUpDiv(num_node, static_cast<size_t>(block.y * 4)));
+  if (limit_block != 0) {
+    grid.x = limit_block;
+  }
+
+  SWITCH_TYPE(_dtype, type, {
+      extract_data_new<type><<<grid, block, 0, cu_stream>>>(data_iter, num_node, _dim);
   });
 
   if (async == false) {
@@ -1354,6 +1469,21 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     // GetMissCacheIndexByCub(dst_index, nodes, num_nodes, group_offset, stream);
     double get_index_time = t0.Passed();
 
+    // {
+    //   SrcKeyDstVal* cpu_new_idx = (SrcKeyDstVal*)malloc(sizeof(SrcKeyDstVal) * num_nodes);
+    //   SrcKey*       cpu_src_idx = (SrcKey*)malloc(sizeof(SrcKey) * num_nodes);
+    //   DstVal*       cpu_dst_idx = (DstVal*)malloc(sizeof(DstVal) * num_nodes);
+    //   CUDA_CALL(cudaMemcpy(cpu_new_idx, output_index, sizeof(SrcKeyDstVal) * num_nodes, cudaMemcpyDefault));
+    //   CUDA_CALL(cudaMemcpy(cpu_src_idx,    src_index, sizeof(SrcKey) * num_nodes, cudaMemcpyDefault));
+    //   CUDA_CALL(cudaMemcpy(cpu_dst_idx,    dst_index, sizeof(DstVal) * num_nodes, cudaMemcpyDefault));
+    //   for (size_t i = 0; i < num_nodes; i++) {
+    //     // LOG(ERROR) << cpu_new_idx[i]._dst_offset__ << "," << cpu_new_idx[i].src_loc() << "," << cpu_new_idx[i].src_off();
+    //     CHECK(cpu_new_idx[i]._dst_offset__ == cpu_dst_idx[i]._dst_offset) << "on " << i << ", "<< cpu_new_idx[i]._dst_offset__ << "!=" << cpu_dst_idx[i]._dst_offset;
+    //     CHECK(cpu_new_idx[i]._src.off() == cpu_dst_idx[i]._src_offset) << "on " << i << ", "<< cpu_new_idx[i]._src.off() << "!=" << cpu_dst_idx[i]._src_offset;
+    //     CHECK(cpu_new_idx[i]._src.loc() == cpu_src_idx[i]._location_id) << "on " << i << ", "<< cpu_new_idx[i]._src.loc() << "!=" << cpu_src_idx[i]._location_id;
+    //   }
+    // }
+
     // std::cout << "Split GrOup " <<t1.Passed() << "\n";
     double combine_times[3] = {0, 0, 0};
     if (RunConfig::concurrent_link_impl == common::kMPS) {
@@ -1419,12 +1549,34 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       auto call_combine = [src_index, group_offset, dst_index, nodes, this, output, num_nodes](int location_id, StreamHandle stream, bool sync=true){
         if (group_offset[location_id+1] - group_offset[location_id] == 0) return;
         Timer t;
-        // CombineOneGroupRevised
-        CombineOneGroup(src_index + group_offset[location_id], 
-                        dst_index + group_offset[location_id], 
-                        nodes + group_offset[location_id], 
-                        group_offset[location_id+1] - group_offset[location_id], 
-                        _cache_ctx->_device_cache_data[location_id], output, stream, 0, true);
+        // // CombineOneGroupRevised
+        // CombineOneGroup(src_index + group_offset[location_id], 
+        //                 dst_index + group_offset[location_id], 
+        //                 nodes + group_offset[location_id], 
+        //                 group_offset[location_id+1] - group_offset[location_id], 
+        //                 _cache_ctx->_device_cache_data[location_id], output, stream, 0, true);
+        {
+          auto _trainer_ctx = _cache_ctx->_trainer_ctx;
+          auto _dtype = _cache_ctx->_dtype;
+          auto _dim = _cache_ctx->_dim;
+          size_t num_node = group_offset[location_id+1] - group_offset[location_id];
+          if (num_node == 0) return;
+          auto device = Device::Get(_trainer_ctx);
+          auto cu_stream = static_cast<cudaStream_t>(stream);
+
+          dim3 block(1024, 1);
+          while (static_cast<size_t>(block.x) >= 2 * _dim) {
+            block.x /= 2;
+            block.y *= 2;
+          }
+          dim3 grid(RoundUpDiv(num_node, static_cast<size_t>(block.y * 4)));
+
+          NewDataIter<> data_iter(output_index, _cache_ctx->_device_cache_data[location_id], output, _dim);
+
+          SWITCH_TYPE(_dtype, type, {
+              extract_data_new<type><<<grid, block, 0, cu_stream>>>(data_iter, num_node, _dim);
+          });
+        }
         if (sync) {
           CUDA_CALL(cudaStreamSynchronize(reinterpret_cast<cudaStream_t>(stream)));
         }

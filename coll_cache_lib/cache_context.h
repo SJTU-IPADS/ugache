@@ -44,6 +44,13 @@ struct DstVal {
   IdType _dst_offset;
 };
 
+struct SrcKeyDstVal {
+  IdType _dst_offset__;
+  EmbCacheOff _src;
+  __host__ __device__ __forceinline__ IdType src_loc() const { return _src.loc(); }
+  __host__ __device__ __forceinline__ IdType src_off() const { return _src.off(); }
+};
+
 struct DevicePointerExchanger {
   void* _buffer;
   // bool _cross_process = false;
@@ -333,6 +340,8 @@ class ExtractSession {
   std::shared_ptr<CacheContext> _cache_ctx;
   MemHandle output_src_index_handle, output_dst_index_handle;
   MemHandle output_src_index_alter_handle, output_dst_index_alter_handle;
+  MemHandle output_src_dst_index_handle, output_src_dst_index_alter_handle;
+  SrcKeyDstVal* output_index;
   MemHandle output_sorted_nodes_handle;
   MemHandle workspace_handle;
   IdType * _group_offset = nullptr;
