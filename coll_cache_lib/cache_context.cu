@@ -90,28 +90,6 @@ struct GetIdxHelperMock {
     };
   }
 };
-
-template<bool use_empty_feat = false>
-struct GetIdxHelperNew {
-  SrcKeyDstVal* src_key_dst_val;
-  int fallback_loc;
-  size_t empty_feat = 0;
-  GetIdxHelperNew(SrcKeyDstVal* src_key_dst_val, int fallback_loc) : src_key_dst_val(src_key_dst_val), fallback_loc(fallback_loc) {
-    empty_feat = RunConfig::option_empty_feat;
-  }
-  inline __host__ __device__ void operator()(const IdType & idx, const IdType & key, const DeviceSimpleHashTable::BucketO2N* val) {
-    if (val) {
-      src_key_dst_val[idx]._dst_offset__ = idx;
-      src_key_dst_val[idx]._src = val->val;
-    } else if (use_empty_feat) {
-      src_key_dst_val[idx]._dst_offset__ = idx;
-      src_key_dst_val[idx]._src = EmbCacheOff(fallback_loc, key % (1 << empty_feat));
-    } else {
-      src_key_dst_val[idx]._dst_offset__ = idx;
-      src_key_dst_val[idx]._src = EmbCacheOff(fallback_loc, key);
-    };
-  }
-};
 #endif
 
 namespace {
@@ -214,30 +192,6 @@ struct DataIterCliqDst {
     return ((T*)data) + idx * dim;
   }
 };
-#ifdef DEAD_CODE
-template<typename OffsetIter_T>
-struct DataIter {
-  OffsetIter_T offset_iter;
-  void* output;
-  size_t dim;
-  DataIter() {}
-  DataIter(OffsetIter_T offset_iter, void* output, size_t dim) : 
-    offset_iter(offset_iter), output(output), dim(dim) {}
-  DataIter(OffsetIter_T offset_iter, const void* output, size_t dim) : 
-    offset_iter(offset_iter), output(const_cast<void*>(output)), dim(dim) {}
-  template<typename T>
-  __forceinline__ __host__ __device__ T* operator[](const size_t & idx) {
-    size_t offset = offset_iter[idx];
-    return ((T*)output) + offset * dim;
-  }
-  template<typename T>
-  __forceinline__ __host__ __device__ const T* operator[](const size_t & idx) const {
-    size_t offset = offset_iter[idx];
-    return ((T*)output) + offset * dim;
-  }
-};
-#endif
-
 template<typename IdxStore_T>
 struct DataIterPerLoc : DataIterAPI {
   IdxStore_T idx_store;
@@ -256,27 +210,6 @@ struct DataIterPerLoc : DataIterAPI {
     return ((T*)output) + idx_store.dst_off(idx) * dim;
   }
 };
-
-#ifdef DEAD_CODE
-template <typename T, typename SrcDataIter_T, typename DstDataIter_T>
-__global__ void extract_data(const SrcDataIter_T full_src, DstDataIter_T dst_index,
-                             const size_t num_node,
-                             size_t dim) {
-  size_t i = blockIdx.x * blockDim.y + threadIdx.y;
-  const size_t stride = blockDim.y * gridDim.x;
-
-  while (i < num_node) {
-    size_t col = threadIdx.x;
-    T* dst = dst_index.template operator[]<T>(i);
-    const T* src = full_src.template operator[]<T>(i);
-    while (col < dim) {
-      dst[col] = src[col];
-      col += blockDim.x;
-    }
-    i += stride;
-  }
-}
-#endif
 
 template <typename T, typename DataIter_T>
 __global__ void extract_data(DataIter_T ptrs,
@@ -351,15 +284,6 @@ struct LocationIter {
   LocationIter(const SrcKey* src_key) : src_key(const_cast<SrcKey*>(src_key)) {}
   __forceinline__ __host__ __device__ int & operator[](const size_t & idx) { return src_key[idx]._location_id; }
   __forceinline__ __host__ __device__ const int & operator[](const size_t & idx) const { return src_key[idx]._location_id; }
-};
-
-struct LocationIterNew {
-  SrcKeyDstVal* index;
-  LocationIterNew() {}
-  LocationIterNew(SrcKeyDstVal* index) : index(index) {}
-  LocationIterNew(const SrcKeyDstVal* index) : index(const_cast<SrcKeyDstVal*>(index)) {}
-  __forceinline__ __host__ __device__ int operator[](const size_t & idx) { return index[idx]._src.loc(); }
-  __forceinline__ __host__ __device__ const int operator[](const size_t & idx) const { return index[idx]._src.loc(); }
 };
 struct SrcOffIter {
   DstVal* dst_val;
@@ -784,9 +708,7 @@ void ExtractSession::GetMissCacheIndex(
   Timer t0;
   {
     Timer t_hash;
-    SWITCH_BOOL(RunConfig::option_empty_feat != 0, use_empty_feat, {
-      _cache_ctx->_new_hash_table->LookupSrcDst(nodes, num_nodes, idx, _cpu_location_id, stream);
-    })
+    _cache_ctx->_new_hash_table->LookupSrcDst(nodes, num_nodes, idx, _cpu_location_id, stream);
 
     device->StreamSync(_cache_ctx->_trainer_ctx, stream);
     CUDA_CALL(cudaGetLastError());
@@ -807,11 +729,9 @@ void ExtractSession::SortIndexByLoc(IdxStore_T & idx, const size_t num_nodes, St
   }
   CUDA_CALL(cudaStreamSynchronize(reinterpret_cast<cudaStream_t>(stream)));
   LOG(DEBUG) << "CollCacheManager: GetMissCacheIndex - sorting according to group - done...";
+  // std::cout << "coll sort index "<< t1.Passed() << "\n";
 
   Timer t2;
-  // if (reinterpret_cast<SrcKeyDstVal*>(new_keys.Current()) != output_index) {
-  //   output_index = reinterpret_cast<SrcKeyDstVal*>(new_keys.Current());
-  // }
 
   // std::cout << "coll free workspace "<< t2.Passed() << "\n";
 }
@@ -888,7 +808,6 @@ void ExtractSession::SplitGroup(const IdxStore_T idx_store, const size_t len, Id
   Timer t0;
   group_offset = this->_group_offset;
   group_offset[_cache_ctx->_num_location] = len;
-
   if (len == 0) return;
   LOG(DEBUG) << "CollCache: SplitGroup: legacy finding offset...";
   find_boundary<><<<grid, block, 0, cu_stream>>>(idx_store, len, group_offset);
@@ -899,6 +818,7 @@ void ExtractSession::SplitGroup(const IdxStore_T idx_store, const size_t len, Id
       group_offset[i+1] = group_offset[i];
     }
   }
+  // std::cout << "coll split group "<< t0.Passed() << "\n";
   LOG(DEBUG) << "CollCache: SplitGroup: legacy fixing done...";
 }
 
@@ -1396,21 +1316,6 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     // GetMissCacheIndexByCub(dst_index, nodes, num_nodes, group_offset, stream);
     double get_index_time = t0.Passed();
 
-    // {
-    //   SrcKeyDstVal* cpu_new_idx = (SrcKeyDstVal*)malloc(sizeof(SrcKeyDstVal) * num_nodes);
-    //   SrcKey*       cpu_src_idx = (SrcKey*)malloc(sizeof(SrcKey) * num_nodes);
-    //   DstVal*       cpu_dst_idx = (DstVal*)malloc(sizeof(DstVal) * num_nodes);
-    //   CUDA_CALL(cudaMemcpy(cpu_new_idx, output_index, sizeof(SrcKeyDstVal) * num_nodes, cudaMemcpyDefault));
-    //   CUDA_CALL(cudaMemcpy(cpu_src_idx,    src_index, sizeof(SrcKey) * num_nodes, cudaMemcpyDefault));
-    //   CUDA_CALL(cudaMemcpy(cpu_dst_idx,    dst_index, sizeof(DstVal) * num_nodes, cudaMemcpyDefault));
-    //   for (size_t i = 0; i < num_nodes; i++) {
-    //     // LOG(ERROR) << cpu_new_idx[i]._dst_offset__ << "," << cpu_new_idx[i].src_loc() << "," << cpu_new_idx[i].src_off();
-    //     CHECK(cpu_new_idx[i]._dst_offset__ == cpu_dst_idx[i]._dst_offset) << "on " << i << ", "<< cpu_new_idx[i]._dst_offset__ << "!=" << cpu_dst_idx[i]._dst_offset;
-    //     CHECK(cpu_new_idx[i]._src.off() == cpu_dst_idx[i]._src_offset) << "on " << i << ", "<< cpu_new_idx[i]._src.off() << "!=" << cpu_dst_idx[i]._src_offset;
-    //     CHECK(cpu_new_idx[i]._src.loc() == cpu_src_idx[i]._location_id) << "on " << i << ", "<< cpu_new_idx[i]._src.loc() << "!=" << cpu_src_idx[i]._location_id;
-    //   }
-    // }
-
     // std::cout << "Split GrOup " <<t1.Passed() << "\n";
     double combine_times[3] = {0, 0, 0};
     if (RunConfig::concurrent_link_impl == common::kMPS) {
@@ -1474,37 +1379,10 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       auto call_combine = [idx_store, group_offset, this, output, num_nodes](int location_id, StreamHandle stream, bool sync=true){
         if (group_offset[location_id+1] - group_offset[location_id] == 0) return;
         Timer t;
-        // // CombineOneGroupRevised
-        // CombineOneGroup(src_index + group_offset[location_id], 
-        //                 dst_index + group_offset[location_id], 
-        //                 nodes + group_offset[location_id], 
-        //                 group_offset[location_id+1] - group_offset[location_id], 
-        //                 _cache_ctx->_device_cache_data[location_id], output, stream, 0, true);
+        // CombineOneGroupRevised
         CombineOneGroup(idx_store.sub_array(group_offset[location_id]),
                         group_offset[location_id+1] - group_offset[location_id],
                         _cache_ctx->_device_cache_data[location_id], output, stream, 0, true);
-        // {
-        //   auto _trainer_ctx = _cache_ctx->_trainer_ctx;
-        //   auto _dtype = _cache_ctx->_dtype;
-        //   auto _dim = _cache_ctx->_dim;
-        //   size_t num_node = group_offset[location_id+1] - group_offset[location_id];
-        //   if (num_node == 0) return;
-        //   auto device = Device::Get(_trainer_ctx);
-        //   auto cu_stream = static_cast<cudaStream_t>(stream);
-
-        //   dim3 block(1024, 1);
-        //   while (static_cast<size_t>(block.x) >= 2 * _dim) {
-        //     block.x /= 2;
-        //     block.y *= 2;
-        //   }
-        //   dim3 grid(RoundUpDiv(num_node, static_cast<size_t>(block.y * 4)));
-
-        //   NewDataIter<> data_iter(output_index, _cache_ctx->_device_cache_data[location_id], output, _dim);
-
-        //   SWITCH_TYPE(_dtype, type, {
-        //       extract_data<type><<<grid, block, 0, cu_stream>>>(data_iter, num_node, _dim);
-        //   });
-        // }
         if (sync) {
           CUDA_CALL(cudaStreamSynchronize(reinterpret_cast<cudaStream_t>(stream)));
         }
