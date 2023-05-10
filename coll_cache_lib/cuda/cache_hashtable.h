@@ -21,6 +21,21 @@ struct EmbCacheOff {
   __host__ __device__ __forceinline__ EmbCacheOff& operator=(const EmbCacheOff & v) { data = v.data; return *this;}
   __host__ __device__ __forceinline__ IdType loc() const { return (data >> 28) & 0x0f; }
   __host__ __device__ __forceinline__ IdType off() const { return data & 0x0fffffff; }
+  __host__ __device__ __forceinline__ void set_loc(const IdType loc) { data = (data & 0x0fffffff) | (loc << 28); }
+  __host__ __device__ __forceinline__ void set_off(const IdType off) { data = (data & 0xf0000000) | (off); }
+};
+
+struct IdxStoreAPI {
+  __forceinline__ __host__ __device__ IdType src_loc(const IdType idx) const { abort(); }
+  __forceinline__ __host__ __device__ IdType src_off(const IdType idx) const { abort(); }
+  __forceinline__ __host__ __device__ IdType dst_off(const IdType idx) const { abort(); }
+  // __forceinline__ __host__ __device__ void set_src_loc(const IdType idx, const IdType src_loc) { }
+  // __forceinline__ __host__ __device__ void set_src_off(const IdType idx, const IdType src_off) { }
+  __forceinline__ __host__ __device__ void set_src(const IdType idx, const IdType src_loc, const IdType src_off) { }
+  __forceinline__ __host__ __device__ void set_dst_off(const IdType idx, const IdType dst_off) { }
+
+  __forceinline__ __host__ __device__ size_t required_mem(const IdType num_keys) const { abort(); }
+  __forceinline__ __host__ __device__ void prepare_mem(uint8_t* ptr, const IdType num_keys) { abort(); }
 };
 
 using ValType = EmbCacheOff;

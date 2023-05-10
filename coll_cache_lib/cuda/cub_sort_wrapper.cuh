@@ -173,7 +173,7 @@ void CubCountByEq(Context gpu_ctx,
 }
 
 template<typename NativeKey_t>
-void CubSortKey(
+void CubSortKeyInPlace(
     NativeKey_t* & key, NativeKey_t* & key_alter,
     const size_t len, Context gpu_ctx, 
     std::function<MemHandle(size_t)> & allocator,
@@ -228,7 +228,7 @@ void CubSortKey(
 }
 
 template<typename NativeKey_t>
-void CubSortKeyDescending(
+void CubSortKeyDescendingInplace(
     NativeKey_t* & key, NativeKey_t* & key_alter,
     const size_t len, Context gpu_ctx, 
     std::function<MemHandle(size_t)> & allocator,
@@ -285,9 +285,9 @@ void CubSortKeyDescending(
 }
 
 template<typename NativeKey_t, typename NativeVal_t>
-void CubSortPair(
-    NativeKey_t* & key, NativeKey_t* & key_out,
-    NativeVal_t* & val, NativeVal_t* & val_out,
+void CubSortPairInplace(
+    NativeKey_t* & key, NativeKey_t* & key_alter,
+    NativeVal_t* & val, NativeVal_t* & val_alter,
     const size_t len, Context gpu_ctx, 
     std::function<MemHandle(size_t)> & allocator,
     int begin_bit = 0, int end_bit = sizeof(NativeKey_t) * 8,
@@ -295,8 +295,8 @@ void CubSortPair(
   auto cu_stream = static_cast<cudaStream_t>(stream);
   auto device = Device::Get(gpu_ctx);
 
-  cub::DoubleBuffer<NativeKey_t> keys(key, key_out);
-  cub::DoubleBuffer<NativeVal_t> vals(val, val_out);
+  cub::DoubleBuffer<NativeKey_t> keys(key, key_alter);
+  cub::DoubleBuffer<NativeVal_t> vals(val, val_alter);
 
   size_t workspace_bytes;
   void * workspace = nullptr;
@@ -312,10 +312,10 @@ void CubSortPair(
       begin_bit, end_bit, cu_stream, false));
   device->StreamSync(gpu_ctx, stream);
 
-  key = keys.Alternate();
-  val = vals.Alternate();
-  key_out = keys.Current();
-  val_out = vals.Current();
+  key = keys.Current();
+  val = vals.Current();
+  key_alter = keys.Alternate();
+  val_alter = vals.Alternate();
 
 }
 
@@ -347,9 +347,9 @@ void CubSortPair(
 }
 
 template<typename NativeKey_t, typename NativeVal_t>
-void CubSortPairDescending(
-    NativeKey_t* & key, NativeKey_t* & key_out,
-    NativeVal_t* & val, NativeVal_t* & val_out,
+void CubSortPairDescendingInplace(
+    NativeKey_t* & key, NativeKey_t* & key_alter,
+    NativeVal_t* & val, NativeVal_t* & val_alter,
     const size_t len, Context gpu_ctx, 
     std::function<MemHandle(size_t)> & allocator,
     int begin_bit = 0, int end_bit = sizeof(NativeKey_t) * 8,
@@ -357,8 +357,8 @@ void CubSortPairDescending(
   auto cu_stream = static_cast<cudaStream_t>(stream);
   auto device = Device::Get(gpu_ctx);
 
-  cub::DoubleBuffer<NativeKey_t> keys(key, key_out);
-  cub::DoubleBuffer<NativeVal_t> vals(val, val_out);
+  cub::DoubleBuffer<NativeKey_t> keys(key, key_alter);
+  cub::DoubleBuffer<NativeVal_t> vals(val, val_alter);
 
   size_t workspace_bytes;
   void * workspace = nullptr;
@@ -374,10 +374,10 @@ void CubSortPairDescending(
       begin_bit, end_bit, cu_stream, false));
   device->StreamSync(gpu_ctx, stream);
 
-  key = keys.Alternate();
-  val = vals.Alternate();
-  key_out = keys.Current();
-  val_out = vals.Current();
+  key = keys.Current();
+  val = vals.Current();
+  key_alter = keys.Alternate();
+  val_alter = vals.Alternate();
 
 }
 template<typename NativeKey_t, typename NativeVal_t>
@@ -405,6 +405,37 @@ void CubSortPairDescending(
       begin_bit, end_bit, cu_stream));
   device->StreamSync(gpu_ctx, stream);
 
+}
+
+template<typename NativeKey_t, typename NativeVal_t>
+void CubSortDispatcher(
+    NativeKey_t* & key, NativeKey_t* & key_out,
+    NativeVal_t* & val, NativeVal_t* & val_out,
+    const size_t len, Context gpu_ctx, 
+    std::function<MemHandle(size_t)> & allocator,
+    bool decending = false,
+    StreamHandle stream = nullptr,
+    int begin_bit = 0, int end_bit = sizeof(NativeKey_t) * 8) {
+  if (decending == false) {
+    CubSortPairInplace(key, key_out, val, val_out, len, gpu_ctx, allocator, begin_bit, end_bit, stream);
+  } else {
+    CubSortPairDescendingInplace(key, key_out, val, val_out, len, gpu_ctx, allocator, begin_bit, end_bit, stream);
+  }
+}
+template<typename NativeKey_t>
+void CubSortDispatcher(
+    NativeKey_t* & key, NativeKey_t* & key_out,
+    void* _1, void* _2,
+    const size_t len, Context gpu_ctx, 
+    std::function<MemHandle(size_t)> & allocator,
+    bool decending = false,
+    StreamHandle stream = nullptr,
+    int begin_bit = 0, int end_bit = sizeof(NativeKey_t) * 8) {
+  if (decending == false) {
+    CubSortKeyInPlace(key, key_out, len, gpu_ctx, allocator, begin_bit, end_bit, stream);
+  } else {
+    CubSortKeyDescendingInplace(key, key_out, len, gpu_ctx, allocator, begin_bit, end_bit, stream);
+  }
 }
 
 }
