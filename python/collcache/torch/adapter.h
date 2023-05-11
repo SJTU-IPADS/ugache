@@ -82,7 +82,7 @@ void coll_torch_init(int replica_id, size_t key_space_size, int dev_id, void *cp
 
 ::torch::Tensor coll_torch_test(int replica_id, ::torch::Tensor key);
 
-::torch::Tensor coll_torch_create_emb_shm(int replica_id, size_t num_key, size_t dim, py::object dtype);
+::torch::Tensor coll_torch_create_emb_shm(int replica_id, size_t num_key, size_t dim, py::object dtype, std::string fname);
 
 void coll_torch_record(int replica_id, ::torch::Tensor key);
 }
