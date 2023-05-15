@@ -1529,22 +1529,37 @@ void CliquePartSolver::Solve(std::vector<int> device_to_stream,
   const IdType num_node = stream_freq_list->Shape()[1];
   // the freq list must already be sorted
   // now calculate the boundary
-  const IdType num_cached_nodes = num_node * (device_to_cache_percent[0] / (double)100);
+  const IdType num_cached_nodes = std::ceil(num_node * (device_to_cache_percent[0] / (double)100));
 
   // LOG(ERROR) << "num_cached_nodes = " << num_cached_nodes;
   CHECK_EQ(stream_freq_list->Type(), kI32);
   const IdType * freq_array = stream_freq_list->Ptr<IdType>();
 
-  const IdType partition_size = std::min(num_cached_nodes, num_node / clique_size);
+  // num_cached_nodes is calculated by cache rate, but the total cache space may exceed num node
+  // so the actual num_cached_nodes per device should be smaller
+  const IdType partition_size = std::min(num_cached_nodes, RoundUpDiv<IdType>(num_node, clique_size));
 
   double cpu_w = 0, total_w = 0;
+
+  if (RunConfig::coll_hash_impl == kRR || RunConfig::coll_hash_impl == kChunk) {
+    CHECK(RunConfig::coll_hash_impl != kDefault);
+    CHECK(partition_size * clique_size >= num_node);
+  }
 
 #pragma omp parallel for num_threads(RunConfig::omp_thread_num) reduction(+ : cpu_w, total_w)
   for (IdType rank = 0; rank < num_node; rank++) {
     IdType node_id = stream_id_list->Ptr<IdType>()[rank];
     IdType block_id = clique_size;
+    auto hash_base = rank;
     if (rank < partition_size * clique_size) {
-      block_id = rank % clique_size;
+      if (RunConfig::coll_hash_impl == kRR) {
+        block_id = node_id % clique_size;
+      } else if (RunConfig::coll_hash_impl == kChunk) {
+        block_id = node_id / partition_size;
+      } else {
+        CHECK(RunConfig::coll_hash_impl == kDefault);
+        block_id = rank % clique_size;
+      }
     } else {
       block_id = clique_size;
       cpu_w += freq_array[rank];

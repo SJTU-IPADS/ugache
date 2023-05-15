@@ -86,6 +86,9 @@ struct GetIdxHelperMock {
 
 namespace {
 
+/**
+ * @brief dynamic finds source location & offset when extracting feature, by old location & offset array impl
+ */
 template<typename OffsetIter_T>
 struct DataIterMultiLocation {
   const OffsetIter_T _offset_iter = nullptr;
@@ -110,6 +113,10 @@ struct DataIterMultiLocation {
     return _remote_raw_data + offset * dim;
   }
 };
+/**
+ * @brief dynamic finds source location & offset when extracting feature, but more general
+ * typical usage is to provide separate loc&off array by lookup cache hashtable in advance.
+ */
 template<typename LocIter_T, typename SrcOffIter_T>
 struct DataIterMixLocation {
   LocIter_T _loc_iter;
@@ -129,6 +136,41 @@ struct DataIterMixLocation {
     const auto _remote_raw_data = (T*)_device_cache_data[location];
     const auto offset = _off_iter[idx];
     return _remote_raw_data + offset * dim;
+  }
+};
+template<int clique_size>
+struct DataIterCliqSrcRR {
+  void* _device_cache_data[clique_size] = {nullptr};
+  const IdType chunk_size;
+  DataIterCliqSrcRR(int _, std::vector<void*> & cache_data, size_t dim, IdType chunk_size)
+   : chunk_size(chunk_size) {
+    memcpy(_device_cache_data, cache_data.data(), sizeof(void*) * cache_data.size());
+  }
+  template<typename T>
+  __forceinline__ __host__ __device__ T* call(const size_t & key, size_t dim) const {
+    return (T*)_device_cache_data[key % clique_size] + (key / clique_size) * dim;
+  }
+};
+template<int clique_size>
+struct DataIterCliqSrcChunk {
+  void* _device_cache_data[clique_size] = {nullptr};
+  const IdType chunk_size;
+  DataIterCliqSrcChunk(int _, std::vector<void*> & cache_data, size_t dim, IdType chunk_size)
+   : chunk_size(chunk_size) {
+    memcpy(_device_cache_data, cache_data.data(), sizeof(void*) * cache_data.size());
+  }
+
+  template<typename T>
+  __forceinline__ __host__ __device__ T* call(const size_t & key, size_t dim) const {
+    return (T*)_device_cache_data[key / chunk_size] + (key % chunk_size) * dim;
+  }
+};
+struct DataIterCliqDst {
+  void* data;
+  DataIterCliqDst(void* data, size_t dim) : data(data) {}
+  template<typename T>
+  __forceinline__ __host__ __device__ T* call(const size_t & idx, size_t dim) const {
+    return ((T*)data) + idx * dim;
   }
 };
 template<typename OffsetIter_T>
@@ -1011,6 +1053,14 @@ __global__ void extract_data_wg(
   const T* src = full_src.template operator[]<T>(item_id);
   dst[col] = src[col];
 }
+template <typename T, typename DataIterRRSrc_T>
+__global__ void extract_data_cliq(
+      DataIterRRSrc_T src, DataIterCliqDst dst, const IdType* key_list,
+      const size_t num_item, const size_t feat_dim) {
+  T* dst_entry =  dst.call<T>(blockIdx.x, feat_dim);
+  const T* src_entry = src.template call<T>(key_list[blockIdx.x], feat_dim);
+  dst_entry[threadIdx.x] = src_entry[threadIdx.x];
+}
 
 template <typename SrcDataIter_T, typename DstDataIter_T>
 void CombineWG(const SrcDataIter_T src_data_iter, DstDataIter_T dst_data_iter,
@@ -1115,6 +1165,44 @@ void ExtractSession::CombineMixGroup(const SrcKey* src_key, const DstVal* dst_va
 
   device->StreamSync(_trainer_ctx, stream);
 }
+void ExtractSession::CombineCliq(const IdType* key_list, const size_t num_node, void* output, Context _trainer_ctx, DataType _dtype, IdType _dim, StreamHandle stream) {
+  if (num_node == 0) return;
+  auto device = Device::Get(_trainer_ctx);
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+
+  const dim3 block(_dim);
+  const dim3 grid(num_node);
+
+  auto clique_size = RunConfig::coll_cache_link_desc.CliqueSize();
+  IdType chunk_size = RoundUpDiv<size_t>(RunConfig::num_total_item, clique_size);
+
+  #define SWITCH_CLIQ_SIZE(val, alias, ...) \
+    switch(val) {                     \
+      case 4: { constexpr int alias = 4; { __VA_ARGS__ }; break; } \
+      case 8: { constexpr int alias = 8; { __VA_ARGS__ }; break; } \
+      default: CHECK(false);           \
+    }
+
+  #define SWITCH_CLIQ_HASH(val, alias, cliq_size, ...) \
+    switch(val) {                     \
+      case kRR:    { using alias= DataIterCliqSrcRR<cliq_size>       ; { __VA_ARGS__ }; break; } \
+      case kChunk: { using alias= DataIterCliqSrcChunk<cliq_size>    ; { __VA_ARGS__ }; break; } \
+      case kDefault: \
+      default: CHECK(false);           \
+    }
+
+  SWITCH_CLIQ_SIZE(clique_size, cliq_size, {
+    SWITCH_CLIQ_HASH(RunConfig::coll_hash_impl, DATA_ITER_T, cliq_size, {
+      DATA_ITER_T src(clique_size, _cache_ctx->_device_cache_data_clique, _dim, chunk_size);
+      DataIterCliqDst dst(output, _dim);
+      SWITCH_TYPE(_dtype, type, {
+          extract_data_cliq<type><<<grid, block, 0, cu_stream>>>(src, dst, key_list, num_node, _dim);
+      });
+    });
+  });
+
+  device->StreamSync(_trainer_ctx, stream);
+}
 
 void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
                   void* output, StreamHandle stream, uint64_t task_key) {
@@ -1194,7 +1282,28 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     }
     cpu_device->FreeWorkspace(CPU(CPU_CUDA_HOST_MALLOC_DEVICE), group_offset);
 #endif
-  } else if (RunConfig::coll_cache_no_group != common::kAlwaysGroup) {
+  } else if (RunConfig::coll_skip_hash) {
+    auto trainer_gpu_device = Device::Get(_cache_ctx->_trainer_ctx);
+    auto cpu_device = Device::Get(CPU(CPU_CUDA_HOST_MALLOC_DEVICE));
+    // Timer t0;
+    // double get_index_time = t0.Passed();
+    Timer t1;
+    CombineCliq(nodes, num_nodes, output, _cache_ctx->_trainer_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
+    double combine_time = t1.Passed();
+    if (task_key != 0xffffffffffffffff) {
+      // size_t num_hit = group_offset[1];
+      auto _dtype = _cache_ctx->_dtype;
+      auto _dim = _cache_ctx->_dim;
+      _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL1FeatureBytes, GetTensorBytes(_dtype, {num_nodes, _dim}));
+      // _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL1MissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
+      // _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL1RemoteBytes, GetTensorBytes(_dtype, {num_remote, _dim}));
+      // _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheCombineMissTime,combine_times[0]);
+      // _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheCombineRemoteTime,combine_times[1]);
+      _cache_ctx->_coll_cache->_profiler->LogStep(task_key, kLogL3CacheCombineCacheTime,combine_time);
+      _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochFeatureBytes,GetTensorBytes(_dtype, {num_nodes, _dim}));
+      // _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochMissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
+    }
+  } else if (RunConfig::coll_cache_no_group == common::kDirectNoGroup || RunConfig::coll_cache_no_group == common::kOrderedNoGroup) {
     // CHECK(false) << "Multi source extraction is not supported now";
     auto trainer_gpu_device = Device::Get(_cache_ctx->_trainer_ctx);
     auto cpu_device = Device::Get(CPU(CPU_CUDA_HOST_MALLOC_DEVICE));
@@ -2398,9 +2507,11 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
       CUDA_CALL(cudaGetLastError());
 
       LOG(INFO) << "CollCacheManager: fix offset of local nodes in hash table";
-      _new_hash_table->_hash_table = std::make_shared<SimpleHashTable>(_eager_gpu_mem_allocator, (size_t)(num_total_nodes - num_cpu_nodes), _trainer_ctx, stream);
-      _new_hash_table->InsertSeqOffWithLoc(cache_node_list, location_id, stream);
-      gpu_device->StreamSync(gpu_ctx, stream);
+      if (RunConfig::coll_skip_hash == false) {
+        _new_hash_table->_hash_table = std::make_shared<SimpleHashTable>(_eager_gpu_mem_allocator, (size_t)(num_total_nodes - num_cpu_nodes), _trainer_ctx, stream);
+        _new_hash_table->InsertSeqOffWithLoc(cache_node_list, location_id, stream);
+        gpu_device->StreamSync(gpu_ctx, stream);
+      }
       // _new_hash_table->_hash_table->CountEntries(stream);
       // gpu_device->StreamSync(gpu_ctx, stream);
     }
@@ -2409,7 +2520,9 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
   LOG(INFO) << "CollCacheManager: waiting for remotes, here is " << _local_location_id;
 
   // wait until all device's hashtable is ready
-  hash_table_list.signin(_local_location_id, _new_hash_table->_hash_table->_o2n_table);
+  if (RunConfig::coll_skip_hash == false) {
+    hash_table_list.signin(_local_location_id, _new_hash_table->_hash_table->_o2n_table);
+  }
   if (num_cached_nodes > 0) {
     device_cache_data_list.signin(_local_location_id, _device_cache_data[_local_location_id]);
   }
@@ -2427,6 +2540,9 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
         }
       }
       _device_cache_data[dev_id] = device_cache_data_list.extract(dev_id);
+      if (RunConfig::coll_skip_hash) {
+        continue;
+      }
       _remote_hash_table[dev_id] = (BucketO2N * )hash_table_list.extract(dev_id);
       _remote_new_hash_table[dev_id] = new CacheEntryManager;
       CacheEntryManager &remote_cache_manager = *_remote_new_hash_table[dev_id];
@@ -2435,19 +2551,36 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
       auto keys = Tensor::CopyToExternal(keys_for_each_source[dev_id], _eager_gpu_mem_allocator, _trainer_ctx, stream);
       auto off = Tensor::EmptyExternal(kI32, keys->Shape(), _eager_gpu_mem_allocator, _trainer_ctx, "");
       remote_cache_manager.LookupOffset(keys, off, stream);
+      auto off_cpu = off->CopyTo(CPU(), stream, "");
+      if (_local_location_id == 0) {
+        LOG(ERROR) 
+          << keys_for_each_source[dev_id]->CPtr<IdType>()[0] << "," << off_cpu->CPtr<IdType>()[0] << "|"
+          << keys_for_each_source[dev_id]->CPtr<IdType>()[1] << "," << off_cpu->CPtr<IdType>()[1] << "|"
+          << keys_for_each_source[dev_id]->CPtr<IdType>()[2] << "," << off_cpu->CPtr<IdType>()[2] << "|"
+          << keys_for_each_source[dev_id]->CPtr<IdType>()[3] << "," << off_cpu->CPtr<IdType>()[3] << "|"
+          << keys_for_each_source[dev_id]->CPtr<IdType>()[4] << "," << off_cpu->CPtr<IdType>()[4] << "|"
+        ;
+      }
       _new_hash_table->InsertWithLoc(keys, off, dev_id, stream);
       gpu_device->StreamSync(gpu_ctx, stream);
     }
   }
-  _new_hash_table->_cached_keys = keys_for_each_source[location_id];
-  _new_hash_table->_cache_space_capacity = _cache_space_capacity;
-  _new_hash_table->cpu_location_id = _cpu_location_id;
-  _new_hash_table->num_total_key = num_total_nodes;
-  _new_hash_table->_free_offsets = Tensor::EmptyExternal(kI32, {_cache_space_capacity}, [](size_t nb){
-    return std::make_shared<HostWorkspaceHandle>(CPU(CPU_CLIB_MALLOC_DEVICE), nb);
-  }, CPU(CPU_CLIB_MALLOC_DEVICE), "");
-  _new_hash_table->_free_offsets->ForceScale(kI32, {_cache_space_capacity - num_cached_nodes}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
-  cpu::ArrangeArray<IdType>(_new_hash_table->_free_offsets->Ptr<IdType>(), _cache_space_capacity - num_cached_nodes, num_cached_nodes);
+  if (RunConfig::coll_skip_hash) {
+    auto clique_size = RunConfig::coll_cache_link_desc.CliqueSize();
+    auto clique_master = RoundUp(_local_location_id + 1, clique_size) - clique_size;
+    _device_cache_data_clique = std::vector<void*>(_device_cache_data.begin() + clique_master, _device_cache_data.begin() + clique_master + clique_size);
+  }
+  if (RunConfig::coll_skip_hash == false) {
+    _new_hash_table->_cached_keys = keys_for_each_source[location_id];
+    _new_hash_table->_cache_space_capacity = _cache_space_capacity;
+    _new_hash_table->cpu_location_id = _cpu_location_id;
+    _new_hash_table->num_total_key = num_total_nodes;
+    _new_hash_table->_free_offsets = Tensor::EmptyExternal(kI32, {_cache_space_capacity}, [](size_t nb){
+      return std::make_shared<HostWorkspaceHandle>(CPU(CPU_CLIB_MALLOC_DEVICE), nb);
+    }, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+    _new_hash_table->_free_offsets->ForceScale(kI32, {_cache_space_capacity - num_cached_nodes}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
+    cpu::ArrangeArray<IdType>(_new_hash_table->_free_offsets->Ptr<IdType>(), _cache_space_capacity - num_cached_nodes, num_cached_nodes);
+  }
   // 4. Free index 
   size_t num_remote_nodes = num_total_nodes - num_cached_nodes - num_cpu_nodes;
 

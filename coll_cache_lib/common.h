@@ -98,6 +98,12 @@ enum NoGroupImpl {
   kOrderedNoGroup,
 };
 
+enum HashImpl {
+  kDefault = 0,
+  kRR = 1,
+  kChunk = 2,
+};
+
 struct Context {
   DeviceType device_type;
   int device_id;

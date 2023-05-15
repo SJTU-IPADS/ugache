@@ -275,6 +275,7 @@ class CacheContext {
   MemHandle _hash_table_offset_handle;
 #endif
   std::vector<void*> _device_cache_data;
+  std::vector<void*> _device_cache_data_clique;
   MemHandle _device_cache_data_local_handle;
   std::vector<BucketO2N*> _remote_hash_table;
   CacheEntryManager* _new_hash_table = nullptr;
@@ -401,6 +402,7 @@ class ExtractSession {
   void CombineNoGroup(const IdType* nodes, const size_t num_nodes, void* output, Context ctx, DataType _dtype, IdType _dim, StreamHandle stream);
 #endif
   void CombineMixGroup(const SrcKey* src_key, const DstVal* dst_val, const size_t num_nodes, void* output, Context ctx, DataType _dtype, IdType _dim, StreamHandle stream);
+  void CombineCliq(const IdType* keys, const size_t num_keys, void* output, Context ctx, DataType _dtype, IdType _dim, StreamHandle stream);
   template<int NUM_LINK>
   void CombineConcurrent(const SrcKey * src_index, const DstVal * dst_index, const IdType * group_offset, void* output, StreamHandle stream);
   template<int NUM_LINK>
