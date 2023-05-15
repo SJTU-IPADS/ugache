@@ -67,7 +67,6 @@ struct RunConfig {
   // clang-format on
 
   static bool                 coll_cache_concurrent_link;
-  static NoGroupImpl          coll_cache_no_group;
   static size_t               coll_cache_num_slot;
   static double               coll_cache_coefficient;
   static double               coll_cache_hyperparam_T_local;

@@ -256,11 +256,17 @@ void AsymmLinkDesc::SMPercentToNum(int total_sm) {
 }
 
 bool AutoEnableConcurrentLink() {
+  return RunConfig::coll_cache_concurrent_link != ConcurrentLinkImpl::kNoConcurrentLink;
+}
+ConcurrentLinkImpl AutoDecideConcurrentExtractImpl() {
   switch(RunConfig::cache_policy) {
     case kCollCacheAsymmLink:
     case kCollCacheIntuitive:
     case kCollCache:
-      return true;
+      return kMPSPhase;
+    case kRepCache:
+    case kCliquePart:
+      return kDirectNoGroup;
     // case kCacheByHeuristic:
     // case kCacheByPreSample:
     // case kCacheByPreSampleStatic:
@@ -271,14 +277,17 @@ bool AutoEnableConcurrentLink() {
     // case kCacheByFakeOptimal:
     // case kCacheByRandom:
     // case kDynamicCache:
+    // case kCliquePartByDegree:
+    // case kSOK:
     default:
-      return false;
+      CHECK(false);
+      return kNoConcurrentLink;
   }
 }
 void AutoHandlePartImpl() {
   if (RunConfig::coll_hash_impl == kHashImplAuto) {
     if (RunConfig::cache_percentage * RunConfig::coll_cache_link_desc.CliqueSize() - 1 > -1e-6 &&
-        RunConfig::coll_cache_no_group == kDirectNoGroup) {
+        RunConfig::concurrent_link_impl == kDirectNoGroup) {
       RunConfig::coll_skip_hash = true;
       RunConfig::coll_hash_impl = kChunk;
       LOG(ERROR) << "full partition, skip hash set to true";

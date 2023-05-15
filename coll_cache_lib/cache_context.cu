@@ -1261,7 +1261,7 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochFeatureBytes,GetTensorBytes(_dtype, {num_nodes, _dim}));
       // _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochMissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
     }
-  } else if (RunConfig::coll_cache_no_group == common::kDirectNoGroup || RunConfig::coll_cache_no_group == common::kOrderedNoGroup) {
+  } else if (RunConfig::concurrent_link_impl == common::kDirectNoGroup || RunConfig::concurrent_link_impl == common::kOrderedNoGroup) {
     // CHECK(false) << "Multi source extraction is not supported now";
     auto trainer_gpu_device = Device::Get(_cache_ctx->_trainer_ctx);
     auto cpu_device = Device::Get(CPU(CPU_CUDA_HOST_MALLOC_DEVICE));
