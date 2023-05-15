@@ -76,6 +76,8 @@ struct RunConfig {
   static double               coll_cache_cpu_addup;
   static size_t               coll_cache_scale_nb;
   static HashImpl             coll_hash_impl;
+  // whether skip hash table lookup in partition strategy. requires hash impl to be rr or chunk
+  // may be altered when hash_impl is auto
   static bool                 coll_skip_hash;
   static uint64_t             seed;
 

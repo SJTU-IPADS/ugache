@@ -66,7 +66,7 @@ double               RunConfig::coll_cache_hyperparam_T_remote = 438 / (double)2
 double               RunConfig::coll_cache_hyperparam_T_cpu    = 438 / (double)11.8; // performance on A100
 double               RunConfig::coll_cache_cpu_addup = 0.02;
 size_t               RunConfig::coll_cache_scale_nb = 0;
-HashImpl             RunConfig::coll_hash_impl = kDefault;
+HashImpl             RunConfig::coll_hash_impl = kHashImplAuto;
 bool                 RunConfig::coll_skip_hash = false;
 
 size_t               RunConfig::seed  = 1;

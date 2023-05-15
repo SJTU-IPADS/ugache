@@ -275,6 +275,24 @@ bool AutoEnableConcurrentLink() {
       return false;
   }
 }
+void AutoHandlePartImpl() {
+  if (RunConfig::coll_hash_impl == kHashImplAuto) {
+    if (RunConfig::cache_percentage * RunConfig::coll_cache_link_desc.CliqueSize() - 1 > -1e-6 &&
+        RunConfig::coll_cache_no_group == kDirectNoGroup) {
+      RunConfig::coll_skip_hash = true;
+      RunConfig::coll_hash_impl = kChunk;
+      LOG(ERROR) << "full partition, skip hash set to true";
+    } else {
+      RunConfig::coll_skip_hash = false;
+      RunConfig::coll_hash_impl = kDefault;
+    }
+  }
+  if (RunConfig::coll_skip_hash) {
+    CHECK(RunConfig::coll_hash_impl == kChunk || RunConfig::coll_hash_impl == kRR);
+  }
+  LOG(ERROR) << "using hash table impl " << RunConfig::coll_hash_impl << ", skip hash is " << RunConfig::coll_skip_hash;
+}
+
 double AsymmLinkDesc::AggregatedRemoteTime() {
   CHECK(_topo_type != kHardWiredAsymm);
   if (RunConfig::coll_cache_concurrent_link) {

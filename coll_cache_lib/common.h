@@ -99,9 +99,10 @@ enum NoGroupImpl {
 };
 
 enum HashImpl {
-  kDefault = 0,
-  kRR = 1,
-  kChunk = 2,
+  kHashImplAuto = 0,
+  kDefault,
+  kRR,
+  kChunk,
 };
 
 struct Context {
