@@ -700,7 +700,6 @@ void ExtractSession::GetMissCacheIndex(
   }
   idx.prepare_mem(idx_store_handle->ptr<uint8_t>(), num_nodes);
 
-
   const size_t num_tiles = RoundUpDiv(num_nodes, Constant::kCudaTileSize);
   const dim3 grid(num_tiles);
   const dim3 block(Constant::kCudaBlockSize);
@@ -709,15 +708,10 @@ void ExtractSession::GetMissCacheIndex(
   {
     Timer t_hash;
     _cache_ctx->_new_hash_table->LookupSrcDst(nodes, num_nodes, idx, _cpu_location_id, stream);
-
     device->StreamSync(_cache_ctx->_trainer_ctx, stream);
-    CUDA_CALL(cudaGetLastError());
     LOG(DEBUG) << "hashtable get idx " << t_hash.Passed();
   }
-}
-template<typename IdxStore_T>
-void ExtractSession::SortIndexByLoc(IdxStore_T & idx, const size_t num_nodes, StreamHandle stream) {
-  auto cu_stream = reinterpret_cast<cudaStream_t>(stream);
+
   Timer t1;
   LOG(DEBUG) << "CollCacheManager: GetMissCacheIndex - sorting according to group...";
   IdxStore_T idx_alter;
@@ -1274,12 +1268,14 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     // Timer t0;
     // double get_index_time = t0.Passed();
     Timer t0;
-    LOG(DEBUG) << "CollCache: ExtractFeat: coll, get miss cache index... ";
+    // if (RunConfig::coll_cache_no_group == common::kOrderedNoGroup) {
+    //   IdType* sorted_nodes;
+    //   SortByLocation(sorted_nodes, nodes, num_nodes, stream);
+    //   nodes = sorted_nodes;
+    // }
     IdxStore idx;
+    LOG(DEBUG) << "CollCache: ExtractFeat: coll, get miss cache index... ";
     GetMissCacheIndex(idx, nodes, num_nodes, stream);
-    if (RunConfig::coll_cache_no_group == common::kOrderedNoGroup) {
-      SortIndexByLoc(idx, num_nodes, stream);
-    }
     double get_index_time = t0.Passed();
     Timer t1;
     DataIterMixLoc<decltype(idx)> data_iter(idx, _cache_ctx->_device_cache_data, output, _cache_ctx->_dim);
@@ -1308,7 +1304,6 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     // IdxStore idx_store;
     IdxStoreCompact idx_store;
     GetMissCacheIndex(idx_store, nodes, num_nodes, stream);
-    SortIndexByLoc(idx_store, num_nodes, stream);
     // std::cout << "Get Idx " << t0.Passed() << "\n";
     IdType * group_offset = nullptr;
     LOG(DEBUG) << "CollCache: ExtractFeat: coll, splitting group... ";
@@ -1644,39 +1639,39 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       accu_local_time += combine_times[2];
       accu_step ++;
       if (accu_step % 100 == 0) {
-        std::stringstream ss;
-        ss << _local_location_id << ":" << std::fixed << std::setw(10) << std::setprecision(6) 
-           << std::setw(10) << accu_cpu_time / 100 
-           << std::setw(10) << accu_remote_time / 100 
-           << std::setw(10) << accu_local_time / 100  
-           << " | "
-           << std::setw(10) << accu_each_src_time[0] / 100
-           << std::setw(10) << accu_each_src_time[1] / 100
-           << std::setw(10) << accu_each_src_time[2] / 100
-           << std::setw(10) << accu_each_src_time[3] / 100
-           << std::setw(10) << accu_each_src_time[4] / 100
-           << std::setw(10) << accu_each_src_time[5] / 100
-           << std::setw(10) << accu_each_src_time[6] / 100
-           << std::setw(10) << accu_each_src_time[7] / 100
-           << std::setw(10) << accu_each_src_time[8] / 100
-           << " | "
-           << std::setw(10) << (int)(accu_each_src_nkey[0] / 100)
-           << std::setw(10) << (int)(accu_each_src_nkey[1] / 100)
-           << std::setw(10) << (int)(accu_each_src_nkey[2] / 100)
-           << std::setw(10) << (int)(accu_each_src_nkey[3] / 100)
-           << std::setw(10) << (int)(accu_each_src_nkey[4] / 100)
-           << std::setw(10) << (int)(accu_each_src_nkey[5] / 100)
-           << std::setw(10) << (int)(accu_each_src_nkey[6] / 100)
-           << std::setw(10) << (int)(accu_each_src_nkey[7] / 100)
-           << std::setw(10) << (int)(accu_each_src_nkey[8] / 100)
-           << "\n";
-        ;
-        std::cerr << ss.str();
-        accu_cpu_time = 0;
-        accu_remote_time = 0;
-        accu_local_time = 0;
-        memset(accu_each_src_time, 0, sizeof(accu_each_src_time));
-        memset(accu_each_src_nkey, 0, sizeof(accu_each_src_nkey));
+        // std::stringstream ss;
+        // ss << _local_location_id << ":" << std::fixed << std::setw(10) << std::setprecision(6) 
+        //    << std::setw(10) << accu_cpu_time / 100 
+        //    << std::setw(10) << accu_remote_time / 100 
+        //    << std::setw(10) << accu_local_time / 100  
+        //    << " | "
+        //    << std::setw(10) << accu_each_src_time[0] / 100
+        //    << std::setw(10) << accu_each_src_time[1] / 100
+        //    << std::setw(10) << accu_each_src_time[2] / 100
+        //    << std::setw(10) << accu_each_src_time[3] / 100
+        //    << std::setw(10) << accu_each_src_time[4] / 100
+        //    << std::setw(10) << accu_each_src_time[5] / 100
+        //    << std::setw(10) << accu_each_src_time[6] / 100
+        //    << std::setw(10) << accu_each_src_time[7] / 100
+        //    << std::setw(10) << accu_each_src_time[8] / 100
+        //    << " | "
+        //    << std::setw(10) << (int)(accu_each_src_nkey[0] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[1] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[2] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[3] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[4] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[5] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[6] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[7] / 100)
+        //    << std::setw(10) << (int)(accu_each_src_nkey[8] / 100)
+        //    << "\n";
+        // ;
+        // std::cerr << ss.str();
+        // accu_cpu_time = 0;
+        // accu_remote_time = 0;
+        // accu_local_time = 0;
+        // memset(accu_each_src_time, 0, sizeof(accu_each_src_time));
+        // memset(accu_each_src_nkey, 0, sizeof(accu_each_src_nkey));
       }
       // _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochFeatureBytes,GetTensorBytes(_dtype, {num_nodes, _dim}));
       // _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochMissBytes, GetTensorBytes(_dtype, {num_miss, _dim}));
@@ -1690,7 +1685,6 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     LOG(DEBUG) << "CollCache: ExtractFeat: coll, get miss cache index... ";
     Timer t0;
     GetMissCacheIndex(idx_store, nodes, num_nodes, stream);
-    SortIndexByLoc(idx_store, num_nodes, stream);
     // std::cout << "Get Idx " << t0.Passed() << "\n";
     Timer t1;
     IdType * group_offset = nullptr;
