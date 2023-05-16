@@ -285,6 +285,7 @@ ConcurrentLinkImpl AutoDecideConcurrentExtractImpl() {
   }
 }
 void AutoHandlePartImpl() {
+  if (RunConfig::cache_policy != kCliquePart) return;
   if (RunConfig::coll_hash_impl == kHashImplAuto) {
     if (RunConfig::cache_percentage * RunConfig::coll_cache_link_desc.CliqueSize() - 1 > -1e-6 &&
         RunConfig::concurrent_link_impl == kDirectNoGroup) {
