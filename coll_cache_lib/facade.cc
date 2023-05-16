@@ -321,7 +321,7 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
     RunConfig::solver_omp_thread_num = RunConfig::omp_thread_num;
     RunConfig::solver_omp_thread_num_per_gpu = RunConfig::omp_thread_num / RunConfig::num_device;
   }
-  bool need_solver = (cache_percentage != 0 && cache_percentage != 1);
+  bool need_solver = (cache_percentage != 0 && (cache_percentage != 1 || RunConfig::cache_policy == common::kCliquePart));
   if (replica_id == 0 && need_solver) {
     solve_impl_master(ranking_nodes_list_ptr, ranking_nodes_freq_list_ptr, num_node);
     LOG(ERROR) << replica_id << " solved master";
@@ -434,7 +434,7 @@ void CollCache::build_v2(int replica_id, ContFreqBuf* freq_rank, IdType num_node
     RunConfig::solver_omp_thread_num = RunConfig::omp_thread_num;
     RunConfig::solver_omp_thread_num_per_gpu = RunConfig::omp_thread_num / RunConfig::num_device;
   }
-  bool need_solver = (cache_percentage != 0 && cache_percentage != 1);
+  bool need_solver = (cache_percentage != 0 && (cache_percentage != 1 || RunConfig::cache_policy == common::kCliquePart));
   if (replica_id == 0 && need_solver) {
     solve_impl_master(freq_rank, num_node);
     LOG(ERROR) << replica_id << " solved master";

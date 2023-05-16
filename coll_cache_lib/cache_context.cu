@@ -2560,7 +2560,7 @@ void CacheContext::build(std::function<MemHandle(size_t)> gpu_mem_allocator,
 
   if (cache_percentage == 0) {
     return build_no_cache(location_id, coll_cache_ptr, cpu_data, dtype, dim, gpu_ctx, stream);
-  } else if (cache_percentage == 1) {
+  } else if (cache_percentage == 1 && RunConfig::cache_policy != common::kCliquePart) {
     return build_full_cache(location_id, coll_cache_ptr, cpu_data, dtype, dim, gpu_ctx, RunConfig::num_total_item, stream);
   } else if (_coll_cache->_block_access_advise) {
     build_with_advise_new_hash(location_id, coll_cache_ptr, cpu_data, dtype, dim,
