@@ -641,6 +641,9 @@ std::ostream& operator<<(std::ostream& os, const CachePolicy policy) {
     case kCollCacheAsymmLink:
       os << "coll_cache_asymm_link";
       break;
+    case kCollFineGrain:
+      os << "coll_fine_grain";
+      break;
     case kCliquePart:
       os << "clique_part";
       break;

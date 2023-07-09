@@ -22,6 +22,7 @@ void AsymmLinkDesc::BuildSwitch(int num_trainer) {
     case AutoRolling:
       switch(RunConfig::cache_policy) {
         case kCollCacheAsymmLink: 
+        case kCollFineGrain: 
         case kCollCacheIntuitive: 
         case kCollCache: 
           useRolling = true; break;
@@ -261,6 +262,7 @@ bool AutoEnableConcurrentLink() {
 ConcurrentLinkImpl AutoDecideConcurrentExtractImpl() {
   switch(RunConfig::cache_policy) {
     case kCollCacheAsymmLink:
+    case kCollFineGrain:
     case kCollCacheIntuitive:
     case kCollCache:
       return kMPSPhase;

@@ -133,6 +133,10 @@ void CollCache::solve_impl_master(IdType *ranking_nodes_list_ptr,
       solver = new coll_cache::OptimalAsymmLinkSolver();
       break;
     }
+    case kCollFineGrain: {
+      solver = new coll_cache::CollFineGrainSolver();
+      break;
+    }
     case kCliquePart: {
       solver = new coll_cache::CliquePartSolver();
       break;
@@ -198,6 +202,10 @@ void CollCache::solve_impl_master(ContFreqBuf* freq_rank, IdType num_node) {
       solver = new coll_cache::OptimalAsymmLinkSolver();
       break;
     }
+    case kCollFineGrain: {
+      solver = new coll_cache::CollFineGrainSolver();
+      break;
+    }
     case kCliquePart: {
       solver = new coll_cache::CliquePartSolver();
       break;
@@ -237,6 +245,7 @@ void CollCache::solve_impl_slave() {
     if (RunConfig::cache_policy == kCollCacheAsymmLink ||
         RunConfig::cache_policy == kRepCache ||
         RunConfig::cache_policy == kCollCacheIntuitive ||
+        RunConfig::cache_policy == kCollFineGrain ||
         RunConfig::cache_policy == kCliquePart ||
         RunConfig::cache_policy == kCliquePartByDegree) {
       size_t num_blocks = _block_placement->Shape()[0];
