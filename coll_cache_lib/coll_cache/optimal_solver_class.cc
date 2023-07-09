@@ -1109,6 +1109,12 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
 
   model.write("asymm.lp");
 
+  if (GetEnv("SAVE_MILP_ONLY") != "") {
+    std::string cmd = "mv asymm.lp " + GetEnv("COLL_LOG_BASE") + ".lp";
+    system(cmd.c_str());
+    abort();
+  }
+
   model.optimize();
   } catch (GRBException e) {
     LOG(FATAL) << e.getMessage();

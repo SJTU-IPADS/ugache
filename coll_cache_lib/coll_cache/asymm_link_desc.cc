@@ -233,8 +233,18 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(Context ctx) {
   cudaDeviceProp prop;
   CUDA_CALL(cudaGetDeviceProperties(&prop, ctx.device_id));
   // fixme
-  auto desc = AutoBuild(RunConfig::num_device, total_gpu, prop.name);
-  desc.local_sm.resize(desc.cpu_sm.size(), prop.multiProcessorCount - desc.cpu_sm[0]);
+  std::string gpu_model = prop.name;
+  int num_total_sm = prop.multiProcessorCount;
+  if (GetEnv("COLL_OVERRIDE_GPU_MODEL") != "") {
+    gpu_model = GetEnv("COLL_OVERRIDE_GPU_MODEL");
+    LOG(ERROR) << "overriding gpu model with " << gpu_model;
+  }
+  if (GetEnv("COLL_OVERRIDE_GPU_SM") != "") {
+    num_total_sm = std::stoi(GetEnv("COLL_OVERRIDE_GPU_SM"));
+    LOG(ERROR) << "overriding gpu sm with " << num_total_sm;
+  }
+  auto desc = AutoBuild(RunConfig::num_device, total_gpu, gpu_model);
+  desc.local_sm.resize(desc.cpu_sm.size(), num_total_sm - desc.cpu_sm[0]);
   // desc.SMPercentToNum(prop.multiProcessorCount - desc.cpu_sm[0]);
   desc.SMPercentToNum(desc.total_sm_for_remote[0]);
   for (int dst_dev = 0; dst_dev < RunConfig::num_device; dst_dev++) {
