@@ -236,6 +236,7 @@ void CollCache::solve_impl_slave() {
     // }
     if (RunConfig::cache_policy == kCollCacheAsymmLink ||
         RunConfig::cache_policy == kRepCache ||
+        RunConfig::cache_policy == kCollCacheIntuitive ||
         RunConfig::cache_policy == kCliquePart ||
         RunConfig::cache_policy == kCliquePartByDegree) {
       size_t num_blocks = _block_placement->Shape()[0];

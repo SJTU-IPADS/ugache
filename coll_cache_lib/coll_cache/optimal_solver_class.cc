@@ -1342,6 +1342,22 @@ void IntuitiveSolver::Solve(std::vector<int> device_to_stream,
     block_placement->Ptr<uint8_t>()[i + 1] = (1 << i);
   }
   block_placement->Ptr<uint8_t>()[num_device + 1] = 0;
+
+  block_access_from = Tensor::CreateShm(_shm_name_access, kU8, {(size_t)num_device, static_cast<size_t>(num_block)}, "coll_cache_advise");
+  TensorView<uint8_t> block_access_from_array(block_access_from);
+  for (IdType dev_id = 0; dev_id < num_device; dev_id++) {
+    block_access_from_array[dev_id][0].ref() = dev_id; // block 0 is replicated
+    for (int block_id = 1; block_id <= num_device; block_id++) {
+      block_access_from_array[dev_id][block_id].ref() = block_id - 1; // block 1~n partitioned: gpu 0~n-1
+    }
+    block_access_from_array[dev_id][num_device + 1].ref() = num_device; // cpu
+  }
+  block_density_tensor = Tensor::CreateShm(_shm_name_dens, kF64, {static_cast<unsigned long>(num_block)}, "");
+  block_density_tensor->Ptr<double>()[0] = (double)partition_lb(partition_size) * 100 / (double)num_node;
+  for (int block_id = 1; block_id <= num_device; block_id++) {
+    block_density_tensor->Ptr<double>()[block_id] = partition_size *(double)100 / (double)num_node;
+  }
+  block_density_tensor->Ptr<double>()[1] = 100 - (partition_rb(partition_size) / (double)num_node) * 100;
 }
 
 void PartitionSolver::Solve(std::vector<int> device_to_stream,
