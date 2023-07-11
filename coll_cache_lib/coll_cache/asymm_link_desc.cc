@@ -267,7 +267,7 @@ void AsymmLinkDesc::SMPercentToNum(int total_sm) {
 }
 
 bool AutoEnableConcurrentLink() {
-  return RunConfig::coll_cache_concurrent_link != ConcurrentLinkImpl::kNoConcurrentLink;
+  return RunConfig::concurrent_link_impl != ConcurrentLinkImpl::kNoConcurrentLink;
 }
 ConcurrentLinkImpl AutoDecideConcurrentExtractImpl() {
   switch(RunConfig::cache_policy) {

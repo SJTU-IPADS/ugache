@@ -1246,9 +1246,8 @@ void SingleStreamSolverBase::Build(TensorPtr stream_id_list,
 }
 void IntuitiveSolver::Solve(std::vector<int> device_to_stream,
                             std::vector<PerT> device_to_cache_percent,
-                            std::string mode, double T_local, double T_remote,
-                            double T_cpu) {
-  CHECK(RunConfig::coll_cache_link_desc._topo_type != AsymmLinkDesc::kHardWiredAsymm) << "IntuitiveSolver does not support asymm link topo";
+                            std::string mode, double T_local, double T_cpu) {
+  // CHECK(RunConfig::coll_cache_link_desc._topo_type != AsymmLinkDesc::kHardWiredAsymm) << "IntuitiveSolver does not support asymm link topo";
   CHECK(std::accumulate(device_to_stream.begin(), device_to_stream.end(), 0, std::plus<>()) == 0);
   const int num_device = device_to_stream.size();
   const int num_block = num_device + 2;
@@ -1272,6 +1271,16 @@ void IntuitiveSolver::Solve(std::vector<int> device_to_stream,
   };
 
   // const double T_partition = (T_local + (num_device - 1) * T_remote) / num_device;
+  double T_remote = 0;
+  if (RunConfig::coll_cache_link_desc._topo_type == AsymmLinkDesc::kHardWiredAsymm) {
+    if (RunConfig::num_device != 8) {
+      CHECK(false) << "unimplemented intuitive solver on asymm hardwired platform with <8 GPUs";
+    }
+    // asumming 8V100 platform
+    T_remote = (6 * T_remote + 3 * T_cpu) / 7;
+  } else {
+    T_remote = RunConfig::coll_cache_link_desc.AggregatedRemoteTime();
+  }
   const double mu = 1 + (T_cpu - T_remote) / (T_remote - T_local) * num_device;
   const IdType * freq_array = stream_freq_list->Ptr<IdType>();
 
@@ -1340,6 +1349,25 @@ void IntuitiveSolver::Solve(std::vector<int> device_to_stream,
   std::cout << "coll_cache:optimal_remote_rate=" << remote_w / total_w << "\n";
   std::cout << "coll_cache:optimal_cpu_rate=" << cpu_w / total_w << "\n";
   std::cout << "z=" << local_w * 100 / num_node * T_local + remote_w * 100 / num_node * T_remote + cpu_w * 100 / num_node * T_cpu << "\n";
+  {
+    // estimate time using coll extract mechanism
+    auto & desc = RunConfig::coll_cache_link_desc;
+    double z = 0;
+    double actual_cpu_w = total_w - local_w;
+    double per_partition_w = remote_w / (num_device - 1);
+    z = std::max(z, local_w * T_local * 100 / num_node);
+    double total_area = 0;
+    total_area += local_w * T_local * 100 / num_node * desc.local_sm[0];
+    for (int link_id = 0; link_id < desc.link_sm[0].size(); link_id++) {
+      actual_cpu_w -= per_partition_w;
+      z = std::max(z, per_partition_w * desc.link_time[0][link_id] * 100 / num_node);
+      total_area += per_partition_w * desc.link_time[0][link_id] * 100 / num_node * desc.link_sm[0][link_id];
+    }
+    z = std::max(z, actual_cpu_w * T_cpu * 100 / num_node);
+    total_area += actual_cpu_w * T_cpu * 100 / num_node * desc.cpu_sm[0];
+    z = std::max(z, total_area / (desc.local_sm[0] + desc.cpu_sm[0]));
+    std::cout << "z.mps_phase=" << z << "\n";
+  }
 
   block_placement = Tensor::CreateShm(_shm_name_place, kU8, {static_cast<size_t>(num_block)}, "coll_cache_block_placement");
 
