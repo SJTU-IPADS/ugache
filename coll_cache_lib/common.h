@@ -72,7 +72,9 @@ enum CachePolicy {
   kCollCacheAsymmLink,
   kCliquePart,
   kCliquePartByDegree,
-  kSOK
+  kSOK,
+  kHPS,
+  kCollFineGrain,
 };
 
 enum RollingPolicy {

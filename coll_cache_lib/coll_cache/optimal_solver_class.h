@@ -280,10 +280,10 @@ class SingleStreamSolverBase : public CollCacheSolver {
 
 class IntuitiveSolver : public SingleStreamSolverBase {
 public:
-  using CollCacheSolver::Solve;
+  using SingleStreamSolverBase::Solve;
   void Solve(std::vector<int> device_to_stream,
              std::vector<PerT> device_to_cache_percent, std::string mode,
-             double T_local, double T_remote, double T_cpu);
+             double T_local, double T_cpu);
 };
 class PartitionSolver : public SingleStreamSolverBase {
 public:
@@ -306,6 +306,18 @@ public:
   void Solve(std::vector<int> device_to_stream,
              std::vector<PerT> device_to_cache_percent, std::string mode,
              double T_local, double T_cpu);
+};
+class CollFineGrainSolver : public SingleStreamSolverBase {
+  template<typename T>
+  using vec=std::vector<T>;
+public:
+  CollFineGrainSolver() : link_src(RunConfig::coll_cache_link_desc.link_src), link_time(RunConfig::coll_cache_link_desc.link_time) {}
+  using SingleStreamSolverBase::Solve;
+  void Solve(std::vector<int> device_to_stream,
+             std::vector<PerT> device_to_cache_percent, std::string mode,
+             double T_local, double T_cpu);
+  vec<vec<vec<int>>> link_src;
+  vec<vec<double>> link_time;
 };
 
 class CliquePartSolver : public SingleStreamSolverBase {

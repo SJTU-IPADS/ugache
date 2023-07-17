@@ -60,6 +60,9 @@ kRepCache               = 12
 kCollCacheAsymmLink     = 13
 kCliquePart             = 14
 kCliquePartByDegree     = 15
+kSOK                    = 16
+kHPS                    = 17
+kCollFineGrain          = 18
 
 
 def cpu(device_id=0):
@@ -84,6 +87,7 @@ cache_policies = {
     'part_rep'              : kPartRepCache,
     'rep'                   : kRepCache,
     'coll_cache_asymm_link' : kCollCacheAsymmLink,
+    'coll_fine_grain'       : kCollFineGrain,
     'clique_part'           : kCliquePart,
     'clique_part_by_degree' : kCliquePartByDegree,
 }
