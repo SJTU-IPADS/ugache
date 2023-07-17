@@ -56,9 +56,8 @@ int                  RunConfig::refresher_omp_thread_num_per_gpu = 1;
 std::string          RunConfig::shared_meta_path               = "/shared_meta_data";
 // clang-format on
 
-ConcurrentLinkImpl   RunConfig::concurrent_link_impl       = kNoConcurrentLink;
+ConcurrentLinkImpl   RunConfig::concurrent_link_impl       = kConcurrentExtractAuto;
 bool                 RunConfig::coll_cache_concurrent_link = false;
-NoGroupImpl          RunConfig::coll_cache_no_group    = kAlwaysGroup;
 size_t               RunConfig::coll_cache_num_slot    = 100;
 double               RunConfig::coll_cache_coefficient = 1.2;
 double               RunConfig::coll_cache_hyperparam_T_local  = 1;
@@ -66,7 +65,7 @@ double               RunConfig::coll_cache_hyperparam_T_remote = 438 / (double)2
 double               RunConfig::coll_cache_hyperparam_T_cpu    = 438 / (double)11.8; // performance on A100
 double               RunConfig::coll_cache_cpu_addup = 0.02;
 size_t               RunConfig::coll_cache_scale_nb = 0;
-HashImpl             RunConfig::coll_hash_impl = kDefault;
+HashImpl             RunConfig::coll_hash_impl = kHashImplAuto;
 bool                 RunConfig::coll_skip_hash = false;
 
 size_t               RunConfig::seed  = 1;
@@ -107,9 +106,9 @@ void RunConfig::LoadConfigFromEnv() {
   }
   if (GetEnv("SAMGRAPH_COLL_CACHE_NO_GROUP") != "") {
     if (GetEnv("SAMGRAPH_COLL_CACHE_NO_GROUP") == "DIRECT") {
-      RunConfig::coll_cache_no_group = kDirectNoGroup;
+      RunConfig::concurrent_link_impl = kDirectNoGroup;
     } else if (GetEnv("SAMGRAPH_COLL_CACHE_NO_GROUP") == "ORDERED") {
-      RunConfig::coll_cache_no_group = kOrderedNoGroup;
+      RunConfig::concurrent_link_impl = kOrderedNoGroup;
     } else {
       CHECK(false) << "Unknown nogroup impl " << GetEnv("SAMGRAPH_COLL_CACHE_NO_GROUP");
     }
@@ -129,33 +128,33 @@ void RunConfig::LoadConfigFromEnv() {
     RunConfig::coll_skip_hash = ture_values.find(GetEnv("COLL_SKIP_HASH")) != ture_values.end();
   }
   if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK") != "") {
-    RunConfig::coll_cache_concurrent_link = ture_values.find(GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK")) != ture_values.end();
+    CHECK(false) << "deprecated env SAMGRAPH_COLL_CACHE_CONCURRENT_LINK";
+  }
+  if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "FUSED") {
+    RunConfig::concurrent_link_impl = kFused;
+  } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "FUSED_LIMIT_BLOCK") {
+    RunConfig::concurrent_link_impl = kFusedLimitNumBlock;
+  } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "MULTI_KERNEL") {
+    RunConfig::concurrent_link_impl = kMultiKernelNumBlock;
+  } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "MULTI_KERNEL_OLD") {
+    RunConfig::concurrent_link_impl = kMultiKernelNumBlockOld;
+  } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "MPS") {
+    RunConfig::concurrent_link_impl = kMPS;
+  } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "MPSForLandC") {
+    RunConfig::concurrent_link_impl = kMPSForLandC;
+  } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "MPSPhase") {
+    RunConfig::concurrent_link_impl = kMPSPhase;
+  } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "DIRECT") {
+    RunConfig::concurrent_link_impl = kDirectNoGroup;
+  } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "ORDERED") {
+    RunConfig::concurrent_link_impl = kOrderedNoGroup;
+  } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "") {
+    RunConfig::concurrent_link_impl = coll_cache::AutoDecideConcurrentExtractImpl();
   } else {
-    // auto enable coll cache concurrent link
-    RunConfig::coll_cache_concurrent_link = coll_cache::AutoEnableConcurrentLink();
+    CHECK(false) << "Unknown concurrent link impl " << GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL");
   }
-  if (RunConfig::coll_cache_concurrent_link) {
-    if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "FUSED") {
-      RunConfig::concurrent_link_impl = kFused;
-    } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "FUSED_LIMIT_BLOCK") {
-      RunConfig::concurrent_link_impl = kFusedLimitNumBlock;
-    } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "MULTI_KERNEL") {
-      RunConfig::concurrent_link_impl = kMultiKernelNumBlock;
-    } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "MULTI_KERNEL_OLD") {
-      RunConfig::concurrent_link_impl = kMultiKernelNumBlockOld;
-    } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "") {
-      RunConfig::concurrent_link_impl = kMPS;
-    } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "MPS") {
-      RunConfig::concurrent_link_impl = kMPS;
-    } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "MPSForLandC") {
-      RunConfig::concurrent_link_impl = kMPSForLandC;
-    } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "MPSPhase") {
-      RunConfig::concurrent_link_impl = kMPSPhase;
-    } else {
-      CHECK(false) << "Unknown concurrent link impl " << GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL");
-    }
-    LOG(ERROR) << "using concurrent impl " << GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL");
-  }
+  LOG(ERROR) << "using concurrent impl " << RunConfig::concurrent_link_impl;
+  RunConfig::coll_cache_concurrent_link = coll_cache::AutoEnableConcurrentLink();
   if (GetEnv("COLL_CACHE_CPU_ADDUP") != "") {
     RunConfig::coll_cache_cpu_addup = std::stod(GetEnv("COLL_CACHE_CPU_ADDUP"));
   }

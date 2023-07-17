@@ -1542,7 +1542,6 @@ void CliquePartSolver::Solve(std::vector<int> device_to_stream,
   double cpu_w = 0, total_w = 0;
 
   if (RunConfig::coll_hash_impl == kRR || RunConfig::coll_hash_impl == kChunk) {
-    CHECK(RunConfig::coll_hash_impl != kDefault);
     CHECK(partition_size * clique_size >= num_node);
   }
 

@@ -481,10 +481,12 @@ class ExtractSession {
   template<typename IdxStore_T = IdxStore>
   void SortIndexByLoc(IdxStore_T & idx, const size_t num_nodes, StreamHandle stream);
 
+#ifdef DEAD_CODE
   void SortByLocation(
     IdType* &sorted_nodes,
     const IdType* nodes, const size_t num_nodes, 
     StreamHandle stream);
+#endif
 
   template<typename IdxStore_T = IdxStore>
   void CombineOneGroup(const IdxStore_T idx_store, const size_t num_node, const void* src_data, void* output, StreamHandle stream, IdType limit_block = 0, bool async = false);

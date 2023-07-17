@@ -706,7 +706,6 @@ class CacheEntryManager {
       for (int dev_id = 0; dev_id < num_gpu; dev_id++) {
         node_list_of_src[dev_id]->ForceScale(kI32, {per_src_cur_size[dev_id]}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
         if (RunConfig::coll_hash_impl == kRR || RunConfig::coll_hash_impl == kChunk) {
-          CHECK(RunConfig::coll_hash_impl != kDefault);
           __gnu_parallel::sort(node_list_of_src[dev_id]->Ptr<IdType>(), node_list_of_src[dev_id]->Ptr<IdType>() + per_src_cur_size[dev_id],
                                std::less<IdType>());
         } else {

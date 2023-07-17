@@ -81,27 +81,27 @@ enum RollingPolicy {
   DisableRolling,
 };
 enum ConcurrentLinkImpl {
-  kNoConcurrentLink = 0,
+  kConcurrentExtractAuto = 0,
+  /** legacy */
+  kNoConcurrentLink,
   kFusedLimitNumBlock,
   kFused,
   kMultiKernelNumBlock,    /** use revised extraction kernel */
   kMultiKernelNumBlockOld, /** use old extraction kernel */
   kMPS, /** use mps with old extraction kernel */
   kMPSForLandC, /** use mpl only for local and cpu with old extraction kernel */
+  /** main for coll cache */
   kMPSPhase,
-};
-
-
-enum NoGroupImpl {
-  kAlwaysGroup = 0,
+  /** mix location extraction for baselines */
   kDirectNoGroup,
   kOrderedNoGroup,
 };
 
 enum HashImpl {
-  kDefault = 0,
-  kRR = 1,
-  kChunk = 2,
+  kHashImplAuto = 0,
+  kDefault,
+  kRR,
+  kChunk,
 };
 
 struct Context {
