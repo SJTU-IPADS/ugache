@@ -232,11 +232,12 @@ void coll_torch_init_t(int replica_id, int dev_id, ::torch::Tensor emb, double c
   return tensor;
 }
 
-::torch::Tensor coll_torch_create_emb_shm(int replica_id, size_t num_key, size_t dim, py::object dtype) {
+::torch::Tensor coll_torch_create_emb_shm(int replica_id, size_t num_key, size_t dim, py::object dtype, std::string fname) {
   ::torch::ScalarType torch_dtype = ::torch::python::detail::py_object_to_dtype(dtype);
   if (GetEnv("SAMGRAPH_EMPTY_FEAT") != "") {
     size_t option_empty_feat = std::stoul(GetEnv("SAMGRAPH_EMPTY_FEAT"));
     num_key = 1 << option_empty_feat;
+    fname = "";
   }
 
   auto shm = common::Tensor::CreateShm("SAMG_FEAT_SHM", to_coll_data_type(torch_dtype), {num_key, dim}, "");
@@ -246,6 +247,18 @@ void coll_torch_init_t(int replica_id, int dev_id, ::torch::Tensor emb, double c
       {(long)num_key, (long)dim},
       [shm](void* data) {},
       ::torch::TensorOptions().dtype(torch_dtype).device("cpu"));
+
+  if (fname != "") {
+    std::fstream f(fname);
+    std::cout << fname << "\n";
+    struct stat s;
+    stat(fname.c_str(), &s);
+    if (s.st_size != common::GetTensorBytes(to_coll_data_type(torch_dtype), {num_key, dim})) {
+      std::cerr << "feat file on disk not equal with claimed shape " << s.st_size << " != " << common::GetDataTypeBytes(to_coll_data_type(torch_dtype)) << "x" << num_key << "x" << dim << "\n";
+      abort();
+    }
+    f.read((char*)(tensor.data_ptr()), s.st_size);
+  }
 
   return tensor;
 }

@@ -44,6 +44,13 @@ struct DstVal {
   IdType _dst_offset;
 };
 
+struct SrcKeyDstVal {
+  IdType _dst_offset__;
+  EmbCacheOff _src;
+  __host__ __device__ __forceinline__ IdType src_loc() const { return _src.loc(); }
+  __host__ __device__ __forceinline__ IdType src_off() const { return _src.off(); }
+};
+
 struct DevicePointerExchanger {
   void* _buffer;
   // bool _cross_process = false;
@@ -324,13 +331,93 @@ class CacheContext {
              int location_id, std::shared_ptr<CollCache> coll_cache_ptr,
              void *cpu_data, DataType dtype, size_t dim, Context gpu_ctx,
              double cache_percentage, StreamHandle stream = nullptr);
-  void lookup();
+  // void lookup();
 
  private:
 };
 
+template<bool use_empty_feat=false>
+struct IdxStoreDirect : IdxStoreAPI {
+  const IdType* key_list_;
+  size_t empty_feat_;
+  IdxStoreDirect(const IdType* key_list) : key_list_(key_list), empty_feat_(RunConfig::option_empty_feat) {}
+  __forceinline__ __host__ __device__ IdType src_off(const IdType idx) const {
+    if (use_empty_feat) {
+      return key_list_[idx] % (1 << empty_feat_);
+    } else {
+      return key_list_[idx];
+    }
+  }
+  __forceinline__ __host__ __device__ IdType dst_off(const IdType idx) const {return idx; }
+};
+
+template<bool use_empty_feat=false>
+struct IdxStoreDst : IdxStoreDirect<use_empty_feat> {
+  const IdType* dst_off_;
+  IdxStoreDst(const IdType* key_list, const IdType* dst_off) : IdxStoreDirect<use_empty_feat>(key_list), dst_off_(dst_off) {}
+  __forceinline__ __host__ __device__ IdType dst_off(const IdType idx) const {return dst_off_[idx]; }
+};
+
+struct IdxStoreLegacy : IdxStoreAPI {
+  SrcKey* src_key;
+  DstVal* dst_val;
+  IdxStoreLegacy() {}
+  IdxStoreLegacy sub_array(size_t begin) const {
+    IdxStoreLegacy ret;
+    ret.src_key = this->src_key + begin;
+    ret.dst_val = this->dst_val + begin;
+    return ret;
+  }
+  __forceinline__ __host__ __device__ IdType src_loc(const IdType idx) const {return src_key[idx]._location_id; }
+  __forceinline__ __host__ __device__ IdType src_off(const IdType idx) const {return dst_val[idx]._src_offset; }
+  __forceinline__ __host__ __device__ IdType dst_off(const IdType idx) const {return dst_val[idx]._dst_offset; }
+  // __forceinline__ __host__ __device__ void set_src_loc(const IdType idx, const IdType src_loc) {src_key[idx]._location_id = src_loc; }
+  // __forceinline__ __host__ __device__ void set_src_off(const IdType idx, const IdType src_off) {dst_val[idx]._src_offset  = src_off; }
+  __forceinline__ __host__ __device__ void set_src(const IdType idx, const IdType src_loc, const IdType src_off) { src_key[idx]._location_id = src_loc; dst_val[idx]._src_offset  = src_off; }
+  __forceinline__ __host__ __device__ void set_dst_off(const IdType idx, const IdType dst_off) {dst_val[idx]._dst_offset  = dst_off; }
+  __forceinline__ __host__ __device__ size_t empty_feat() { abort(); }
+  __forceinline__ __host__ __device__ IdType fallback_loc() { abort(); }
+  __forceinline__ __host__ __device__ size_t required_mem(const IdType num_keys) const {
+    return (sizeof(SrcKey) + sizeof(DstVal)) * num_keys;
+  }
+  __forceinline__ __host__ __device__ void prepare_mem(uint8_t* buf, const IdType num_keys) {
+    dst_val = (DstVal*)(buf);
+    src_key = (SrcKey*)(dst_val + num_keys);
+  }
+  __forceinline__ __host__ int*      & keys_for_sort() { return (int* &)src_key; }
+  __forceinline__ __host__ uint64_t* & vals_for_sort() { return (uint64_t* &)dst_val; }
+};
+
+struct IdxStoreCompact : IdxStoreAPI {
+  SrcKeyDstVal* src_dst_idx;
+  IdxStoreCompact() {}
+  // IdxStoreCompact(int fallback_loc) : fallback_loc(fallback_loc), empty_feat(RunConfig::option_empty_feat) {}
+  IdxStoreCompact sub_array(size_t begin) const {
+    IdxStoreCompact ret;
+    ret.src_dst_idx = this->src_dst_idx + begin;
+    return ret;
+  }
+  __forceinline__ __host__ __device__ IdType src_loc(const IdType idx) const {return src_dst_idx[idx].src_loc(); }
+  __forceinline__ __host__ __device__ IdType src_off(const IdType idx) const {return src_dst_idx[idx].src_off(); }
+  __forceinline__ __host__ __device__ IdType dst_off(const IdType idx) const {return src_dst_idx[idx]._dst_offset__; }
+  // __forceinline__ __host__ __device__ void set_src_loc(const IdType idx, const IdType src_loc) { src_dst_idx[idx]._src.set_loc(src_loc);}
+  // __forceinline__ __host__ __device__ void set_src_off(const IdType idx, const IdType src_off) { src_dst_idx[idx]._src.set_off(src_off); }
+  __forceinline__ __host__ __device__ void set_src(const IdType idx, const IdType src_loc, const IdType src_off) { src_dst_idx[idx]._src = EmbCacheOff(src_loc, src_off); }
+  __forceinline__ __host__ __device__ void set_dst_off(const IdType idx, const IdType dst_off) { src_dst_idx[idx]._dst_offset__  = dst_off; }
+  __forceinline__ __host__ __device__ size_t required_mem(const IdType num_keys) const {
+    return (sizeof(SrcKeyDstVal)) * num_keys;
+  }
+  __forceinline__ __host__ __device__ void prepare_mem(uint8_t* buf, const IdType num_keys) {
+    src_dst_idx = (SrcKeyDstVal*)buf;
+  }
+  __forceinline__ __host__ uint64_t* & keys_for_sort() { return (uint64_t* &)src_dst_idx; }
+  __forceinline__ __host__ void*  vals_for_sort() { return nullptr; }
+};
+using IdxStore = IdxStoreLegacy;
+
 class ExtractSession {
   std::shared_ptr<CacheContext> _cache_ctx;
+  MemHandle idx_store_handle = nullptr, idx_store_alter_handle = nullptr;
   MemHandle output_src_index_handle, output_dst_index_handle;
   MemHandle output_src_index_alter_handle, output_dst_index_alter_handle;
   MemHandle output_sorted_nodes_handle;
@@ -376,7 +463,8 @@ class ExtractSession {
     if ( _local_syncer)  _local_syncer->on_wait_job_done();
   }
 
-  void SplitGroup(const SrcKey * src_index, const size_t len, IdType * & group_offset, StreamHandle stream);
+  template<typename IdxStore_T = IdxStore>
+  void SplitGroup(const IdxStore_T idx_store, const size_t len, IdType * & group_offset, StreamHandle stream);
 
 #ifdef COLL_HASH_VALID_LEGACY
   void GetMissCacheIndexByCub(DstVal* & output_dst_index,
@@ -385,28 +473,33 @@ class ExtractSession {
     StreamHandle stream);
 #endif
 
+  template<typename IdxStore_T = IdxStore>
   void GetMissCacheIndex(
-    SrcKey* & output_src_index, DstVal* & output_dst_index,
+    IdxStore_T & idx,
     const IdType* nodes, const size_t num_nodes, 
     StreamHandle stream);
+  template<typename IdxStore_T = IdxStore>
+  void SortIndexByLoc(IdxStore_T & idx, const size_t num_nodes, StreamHandle stream);
 
   void SortByLocation(
     IdType* &sorted_nodes,
     const IdType* nodes, const size_t num_nodes, 
     StreamHandle stream);
 
-  void CombineOneGroup(const SrcKey * src_index, const DstVal * dst_index, const IdType* nodes, const size_t num_node, const void* src_data, void* output, StreamHandle stream, IdType limit_block = 0, bool async = false);
-  void CombineOneGroupRevised(const SrcKey * src_index, const DstVal * dst_index, const IdType* nodes, const size_t num_node, const void* src_data, void* output, StreamHandle stream, IdType limit_block = 0, bool async = false);
+  template<typename IdxStore_T = IdxStore>
+  void CombineOneGroup(const IdxStore_T idx_store, const size_t num_node, const void* src_data, void* output, StreamHandle stream, IdType limit_block = 0, bool async = false);
+  template<typename IdxStore_T = IdxStore>
+  void CombineOneGroupRevised(const IdxStore_T idx_store, const size_t num_node, const void* src_data, void* output, StreamHandle stream, IdType limit_block = 0, bool async = false);
 
 #ifdef COLL_HASH_VALID_LEGACY
   void CombineNoGroup(const IdType* nodes, const size_t num_nodes, void* output, Context ctx, DataType _dtype, IdType _dim, StreamHandle stream);
 #endif
   void CombineMixGroup(const SrcKey* src_key, const DstVal* dst_val, const size_t num_nodes, void* output, Context ctx, DataType _dtype, IdType _dim, StreamHandle stream);
   void CombineCliq(const IdType* keys, const size_t num_keys, void* output, Context ctx, DataType _dtype, IdType _dim, StreamHandle stream);
-  template<int NUM_LINK>
-  void CombineConcurrent(const SrcKey * src_index, const DstVal * dst_index, const IdType * group_offset, void* output, StreamHandle stream);
-  template<int NUM_LINK>
-  void CombineFused(const SrcKey * src_index, const DstVal * dst_index, const IdType * group_offset, void* output, StreamHandle stream);
+  template<int NUM_LINK, typename IdxStore_T = IdxStore>
+  void CombineConcurrent(const IdxStore_T idx_store, const IdType * group_offset, void* output, StreamHandle stream);
+  template<int NUM_LINK, typename IdxStore_T = IdxStore>
+  void CombineFused(const IdxStore_T idx_store, const IdType * group_offset, void* output, StreamHandle stream);
 
  public:
   void ExtractFeat(const IdType* nodes, const size_t num_nodes, void* output, StreamHandle stream, uint64_t task_key);

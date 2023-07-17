@@ -376,6 +376,29 @@ struct EmbedVal {
     };
   }
 };
+template<bool use_empty_feat, typename IdxStore_T>
+struct LookupHelper {
+  IdxStore_T idx_store;
+  int fallback_loc_;
+  size_t empty_feat_;
+  LookupHelper(int fallback_loc) : fallback_loc_(fallback_loc), empty_feat_(RunConfig::option_empty_feat) {}
+  inline __host__ __device__ void operator()(const IdType & idx, const IdType & key, const DeviceSimpleHashTable::BucketO2N* val) {
+    idx_store.set_dst_off(idx, idx);
+    if (val) {
+      idx_store.set_src(idx, val->val.loc(), val->val.off());
+      // idx_store.set_src_loc(idx, val->val.loc());
+      // idx_store.set_src_off(idx, val->val.off());
+    } else if (use_empty_feat) {
+      idx_store.set_src(idx, fallback_loc_, key % (1 << empty_feat_));
+      // idx_store.set_src_loc(idx, fallback_loc_);
+      // idx_store.set_src_off(idx, key % (1 << empty_feat_));
+    } else {
+      idx_store.set_src(idx, fallback_loc_, key);
+      // idx_store.set_src_loc(idx, fallback_loc_);
+      // idx_store.set_src_off(idx, key);
+    }
+  }
+};
 };
 
 namespace HashTableInsertHelper {
@@ -426,6 +449,7 @@ class CacheEntryManager {
   IdType num_total_key;
   int cpu_location_id;
   TensorPtr _keys_for_each_src[9];
+#ifdef DEAD_CODE
   void Lookup(TensorPtr keys, TensorPtr vals, StreamHandle stream) {
     CHECK(sizeof(ValType) == 4);
     _hash_table->LookupValWithDef<>(keys->CPtr<IdType>(), keys->NumItem(), vals->Ptr<ValType>(), CPUFallback(cpu_location_id), stream);
@@ -434,6 +458,7 @@ class CacheEntryManager {
     auto helper = HashTableLookupHelper::SepLocOffset(loc->Ptr<IdType>(), off->Ptr<IdType>(), cpu_location_id);
     _hash_table->LookupValCustom(keys->CPtr<IdType>(), keys->NumItem(), helper, stream);
   }
+#endif
   void LookupOffset(TensorPtr keys, TensorPtr off, StreamHandle stream) {
     if (RunConfig::option_empty_feat == 0) {
       auto helper = HashTableLookupHelper::OffsetOnly(off->Ptr<IdType>());
@@ -443,10 +468,24 @@ class CacheEntryManager {
       _hash_table->LookupValCustom(keys->CPtr<IdType>(), keys->NumItem(), helper, stream);
     }
   }
+  template<typename IdxStore_T=IdxStoreAPI>
+  void LookupSrcDst(const IdType * keys, const size_t num_keys, IdxStore_T idx_store, int fallback_loc, StreamHandle stream) {
+    if (RunConfig::option_empty_feat == 0) {
+      auto helper = HashTableLookupHelper::LookupHelper<false, IdxStore_T>(fallback_loc);
+      helper.idx_store = idx_store;
+      _hash_table->LookupValCustom(keys, num_keys, helper, stream);
+    } else {
+      auto helper = HashTableLookupHelper::LookupHelper<true, IdxStore_T>(fallback_loc);
+      helper.idx_store = idx_store;
+      _hash_table->LookupValCustom(keys, num_keys, helper, stream);
+    }
+  }
+#ifdef DEAD_CODE
   void LookupLoc(TensorPtr keys, TensorPtr loc, StreamHandle stream) {
     auto helper = HashTableLookupHelper::LocOnly(loc->Ptr<IdType>(), cpu_location_id);
     _hash_table->LookupValCustom(keys->CPtr<IdType>(), keys->NumItem(), helper, stream);
   }
+#endif
   void InsertWithLoc(TensorPtr keys, TensorPtr off, int loc, StreamHandle stream) {
     auto helper = HashTableInsertHelper::SingleLoc(off->CPtr<IdType>(), loc);
     _hash_table->InsertUnique(keys->CPtr<IdType>(), helper, keys->NumItem(), stream);
@@ -455,6 +494,7 @@ class CacheEntryManager {
     auto helper = HashTableInsertHelper::SingleLocSeqOff(loc);
     _hash_table->InsertUnique(keys->CPtr<IdType>(), helper, keys->NumItem(), stream);
   }
+#ifdef DEAD_CODE
   TensorPtr EvictLocal(TensorPtr keys_to_evict, StreamHandle stream) {
     CHECK(sizeof(ValType) == 4);
     auto offsets = Tensor::Empty(kI32, keys_to_evict->Shape(), keys_to_evict->Ctx(), "");
@@ -462,6 +502,7 @@ class CacheEntryManager {
     _hash_table->EvictWithUnique(keys_to_evict->CPtr<IdType>(), keys_to_evict->NumItem(), stream);
     return offsets;
   }
+#endif
   void EvictRemote(TensorPtr keys_to_evict, StreamHandle stream) {
     CHECK(sizeof(ValType) == 4);
     _hash_table->EvictWithUnique(keys_to_evict->CPtr<IdType>(), keys_to_evict->NumItem(), stream);
