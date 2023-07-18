@@ -1,0 +1,19 @@
+# syntax=docker/dockerfile:1.2
+
+ARG RELEASE=false
+
+ARG BASE_IMAGE=nvcr.io/nvidia/merlin/merlin-pytorch:22.11
+
+FROM ${BASE_IMAGE} as base
+
+ENV LANG=en_US.UTF-8
+ENV LC_ALL=C.UTF-8
+ENV USER=root
+
+RUN chmod 1777 /tmp
+RUN apt update -y --fix-missing && \
+    apt install -y --no-install-recommends cmake zsh tmux htop pybind11-dev &&\
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY setup_* /tmp/
