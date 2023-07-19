@@ -54,6 +54,14 @@ We also provide an online image on github registry. The image can be run by the 
 xxx
 ```
 
+### Prepare Gurobi license
+
+UGache depends on gurobi to solve MILP problem. Please refer to link xxx to request a trial license.
+Verify license is properly installed by the following command:
+```bash
+gurobi_cl --license
+```
+
 # Preparing the Dataset:
 This script will download the dataset. Later, we will provide a detailed description for preparing the dataset.
 
