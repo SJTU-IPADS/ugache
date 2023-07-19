@@ -93,6 +93,8 @@ def write_split_feat_label_wholegraph():
     print('Writing split files for wholegraph...')
     with open(output_fname, "wb") as f:
         pickle.dump(data_and_label, f)
+    os.system(f'touch {WHOLEGRAPH_OUTPUT_DATA_DIR}/mag240m_homo_edge_index_paper_cites_paper_part_0_of_1')
+    os.system(f'touch {WHOLEGRAPH_OUTPUT_DATA_DIR}/mag240m_homo_node_feat_paper_part_0_of_1')
 
 def soft_link_graph_topo_gnnlab():
     os.system(f'ln -s {WHOLEGRAPH_OUTPUT_DATA_DIR}/homograph_csr_row_ptr {GNNLAB_OUTPUT_DATA_DIR}/indptr.bin')
