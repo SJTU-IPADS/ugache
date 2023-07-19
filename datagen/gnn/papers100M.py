@@ -32,19 +32,18 @@ WHOLEGRAPH_OUTPUT_DATA_DIR = '/datasets_gnn/wholegraph/ogbn_papers100M/converted
 def download_data():
     print('Download data...')
     if not os.path.exists(f'{RAW_DATA_DIR}/papers100M-bin.zip'):
-        assert(os.system(
-            f'wget {DOWNLOAD_URL} -O {RAW_DATA_DIR}/papers100M-bin.zip') == 0)
+        print('Start downloading...')
+        assert(os.system(f'wget {DOWNLOAD_URL} -O {RAW_DATA_DIR}/papers100M-bin.zip') == 0)
     else:
         print('Already downloaded.')
 
     print('Unzip data...')
     if not os.path.exists(f'{PAPERS_RAW_DATA_DIR}/unzipped'):
-        assert(os.system(
-            f'cd {RAW_DATA_DIR}; unzip {RAW_DATA_DIR}/papers100M-bin.zip') == 0)
+        print('Start unziping...')
+        assert(os.system(f'cd {RAW_DATA_DIR}; unzip {RAW_DATA_DIR}/papers100M-bin.zip') == 0)
         assert(os.system(f'touch {PAPERS_RAW_DATA_DIR}/unzipped') == 0)
     else:
         print('Already unzipped...')
-
 
 def write_split_feat_label_gnnlab():
     print('Reading split raw data...')
@@ -98,7 +97,6 @@ def gen_undir_graph_wholegraph_cpu():
     file0 = np.load(f'{PAPERS_RAW_DATA_DIR}/raw/data.npz', mmap_mode='r')
     num_nodes = file0['num_nodes_list'][0]
 
-    ##################### gnnlab's script
     edge_index = file0['edge_index']
     src = edge_index[0]
     dst = edge_index[1]
@@ -144,8 +142,8 @@ def write_wholegraph_meta():
             "emb_file_prefix": "ogbn_papers100M_node_feat_paper",
             "num_nodes": 111059956,
             "emb_dim": 128,
-            "dtype": "float32"}
-        ], 
+            "dtype": "float32"
+        }],
         "edges": [{
             "src": "paper",
             "dst": "paper",
@@ -154,8 +152,8 @@ def write_wholegraph_meta():
             "edge_list_prefix": "ogbn_papers100M_edge_index_paper_cites_paper",
             "num_edges": 3228124712,
             "dtype": "int32",
-            "directed": True}
-        ]
+            "directed": True
+        }]
     }
     with open(f'{WHOLEGRAPH_OUTPUT_DATA_DIR}/ogbn_papers100M_meta.json', 'w') as f:
         json.dump(meta, f)
