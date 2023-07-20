@@ -17,3 +17,13 @@ RUN apt update -y --fix-missing && \
     rm -rf /var/lib/apt/lists/*
 
 COPY setup_* /tmp/
+
+ENV WHOLEGRAPH_PATH=/wholegraph
+ENV PYTHONPATH=/wholegraph/python:/wholegraph/build:$PYTHONPATH
+
+ENV GUROBI_HOME="/opt/gurobi-install/linux64"
+ENV PATH="${PATH}:${GUROBI_HOME}/bin"
+ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/ugache/build:${GUROBI_HOME}/lib"
+ENV LIBRARY_PATH="${LIBRARY_PATH}:/ugache/build:${GUROBI_HOME}/lib"
+ENV C_INCLUDE_PATH="/ugache:${GUROBI_HOME}/include"
+ENV CPLUS_INCLUDE_PATH="/ugache:${GUROBI_HOME}/include"
