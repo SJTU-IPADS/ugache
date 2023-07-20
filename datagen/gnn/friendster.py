@@ -17,7 +17,7 @@
 import os
 
 import numpy as np
-import pickle, json
+import pickle, json, torch
 
 DOWNLOAD_URL = 'https://pub-383410a98aef4cb686f0c7601eddd25f.r2.dev/graphalytics/com-friendster.tar.zst'
 
@@ -58,7 +58,6 @@ def write_split_feat_label_gnnlab():
     # label.astype('uint64').tofile(f'{GNNLAB_OUTPUT_DATA_DIR}/label.bin')
 
 def write_split_feat_label_wholegraph():
-
     data_and_label = {
         "train_idx"   : None,
         "train_label" : None,
@@ -77,6 +76,9 @@ def write_split_feat_label_wholegraph():
         pickle.dump(data_and_label, f)
     os.system(f'touch {WHOLEGRAPH_OUTPUT_DATA_DIR}/com_friendster_edge_index_paper_cites_paper_part_0_of_1')
     os.system(f'touch {WHOLEGRAPH_OUTPUT_DATA_DIR}/com_friendster_node_feat_paper_part_0_of_1')
+
+    train_edge_idx_list = (torch.randperm(3612134270, dtype=torch.int64, device="cpu"))
+    torch.save(train_edge_idx_list, f"{WHOLEGRAPH_OUTPUT_DATA_DIR}/global_train_edge_idx_rand")
 
 def soft_link_graph_topo_gnnlab():
     os.system(f'cp {CF_RAW_DATA_DIR}/indptr.bin {GNNLAB_OUTPUT_DATA_DIR}/indptr.bin')

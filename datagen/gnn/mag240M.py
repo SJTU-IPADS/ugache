@@ -96,6 +96,9 @@ def write_split_feat_label_wholegraph():
     os.system(f'touch {WHOLEGRAPH_OUTPUT_DATA_DIR}/mag240m_homo_edge_index_paper_cites_paper_part_0_of_1')
     os.system(f'touch {WHOLEGRAPH_OUTPUT_DATA_DIR}/mag240m_homo_node_feat_paper_part_0_of_1')
 
+    train_edge_idx_list = (torch.randperm(3454471824, dtype=torch.int64, device="cpu"))
+    torch.save(train_edge_idx_list, f"{WHOLEGRAPH_OUTPUT_DATA_DIR}/global_train_edge_idx_rand")
+
 def soft_link_graph_topo_gnnlab():
     indptr = np.memmap(f"{WHOLEGRAPH_OUTPUT_DATA_DIR}/homograph_csr_row_ptr", dtype='uint32', mode='r')
     indptr.astype('uint32').tofile(f'{GNNLAB_OUTPUT_DATA_DIR}/indptr.bin')

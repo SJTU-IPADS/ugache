@@ -19,7 +19,7 @@ import os
 import numpy as np
 import pandas as pd
 from scipy.sparse import coo_matrix, csr_matrix
-import pickle, json
+import pickle, json, torch
 
 DOWNLOAD_URL = 'http://snap.stanford.edu/ogb/data/nodeproppred/papers100M-bin.zip'
 
@@ -89,6 +89,9 @@ def write_split_feat_label_wholegraph():
         pickle.dump(data_and_label, f)
     os.system(f'touch {WHOLEGRAPH_OUTPUT_DATA_DIR}/ogbn_papers100M_edge_index_paper_cites_paper_part_0_of_1')
     os.system(f'touch {WHOLEGRAPH_OUTPUT_DATA_DIR}/ogbn_papers100M_node_feat_paper_part_0_of_1')
+
+    train_edge_idx_list = (torch.randperm(3228124712, dtype=torch.int64, device="cpu"))
+    torch.save(train_edge_idx_list, f"{WHOLEGRAPH_OUTPUT_DATA_DIR}/global_train_edge_idx_rand")
 
 def soft_link_graph_topo_gnnlab():
     indptr = np.memmap(f"{WHOLEGRAPH_OUTPUT_DATA_DIR}/homograph_csr_row_ptr", dtype='uint32', mode='r')
