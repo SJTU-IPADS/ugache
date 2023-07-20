@@ -66,16 +66,16 @@ def write_split_feat_label_wholegraph():
         "test_idx"    : None,
         "test_label"  : None,
     }
-    data_and_label['train_idx'] = np.memmap(f"{CF_RAW_DATA_DIR}/train_set.bin", dtype='uint32', mode='r')
-    data_and_label['train_label'] = np.zeros_like(data_and_label['train_label'], dtype='float32')
+    data_and_label['train_idx'] = np.memmap(f"{CF_RAW_DATA_DIR}/train_set.bin", dtype='int32', mode='r')
+    data_and_label['train_label'] = np.zeros_like(data_and_label['train_idx'], dtype='float32')
 
     output_fname = f"{WHOLEGRAPH_OUTPUT_DATA_DIR}/com_friendster_data_and_label.pkl"
 
     print('Writing split files for wholegraph...')
     with open(output_fname, "wb") as f:
         pickle.dump(data_and_label, f)
-    os.system(f'touch {WHOLEGRAPH_OUTPUT_DATA_DIR}/com_friendster_edge_index_paper_cites_paper_part_0_of_1')
-    os.system(f'touch {WHOLEGRAPH_OUTPUT_DATA_DIR}/com_friendster_node_feat_paper_part_0_of_1')
+    os.system(f'touch {WHOLEGRAPH_OUTPUT_DATA_DIR}/com_friendster_edge_index_node_edge_node_part_0_of_1')
+    os.system(f'touch {WHOLEGRAPH_OUTPUT_DATA_DIR}/com_friendster_node_feat_node_part_0_of_1')
 
     train_edge_idx_list = (torch.randperm(3612134270, dtype=torch.int64, device="cpu"))
     torch.save(train_edge_idx_list, f"{WHOLEGRAPH_OUTPUT_DATA_DIR}/global_train_edge_idx_rand")

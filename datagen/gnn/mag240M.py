@@ -86,7 +86,7 @@ def write_split_feat_label_wholegraph():
         "test_label"  : None,
     }
 
-    data_and_label['train_idx'] = train_idx.astype('uint32')
+    data_and_label['train_idx'] = train_idx.astype('int32')
     data_and_label['train_label'] = paper_label.astype('float32')[data_and_label['train_idx']]
     output_fname = f"{WHOLEGRAPH_OUTPUT_DATA_DIR}/mag240m_homo_data_and_label.pkl"
 
