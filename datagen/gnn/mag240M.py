@@ -86,7 +86,7 @@ def write_split_feat_label_wholegraph():
         "test_label"  : None,
     }
 
-    data_and_label['train_idx'] = train_idx.astype('int32')
+    data_and_label['train_idx'] = train_idx.astype('uint32')
     data_and_label['train_label'] = paper_label.astype('float32')[data_and_label['train_idx']]
     output_fname = f"{WHOLEGRAPH_OUTPUT_DATA_DIR}/mag240m_homo_data_and_label.pkl"
 
@@ -97,8 +97,9 @@ def write_split_feat_label_wholegraph():
     os.system(f'touch {WHOLEGRAPH_OUTPUT_DATA_DIR}/mag240m_homo_node_feat_paper_part_0_of_1')
 
 def soft_link_graph_topo_gnnlab():
-    os.system(f'ln -s {WHOLEGRAPH_OUTPUT_DATA_DIR}/homograph_csr_row_ptr {GNNLAB_OUTPUT_DATA_DIR}/indptr.bin')
-    os.system(f'ln -s {WHOLEGRAPH_OUTPUT_DATA_DIR}/homograph_csr_col_idx {GNNLAB_OUTPUT_DATA_DIR}/indices.bin')
+    indptr = np.memmap(f"{WHOLEGRAPH_OUTPUT_DATA_DIR}/homograph_csr_row_ptr", dtype='uint32', mode='r')
+    indptr.astype('uint32').tofile(f'{GNNLAB_OUTPUT_DATA_DIR}/indptr.bin')
+    os.system(f'ln -s {os.path.relpath(WHOLEGRAPH_OUTPUT_DATA_DIR, GNNLAB_OUTPUT_DATA_DIR)}/homograph_csr_col_idx {GNNLAB_OUTPUT_DATA_DIR}/indices.bin')
 
 def gen_undir_graph_wholegraph_cpu():
     meta = torch.load(f'{MAG240M_RAW_DATA_DIR}/meta.pt')
@@ -136,7 +137,7 @@ def gen_undir_graph_wholegraph_cpu():
     indices = csr.indices
 
     print('Writing topo...')
-    indptr.astype('uint32').tofile(f'{WHOLEGRAPH_OUTPUT_DATA_DIR}/homograph_csr_row_ptr')
+    indptr.astype('uint64').tofile(f'{WHOLEGRAPH_OUTPUT_DATA_DIR}/homograph_csr_row_ptr')
     indices.astype('uint32').tofile(f'{WHOLEGRAPH_OUTPUT_DATA_DIR}/homograph_csr_col_idx')
 
 def write_gnnlab_meta():

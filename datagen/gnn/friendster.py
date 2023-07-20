@@ -67,7 +67,7 @@ def write_split_feat_label_wholegraph():
         "test_idx"    : None,
         "test_label"  : None,
     }
-    data_and_label['train_idx'] = np.memmap(f"{CF_RAW_DATA_DIR}/train_set.bin", dtype='int32', mode='r')
+    data_and_label['train_idx'] = np.memmap(f"{CF_RAW_DATA_DIR}/train_set.bin", dtype='uint32', mode='r')
     data_and_label['train_label'] = np.zeros_like(data_and_label['train_label'], dtype='float32')
 
     output_fname = f"{WHOLEGRAPH_OUTPUT_DATA_DIR}/com_friendster_data_and_label.pkl"
@@ -79,13 +79,14 @@ def write_split_feat_label_wholegraph():
     os.system(f'touch {WHOLEGRAPH_OUTPUT_DATA_DIR}/com_friendster_node_feat_paper_part_0_of_1')
 
 def soft_link_graph_topo_gnnlab():
-    os.system(f'ln -s {WHOLEGRAPH_OUTPUT_DATA_DIR}/homograph_csr_row_ptr {GNNLAB_OUTPUT_DATA_DIR}/indptr.bin')
-    os.system(f'ln -s {WHOLEGRAPH_OUTPUT_DATA_DIR}/homograph_csr_col_idx {GNNLAB_OUTPUT_DATA_DIR}/indices.bin')
+    os.system(f'cp {CF_RAW_DATA_DIR}/indptr.bin {GNNLAB_OUTPUT_DATA_DIR}/indptr.bin')
+    os.system(f'ln -s {os.path.relpath(WHOLEGRAPH_OUTPUT_DATA_DIR, GNNLAB_OUTPUT_DATA_DIR)}/homograph_csr_col_idx {GNNLAB_OUTPUT_DATA_DIR}/indices.bin')
 
 def gen_undir_graph_wholegraph_cpu():
     os.system('g++ -std=c++11 -pthread -fopenmp -O2 comfriendster_csr_generator.cc -o comfriendster_csr_generator.out')
     os.system('./comfriendster_csr_generator.out')
-    os.system(f'mv {CF_RAW_DATA_DIR}/indptr.bin {WHOLEGRAPH_OUTPUT_DATA_DIR}/homograph_csr_row_ptr')
+    indptr = np.memmap(f"{CF_RAW_DATA_DIR}/indptr.bin", dtype='uint32', mode='r')
+    indptr.astype('uint64').tofile(f'{WHOLEGRAPH_OUTPUT_DATA_DIR}/homograph_csr_row_ptr')
     os.system(f'mv {CF_RAW_DATA_DIR}/indices.bin {WHOLEGRAPH_OUTPUT_DATA_DIR}/homograph_csr_col_idx')
 
 def write_gnnlab_meta():
