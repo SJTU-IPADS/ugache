@@ -41,11 +41,10 @@ def generate_random_samples(num_samples, vocabulary_range_per_slot, dense_dim, k
     dense_features, labels = generate_cont_feats(num_samples, dense_dim)
     return cat_keys, dense_features, labels
 
-def criteo_tb(fnames, replica_batch_size, iter_num, num_replica, key_type):
-    assert(len(fnames) == 1)
-    fname = fnames[0]
-    print("load criteo from ", fname + ".sparse")
-    file_num_samples = os.stat(fname+".label").st_size
+def criteo_tb(dir_name, replica_batch_size, iter_num, num_replica, key_type):
+    fname_prefix = os.path.join(dir_name, 'day_concat')
+    print("load criteo from ", fname_prefix + ".sparse/dense/label")
+    file_num_samples = os.stat(fname_prefix+".label").st_size
     assert(file_num_samples % 4 == 0)
     file_num_samples = file_num_samples // 4
 
@@ -55,9 +54,9 @@ def criteo_tb(fnames, replica_batch_size, iter_num, num_replica, key_type):
         assert(False)
     file_num_samples = iter_num * replica_batch_size * num_replica
 
-    sparse_keys = np.memmap(fname+".sparse", dtype='int32', mode='r', shape=(file_num_samples, 26))
-    dense_features = np.memmap(fname+".dense", dtype='float32', mode='r', shape=(file_num_samples, 13))
-    labels = np.memmap(fname+".label", dtype='int32', mode='r', shape=(file_num_samples, 1))
+    sparse_keys = np.memmap(fname_prefix+".sparse", dtype='int32', mode='r', shape=(file_num_samples, 26))
+    dense_features = np.memmap(fname_prefix+".dense", dtype='float32', mode='r', shape=(file_num_samples, 13))
+    labels = np.memmap(fname_prefix+".label", dtype='int32', mode='r', shape=(file_num_samples, 1))
 
     sparse_keys = sparse_keys[:iter_num * replica_batch_size * num_replica, :]
     dense_features = dense_features[:iter_num * replica_batch_size * num_replica, :]
@@ -71,6 +70,39 @@ def criteo_tb(fnames, replica_batch_size, iter_num, num_replica, key_type):
         output_signature=(
             tf.TensorSpec(shape=(replica_batch_size, 26), dtype=key_type), 
             tf.TensorSpec(shape=(replica_batch_size, 13), dtype=tf.float32),
+            tf.TensorSpec(shape=(replica_batch_size, 1), dtype=tf.int32)))
+
+    return dataset
+
+def syn(dir_name, replica_batch_size, iter_num, num_replica, key_type, slot_num=100, dense_dim=13):
+    fname_prefix = os.path.join(dir_name, 'syn')
+    print("load criteo from ", fname_prefix + ".sparse/dense/label")
+    file_num_samples = os.stat(fname_prefix+".label").st_size
+    assert(file_num_samples % 4 == 0)
+    file_num_samples = file_num_samples // 4
+
+    print(file_num_samples)
+    if file_num_samples < iter_num * replica_batch_size * num_replica:
+        print(f"ds contains {file_num_samples} samples, not enough for ", iter_num * replica_batch_size * num_replica)
+        assert(False)
+    file_num_samples = iter_num * replica_batch_size * num_replica
+
+    sparse_keys = np.memmap(fname_prefix+".sparse", dtype='int32', mode='r', shape=(file_num_samples, slot_num))
+    dense_features = np.memmap(fname_prefix+".dense", dtype='float32', mode='r', shape=(file_num_samples, dense_dim))
+    labels = np.memmap(fname_prefix+".label", dtype='int32', mode='r', shape=(file_num_samples, 1))
+
+    sparse_keys = sparse_keys[:iter_num * replica_batch_size * num_replica, :]
+    dense_features = dense_features[:iter_num * replica_batch_size * num_replica, :]
+    labels = labels[:iter_num * replica_batch_size * num_replica, :]
+
+    def sequential_batch_gen():
+        for i in range(0, replica_batch_size * iter_num * num_replica, replica_batch_size):
+            sparse_keys, dense_features, labels
+            yield sparse_keys[i:i+replica_batch_size],dense_features[i:i+replica_batch_size],labels[i:i+replica_batch_size]
+    dataset = tf.data.Dataset.from_generator(sequential_batch_gen, 
+        output_signature=(
+            tf.TensorSpec(shape=(replica_batch_size, slot_num), dtype=key_type), 
+            tf.TensorSpec(shape=(replica_batch_size, dense_dim), dtype=tf.float32),
             tf.TensorSpec(shape=(replica_batch_size, 1), dtype=tf.int32)))
 
     return dataset

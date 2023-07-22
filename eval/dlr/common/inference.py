@@ -142,15 +142,15 @@ def inference_with_saved_model(args):
     def _dataset_fn(num_replica, local_id):
         assert(args["global_batch_size"] % num_replica == 0)
         replica_batch_size = args["global_batch_size"] // num_replica
-        if args["dataset_path"].endswith("criteo_tb/saved_dataset"):
+        if args["dataset_path"].endswith("criteo_tb"):
             print("Loading Criteo TB")
             from ds_generator import criteo_tb
-            dataset = criteo_tb(["/datasets_dlr/criteo_tb/day_concat"], replica_batch_size, args["iter_num"], num_replica, args["tf_key_type"])
+            dataset = criteo_tb(args["dataset_path"], replica_batch_size, args["iter_num"], num_replica, args["tf_key_type"])
             dataset = dataset.shard(num_replica, local_id)
-        elif args["dataset_path"].endswith("criteo_kaggle/saved_dataset"):
-            print("Loading Criteo Kaggle")
-            from ds_generator import criteo_tb
-            dataset = criteo_tb(["/nvme/songxiaoniu/criteo-kaggle/processed/train"], replica_batch_size, args["iter_num"], num_replica, args["tf_key_type"])
+        elif os.path.split(args['dataset_path'])[-1].startswith('syn'):
+            print("Loading SYN")
+            from ds_generator import syn
+            dataset = syn(args["dataset_path"], replica_batch_size, args["iter_num"], num_replica, args["tf_key_type"], args["slot_num"], args["dense_dim"])
             dataset = dataset.shard(num_replica, local_id)
         elif args["random_request"] == False:
             dataset = tf.data.experimental.load(args["dataset_path"], compression="GZIP")

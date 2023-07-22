@@ -74,6 +74,7 @@ class Dataset(Enum):
   simple_power1_slot100     = None,                      "SP_1_S100",  100000000, 100
   simple_uniform            = None,                      None,         100000000, 25
   criteo_tb                 = "criteo_tb",               "CR",         882774592, 26
+  syn                       = "syn_a12_s100_c800m",      "SYN",        800000000, 100
   criteo_kaggle             = "criteo_kaggle",           "CK",         33762604, 26
 
 class RandomDataset:
@@ -179,7 +180,7 @@ class RunConfig:
     self.combiner       = "mean"
     self.optimizer      = "plugin_adam"
     self.global_batch_size      = global_batch_size
-    self.dataset_root_path      = "/nvme/songxiaoniu/hps-dataset/"
+    self.dataset_root_path      = "/datasets_dlr/processed/"
     self.model_root_path        = "/nvme/songxiaoniu/hps-model/dlrm_criteo/"
     # hps json
     self.cache_percent          = cache_percent

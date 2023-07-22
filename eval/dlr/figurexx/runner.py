@@ -6,7 +6,7 @@ do_mock = False
 durable_log = True
 
 cur_common_base = (ConfigList()
-  .override('root_path', ['/datasets_dlr/'])
+  .override('dataset_root_path', ['/datasets_dlr/processed/'])
   .override('epoch', [3])
   # .override('epoch', [5])
   .override('gpu_num', [4])
@@ -47,7 +47,8 @@ cfg_list_collector.concat(cur_common_base.copy().hyper_override(
     ["random_request", "alpha", "dataset"],
     [
       # [True,  0.3,  RandomDataset("simple_power0.3_slot100_C800m", "SP_03_S100_C800m", 800000000, 100)],
-      [True,  0.2,  RandomDataset("simple_power0.2_slot100_C800m", "SP_02_S100_C800m", 800000000, 100)],
+      # [True,  0.2,  RandomDataset("simple_power0.2_slot100_C800m", "SP_02_S100_C800m", 800000000, 100)],
+      [False,  None,  Dataset.syn],
       [False,  None,  Dataset.criteo_tb],
     ]
   )

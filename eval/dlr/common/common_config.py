@@ -83,7 +83,6 @@ def add_common_arguments(argparser, run_config):
                             dest='_empty_feat', default='')
 
 def process_common_config(run_config):
-    run_config["dataset_path"] += '/saved_dataset'
     if run_config["coll_cache_policy"] == "sok":
         run_config["tf_key_type"] = tf.uint32
     # os.environ['SAMGRAPH_LOG_LEVEL'] = run_config['_log_level']
