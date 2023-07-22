@@ -36,8 +36,19 @@ def reverse_percent_gen(lb, ub, gap=1):
   return list(reversed(ret))
 
 class System(Enum):
-  samgraph = 0
-  dgl = 1
+  def __new__(cls, *args, **kwds):
+    value = len(cls.__members__) + 1
+    obj = object.__new__(cls)
+    obj._value_ = value
+    return obj
+  def __init__(self, short_name):
+    self.short_name = short_name if short_name else self.name
+  def __str__(self):
+    return self.name
+  def short(self):
+    return self.short_name
+  samgraph = 'GNNLab'
+  dgl = 'DGL'
 
 class CachePolicy(Enum):
   cache_by_degree = 0
@@ -201,10 +212,26 @@ class Arch(Enum):
   arch4 = 4
 
 
+# class App(Enum):
+#   gcn = 0
+#   graphsage = 1
+#   pinsage = 2
+
 class App(Enum):
-  gcn = 0
-  graphsage = 1
-  pinsage = 2
+  def __new__(cls, *args, **kwds):
+    value = len(cls.__members__) + 1
+    obj = object.__new__(cls)
+    obj._value_ = value
+    return obj
+  def __init__(self, short_name):
+    self.short_name = short_name if short_name else self.name
+  def __str__(self):
+    return self.name
+  def short(self):
+    return self.short_name
+  gcn = 'gcn'
+  graphsage = 'sage'
+  pinsage = 'pinsage'
 
 class SampleType(Enum):
   kKHop0 = 0

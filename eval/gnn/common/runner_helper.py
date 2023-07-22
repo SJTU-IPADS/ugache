@@ -43,35 +43,23 @@ class Framework(Enum):
 
 class Model(Enum):
   sage = 0
-  gcn  = 1
-  gat  = 2
 
 class Dataset(Enum):
-  reddit = 0
-  products = 1
-  papers100M = 2
-  friendster = 3
-  uk_2006_05 = 4
-  twitter = 5
-  papers100M_undir = 6
-  mag240m_homo = 7
+  products = 0
+  papers100M_undir = 1
+  friendster = 2
+  mag240m_homo = 3
 
   def __str__(self):
     if self is Dataset.friendster:
       return 'com-friendster'
-    elif self is Dataset.uk_2006_05:
-      return 'uk-2006-05'
     elif self is Dataset.papers100M_undir:
       return 'ogbn-papers100M'
     elif self is Dataset.mag240m_homo:
       return 'mag240m-homo'
     return self.name
-  def FeatGB(self):
-    return [0.522,0.912,52.96,34.22, None ,74.14,39.72, 52.96,349.27][self.value]
-  def TopoGB(self):
-    return [math.nan, 0.4700, 6.4326, 13.7007, math.nan , 11.3358, 5.6252, 12.4394, 13.7785][self.value]
   def short(self):
-    return ['RE', 'PR', 'PA', 'CF', 'UK', 'TW', 'PAU', 'MAG'][self.value]
+    return ['PR', 'PA', 'CF', 'MAG'][self.value]
 
 # class CachePolicy(Enum):
 #   pre_sample = 0
