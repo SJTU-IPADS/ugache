@@ -1,0 +1,416 @@
+/usr/lib/python3/dist-packages/requests/__init__.py:89: RequestsDependencyWarning: urllib3 (1.26.12) or chardet (3.0.4) doesn't match a supported version!
+  warnings.warn("urllib3 ({}) or chardet ({}) doesn't match a supported "
+Rank=2 done reading 27764990 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/ogbn_papers100M/converted/homograph_csr_row_ptr
+Rank=3 done reading 27764987 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/ogbn_papers100M/converted/homograph_csr_row_ptr
+Rank=1 done reading 27764990 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/ogbn_papers100M/converted/homograph_csr_row_ptr
+Rank=0 done reading 27764990 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/ogbn_papers100M/converted/homograph_csr_row_ptr
+Rank=3 done reading 27764987 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/ogbn_papers100M/converted/homograph_csr_row_ptr
+Rank=2 done reading 27764990 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/ogbn_papers100M/converted/homograph_csr_row_ptr
+Rank=1 done reading 27764990 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/ogbn_papers100M/converted/homograph_csr_row_ptr
+Rank=0 done reading 27764990 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/ogbn_papers100M/converted/homograph_csr_row_ptr
+Rank=2 done reading 807031178 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/ogbn_papers100M/converted/homograph_csr_col_idx
+Rank=3 done reading 807031178 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/ogbn_papers100M/converted/homograph_csr_col_idx
+Rank=0 done reading 807031178 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/ogbn_papers100M/converted/homograph_csr_col_idx
+Rank=1 done reading 807031178 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/ogbn_papers100M/converted/homograph_csr_col_idx
+Rank=2 done reading 807031178 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/ogbn_papers100M/converted/homograph_csr_col_idx
+Rank=3 done reading 807031178 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/ogbn_papers100M/converted/homograph_csr_col_idx
+Rank=1 done reading 807031178 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/ogbn_papers100M/converted/homograph_csr_col_idx
+Rank=0 done reading 807031178 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/ogbn_papers100M/converted/homograph_csr_col_idx
+[2023-04-14 07:33:41.974905: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 908835 into 0
+[2023-04-14 07:33:41.979893: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3415525
+[2023-04-14 07:33:41.980322: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 908184 into 908835
+[2023-04-14 07:33:41.985337: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3418435
+[2023-04-14 07:33:41.985779: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 909735 into 1817019
+[2023-04-14 07:33:41.990770: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3410040
+[2023-04-14 07:33:41.991202: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 908820 into 2726754
+[2023-04-14 07:33:41.996087: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3405076
+[2023-04-14 07:33:41.996521: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 907441 into 3635574
+[2023-04-14 07:33:42.  1508: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3410631
+[2023-04-14 07:33:42.  1949: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 909462 into 4543015
+[2023-04-14 07:33:42.  6957: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3416998
+[2023-04-14 07:33:42.  7402: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 908953 into 5452477
+[2023-04-14 07:33:42. 12387: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3416299
+[2023-04-14 07:33:42. 12826: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 910294 into 6361430
+[2023-04-14 07:33:42. 17729: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3421675
+[2023-04-14 07:33:42. 18161: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 907223 into 7271724
+[2023-04-14 07:33:42. 23136: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3417337
+[2023-04-14 07:33:42. 23567: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 909121 into 8178947
+[2023-04-14 07:33:42. 28446: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3416529
+[2023-04-14 07:33:42. 28918: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 910921 into 9088068
+[2023-04-14 07:33:42. 33882: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3797485
+[2023-04-14 07:33:42. 34322: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 911170 into 9998989
+[2023-04-14 07:33:42. 39180: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3801376
+[2023-04-14 07:33:42. 39594: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 911536 into 10910159
+[2023-04-14 07:33:42. 44456: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3794332
+[2023-04-14 07:33:42. 44897: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 910354 into 11821695
+[2023-04-14 07:33:42. 49783: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3784938
+[2023-04-14 07:33:42. 50215: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 909944 into 12732049
+[2023-04-14 07:33:42. 55184: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3790597
+[2023-04-14 07:33:42. 55622: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 911176 into 13641993
+[2023-04-14 07:33:42. 60492: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3804483
+[2023-04-14 07:33:42. 60939: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 911439 into 14553169
+[2023-04-14 07:33:42. 65936: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3798599
+[2023-04-14 07:33:42. 66369: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 911564 into 15464608
+[2023-04-14 07:33:42. 71358: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3804258
+[2023-04-14 07:33:42. 71801: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 910431 into 16376172
+[2023-04-14 07:33:42. 76796: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3803002
+[2023-04-14 07:33:42. 77237: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 911437 into 17286603
+[2023-04-14 07:33:42. 82107: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3803001
+[2023-04-14 07:33:42. 82536: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 771874 into 18198040
+[2023-04-14 07:33:42. 86363: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3810056
+[2023-04-14 07:33:42. 86607: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 773321 into 18969914
+[2023-04-14 07:33:42. 90411: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3818110
+[2023-04-14 07:33:42. 90648: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 772276 into 19743235
+[2023-04-14 07:33:42. 94446: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3807508
+[2023-04-14 07:33:42. 94688: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 771818 into 20515511
+[2023-04-14 07:33:42. 98484: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3798112
+[2023-04-14 07:33:42. 98723: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 771545 into 21287329
+[2023-04-14 07:33:42.102524: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3809245
+[2023-04-14 07:33:42.102763: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 773277 into 22058874
+[2023-04-14 07:33:42.106541: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3823113
+[2023-04-14 07:33:42.106780: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 772707 into 22832151
+[2023-04-14 07:33:42.110558: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3812574
+[2023-04-14 07:33:42.110797: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 773237 into 23604858
+[2023-04-14 07:33:42.114574: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3819779
+[2023-04-14 07:33:42.114811: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 772923 into 24378095
+[2023-04-14 07:33:42.118582: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3822431
+[2023-04-14 07:33:42.118819: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 771983 into 25151018
+[2023-04-14 07:33:42.122581: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3824927
+[2023-04-14 07:33:42.122838: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 774784 into 25923001
+[2023-04-14 07:33:42.126728: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3813328
+[2023-04-14 07:33:42.126960: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 773975 into 26697785
+[2023-04-14 07:33:42.130797: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3818471
+[2023-04-14 07:33:42.131031: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 772789 into 27471760
+[2023-04-14 07:33:42.134857: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3805533
+[2023-04-14 07:33:42.135091: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 772487 into 28244549
+[2023-04-14 07:33:42.138918: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3798852
+[2023-04-14 07:33:42.139153: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 771750 into 29017036
+[2023-04-14 07:33:42.142987: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3807957
+[2023-04-14 07:33:42.143223: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 774964 into 29788786
+[2023-04-14 07:33:42.147054: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3824939
+[2023-04-14 07:33:42.147287: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 774560 into 30563750
+[2023-04-14 07:33:42.151120: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3816241
+[2023-04-14 07:33:42.151355: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 773137 into 31338310
+[2023-04-14 07:33:42.155179: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3819629
+[2023-04-14 07:33:42.155410: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 773633 into 32111447
+[2023-04-14 07:33:42.159256: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3819390
+[2023-04-14 07:33:42.159492: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 773389 into 32885080
+[2023-04-14 07:33:42.163326: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3825707
+[2023-04-14 07:33:42.163577: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 873991 into 33658469
+[2023-04-14 07:33:42.168511: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3939297
+[2023-04-14 07:33:42.168970: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 874046 into 34532460
+[2023-04-14 07:33:42.173869: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3941332
+[2023-04-14 07:33:42.174309: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 874009 into 35406506
+[2023-04-14 07:33:42.179200: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3932202
+[2023-04-14 07:33:42.179650: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 872356 into 36280515
+[2023-04-14 07:33:42.184494: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3921336
+[2023-04-14 07:33:42.184956: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 871888 into 37152871
+[2023-04-14 07:33:42.189817: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3932856
+[2023-04-14 07:33:42.190258: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 874451 into 38024759
+[2023-04-14 07:33:42.195129: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3945808
+[2023-04-14 07:33:42.195567: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 872548 into 38899210
+[2023-04-14 07:33:42.200435: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3933967
+[2023-04-14 07:33:42.200883: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 873067 into 39771758
+[2023-04-14 07:33:42.205800: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3943187
+[2023-04-14 07:33:42.206239: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 873079 into 40644825
+[2023-04-14 07:33:42.211158: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3948282
+[2023-04-14 07:33:42.211605: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 872735 into 41517904
+[2023-04-14 07:33:42.216486: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3943308
+[2023-04-14 07:33:42.216954: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 998818 into 42390639
+[2023-04-14 07:33:42.222246: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 4093841
+[2023-04-14 07:33:42.222687: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 997368 into 43389457
+[2023-04-14 07:33:42.227970: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 4091222
+[2023-04-14 07:33:42.228402: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 998536 into 44386825
+[2023-04-14 07:33:42.233694: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 4083360
+[2023-04-14 07:33:42.234127: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 996860 into 45385361
+[2023-04-14 07:33:42.239383: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 4076833
+[2023-04-14 07:33:42.239815: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 996752 into 46382221
+[2023-04-14 07:33:42.245134: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 4085851
+[2023-04-14 07:33:42.245566: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 999738 into 47378973
+[2023-04-14 07:33:42.250849: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 4100001
+[2023-04-14 07:33:42.251277: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 997205 into 48378711
+[2023-04-14 07:33:42.256564: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 4084648
+[2023-04-14 07:33:42.257012: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 999794 into 49375916
+[2023-04-14 07:33:42.262285: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 4099079
+[2023-04-14 07:33:42.262707: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 998400 into 50375710
+[2023-04-14 07:33:42.267979: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 4100063
+[2023-04-14 07:33:42.268409: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 997051 into 51374110
+[2023-04-14 07:33:42.273721: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 4097362
+[2023-04-14 07:33:42.274168: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 1011033 into 52371161
+[2023-04-14 07:33:42.279571: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 4007571
+[2023-04-14 07:33:42.280025: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 1009727 into 53382194
+[2023-04-14 07:33:42.285377: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 4002258
+[2023-04-14 07:33:42.285798: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 1009630 into 54391921
+[2023-04-14 07:33:42.291175: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3998101
+[2023-04-14 07:33:42.291622: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 1008342 into 55401551
+[2023-04-14 07:33:42.296964: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3991229
+[2023-04-14 07:33:42.297399: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 1008791 into 56409893
+[2023-04-14 07:33:42.302748: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 4000848
+[2023-04-14 07:33:42.303186: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 1010713 into 57418684
+[2023-04-14 07:33:42.308565: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 4016755
+[2023-04-14 07:33:42.309023: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 1010766 into 58429397
+[2023-04-14 07:33:42.314412: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 4003227
+[2023-04-14 07:33:42.314858: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 1010780 into 59440163
+[2023-04-14 07:33:42.320233: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 4012435
+[2023-04-14 07:33:42.320678: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 1009530 into 60450943
+[2023-04-14 07:33:42.326029: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 4008290
+[2023-04-14 07:33:42.326468: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 1009566 into 61460473
+[2023-04-14 07:33:42.331842: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 4005884
+[2023-04-14 07:33:42.332294: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 880075 into 62470039
+[2023-04-14 07:33:42.337212: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3539861
+[2023-04-14 07:33:42.337678: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 878402 into 63350114
+[2023-04-14 07:33:42.342528: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3531178
+[2023-04-14 07:33:42.342974: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 878677 into 64228516
+[2023-04-14 07:33:42.347895: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3525665
+[2023-04-14 07:33:42.348332: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 878215 into 65107193
+[2023-04-14 07:33:42.353264: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3521195
+[2023-04-14 07:33:42.353711: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 877747 into 65985408
+[2023-04-14 07:33:42.358565: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3528696
+[2023-04-14 07:33:42.359010: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 879102 into 66863155
+[2023-04-14 07:33:42.363911: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3532097
+[2023-04-14 07:33:42.364348: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 879251 into 67742257
+[2023-04-14 07:33:42.369290: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3530756
+[2023-04-14 07:33:42.369738: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 880654 into 68621508
+[2023-04-14 07:33:42.374621: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3538996
+[2023-04-14 07:33:42.375059: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 880260 into 69502162
+[2023-04-14 07:33:42.379931: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3538887
+[2023-04-14 07:33:42.380355: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 879214 into 70382422
+[2023-04-14 07:33:42.385229: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 3524179
+[2023-04-14 07:33:42.385666: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:266] freq recorder global combining
+[2023-04-14 07:33:42.[[385699[[2023-04-14 07:33:42[[2023-04-14 07:33:42: 2023-04-14 07:33:422023-04-14 07:33:42.2023-04-14 07:33:422023-04-14 07:33:42.E..385701..385701 385708385708: 385709385713: /samgraph/3rdparty/collcachelib/coll_cache_lib/run_config.cc: : E: : E:EE EE 141  /samgraph/3rdparty/collcachelib/coll_cache_lib/run_config.cc  /samgraph/3rdparty/collcachelib/coll_cache_lib/run_config.cc] /samgraph/3rdparty/collcachelib/coll_cache_lib/run_config.cc/samgraph/3rdparty/collcachelib/coll_cache_lib/run_config.cc:/samgraph/3rdparty/collcachelib/coll_cache_lib/run_config.cc/samgraph/3rdparty/collcachelib/coll_cache_lib/run_config.cc:using concurrent impl MPSPhase::141::141
+141141] 141141] ] ] using concurrent impl MPSPhase[] ] using concurrent impl MPSPhaseusing concurrent impl MPSPhaseusing concurrent impl MPSPhase
+2023-04-14 07:33:42using concurrent impl MPSPhaseusing concurrent impl MPSPhase
+
+
+.
+
+[385917[[[[2023-04-14 07:33:42: 2023-04-14 07:33:42[2023-04-14 07:33:422023-04-14 07:33:422023-04-14 07:33:42.E.2023-04-14 07:33:42...385963 385982.385974385975385978: /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc: 385986: : : E:E: EEE 409 E   /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc] /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc/samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc/samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:before scale, dtype is 0, dim is 128:/samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:::409
+409:409409409] ] [409] ] ] before scale, dtype is 0, dim is 128before scale, dtype is 0, dim is 1282023-04-14 07:33:42] before scale, dtype is 0, dim is 128before scale, dtype is 0, dim is 128before scale, dtype is 0, dim is 128
+
+.before scale, dtype is 0, dim is 128
+
+
+386163[[[
+[: [2023-04-14 07:33:422023-04-14 07:33:422023-04-14 07:33:422023-04-14 07:33:42E[2023-04-14 07:33:42.... 2023-04-14 07:33:42.386242386230386232386240/samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc.386244: : : : :386261: EEEE415: E    ] E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc/samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc/samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc/samgraph/3rdparty/collcachelib/coll_cache_lib/facade.ccafter scale, dtype is 7, new dim is 32 /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc::::
+/samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:415415415415:415] ] ] ] 415] after scale, dtype is 7, new dim is 32after scale, dtype is 7, new dim is 32after scale, dtype is 7, new dim is 32after scale, dtype is 7, new dim is 32] after scale, dtype is 7, new dim is 32
+
+
+
+after scale, dtype is 7, new dim is 32
+
+[2023-04-14 07:33:42.390078: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc:181] v100x8, slow pcie
+[2023-04-14 07:33:42.390114: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc[:2023-04-14 07:33:42207.] 390123assigning 8 to cpu: 
+E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc:181] v100x8, slow pcie
+[2023-04-14 07:33:42.[3901662023-04-14 07:33:42: .E390168 : [/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.ccE2023-04-14 07:33:42: .207/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc390185] :: assigning 8 to cpu181E
+]  [v100x8, slow pcie/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc2023-04-14 07:33:42
+:.224390217[] [: 2023-04-14 07:33:42build asymm link desc with 8X Tesla V100-SXM2-32GB out of 82023-04-14 07:33:42E.
+.[ 3902453902542023-04-14 07:33:42/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc: : [.:EE2023-04-14 07:33:42[390268181  .2023-04-14 07:33:42: ] /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc390293.Ev100x8, slow pcie::: 390314 
+207224E: [/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc] ]  [E2023-04-14 07:33:42:assigning 8 to cpubuild asymm link desc with 8X Tesla V100-SXM2-32GB out of 8/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc2023-04-14 07:33:42 .181
+
+:./samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc390361] 225390376:: [v100x8, slow pcie] : 181E[2023-04-14 07:33:42
+remote time is 15.5556E]  2023-04-14 07:33:42.
+ [v100x8, slow pcie/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc.390438/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc2023-04-14 07:33:42[
+:390456: :.2023-04-14 07:33:42181: [E207390487.] E2023-04-14 07:33:42 ] : 390508 v100x8, slow pcie./samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.ccassigning 8 to cpuE: /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc
+390539:
+ E:: 225[/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc 224E] 2023-04-14 07:33:42:/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc]  remote time is 15.5556.207:[build asymm link desc with 8X Tesla V100-SXM2-32GB out of 8/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc
+390628] 2262023-04-14 07:33:42
+:: assigning 8 to cpu[] .207E
+[2023-04-14 07:33:42cpu time is 102.941390666]  2023-04-14 07:33:42.
+: assigning 8 to cpu/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc.390697E
+:[390716:  2072023-04-14 07:33:42: [E/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc] .E2023-04-14 07:33:42 :assigning 8 to cpu390768[ ./samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc224
+: 2023-04-14 07:33:42/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc390786:] E.:: 226build asymm link desc with 8X Tesla V100-SXM2-32GB out of 8 390816225E] 
+/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc: ] [ cpu time is 102.941:Eremote time is 15.55562023-04-14 07:33:42[/samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc
+224 
+.2023-04-14 07:33:42:] /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc390890.[425build asymm link desc with 8X Tesla V100-SXM2-32GB out of 8:: 3909142023-04-14 07:33:42] [
+224E: .registering cpu data with 8.00 GB2023-04-14 07:33:42]  E[390945
+.build asymm link desc with 8X Tesla V100-SXM2-32GB out of 8/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc 2023-04-14 07:33:42: 390960
+:/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc.E: 224:390991 [E] 225: /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc2023-04-14 07:33:42 build asymm link desc with 8X Tesla V100-SXM2-32GB out of 8] E:./samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc
+remote time is 15.5556 226391042:
+/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc] : 425[:cpu time is 102.941[E] 2023-04-14 07:33:42225
+2023-04-14 07:33:42 registering cpu data with 8.00 GB.] ./samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc
+391101remote time is 15.5556391109:: [
+: 225E2023-04-14 07:33:42E[]  . 2023-04-14 07:33:42remote time is 15.5556/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc391166/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc.
+:: [:391193225E2023-04-14 07:33:42226: ]  .] Eremote time is 15.5556/samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc391249cpu time is 102.941 
+:: 
+/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc425[E:] 2023-04-14 07:33:42 226registering cpu data with 8.00 GB./samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc] 
+391319[:cpu time is 102.941: 2023-04-14 07:33:42226
+E.]  391350cpu time is 102.941/samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc: 
+:E[226 2023-04-14 07:33:42] /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc.cpu time is 102.941:391410
+425: [] E2023-04-14 07:33:42registering cpu data with 8.00 GB .
+/samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc391439[:: 2023-04-14 07:33:42425E.]  391480registering cpu data with 8.00 GB/samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc: 
+:E425 ] /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.ccregistering cpu data with 8.00 GB:
+425] registering cpu data with 8.00 GB
+[2023-04-14 07:33:44.642574: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:427] registering cpu data done.
+[2023-04-14 07:33:44.642825: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:427] registering cpu data done.
+[2023-04-14 07:33:44.643084: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:427] registering cpu data done.
+[2023-04-14 07:33:44.643333: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:427] registering cpu data done.
+[2023-04-14 07:33:44.643648: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:427] registering cpu data done.
+[2023-04-14 07:33:44.643887: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:427] registering cpu data done.
+[2023-04-14 07:33:44.646154: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:427] registering cpu data done.
+[2023-04-14 07:33:47.445268: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:269] freq recorder global combine from 71261636 to 21593227
+[2023-04-14 07:33:48.149878: E /samgraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:286] top 5 freq is 288,288,288,288,288
+[2023-04-14 07:33:48.150086: E /samgraph/3rdparty/collcachelib/coll_cache_lib/run_config.cc:141] using concurrent impl MPSPhase
+[2023-04-14 07:33:48.150153: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:409] before scale, dtype is 0, dim is 128
+[2023-04-14 07:33:48.150180: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:415] after scale, dtype is 7, new dim is 32
+[2023-04-14 07:33:48.150741: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc:181] v100x8, slow pcie
+[2023-04-14 07:33:48.150773: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc:207] assigning 8 to cpu
+[2023-04-14 07:33:48.150827: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc:224] build asymm link desc with 8X Tesla V100-SXM2-32GB out of 8
+[2023-04-14 07:33:48.150865: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc:225] remote time is 15.5556
+[2023-04-14 07:33:48.150891: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc:226] cpu time is 102.941
+[2023-04-14 07:33:48.150936: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:425] registering cpu data with 8.00 GB
+[2023-04-14 07:33:48.602288: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:427] registering cpu data done.
+[2023-04-14 07:33:48.602374: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:174] creating solver
+[2023-04-14 07:33:48.602410: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:214] solver created. now build & solve
+[2023-04-14 07:33:48.646767: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:309] reconfigured max freq to be 288
+[2023-04-14 07:33:48.646815: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:311] reconfigured num slot to be 9
+[2023-04-14 07:33:48.646840: W /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:318] counting slots...
+[2023-04-14 07:33:49.169623: W /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:367] Final num slot is 27
+[2023-04-14 07:33:49.169730: W /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:371] preparing block granularity...
+[2023-04-14 07:33:49.169768: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 0 has 318212 nodes, max_size set to 39777, #slice=8
+[2023-04-14 07:33:49.169802: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 1 has 731304 nodes, max_size set to 91413, #slice=8
+[2023-04-14 07:33:49.169836: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 2 has 1114394 nodes, max_size set to 139300, #slice=8
+[2023-04-14 07:33:49.169870: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 3 has 1558011 nodes, max_size set to 194752, #slice=8
+[2023-04-14 07:33:49.169903: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 4 has 2080710 nodes, max_size set to 260089, #slice=8
+[2023-04-14 07:33:49.169936: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 5 has 3129795 nodes, max_size set to 391225, #slice=8
+[2023-04-14 07:33:49.169970: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 6 has 3068037 nodes, max_size set to 383505, #slice=8
+[2023-04-14 07:33:49.170003: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 7 has 9592764 nodes, max_size set to 555299, #slice=24
+[2023-04-14 07:33:49.170037: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 8 has 896279 nodes, max_size set to 112035, #slice=8
+[2023-04-14 07:33:49.170070: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 9 has 893446 nodes, max_size set to 111681, #slice=8
+[2023-04-14 07:33:49.170104: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 10 has 893813 nodes, max_size set to 111727, #slice=8
+[2023-04-14 07:33:49.170152: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 11 has 896149 nodes, max_size set to 112019, #slice=8
+[2023-04-14 07:33:49.170186: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 12 has 895117 nodes, max_size set to 111890, #slice=8
+[2023-04-14 07:33:49.170219: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 13 has 895124 nodes, max_size set to 111891, #slice=8
+[2023-04-14 07:33:49.170253: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 14 has 896063 nodes, max_size set to 112008, #slice=8
+[2023-04-14 07:33:49.170286: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 15 has 894689 nodes, max_size set to 111837, #slice=8
+[2023-04-14 07:33:49.170320: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 16 has 895113 nodes, max_size set to 111890, #slice=8
+[2023-04-14 07:33:49.170353: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 17 has 894653 nodes, max_size set to 111832, #slice=8
+[2023-04-14 07:33:49.170386: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 18 has 8949853 nodes, max_size set to 555299, #slice=24
+[2023-04-14 07:33:49.170423: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 19 has 8945521 nodes, max_size set to 555299, #slice=24
+[2023-04-14 07:33:49.170457: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 20 has 8946731 nodes, max_size set to 555299, #slice=24
+[2023-04-14 07:33:49.170490: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 21 has 8946269 nodes, max_size set to 555299, #slice=24
+[2023-04-14 07:33:49.170523: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 22 has 8946978 nodes, max_size set to 555299, #slice=24
+[2023-04-14 07:33:49.170557: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 23 has 8946200 nodes, max_size set to 555299, #slice=24
+[2023-04-14 07:33:49.170590: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 24 has 8941830 nodes, max_size set to 555299, #slice=24
+[2023-04-14 07:33:49.170624: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 25 has 8947352 nodes, max_size set to 555299, #slice=24
+[2023-04-14 07:33:49.170657: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 26 has 8945549 nodes, max_size set to 555299, #slice=24
+[2023-04-14 07:33:49.170690: W /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:405] counting blocks...
+[2023-04-14 07:33:49.313398: W /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:425] Final num block is 376
+[2023-04-14 07:33:49.313471: W /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:430] counting freq and density...
+[2023-04-14 07:33:49.322326: W /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:479] averaging freq and density...
+[2023-04-14 07:33:49.322411: W /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:480] 376
+[2023-04-14 07:33:49.339712: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:218] solver built. now solve
+[2023-04-14 07:33:49.339766: W /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:893] constructing optimal solver, device=8, stream=1
+376 blocks, 8 devices
+[2023-04-14 07:33:49.344226: W /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:1078] Add Var...
+[2023-04-14 07:33:49.354556: W /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:1096] Capacity...
+[2023-04-14 07:33:49.355131: W /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:1099] Connect CPU...
+[2023-04-14 07:33:49.362801: W /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:1101] Connect Access To Storage...
+[2023-04-14 07:33:49.554943: W /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:1105] Time...
+[2023-04-14 07:33:49.555662: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:1067] dst 0, total sm is 80
+[2023-04-14 07:33:49.556599: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:1067] dst 1, total sm is 80
+[2023-04-14 07:33:49.557544: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:1067] dst 2, total sm is 80
+[2023-04-14 07:33:49.558475: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:1067] dst 3, total sm is 80
+[2023-04-14 07:33:49.559404: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:1067] dst 4, total sm is 80
+[2023-04-14 07:33:49.560326: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:1067] dst 5, total sm is 80
+[2023-04-14 07:33:49.561263: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:1067] dst 6, total sm is 80
+[2023-04-14 07:33:49.562192: E /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:1067] dst 7, total sm is 80
+[2023-04-14 07:33:50.301437: W /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:1124] Coll Cache init block placement array
+[2023-04-14 07:33:50.304015: W /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:1200] Coll Cache init block placement array done
+[2023-04-14 07:33:50.304143: W /samgraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/optimal_solver_class.cc:1202] Coll Cache model reset done
+[2023-04-14 07:33:50.318254: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:222] solver solved
+[2023-04-14 07:33:50.318319: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:437] 0 solved master
+[2023-04-14 07:33:50.318346: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:444] 0 solved
+[2023-04-14 07:33:50.318379: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:447] worker 0 thread 0 initing device 0
+[2023-04-14 07:33:50.319005: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2320] Building Coll Cache with ... num gpu device is 8
+[2023-04-14 07:33:50.319142: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cuh:611] per src size local is 17061832
+[2023-04-14 07:33:50.336259: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:444] 7 solved
+[2023-04-14 07:33:50.336324: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:447] worker 0 thread 7 initing device 7
+[2023-04-14 07:33:50.336666: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2320] Building Coll Cache with ... num gpu device is 8
+[2023-04-14 07:33:50.337659: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:444] 6 solved
+[2023-04-14 07:33:50.337717: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:447] worker 0 thread 6 initing device 6
+[2023-04-14 07:33:50.338046: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2320] Building Coll Cache with ... num gpu device is 8
+[2023-04-14 07:33:50.365138: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:444] 1 solved
+[2023-04-14 07:33:50.365216: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:447] worker 0 thread 1 initing device 1
+[2023-04-14 07:33:50.365249: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:444] 3 solved
+[2023-04-14 07:33:50.365326: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:447] worker 0 thread 3 initing device 3
+[2023-04-14 07:33:50.365568: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2320] Building Coll Cache with ... num gpu device is 8
+[2023-04-14 07:33:50.365692: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2320] Building Coll Cache with ... num gpu device is 8
+[2023-04-14 07:33:50.366548: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:444] 5 solved
+[2023-04-14 07:33:50.366599: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:447] worker 0 thread 5 initing device 5
+[2023-04-14 07:33:50.366716: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:444] 4 solved
+[2023-04-14 07:33:50.366764: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:447] worker 0 thread 4 initing device 4
+[2023-04-14 07:33:50.366921: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2320] Building Coll Cache with ... num gpu device is 8
+[2023-04-14 07:33:50.367084: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2320] Building Coll Cache with ... num gpu device is 8
+[2023-04-14 07:33:50.389165: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:444] 2 solved
+[2023-04-14 07:33:50.389247: E /samgraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:447] worker 0 thread 2 initing device 2
+[2023-04-14 07:33:50.389598: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2320] Building Coll Cache with ... num gpu device is 8
+[2023-04-14 07:33:50.553301: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2362] num cpu nodes is 80821559
+[2023-04-14 07:33:50.564677: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2362] num cpu nodes is 80821559
+[2023-04-14 07:33:50.583600: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2362] num cpu nodes is 80821559
+[2023-04-14 07:33:50.586757: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2362] num cpu nodes is 80821559
+[2023-04-14 07:33:50.599430: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2362] num cpu nodes is 80821559
+[2023-04-14 07:33:50.605598: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2362] num cpu nodes is 80821559
+[2023-04-14 07:33:50.607818: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2362] num cpu nodes is 80821559
+[2023-04-14 07:33:50.619739: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2362] num cpu nodes is 80821559
+[2023-04-14 07:33:51.674365: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:355] create a hashtable with 30238397 possible elem, scale to 67108864
+[2023-04-14 07:33:51.674431: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:360] SimpleHashTable allocating 512.00 MB
+[2023-04-14 07:33:51.814249: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:355] create a hashtable with 30238397 possible elem, scale to 67108864
+[2023-04-14 07:33:51.814310: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:360] SimpleHashTable allocating 512.00 MB
+[2023-04-14 07:33:51.839998: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:355] create a hashtable with 30238397 possible elem, scale to 67108864
+[2023-04-14 07:33:51.840054: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:360] SimpleHashTable allocating 512.00 MB
+[2023-04-14 07:33:51.841036: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:355] create a hashtable with 30238397 possible elem, scale to 67108864
+[2023-04-14 07:33:51.841092: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:360] SimpleHashTable allocating 512.00 MB
+[2023-04-14 07:33:51.900380: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:355] create a hashtable with 30238397 possible elem, scale to 67108864
+[2023-04-14 07:33:51.900436: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:360] SimpleHashTable allocating 512.00 MB
+[2023-04-14 07:33:51.945193: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:355] create a hashtable with 30238397 possible elem, scale to 67108864
+[2023-04-14 07:33:51.945261: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:360] SimpleHashTable allocating 512.00 MB
+[2023-04-14 07:33:51.957608: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:355] create a hashtable with 30238397 possible elem, scale to 67108864
+[2023-04-14 07:33:51.957662: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:360] SimpleHashTable allocating 512.00 MB
+[2023-04-14 07:33:52. 60095: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:355] create a hashtable with 30238397 possible elem, scale to 67108864
+[2023-04-14 07:33:52. 60152: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:360] SimpleHashTable allocating 512.00 MB
+[2023-04-14 07:33:52.226000: E /samgraph/3rdparty/collcachelib/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?27876048->10198514
+[2023-04-14 07:33:52.228736: E /samgraph/3rdparty/collcachelib/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?27876048->12365382
+[2023-04-14 07:33:52.230242: E /samgraph/3rdparty/collcachelib/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?27876048->12325334
+[2023-04-14 07:33:52.230716: E /samgraph/3rdparty/collcachelib/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?27876048->12648252
+[2023-04-14 07:33:52.232220: E /samgraph/3rdparty/collcachelib/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?27876048->11168548
+[2023-04-14 07:33:52.235656: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2439] Asymm Coll cache (policy: coll_cache_asymm_link) | local 13613775 / 111059956 nodes ( 12.26 %~25.00 %) | remote 16624622 / 111059956 nodes ( 14.97 %) | cpu 80821559 / 111059956 nodes ( 72.77 %) | 13.29 GB | 1.84602 secs 
+[2023-04-14 07:33:52.235974: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2439] Asymm Coll cache (policy: coll_cache_asymm_link) | local 17677534 / 111059956 nodes ( 15.92 %~25.00 %) | remote 12560863 / 111059956 nodes ( 11.31 %) | cpu 80821559 / 111059956 nodes ( 72.77 %) | 13.29 GB | 1.87035 secs 
+[2023-04-14 07:33:52.239519: E /samgraph/3rdparty/collcachelib/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?27876048->12694935
+[2023-04-14 07:33:52.252673: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2439] Asymm Coll cache (policy: coll_cache_asymm_link) | local 15227796 / 111059956 nodes ( 13.71 %~25.00 %) | remote 15010601 / 111059956 nodes ( 13.52 %) | cpu 80821559 / 111059956 nodes ( 72.77 %) | 13.29 GB | 1.91459 secs 
+[2023-04-14 07:33:52.254093: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2439] Asymm Coll cache (policy: coll_cache_asymm_link) | local 15550714 / 111059956 nodes ( 14.00 %~25.00 %) | remote 14687683 / 111059956 nodes ( 13.23 %) | cpu 80821559 / 111059956 nodes ( 72.77 %) | 13.29 GB | 1.88714 secs 
+[2023-04-14 07:33:52.255019: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2439] Asymm Coll cache (policy: coll_cache_asymm_link) | local 15510666 / 111059956 nodes ( 13.97 %~25.00 %) | remote 14727731 / 111059956 nodes ( 13.26 %) | cpu 80821559 / 111059956 nodes ( 72.77 %) | 13.29 GB | 1.93598 secs 
+[2023-04-14 07:33:52.256578: W /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:3958] before create ctx, mem is 19.01 GB
+[2023-04-14 07:33:52.256633: W /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:3958] before create ctx, mem is 19.01 GB
+[2023-04-14 07:33:52.257010: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2439] Asymm Coll cache (policy: coll_cache_asymm_link) | local 16707500 / 111059956 nodes ( 15.04 %~25.00 %) | remote 13530897 / 111059956 nodes ( 12.18 %) | cpu 80821559 / 111059956 nodes ( 72.77 %) | 13.29 GB | 1.89128 secs 
+[2023-04-14 07:33:52.258819: W /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:3958] before create ctx, mem is 19.01 GB
+[2023-04-14 07:33:52.259936: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2439] Asymm Coll cache (policy: coll_cache_asymm_link) | local 11952259 / 111059956 nodes ( 10.76 %~25.00 %) | remote 18286138 / 111059956 nodes ( 16.47 %) | cpu 80821559 / 111059956 nodes ( 72.77 %) | 13.29 GB | 1.89282 secs 
+[2023-04-14 07:33:52.260213: E /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2439] Asymm Coll cache (policy: coll_cache_asymm_link) | local 15181113 / 111059956 nodes ( 13.67 %~25.00 %) | remote 15057284 / 111059956 nodes ( 13.56 %) | cpu 80821559 / 111059956 nodes ( 72.77 %) | 13.29 GB | 1.92351 secs 
+[2023-04-14 07:33:52.283088: W /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:3958] before create ctx, mem is 19.01 GB
+[2023-04-14 07:33:52.284390: W /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:3958] before create ctx, mem is 19.01 GB
+[2023-04-14 07:34:01.235491: W /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:3958] after create ctx, mem is 20.83 GB
+[2023-04-14 07:34:01.235959: W /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:3958] after create stream, mem is 20.83 GB
+[2023-04-14 07:34:01.530199: W /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:3958] after create ctx, mem is 20.92 GB
+[2023-04-14 07:34:01.530653: W /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:3958] after create stream, mem is 20.92 GB
+[2023-04-14 07:34:01.835931: W /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:3958] after create ctx, mem is 21.02 GB
+[2023-04-14 07:34:01.836762: W /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:3958] after create stream, mem is 21.02 GB
+[2023-04-14 07:34:01.940775: W /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:3958] after create ctx, mem is 21.05 GB
+[2023-04-14 07:34:01.940904: W /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:3958] after create stream, mem is 21.05 GB
+[2023-04-14 07:34:02. 27021: W /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:3958] after create ctx, mem is 21.08 GB
+[2023-04-14 07:34:02. 27147: W /samgraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:3958] after create stream, mem is 21.08 GB
+Warning, found a larger batch, re allocating emb output now10717521068871
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
