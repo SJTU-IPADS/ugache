@@ -12,7 +12,7 @@ ENV USER=root
 
 RUN chmod 1777 /tmp
 RUN apt update -y --fix-missing && \
-    apt install -y --no-install-recommends cmake zsh tmux htop pybind11-dev &&\
+    apt install -y --no-install-recommends cmake zsh tmux htop pybind11-dev gnuplot pdf2svg &&\
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 

@@ -18,7 +18,7 @@ RUN apt update -y --fix-missing && \
         #   Required to build RdKafka.
             zlib1g-dev libzstd-dev \
             libssl-dev libsasl2-dev && \
-    apt install -y --no-install-recommends cmake zsh tmux htop pybind11-dev &&\
+    apt install -y --no-install-recommends cmake zsh tmux htop pybind11-dev gnuplot pdf2svg &&\
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
