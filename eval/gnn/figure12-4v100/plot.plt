@@ -94,9 +94,9 @@ plot cmd_filter_dat_by_policy(dat_file, "sage_unsup", "^GNN"  ) using (column(co
 
 eval(handle_multiplot_location(0,1))
 set arrow from  graph 0.2, graph -0.17 to graph 0.8, graph -0.17 nohead lt 1 lw 2 lc "#000000" front
+set xlabel "GNN Unsup." offset 0,0.3
 unset grid
 set yrange [0:50]
-set xlabel "GNN Unsup." offset 0,0.3
 plot cmd_filter_dat_by_policy(dat_file, "sage_unsup", "^GNN"  ) using (column(col_epoch_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_A lc rgb "#af2318" t "", \
      cmd_filter_dat_by_policy(dat_file, "sage_unsup", "^Cliq" ) using (column(col_epoch_total)):xticlabels(col_dataset) w histogram fs transparent pattern 6 lc rgb "#000000" t "", \
      cmd_filter_dat_by_policy(dat_file, "sage_unsup", "^Coll*") using (column(col_epoch_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_A lc rgb "#0080ff" t ""
