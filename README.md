@@ -38,6 +38,7 @@ We also provide a docker image to setup the environment. The docker image can be
 todo: dirs
 ```bash
 docker build --pull -t ugache-gnn -f Dockerfile.gnn --build-arg RELEASE=false .
+docker build --pull -t ugache-dlr -f Dockerfile.dlr --build-arg RELEASE=false .
 ```
 
 ### Starting the Docker Container
@@ -47,11 +48,13 @@ The docker image can be run by the following command:
 ```bash
 xxx
 docker run  --shm-size=200g --ulimit memlock=-1 --ulimit core=0 --runtime=nvidia --privileged=true --cap-add=SYS_ADMIN --cap-add=SYS_NICE --ipc=host --name ugache-ae-gnn-sxn -it ugache-gnn bash
+docker run  --shm-size=200g --ulimit memlock=-1 --ulimit core=0 --runtime=nvidia --privileged=true --cap-add=SYS_ADMIN --cap-add=SYS_NICE --ipc=host --name ugache-ae-dlr-sxn -it ugache-dlr bash
 ```
 
 Please also bind external storage into the container if the free space in your docker volume is limited:
 ```bash
 docker run  --shm-size=200g --ulimit memlock=-1 --ulimit core=0 --runtime=nvidia --privileged=true --cap-add=SYS_ADMIN --cap-add=SYS_NICE --ipc=host -v <your_large_storage_on_host>:/dataset_gnn --name ugache-ae-gnn-sxn -it ugache-gnn bash
+docker run  --shm-size=200g --ulimit memlock=-1 --ulimit core=0 --runtime=nvidia --privileged=true --cap-add=SYS_ADMIN --cap-add=SYS_NICE --ipc=host -v <your_large_storage_on_host>:/dataset_dlr --name ugache-ae-dlr-sxn -it ugache-dlr bash
 ```
 
 We also provide an online image on github registry. The image can be run by the following command:

@@ -1,0 +1,37 @@
+# syntax=docker/dockerfile:1.2
+ARG RELEASE=false
+
+ARG BASE_IMAGE=nvcr.io/nvidia/merlin/merlin-tensorflow:22.07
+
+FROM ${BASE_IMAGE} as base
+
+ENV LANG=en_US.UTF-8
+ENV LC_ALL=C.UTF-8
+ENV USER=root
+
+RUN chmod 1777 /tmp
+RUN apt update -y --fix-missing && \
+    apt install -y --no-install-recommends \
+        #   Required to build RocksDB.
+            libgflags-dev \
+            zlib1g-dev libbz2-dev libsnappy-dev liblz4-dev libzstd-dev \
+        #   Required to build RdKafka.
+            zlib1g-dev libzstd-dev \
+            libssl-dev libsasl2-dev && \
+    apt install -y --no-install-recommends cmake zsh tmux htop pybind11-dev &&\
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY setup_* /tmp/
+
+ENV SOK_COMPILE_UNIT_TEST=ON
+ARG HUGECTR_DEV_MODE=true
+ARG _CI_JOB_TOKEN=""
+ARG HUGECTR_VER=master
+
+ENV GUROBI_HOME="/opt/gurobi-install/linux64"
+ENV PATH="${PATH}:${GUROBI_HOME}/bin"
+ENV LD_LIBRARY_PATH="/usr/local/hugectr/lib:${LD_LIBRARY_PATH}:/ugache/build:${GUROBI_HOME}/lib"
+ENV LIBRARY_PATH="/usr/local/hugectr/lib:${LIBRARY_PATH}:/ugache/build:${GUROBI_HOME}/lib"
+ENV C_INCLUDE_PATH="/ugache:${GUROBI_HOME}/include"
+ENV CPLUS_INCLUDE_PATH="/ugache:${GUROBI_HOME}/include"
