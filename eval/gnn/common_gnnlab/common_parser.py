@@ -105,8 +105,8 @@ policy_str_short = {
 }
 dataset_str_short = {
   'papers100M':'PA',
-  'papers100M-undir':'PA_U',
-  'mag240m-homo':'MAG2_H',
+  'papers100M-undir':'PA',
+  'mag240m-homo':'MAG',
   'products':'PR',
   'uk-2006-05':'UK',
   'twitter':'TW',
@@ -153,6 +153,7 @@ def grep_from(fname, pattern, line_ctx=[0,0]):
           ret_lines += lines[max(0, i - line_ctx[0]):min(len(lines), i + line_ctx[1] + 1)]
     return ret_lines
   except FileNotFoundError as e:
+    print("cannot find logfile ", fname)
     return []
   except Exception as e:
     print("error when ", fname)
@@ -176,6 +177,26 @@ def exclude_from(line_list, pattern):
   return ret_lines
 
 
+def div_nan(a,b):
+  if b == 0:
+    return math.nan
+  return a/b
+
+def max_nan(a,b):
+  if math.isnan(a):
+    return b
+  elif math.isnan(b):
+    return a
+  else:
+    return max(a,b)
+
+def handle_nan(a, default=0):
+  if math.isnan(a):
+    return default
+  return a
+def zero_nan(a):
+  return handle_nan(a, 0)
+
 default_meta_list = ['app', 'dataset', 'cache_policy', 'cache_percentage',
               'step_sample_time', 'step_copy_time', 'step_convert_time', 'step_train_time',
               'step_feature_KB', 'step_label_KB', 'step_id_KB', 'step_graph_KB', 'step_miss_KB',
@@ -198,6 +219,7 @@ class BenchInstance:
       self.prepare_coll_cache(cfg)
       self.prepare_profiler_log(cfg)
       self.prepare_config(cfg)
+      self.prepare_coll_cache_meta(cfg)
       self.vals['optimal_hit_percent'] = self.get_optimal()
     except Exception as e:
       print("error when ", fname)
@@ -240,6 +262,8 @@ class BenchInstance:
     self.vals['cache_percentage'] = 100 * cfg.cache_percent
     self.vals['sample_type'] = cfg.sample_type.name
     self.vals['app'] = cfg.app.name
+    self.vals['app_short'] = cfg.app.short()
+    self.vals['system_short'] = cfg.system.short()
   
   def get_optimal(self):
     optimal_cfg = copy.deepcopy(self.cfg)
@@ -307,6 +331,47 @@ class BenchInstance:
       m = re.match(r".*local ([0-9]+) / ([0-9]+) nodes.*", coll_rst_list[0])
       self.vals["coll_cache:local_cache_rate"] = float(m.group(1)) / float(m.group(2))
       self.vals["coll_cache:global_cache_rate"] = self.vals["coll_cache:remote_cache_rate"] + self.vals["coll_cache:local_cache_rate"]
+
+  def short_app_name(self):
+    suffix = "_unsup" if self.get_val('unsupervised') else "_sup"
+    self.vals['short_app'] = self.get_val('app_short') + suffix
+
+  def full_policy_name(self):
+    self.vals['policy_impl'] = self.get_val('coll_cache_concurrent_link') + self.get_val('cache_policy_short')
+  def prepare_coll_cache_meta(self, cfg):
+    self.short_app_name()
+    self.full_policy_name()
+    try:
+      self.vals['Step(average) L1 train total'] = self.get_val('Step(average) L1 convert time') + self.get_val('Step(average) L1 train')
+      # when cache rate = 0, extract time has different log name...
+      self.vals['Step(average) L2 feat copy'] = max_nan(self.get_val('Step(average) L2 cache feat copy'), self.get_val('Step(average) L2 extract'))
+
+      # per-step feature nbytes (Remote, Cpu, Local)
+      self.vals['Size.A'] = self.get_val('Step(average) L1 feature nbytes')
+      self.vals['Size.R'] = handle_nan(self.get_val('Step(average) L1 remote nbytes'), 0)
+      self.vals['Size.C'] = handle_nan(self.get_val('Step(average) L1 miss nbytes'), self.vals['Size.A'])
+      self.vals['Size.L'] = self.get_val('Size.A') - self.get_val('Size.C') - self.get_val('Size.R')
+
+      self.vals['SizeGB.R'] = self.get_val('Size.R') / 1024 / 1024 / 1024
+      self.vals['SizeGB.C'] = self.get_val('Size.C') / 1024 / 1024 / 1024
+      self.vals['SizeGB.L'] = self.get_val('Size.L') / 1024 / 1024 / 1024
+
+      # per-step extraction time
+      self.vals['Time.R'] = handle_nan(self.get_val('Step(average) L3 cache combine remote'))
+      self.vals['Time.C'] = handle_nan(self.get_val('Step(average) L3 cache combine_miss'), self.get_val('Step(average) L2 extract'))
+      self.vals['Time.L'] = handle_nan(self.get_val('Step(average) L3 cache combine cache'))
+
+      # per-step extraction throughput (GB/s)
+      self.vals['Thpt.R'] = div_nan(self.get_val('Size.R'), self.get_val('Time.R')) / 1024 / 1024 / 1024
+      self.vals['Thpt.C'] = div_nan(self.get_val('Size.C'), self.get_val('Time.C')) / 1024 / 1024 / 1024
+      self.vals['Thpt.L'] = div_nan(self.get_val('Size.L'), self.get_val('Time.L')) / 1024 / 1024 / 1024
+
+      # per-step extraction portion from different source
+      self.vals['Wght.R'] = div_nan(self.get_val('Size.R'), self.get_val('Size.A')) * 100
+      self.vals['Wght.C'] = div_nan(self.get_val('Size.C'), self.get_val('Size.A')) * 100
+      self.vals['Wght.L'] = 100 - self.get_val('Wght.R') - self.get_val('Wght.C')
+    except Exception as e:
+      print("Error when " + self.cfg.get_log_fname() + '.log')
 
   def prepare_epoch_eval(self, cfg):
     self.vals['epoch_time'] = math.nan
@@ -466,10 +531,11 @@ class BenchInstance:
       return math.nan
 
   @staticmethod
-  def print_dat(inst_list: list, outf, meta_list = default_meta_list, custom_col_title_list=None, sep='\t'):
+  def print_dat(inst_list: list, outf, meta_list = default_meta_list, custom_col_title_list=None, sep='\t', skip_header=False):
     if custom_col_title_list is None:
       custom_col_title_list = meta_list
-    print(sep.join(custom_col_title_list), file=outf)
+    if not skip_header:
+      print(sep.join(custom_col_title_list), file=outf)
     for inst in inst_list:
       try:
         inst.to_formated_str()
