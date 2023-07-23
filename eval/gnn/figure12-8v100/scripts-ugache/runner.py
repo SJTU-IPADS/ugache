@@ -17,7 +17,7 @@ cur_common_base = (ConfigList()
   .override('empty_feat', [24])
   .override('omp_thread_num', [48])
   .override('num_intra_size', [4])
-  .override('custom_env', [' COLL_BLOCK_SLICE_GRAIN_BY_CACHE=50 COLL_BLOCK_SLICE_BASE=2 COLL_GUROBI_EXP_PARAM=1 COLL_REMOTE_TIME_OVERRIDE=22.5'])
+  .override('custom_env', [' COLL_MIN_FREQ=0.001 COLL_BLOCK_SLICE_GRAIN_BY_CACHE=50 COLL_BLOCK_SLICE_BASE=2 COLL_GUROBI_EXP_PARAM=1 COLL_REMOTE_TIME_OVERRIDE=22.5'])
   )
 
 cfg_list_1 = ConfigList.Empty()
