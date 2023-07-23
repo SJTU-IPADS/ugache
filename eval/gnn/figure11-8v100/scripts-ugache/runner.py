@@ -28,7 +28,7 @@ GraphSage
 '''
 # 1.1 unsup, large batch
 cur_common_base = (cur_common_base.copy().override('model', [Model.sage]).override('unsupervised', [True]))
-cur_common_base = (cur_common_base.copy().override('batchsize', [8000]).override('local_step', [125]))
+cur_common_base = (cur_common_base.copy().override('batchsize', [4000]).override('local_step', [125]))
 cfg_list_1.concat(cur_common_base.copy().override('dataset', [Dataset.papers100M_undir, ]).override('cache_percent', [0.25]).override('batchsize', [4000]))
 cfg_list_1.concat(cur_common_base.copy().override('dataset', [Dataset.friendster,       ]).override('cache_percent', [0.25]).override('batchsize', [4000]))
 cfg_list_2.concat(cur_common_base.copy().override('dataset', [Dataset.mag240m_homo,     ]).override('cache_percent', [0.04]).override('batchsize', [2000]))

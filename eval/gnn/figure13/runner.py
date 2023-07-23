@@ -1,7 +1,6 @@
 import os, sys, copy
 sys.path.append(os.path.dirname(os.path.abspath(sys.argv[0]))+'/../common')
-from runner_helper import Model, Dataset, CachePolicy, ConfigList, percent_gen
-from runner_helper import percent_gen as pg
+from runner_helper import Model, Dataset, CachePolicy, ConfigList, percent_gen as pg
 
 do_mock = False
 durable_log = True
@@ -17,6 +16,9 @@ cur_common_base = (ConfigList()
   .override('use_amp', [False])
   .override('empty_feat', [24])
   .override('omp_thread_num', [56])
+  .override('custom_env', [
+    'COLL_MIN_FREQ=0.001 ',
+  ])
   )
 
 cfg_list_collector = ConfigList.Empty()
