@@ -197,7 +197,7 @@ class BenchInstance:
     self.vals['cache_policy'] = str(cfg.coll_cache_policy)
     self.vals['cache_policy_short'] = cfg.coll_cache_policy.short()
     self.vals['cache_percentage'] = 100 * cfg.cache_percent
-    self.vals['short_app'] = cfg.model.name
+    self.vals['app_short'] = cfg.model.name
     self.vals['policy_impl'] = self.get_val('coll_cache_concurrent_link') + self.get_val('cache_policy_short')
   
   def get_optimal(self):
