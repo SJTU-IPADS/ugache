@@ -1,0 +1,136 @@
+succeed=True
+    [Step(average) Profiler Level 1 E3 S143]
+        L1  sample           0.001956 | send           0.000000
+        L1  recv             0.000000 | copy           0.002787 | convert time 0.000000 | train  0.005129
+        L1  feature nbytes 0.00 Bytes | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes    0.00 Bytes | remote nbytes 0.00 Bytes
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     0.000000 | refresh duration   0.000000
+    [Step(average) Profiler Level 2 E3 S143]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.002787
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(average) Profiler Level 3 E3 S143]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000000 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000000 | cache combine cache 0.000000 | cache combine remote 0.000000
+        L3  label extract  0.000000
+    [Profiler Level Percentiles E3 S143]
+        p50.00_tail_logl2featcopy=0.002864
+        p90.00_tail_logl2featcopy=0.003023
+        p95.00_tail_logl2featcopy=0.003852
+        p99.00_tail_logl2featcopy=0.006307
+        p99.90_tail_logl2featcopy=0.006724
+[CUDA] cuda: usage: 17.30 GB
+Rank=7, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.49374842643737793
+!!!!Train_data_list(with 18 items) enumerate latency: 4.5299530029296875e-06, transfer latency: 0.4629244804382324
+config:eval_tsp="2023-05-15 15:42:38"
+config:num_worker=8
+config:num_intra_size=8
+config:root_dir=/nvme/songxiaoniu/graph-learning/wholegraph
+config:graph_name=ogbn-papers100M
+config:epochs=4
+config:batchsize=8000
+config:skip_epoch=2
+config:local_step=125
+config:presc_epoch=2
+config:neighbors=10,25
+config:hiddensize=256
+config:num_layer=2
+config:model=sage
+config:framework=dgl
+config:dataloaderworkers=0
+config:dropout=0.5
+config:lr=0.003
+config:use_nccl=False
+config:use_amp=False
+config:use_collcache=False
+config:cache_percentage=0.25
+config:cache_policy=coll_cache_asymm_link
+config:omp_thread_num=56
+config:unsupervised=False
+config:classnum=172
+config:global_barrier=<multiprocessing.synchronize.Barrier object at 0x7f24892c1370>
+config:worker_id=0
+creating_intra_node_communicator root=0, local_size=8, world_size=8
+Rank=0, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.5025331974029541
+!!!!Train_data_list(with 18 items) enumerate latency: 4.0531158447265625e-06, transfer latency: 0.4760146141052246
+epoch=4 total_steps=72
+start training...
+[Epoch 0], time=1.4361791610717773, loss=3.033341884613037
+[Epoch 1], time=0.18213510513305664, loss=2.290426015853882
+[Epoch 2], time=0.1768510341644287, loss=1.9777437448501587
+[Epoch 3], time=0.1767253875732422, loss=1.7844574451446533
+|===========================================================================|
+|                  PyTorch CUDA memory summary, device ID 0                 |
+|---------------------------------------------------------------------------|
+|            CUDA OOMs: 0            |        cudaMalloc retries: 0         |
+|===========================================================================|
+|        Metric         | Cur Usage  | Peak Usage | Tot Alloc  | Tot Freed  |
+|---------------------------------------------------------------------------|
+| Allocated memory      |  519716 KB |     967 MB |  116446 MB |  115939 MB |
+|       from large pool |  513713 KB |     961 MB |  115424 MB |  114922 MB |
+|       from small pool |    6003 KB |       8 MB |    1022 MB |    1016 MB |
+|---------------------------------------------------------------------------|
+| Active memory         |  519716 KB |     967 MB |  116446 MB |  115939 MB |
+|       from large pool |  513713 KB |     961 MB |  115424 MB |  114922 MB |
+|       from small pool |    6003 KB |       8 MB |    1022 MB |    1016 MB |
+|---------------------------------------------------------------------------|
+| GPU reserved memory   |    3772 MB |    3772 MB |    3772 MB |       0 B  |
+|       from large pool |    3762 MB |    3762 MB |    3762 MB |       0 B  |
+|       from small pool |      10 MB |      10 MB |      10 MB |       0 B  |
+|---------------------------------------------------------------------------|
+| Non-releasable memory |   23003 KB |  172790 KB |   19425 MB |   19403 MB |
+|       from large pool |   18767 KB |  168287 KB |   18342 MB |   18323 MB |
+|       from small pool |    4236 KB |    5537 KB |    1083 MB |    1079 MB |
+|---------------------------------------------------------------------------|
+| Allocations           |      49    |      59    |    9036    |    8987    |
+|       from large pool |       8    |      16    |    3384    |    3376    |
+|       from small pool |      41    |      46    |    5652    |    5611    |
+|---------------------------------------------------------------------------|
+| Active allocs         |      49    |      59    |    9036    |    8987    |
+|       from large pool |       8    |      16    |    3384    |    3376    |
+|       from small pool |      41    |      46    |    5652    |    5611    |
+|---------------------------------------------------------------------------|
+| GPU reserved segments |      25    |      25    |      25    |       0    |
+|       from large pool |      20    |      20    |      20    |       0    |
+|       from small pool |       5    |       5    |       5    |       0    |
+|---------------------------------------------------------------------------|
+| Non-releasable allocs |      20    |      31    |    4000    |    3980    |
+|       from large pool |       5    |      15    |    2339    |    2334    |
+|       from small pool |      15    |      22    |    1661    |    1646    |
+|---------------------------------------------------------------------------|
+| Oversize allocations  |       0    |       0    |       0    |       0    |
+|---------------------------------------------------------------------------|
+| Oversize GPU segments |       0    |       0    |       0    |       0    |
+|===========================================================================|
+
+[TRAIN_TIME] train time is 1.972478 seconds
+[EPOCH_TIME] 0.493120 seconds, maybe large due to not enough epoch skipped.
+[EPOCH_TIME] 0.176931 seconds
+Rank=2, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.49342966079711914
+!!!!Train_data_list(with 18 items) enumerate latency: 3.0994415283203125e-06, transfer latency: 0.44214844703674316
+Rank=1, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.5103902816772461
+!!!!Train_data_list(with 18 items) enumerate latency: 4.5299530029296875e-06, transfer latency: 0.4765799045562744
+Rank=5, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.4746699333190918
+!!!!Train_data_list(with 18 items) enumerate latency: 3.0994415283203125e-06, transfer latency: 0.4547994136810303
+Rank=6, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.5069437026977539
+!!!!Train_data_list(with 18 items) enumerate latency: 4.291534423828125e-06, transfer latency: 0.4727632999420166
+Rank=4, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.4842672348022461
+!!!!Train_data_list(with 18 items) enumerate latency: 4.5299530029296875e-06, transfer latency: 0.47189974784851074
+Rank=3, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.4716963768005371
+!!!!Train_data_list(with 18 items) enumerate latency: 2.86102294921875e-06, transfer latency: 0.460559606552124
+
