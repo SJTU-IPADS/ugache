@@ -10,6 +10,9 @@ selected_col += ['dataset_short']
 selected_col += ['step.copy']
 
 if __name__ == '__main__':
+  if len(sys.argv) > 1:
+    logdir = sys.argv[1]
+    cfg_list_collector.override('logdir', [logdir])
   bench_list = [BenchInstance().init_from_cfg(cfg) for cfg in cfg_list_collector.conf_list]
   for inst in bench_list:
     inst : BenchInstance
