@@ -12,7 +12,7 @@ ENV USER=root
 
 RUN chmod 1777 /tmp
 RUN apt update -y --fix-missing && \
-    apt install -y --no-install-recommends cmake zsh tmux htop pybind11-dev gnuplot pdf2svg ghostscript &&\
+    apt install -y --no-install-recommends cmake zsh tmux htop pybind11-dev gnuplot pdf2svg ghostscript ncat openssh-server &&\
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -22,7 +22,6 @@ ENV WHOLEGRAPH_PATH=/wholegraph
 ENV PYTHONPATH=/wholegraph/python:/wholegraph/build:$PYTHONPATH
 
 ENV GUROBI_HOME="/opt/gurobi-install/linux64"
-ENV PATH="${PATH}:${GUROBI_HOME}/bin"
 ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/ugache/build:${GUROBI_HOME}/lib"
 ENV LIBRARY_PATH="${LIBRARY_PATH}:/ugache/build:${GUROBI_HOME}/lib"
 ENV C_INCLUDE_PATH="/ugache:${GUROBI_HOME}/include"
