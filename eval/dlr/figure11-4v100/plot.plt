@@ -12,7 +12,7 @@ col_step_time_train_total        = 4
 set terminal postscript "Helvetica,16" eps enhance color dl 2 background "white"
 
 set pointsize 1
-set size 0.7,0.35
+set size 0.7,0.36
 
 set tics font ",14" scale 0.5
 
@@ -55,7 +55,8 @@ set border lc rgb "#006000" lw 2
 set tics textcolor "black"
 eval(handle_multiplot_location(0,0))
 set key outside left Right top enhanced nobox # autotitles columnhead
-set key samplen 4 spacing 0 height 3 width 4 font ',16' maxrows 1 center at graph 1, graph 1.1 #maxrows 1 at graph 0.02, graph 0.975  noopaque
+set key samplen 4 spacing 0 height 3 width 4 font ',16' maxrows 1 center at graph 1, graph 1.15 #maxrows 1 at graph 0.02, graph 0.975  noopaque
+set arrow from  graph 0.2, graph -0.2 to graph 0.8, graph -0.2 nohead lt 1 lw 2 lc "#000000" front
 set xtics nomirror offset 0,0.3
 set ylabel "E2E Time(ms)" offset 2.,0
 set yrange [0:20]
