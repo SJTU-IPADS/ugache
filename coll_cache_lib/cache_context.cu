@@ -1174,11 +1174,11 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
     // direct mapping from node id to freature, no need to go through hashtable
     LOG(DEBUG) << "CollCache: ExtractFeat: Direct mapping, going fast path... ";
     Timer t0;
-
+    CUDA_CALL(cudaGetLastError());
     /**
      * need to distinguish 0% or 100%. for host, we expect empty feat to work. for local, we expect to ignore empty feat.
      */
-    SWITCH_BOOL(RunConfig::option_empty_feat != 0 && _cache_ctx->_cache_space_capacity == 0, use_empty_feat, {
+    SWITCH_BOOL(RunConfig::option_empty_feat != 0 && _cache_ctx->_dim != 1 && _cache_ctx->_cache_space_capacity == 0, use_empty_feat, {
       IdxStoreDirect<use_empty_feat> idx_store(nodes);
       DataIterPerLoc<decltype(idx_store)> data_iter(idx_store, _cache_ctx->_device_cache_data[0], output, _cache_ctx->_dim);
       Combine(data_iter, num_nodes, _cache_ctx->_trainer_ctx, _cache_ctx->_dtype, _cache_ctx->_dim, stream);
@@ -1198,6 +1198,7 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochFeatureBytes,nbytes);
       _cache_ctx->_coll_cache->_profiler->LogEpochAdd(task_key, kLogEpochMissBytes, nbytes);
     }
+    CUDA_CALL(cudaGetLastError());
   } else if (IsLegacy()) {
 #ifdef DEAD_CODE
     auto trainer_gpu_device = Device::Get(_trainer_ctx);

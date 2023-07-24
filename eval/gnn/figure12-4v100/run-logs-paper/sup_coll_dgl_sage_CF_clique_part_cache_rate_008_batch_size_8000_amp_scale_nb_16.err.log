@@ -1,0 +1,193 @@
+/usr/lib/python3/dist-packages/requests/__init__.py:89: RequestsDependencyWarning: urllib3 (1.26.12) or chardet (3.0.4) doesn't match a supported version!
+  warnings.warn("urllib3 ({}) or chardet ({}) doesn't match a supported "
+[W socket.cpp:601] [c10d] The client socket has failed to connect to [localhost]:12335 (errno: 99 - Cannot assign requested address).
+Rank=1 done reading 16402092 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/com_friendster/converted/homograph_csr_row_ptr
+Rank=0 done reading 16402092 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/com_friendster/converted/homograph_csr_row_ptr
+Rank=3 done reading 16402091 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/com_friendster/converted/homograph_csr_row_ptr
+Rank=2 done reading 16402092 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/com_friendster/converted/homograph_csr_row_ptr
+Rank=3 done reading 903033566 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/com_friendster/converted/homograph_csr_col_idx
+Rank=2 done reading 903033568 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/com_friendster/converted/homograph_csr_col_idx
+Rank=1 done reading 903033568 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/com_friendster/converted/homograph_csr_col_idx
+Rank=0 done reading 903033568 embedding vectors from file /nvme/songxiaoniu/graph-learning/wholegraph/com_friendster/converted/homograph_csr_col_idx
+[2023-05-16 12:19:08.361044: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2352116 into 0
+[2023-05-16 12:19:08.372586: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7364024
+[2023-05-16 12:19:08.373205: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2349565 into 2352116
+[2023-05-16 12:19:08.384694: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7352724
+[2023-05-16 12:19:08.385309: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2349690 into 4701681
+[2023-05-16 12:19:08.396792: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7349763
+[2023-05-16 12:19:08.397408: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2349308 into 7051371
+[2023-05-16 12:19:08.408883: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7346390
+[2023-05-16 12:19:08.409499: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2351391 into 9400679
+[2023-05-16 12:19:08.420999: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7357709
+[2023-05-16 12:19:08.421619: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2349361 into 11752070
+[2023-05-16 12:19:08.433105: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7349996
+[2023-05-16 12:19:08.433723: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2350565 into 14101431
+[2023-05-16 12:19:08.445202: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7360817
+[2023-05-16 12:19:08.445819: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2352029 into 16451996
+[2023-05-16 12:19:08.457306: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7364011
+[2023-05-16 12:19:08.457926: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2349777 into 18804025
+[2023-05-16 12:19:08.469405: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7360549
+[2023-05-16 12:19:08.470021: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2350876 into 21153802
+[2023-05-16 12:19:08.481502: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7368058
+[2023-05-16 12:19:08.482160: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2350211 into 23504678
+[2023-05-16 12:19:08.493738: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7364813
+[2023-05-16 12:19:08.494344: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2349020 into 25854889
+[2023-05-16 12:19:08.505845: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7349927
+[2023-05-16 12:19:08.506455: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2350168 into 28203909
+[2023-05-16 12:19:08.517963: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7348449
+[2023-05-16 12:19:08.518572: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2349493 into 30554077
+[2023-05-16 12:19:08.530062: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7352710
+[2023-05-16 12:19:08.530679: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2350710 into 32903570
+[2023-05-16 12:19:08.542185: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7359255
+[2023-05-16 12:19:08.542800: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2349416 into 35254280
+[2023-05-16 12:19:08.554300: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7356011
+[2023-05-16 12:19:08.554912: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2350822 into 37603696
+[2023-05-16 12:19:08.566428: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7358662
+[2023-05-16 12:19:08.567029: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2352410 into 39954518
+[2023-05-16 12:19:08.578532: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7364919
+[2023-05-16 12:19:08.579134: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2349709 into 42306928
+[2023-05-16 12:19:08.590650: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7355947
+[2023-05-16 12:19:08.591255: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2348853 into 44656637
+[2023-05-16 12:19:08.602760: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7362609
+[2023-05-16 12:19:08.603380: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2354387 into 47005490
+[2023-05-16 12:19:08.615732: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7398396
+[2023-05-16 12:19:08.616342: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2352933 into 49359877
+[2023-05-16 12:19:08.627864: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7382405
+[2023-05-16 12:19:08.628460: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2352473 into 51712810
+[2023-05-16 12:19:08.640703: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7381023
+[2023-05-16 12:19:08.641292: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2352436 into 54065283
+[2023-05-16 12:19:08.653531: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7386581
+[2023-05-16 12:19:08.654122: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2355235 into 56417719
+[2023-05-16 12:19:08.665718: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7388813
+[2023-05-16 12:19:08.666308: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2350069 into 58772954
+[2023-05-16 12:19:08.677811: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7380156
+[2023-05-16 12:19:08.678415: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2351850 into 61123023
+[2023-05-16 12:19:08.689894: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7384751
+[2023-05-16 12:19:08.690496: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2356420 into 63474873
+[2023-05-16 12:19:08.702055: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7398649
+[2023-05-16 12:19:08.702642: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2353155 into 65831293
+[2023-05-16 12:19:08.714138: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7395321
+[2023-05-16 12:19:08.714720: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2353532 into 68184448
+[2023-05-16 12:19:08.726971: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7396384
+[2023-05-16 12:19:08.727561: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2354300 into 70537980
+[2023-05-16 12:19:08.739109: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7387871
+[2023-05-16 12:19:08.739715: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2352876 into 72892280
+[2023-05-16 12:19:08.751199: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7379722
+[2023-05-16 12:19:08.751803: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2352770 into 75245156
+[2023-05-16 12:19:08.763376: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7373045
+[2023-05-16 12:19:08.763977: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2352128 into 77597926
+[2023-05-16 12:19:08.775562: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7378512
+[2023-05-16 12:19:08.776164: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2355348 into 79950054
+[2023-05-16 12:19:08.787690: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7382632
+[2023-05-16 12:19:08.788302: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2352578 into 82305402
+[2023-05-16 12:19:08.800552: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7376578
+[2023-05-16 12:19:08.801164: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2353969 into 84657980
+[2023-05-16 12:19:08.813417: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7382510
+[2023-05-16 12:19:08.814028: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2353686 into 87011949
+[2023-05-16 12:19:08.825519: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7389087
+[2023-05-16 12:19:08.826128: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2354584 into 89365635
+[2023-05-16 12:19:08.837674: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7389323
+[2023-05-16 12:19:08.838285: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:337] bulk append 2352942 into 91720219
+[2023-05-16 12:19:08.849770: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:347] bulk append 7388027
+[2023-05-16 12:19:08[.2023-05-16 12:19:08850387[.: 2023-05-16 12:19:08850407E.: [ 850411E2023-05-16 12:19:08/wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:  .:E/wholegraph/3rdparty/collcachelib/coll_cache_lib/run_config.cc850418266 :: ] /wholegraph/3rdparty/collcachelib/coll_cache_lib/run_config.cc156Efreq recorder global combining:]  
+156using concurrent impl 9/wholegraph/3rdparty/collcachelib/coll_cache_lib/run_config.cc] 
+:using concurrent impl 9156
+] using concurrent impl 9[
+2023-05-16 12:19:08.[8505662023-05-16 12:19:08: .E850579 : /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc[E:2023-05-16 12:19:08 411./wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc] 850596:before scale, dtype is 0, dim is 256: 411
+E]  [before scale, dtype is 0, dim is 256/wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc2023-05-16 12:19:08
+:.411[850655] 2023-05-16 12:19:08: before scale, dtype is 0, dim is 256.E
+850682 : /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc[E:2023-05-16 12:19:08 417./wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc] 850725:after scale, dtype is 7, new dim is 64: 417
+E]  after scale, dtype is 7, new dim is 64/wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc
+:417] after scale, dtype is 7, new dim is 64
+[2023-05-16 12:19:08.851664: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc:207[] 2023-05-16 12:19:08assigning 0 to cpu.
+851685: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc:207] [assigning 0 to cpu2023-05-16 12:19:08
+[.2023-05-16 12:19:08851711.: 851718E: [ E2023-05-16 12:19:08/wholegraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc .:/wholegraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc851751207:: ] 224Eassigning 0 to cpu]  
+build symm link desc with 4X Tesla V100-SXM2-16GB out of 4/wholegraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc
+:224] build symm link desc with 4X Tesla V100-SXM2-16GB out of 4
+[[2023-05-16 12:19:08[2023-05-16 12:19:08.2023-05-16 12:19:08.851850.851848: 851855: E: E E /wholegraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc /wholegraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc:/wholegraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc:225:224] 225] remote time is 9.21053] build symm link desc with 4X Tesla V100-SXM2-16GB out of 4
+remote time is 9.21053
+[
+2023-05-16 12:19:08.851985: [E[2023-05-16 12:19:08 2023-05-16 12:19:08./wholegraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc.851997:851999: 226: E] E cpu time is 31.8182 /wholegraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc
+/wholegraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc::226225] [] cpu time is 31.81822023-05-16 12:19:08remote time is 9.21053
+.
+852085: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc:[302[2023-05-16 12:19:08] 2023-05-16 12:19:08.using hash table impl 1, skip hash is 0.852125
+852125: : E[E 2023-05-16 12:19:08 /wholegraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc./wholegraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc:852176:226: 302] E] cpu time is 31.8182 using hash table impl 1, skip hash is 0
+/wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc
+:428] registering cpu data with 16.00 GB[
+2023-05-16 12:19:08[.2023-05-16 12:19:08852265.: 852267E:  E/wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc :/wholegraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc428:] 302registering cpu data with 16.00 GB] 
+using hash table impl 1, skip hash is 0
+[2023-05-16 12:19:08.852366: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:428] registering cpu data with 16.00 GB
+[2023-05-16 12:19:11.131422: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:430] registering cpu data done.
+[2023-05-16 12:19:11.131901: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:430] registering cpu data done.
+[2023-05-16 12:19:11.139718: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:430] registering cpu data done.
+[2023-05-16 12:19:13.592562: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:269] freq recorder global combine from 94073161 to 37952018
+[2023-05-16 12:19:14.307947: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/freq_recorder.cc:286] top 5 freq is 218,215,215,215,214
+[2023-05-16 12:19:14.308112: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/run_config.cc:156] using concurrent impl 9
+[2023-05-16 12:19:14.308161: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:411] before scale, dtype is 0, dim is 256
+[2023-05-16 12:19:14.308195: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:417] after scale, dtype is 7, new dim is 64
+[2023-05-16 12:19:14.308540: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc:207] assigning 0 to cpu
+[2023-05-16 12:19:14.308586: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc:224] build symm link desc with 4X Tesla V100-SXM2-16GB out of 4
+[2023-05-16 12:19:14.308638: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc:225] remote time is 9.21053
+[2023-05-16 12:19:14.308672: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc:226] cpu time is 31.8182
+[2023-05-16 12:19:14.308729: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/coll_cache/asymm_link_desc.cc:302] using hash table impl 1, skip hash is 0
+[2023-05-16 12:19:14.308767: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:428] registering cpu data with 16.00 GB
+[2023-05-16 12:19:15.331643: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:430] registering cpu data done.
+[2023-05-16 12:19:15.331726: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:174] creating solver
+[2023-05-16 12:19:15.331754: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:214] solver created. now build & solve
+[2023-05-16 12:19:15.674811: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:218] solver built. now solve
+block 0 storage is 00000001
+	access is	0	0	0	0	
+block 1 storage is 00000010
+	access is	1	1	1	1	
+block 2 storage is 00000100
+	access is	2	2	2	2	
+block 3 storage is 00001000
+	access is	3	3	3	3	
+block 4 storage is 00000000
+	access is	4	4	4	4	
+[2023-05-16 12:19:15.802240: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:222] solver solved
+[2023-05-16 12:19:15.803940: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:440] 0 solved master
+[2023-05-16 12:19:15.803993: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:447] 0 solved
+[2023-05-16 12:19:15.804026: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:450] worker 0 thread 0 initing device 0
+[2023-05-16 12:19:15.804952: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2386] Building Coll Cache with ... num gpu device is 4
+[2023-05-16 12:19:15.806227: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cuh:652] per src size local is 5773637
+[2023-05-16 12:19:15.821528: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:447] 3 solved
+[2023-05-16 12:19:15.821582: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:450] worker 0 thread 3 initing device 3
+[2023-05-16 12:19:15.822084: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2386] Building Coll Cache with ... num gpu device is 4
+[2023-05-16 12:19:15.830879: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:447] 2 solved
+[2023-05-16 12:19:15.830949: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc[:450] 2023-05-16 12:19:15worker 0 thread 2 initing device 2.
+830880: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:447] 1 solved
+[2023-05-16 12:19:15.831037: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/facade.cc:450] worker 0 thread 1 initing device 1
+[2023-05-16 12:19:15.831458: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2386] Building Coll Cache with ... num gpu device is 4
+[2023-05-16 12:19:15.831704: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2386] Building Coll Cache with ... num gpu device is 4
+[2023-05-16 12:19:15.912296: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2428] num cpu nodes is 44613686
+[2023-05-16 12:19:15.928493: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2428] num cpu nodes is 44613686
+[2023-05-16 12:19:15.930967: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2428] num cpu nodes is 44613686
+[2023-05-16 12:19:15.931547: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2428] num cpu nodes is 44613686
+[2023-05-16 12:19:16.359217: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:355] create a hashtable with 20994680 possible elem, scale to 67108864
+[2023-05-16 12:19:16.359281: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:360] SimpleHashTable allocating 512.00 MB
+[2023-05-16 12:19:16.387843: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:355] create a hashtable with 20994680 possible elem, scale to 67108864
+[2023-05-16 12:19:16.387894: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:360] SimpleHashTable allocating 512.00 MB
+[2023-05-16 12:19:16.388439: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:355] create a hashtable with 20994680 possible elem, scale to 67108864
+[2023-05-16 12:19:16.388521: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:360] SimpleHashTable allocating 512.00 MB
+[2023-05-16 12:19:16.389196: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:355] create a hashtable with 20994680 possible elem, scale to 67108864
+[2023-05-16 12:19:16.389250: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cuda/cache_hashtable.cu:360] SimpleHashTable allocating 512.00 MB
+[2023-05-16 12:19:16.415778: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2494] 6560850,131072|6560854,131073|6560867,131074|6560869,131075|6560871,131076|
+[2023-05-16 12:19:16.446313: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2494] 6560865,262144|6560868,262145|6560881,262146|6560883,262147|6560885,262148|
+[2023-05-16 12:19:16.473196: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2494] 9,0|16,1|22,2|36,3|57,4|
+[2023-05-16 12:19:16.481075: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?5314277->65607
+[2023-05-16 12:19:16.481261: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?5314277->65607
+[2023-05-16 12:19:16.481429: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?5314277->65607
+[2023-05-16 12:19:16.481654: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?5314277->65607
+[2023-05-16 12:19:16.504186: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2526] Asymm Coll cache (policy: clique_part) | local 5248670 / 65608366 nodes ( 8.00 %~8.00 %) | remote 15746010 / 65608366 nodes ( 24.00 %) | cpu 44613686 / 65608366 nodes ( 68.00 %) | 5.07 GB | 0.67269 secs 
+[2023-05-16 12:19:16.530976: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2526] Asymm Coll cache (policy: clique_part) | local 5248670 / 65608366 nodes ( 8.00 %~8.00 %) | remote 15746010 / 65608366 nodes ( 24.00 %) | cpu 44613686 / 65608366 nodes ( 68.00 %) | 5.07 GB | 0.699231 secs 
+[2023-05-16 12:19:16.539021: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2526] Asymm Coll cache (policy: clique_part) | local 5248670 / 65608366 nodes ( 8.00 %~8.00 %) | remote 15746010 / 65608366 nodes ( 24.00 %) | cpu 44613686 / 65608366 nodes ( 68.00 %) | 5.07 GB | 0.734029 secs 
+[2023-05-16 12:19:16.546417: E /wholegraph/3rdparty/collcachelib/coll_cache_lib/cache_context.cu:2526] Asymm Coll cache (policy: clique_part) | local 5248670 / 65608366 nodes ( 8.00 %~8.00 %) | remote 15746010 / 65608366 nodes ( 24.00 %) | cpu 44613686 / 65608366 nodes ( 68.00 %) | 5.07 GB | 0.70899 secs 
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")

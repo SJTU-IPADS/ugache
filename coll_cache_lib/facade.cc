@@ -285,6 +285,7 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
                          void *cpu_data, DataType dtype, size_t dim,
                          double cache_percentage, StreamHandle stream) {
   int device_id = RunConfig::device_id_list[replica_id];
+  size_t orig_dim = dim;
   if (RunConfig::cross_process || replica_id == 0) {
     // one-time call for each process
     RunConfig::LoadConfigFromEnv();
@@ -319,7 +320,7 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
     RunConfig::coll_cache_link_desc = coll_cache::AsymmLinkDesc::AutoBuild(GPU(device_id));
     common::coll_cache::AutoHandlePartImpl();
     size_t num_node_host_mem = num_node;
-    if (RunConfig::option_empty_feat != 0) {
+    if (RunConfig::option_empty_feat != 0 && orig_dim != 1) {
       num_node_host_mem = 1 << RunConfig::option_empty_feat;
     }
     LOG(ERROR) << "registering cpu data with " << ToReadableSize(RoundUp<size_t>(num_node_host_mem * dim * GetDataTypeBytes(dtype), 1 << 21));
