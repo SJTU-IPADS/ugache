@@ -1,0 +1,606 @@
+environ({'SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL': 'MPSPhase', 'TF_CPP_MIN_LOG_LEVEL': '2', 'HUGECTR_LOG_LEVEL': '0', 'SAMGRAPH_LOG_LEVEL': 'warn', 'SAMGRAPH_PROFILE_LEVEL': '3', 'SAMGRAPH_COLL_CACHE_CONCURRENT_LINK': '1', 'COLL_CACHE_SCALE': '16', 'COLL_NUM_REPLICA': '8', 'SAMGRAPH_EMPTY_FEAT': '24', 'NPP_VERSION': '11.7.4.75', 'SHELL': '/bin/bash', 'NVIDIA_VISIBLE_DEVICES': 'all', 'JUPYTER_CONFIG_DIR': '/tmp/.jupyter', 'DALI_BUILD': '4921308', 'CUSOLVER_VERSION': '11.4.0.1', 'CUBLAS_VERSION': '11.10.3.66', 'TMUX': '/tmp/tmux-0/default,191,0', 'HOSTNAME': '3724b9b1b880', 'SOK_COMPILE_UNIT_TEST': 'ON', 'CUFFT_VERSION': '10.7.2.91', 'NVIDIA_REQUIRE_CUDA': 'cuda>=9.0', 'CUDA_CACHE_DISABLE': '1', 'NCCL_VERSION': '2.12.12', 'CUSPARSE_VERSION': '11.7.4.91', 'ENV': '/etc/shinit_v2', 'PWD': '/hugectr_dev/study/exp-overview-8a100', 'OPENUCX_VERSION': '1.12.0', 'NSIGHT_SYSTEMS_VERSION': '2022.1.3.3', 'NVIDIA_DRIVER_CAPABILITIES': 'compute,utility,video', 'TRT_VERSION': '8.2.5.1+cuda11.4.2.006', 'NVIDIA_PRODUCT_NAME': 'Triton Server Base', 'RDMACORE_VERSION': '36.0', 'CUDA_CUDA_LIBRARY': '/usr/local/cuda/lib64/stubs', 'HOME': '/root', 'LANG': 'C.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'CUDA_VERSION': '11.7.1.014', 'CURAND_VERSION': '10.2.10.91', 'PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION': 'python', 'JUPYTER_DATA_DIR': '/tmp/.jupyter', 'CUTENSOR_VERSION': '1.5.0.3', 'HPCX_VERSION': '2.10', 'DLPROF_VERSION': '', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'JUPYTER_RUNTIME_DIR': '/tmp/.jupyter', 'PYTHONPATH': ':/usr/local/lib/python3.8/dist-packages/', 'TERM': 'screen', 'GUROBI_HOME': '/opt/gurobi-install/gurobi-latest/linux64', 'GDRCOPY_VERSION': '2.3', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'root', 'OPENMPI_VERSION': '4.1.2rc4', 'TMUX_PANE': '%4', 'NVJPEG_VERSION': '11.8.0.2', 'LIBRARY_PATH': '/usr/local/hugectr/lib:/usr/local/hugectr/lib:/usr/local/cuda/lib64/stubs::/opt/gurobi-install/gurobi-latest/linux64/lib', 'CUDA_PATH': '/usr/local/cuda', 'SHLVL': '3', 'BASH_ENV': '/etc/bash.bashrc', 'CUDNN_VERSION': '8.4.1.50+cuda11.6', 'NVIDIA_TRITON_SERVER_BASE_VERSION': '22.06', 'NSIGHT_COMPUTE_VERSION': '2022.2.1.3', 'DALI_VERSION': '1.14.0', 'LD_LIBRARY_PATH': '/usr/local/hugectr/lib:/usr/local/hugectr/lib:/usr/local/cuda/compat/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:/usr/local/lib:/repos/dist/lib:/opt/tritonserver/lib:/opt/gurobi-install/gurobi-latest/linux64/lib', 'NVIDIA_BUILD_ID': '39726160', 'OMPI_MCA_coll_hcoll_enable': '0', 'OPAL_PREFIX': '/opt/hpcx/ompi', 'CUDA_DRIVER_VERSION': '515.48.08', '_CUDA_COMPAT_PATH': '/usr/local/cuda/compat', 'CUDA_HOME': '/usr/local/cuda', 'PATH': '/opt/tritonserver/bin:/usr/local/cuda/lib64/:/usr/local/mpi/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/ucx/bin:/usr/local/cuda/bin::/opt/gurobi-install/gurobi-latest/linux64/bin', 'MOFED_VERSION': '5.4-rdmacore36.0', 'TRTOSS_VERSION': '22.05', 'DEBIAN_FRONTEND': 'noninteractive', 'GRB_LICENSE_FILE': '/opt/gurobi-install/gurobi.lic', 'OLDPWD': '/opt/tritonserver', '_': '/usr/bin/python', 'TF2_BEHAVIOR': '1'})
+config:eval_tsp="2023-04-14 16:37:34"
+config:gpu_num=8
+config:iter_num=4000
+config:slot_num=100
+config:embed_vec_size=128
+config:dense_dim=13
+config:global_batch_size=65536
+config:iteration_per_epoch=1000
+config:coll_cache_enable_iter=1000
+config:coll_cache_refresh_iter=1000
+config:coll_cache_enable_refresh=False
+config:coll_cache_policy=coll_asymm
+config:model=dcn
+config:combiner=mean
+config:optimizer=plugin_adam
+config:np_key_type=<class 'numpy.int32'>
+config:np_vector_type=<class 'numpy.float32'>
+config:tf_key_type=<dtype: 'int32'>
+config:tf_vector_type=<dtype: 'float32'>
+config:ps_config_file=run-configs/COLL_dcn_SP_02_S100_C800m_policy_CollAsymm_cache_rate_0.12_batch_size_65536_mock_800000000_128_concurrent_impl_MPSPhase_scale_nb_16.json
+config:cache_percent=0.12
+config:dense_model_path=plain
+config:dataset_path=/nvme/songxiaoniu/hps-dataset/criteo_like_uniform/saved_dataset
+config:sok_use_hashtable=False
+config:random_request=True
+config:alpha=0.2
+config:max_vocabulary_size=800000000
+config:vocabulary_range_per_slot=[[0, 8000000], [8000000, 16000000], [16000000, 24000000], [24000000, 32000000], [32000000, 40000000], [40000000, 48000000], [48000000, 56000000], [56000000, 64000000], [64000000, 72000000], [72000000, 80000000], [80000000, 88000000], [88000000, 96000000], [96000000, 104000000], [104000000, 112000000], [112000000, 120000000], [120000000, 128000000], [128000000, 136000000], [136000000, 144000000], [144000000, 152000000], [152000000, 160000000], [160000000, 168000000], [168000000, 176000000], [176000000, 184000000], [184000000, 192000000], [192000000, 200000000], [200000000, 208000000], [208000000, 216000000], [216000000, 224000000], [224000000, 232000000], [232000000, 240000000], [240000000, 248000000], [248000000, 256000000], [256000000, 264000000], [264000000, 272000000], [272000000, 280000000], [280000000, 288000000], [288000000, 296000000], [296000000, 304000000], [304000000, 312000000], [312000000, 320000000], [320000000, 328000000], [328000000, 336000000], [336000000, 344000000], [344000000, 352000000], [352000000, 360000000], [360000000, 368000000], [368000000, 376000000], [376000000, 384000000], [384000000, 392000000], [392000000, 400000000], [400000000, 408000000], [408000000, 416000000], [416000000, 424000000], [424000000, 432000000], [432000000, 440000000], [440000000, 448000000], [448000000, 456000000], [456000000, 464000000], [464000000, 472000000], [472000000, 480000000], [480000000, 488000000], [488000000, 496000000], [496000000, 504000000], [504000000, 512000000], [512000000, 520000000], [520000000, 528000000], [528000000, 536000000], [536000000, 544000000], [544000000, 552000000], [552000000, 560000000], [560000000, 568000000], [568000000, 576000000], [576000000, 584000000], [584000000, 592000000], [592000000, 600000000], [600000000, 608000000], [608000000, 616000000], [616000000, 624000000], [624000000, 632000000], [632000000, 640000000], [640000000, 648000000], [648000000, 656000000], [656000000, 664000000], [664000000, 672000000], [672000000, 680000000], [680000000, 688000000], [688000000, 696000000], [696000000, 704000000], [704000000, 712000000], [712000000, 720000000], [720000000, 728000000], [728000000, 736000000], [736000000, 744000000], [744000000, 752000000], [752000000, 760000000], [760000000, 768000000], [768000000, 776000000], [776000000, 784000000], [784000000, 792000000], [792000000, 800000000]]
+config:_empty_feat=25
+[INFO] hierarchical_parameter_server is imported
+worker 0 at process 110522
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 3 at process 110525
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 7 at process 110529
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 5 at process 110527
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 1 at process 110523
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 2 at process 110524
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 6 at process 110528
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 4 at process 110526
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+100 time 1.38116e-05 0.243026
+100 time 1.4441e-05 0.244896
+100 time 1.39523e-05 0.249555
+100 time 1.31345e-05 0.249909
+100 time 1.41811e-05 0.250147
+100 time 1.33324e-05 0.252264
+100 time 1.3001e-05 0.252359
+100 time 1.39427e-05 0.253513
+200 time 1.27292e-05 0.0321621
+200 time 1.25957e-05 0.0332334
+200 time 1.2517e-05 0.0332132
+200 time 1.24931e-05 0.0333887
+200 time 1.38474e-05 0.033429
+200 time 1.25146e-05 0.0336275
+200 time 1.2846e-05 0.0338098
+200 time 1.30963e-05 0.0338377
+300 time 1.15752e-05 0.030825
+300 time 1.14584e-05 0.0325204
+300 time 1.24073e-05 0.0325929
+300 time 1.35112e-05 0.0325677
+300 time 1.19305e-05 0.0332364
+300 time 1.18494e-05 0.0333184
+300 time 1.2486e-05 0.0336675
+300 time 1.20473e-05 0.0352025
+400 time 1.2877e-05 0.0291194
+400 time 1.29223e-05 0.0298522
+400 time 1.13797e-05 0.0309808
+400 time 1.17278e-05 0.0310942
+400 time 1.24574e-05 0.0315898
+400 time 1.24574e-05 0.0315843
+400 time 1.16158e-05 0.0317842
+400 time 1.2846e-05 0.0318364
+500 time 1.15871e-05 0.0296165
+500 time 1.25074e-05 0.0303444
+500 time 1.17636e-05 0.0309474
+500 time 1.23501e-05 0.0314954
+500 time 1.21236e-05 0.0315754
+500 time 1.12939e-05 0.0316793
+500 time 1.19686e-05 0.0317695
+500 time 1.21641e-05 0.0317604
+600 time 1.25456e-05 0.032023
+600 time 1.29652e-05 0.0330169
+600 time 1.2536e-05 0.0339858
+600 time 1.34492e-05 0.0346123
+600 time 1.18327e-05 0.0348171
+600 time 1.20401e-05 0.0351052
+600 time 1.20378e-05 0.0358387
+600 time 1.23e-05 0.0362679
+700 time 1.1363e-05 0.0271646
+700 time 1.2114e-05 0.0289187
+700 time 1.15418e-05 0.0292824
+700 time 1.21355e-05 0.0295199
+700 time 1.09482e-05 0.0296636
+700 time 1.2362e-05 0.03014
+700 time 1.11938e-05 0.0307275
+700 time 1.17135e-05 0.0309423
+800 time 1.1816e-05 0.0276694
+800 time 1.27077e-05 0.0298172
+800 time 1.23334e-05 0.0299161
+800 time 1.16444e-05 0.0300621
+800 time 1.24407e-05 0.0301319
+800 time 1.17826e-05 0.0302683
+800 time 1.23429e-05 0.0303537
+800 time 1.14489e-05 0.0308967
+900 time 1.15848e-05 0.0281246
+900 time 1.20258e-05 0.028547
+900 time 1.15156e-05 0.028894
+900 time 1.16801e-05 0.0289439
+900 time 1.15824e-05 0.0297013
+900 time 1.19734e-05 0.0299399
+900 time 1.17421e-05 0.030116
+900 time 1.17469e-05 0.0306605
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID
+Set parameter TimeLimit to value 200
+Set parameter MIPGap to value 0.05
+Set parameter LogFile to value "cppsolver.log"
+Set parameter Threads to value 40
+Academic license - for non-commercial use only - registered to bessss-zyw@sjtu.edu.cn
+Gurobi Optimizer version 9.5.1 build v9.5.1rc2 (linux64)
+Thread count: 56 physical cores, 112 logical processors, using up to 40 threads
+Academic license - for non-commercial use only - registered to bessss-zyw@sjtu.edu.cn
+Optimize a model with 755224 rows, 107649 columns and 1854800 nonzeros
+Model fingerprint: 0x19272241
+Variable types: 9 continuous, 107640 integer (107640 binary)
+Coefficient statistics:
+  Matrix range     [6e-10, 2e+04]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+04]
+Warning: Model contains large matrix coefficient range
+         Consider reformulating model or setting NumericFocus parameter
+         to avoid numerical issues.
+Found heuristic solution: objective 2.000000e+09
+Presolve removed 649166 rows and 7 columns
+Presolve time: 1.58s
+Presolved: 106058 rows, 107642 columns, 518905 nonzeros
+Found heuristic solution: objective 63473.567656
+Variable types: 1 continuous, 107641 integer (107640 binary)
+
+Deterministic concurrent LP optimizer: primal and dual simplex
+Showing first log only...
+
+
+Use crossover to convert LP symmetric solution to basic solution...
+Concurrent spin time: 0.12s
+
+Solved with dual simplex
+
+Root relaxation: objective 1.495040e+03, 12716 iterations, 0.69 seconds (0.94 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 1495.04005    0   82 63473.5677 1495.04005  97.6%     -    3s
+H    0     0                    1495.0400463 1495.04005  0.00%     -    3s
+
+Explored 1 nodes (28667 simplex iterations) in 3.16 seconds (5.12 work units)
+Thread count was 40 (of 112 available processors)
+
+Solution count 3: 1495.04 63473.6 2e+09 
+
+Optimal solution found (tolerance 5.00e-02)
+Best objective 1.495040046252e+03, best bound 1.495040046196e+03, gap 0.0000%
+coll_cache:optimal_local_rate=0.973752,0.973707,0.97375,0.973243,0.974124,0.974267,0.97434,0.97375,
+coll_cache:optimal_remote_rate=0.0262485,0.0262931,0.0262498,0.0267573,0.0258758,0.0257331,0.0256601,0.0262502,
+coll_cache:optimal_cpu_rate=6.073e-10,6.073e-10,6.073e-10,6.073e-10,6.073e-10,6.073e-10,6.073e-10,6.073e-10,
+z=1495.04
+test_result:init:feat_nbytes=409600000000
+test_result:init:cache_nbytes=49561598464
+1000 time 2.30742e-05 0.715157
+1000 time 1.18113e-05 0.715212
+1000 time 1.17779e-05 0.715145
+1000 time 1.20759e-05 0.715192
+1000 time 1.2002e-05 0.71513
+1000 time 1.27578e-05 0.715193
+1000 time 1.33014e-05 0.715187
+1000 time 1.17326e-05 0.715262
+1100 time 1.02496e-05 0.0139059
+1100 time 1.12176e-05 0.0139342
+1100 time 1.14751e-05 0.0139902
+1100 time 2.11859e-05 0.0139836
+1100 time 1.02019e-05 0.0141202
+1100 time 1.20497e-05 0.0141855
+1100 time 1.03903e-05 0.0142288
+1100 time 1.03521e-05 0.0142679
+1200 time 1.06287e-05 0.0136788
+1200 time 1.0438e-05 0.0136801
+1200 time 1.05023e-05 0.0137395
+1200 time 1.22833e-05 0.0137522
+1200 time 1.16825e-05 0.013767
+1200 time 1.07503e-05 0.0137828
+1200 time 1.05143e-05 0.0138051
+1200 time 1.11747e-05 0.0138349
+1300 time 1.00207e-05 0.0136154
+1300 time 9.89914e-06 0.0136215
+1300 time 1.06597e-05 0.0136828
+1300 time 1.09816e-05 0.0137219
+1300 time 1.03068e-05 0.013717
+1300 time 1.04237e-05 0.0137508
+1300 time 1.11651e-05 0.0137921
+1300 time 1.07145e-05 0.0138342
+1400 time 1.04403e-05 0.0136616
+1400 time 1.12534e-05 0.0136778
+1400 time 1.05524e-05 0.0136574
+1400 time 1.09553e-05 0.0137197
+1400 time 9.46999e-06 0.0137343
+1400 time 1.1282e-05 0.013758
+1400 time 1.08337e-05 0.0137518
+1400 time 1.1847e-05 0.0138404
+1500 time 1.02544e-05 0.0136384
+1500 time 1.07288e-05 0.0136829
+1500 time 9.77278e-06 0.013728
+1500 time 1.0891e-05 0.013707
+1500 time 1.01137e-05 0.0136877
+1500 time 1.04618e-05 0.0137339
+1500 time 1.05071e-05 0.0137481
+1500 time 1.01948e-05 0.0138086
+1600 time 9.60112e-06 0.0136743
+1600 time 1.18876e-05 0.013693
+1600 time 9.80616e-06 0.0137121
+1600 time 1.10936e-05 0.0137164
+1600 time 1.11604e-05 0.013732
+1600 time 1.07408e-05 0.0137524
+1600 time 1.06883e-05 0.0137464
+1600 time 1.13201e-05 0.0137219
+1700 time 1.12772e-05 0.0136243
+1700 time 1.0767e-05 0.013708
+1700 time 1.13869e-05 0.0137347
+1700 time 1.05858e-05 0.0137484
+1700 time 1.14393e-05 0.0137636
+1700 time 1.10149e-05 0.0138139
+1700 time 1.08075e-05 0.0138416
+1700 time 1.09887e-05 0.0139068
+1800 time 1.05453e-05 0.0136517
+1800 time 1.00517e-05 0.0136604
+1800 time 1.11723e-05 0.0136843
+1800 time 1.05977e-05 0.0137273
+1800 time 1.06645e-05 0.0137431
+1800 time 1.06072e-05 0.0137365
+1800 time 1.05858e-05 0.0137779
+1800 time 1.04189e-05 0.0138549
+1900 time 9.2864e-06 0.0135371
+1900 time 1.04904e-05 0.0136213
+1900 time 1.01829e-05 0.0136466
+1900 time 9.93967e-06 0.0137148
+1900 time 1.04237e-05 0.0137032
+1900 time 1.04713e-05 0.0137543
+1900 time 1.04332e-05 0.0137794
+1900 time 1.1642e-05 0.0137612
+2000 time 9.40561e-06 0.0136077
+2000 time 1.01256e-05 0.0136112
+2000 time 1.05572e-05 0.013667
+2000 time 1.07598e-05 0.0136879
+2000 time 1.11341e-05 0.0137251
+2000 time 1.03974e-05 0.0137493
+2000 time 1.04237e-05 0.0137654
+2000 time 1.06025e-05 0.0137438
+2100 time 1.0016e-05 0.0135964
+2100 time 1.06668e-05 0.013618
+2100 time 1.11198e-05 0.0136447
+2100 time 9.92775e-06 0.0136544
+2100 time 1.07408e-05 0.0136633
+2100 time 9.94205e-06 0.013702
+2100 time 1.02806e-05 0.0137093
+2100 time 1.08004e-05 0.0137157
+2200 time 9.42945e-06 0.0135784
+2200 time 1.07527e-05 0.013669
+2200 time 1.04451e-05 0.0136736
+2200 time 1.08647e-05 0.0136592
+2200 time 9.87291e-06 0.0136825
+2200 time 1.00827e-05 0.0137043
+2200 time 1.01614e-05 0.0136956
+2200 time 1.05023e-05 0.0138197
+2300 time 9.70125e-06 0.0135501
+2300 time 9.69648e-06 0.0135927
+2300 time 1.13416e-05 0.0136292
+2300 time 9.99212e-06 0.0136095
+2300 time 1.01686e-05 0.0136531
+2300 time 9.71079e-06 0.0136795
+2300 time 9.94444e-06 0.0137307
+2300 time 1.01113e-05 0.0137462
+2400 time 1.05143e-05 0.0135619
+2400 time 9.57727e-06 0.0136031
+2400 time 9.77755e-06 0.0136037
+2400 time 1.01995e-05 0.0136245
+2400 time 9.70602e-06 0.0136336
+2400 time 9.79185e-06 0.013661
+2400 time 9.87053e-06 0.013699
+2400 time 1.0407e-05 0.013733
+2500 time 9.42707e-06 0.0135383
+2500 time 1.04189e-05 0.0136314
+2500 time 1.03688e-05 0.0136452
+2500 time 1.14632e-05 0.0136897
+2500 time 1.02854e-05 0.0136917
+2500 time 9.77039e-06 0.0137259
+2500 time 1.02282e-05 0.0137428
+2500 time 1.02139e-05 0.0137855
+2600 time 9.36031e-06 0.0135875
+2600 time 1.00446e-05 0.0136239
+2600 time 9.6488e-06 0.0136304
+2600 time 9.74894e-06 0.0136537
+2600 time 1.05357e-05 0.0136408
+2600 time 1.25527e-05 0.0137027
+2600 time 1.0035e-05 0.0137026
+2600 time 1.02806e-05 0.0137446
+2700 time 1.02711e-05 0.0136021
+2700 time 9.71079e-06 0.0135761
+2700 time 1.01614e-05 0.0136209
+2700 time 9.62734e-06 0.0136611
+2700 time 1.03283e-05 0.0136707
+2700 time 9.96113e-06 0.0137165
+2700 time 1.05095e-05 0.0136952
+2700 time 1.0488e-05 0.0137006
+2800 time 9.53674e-06 0.0135889
+2800 time 1.02043e-05 0.0136788
+2800 time 1.03617e-05 0.0136542
+2800 time 1.0972e-05 0.0136983
+2800 time 9.88722e-06 0.0137246
+2800 time 1.0128e-05 0.0137082
+2800 time 1.05667e-05 0.0137468
+2800 time 9.61304e-06 0.0137935
+2900 time 9.77755e-06 0.0136139
+2900 time 1.01185e-05 0.0136419
+2900 time 9.54151e-06 0.0136368
+2900 time 9.77516e-06 0.0136892
+2900 time 9.44614e-06 0.0136525
+2900 time 1.06931e-05 0.0137545
+2900 time 9.92298e-06 0.0137749
+2900 time 1.07336e-05 0.0137597
+3000 time 1.01233e-05 0.0135959
+3000 time 9.74655e-06 0.0135871
+3000 time 1.06454e-05 0.0136007
+3000 time 9.88722e-06 0.0136164
+3000 time 9.72748e-06 0.0136805
+3000 time 9.58204e-06 0.0136987
+3000 time 9.59158e-06 0.0136754
+3000 time 9.62496e-06 0.0138306
+3100 time 9.65595e-06 0.0135715
+3100 time 9.48906e-06 0.0136442
+3100 time 1.00946e-05 0.0136344
+3100 time 1.14417e-05 0.0136734
+3100 time 9.91344e-06 0.0137022
+3100 time 9.91821e-06 0.0137366
+3100 time 1.00803e-05 0.0137465
+3100 time 9.68218e-06 0.01375
+3200 time 9.7394e-06 0.0135883
+3200 time 9.60827e-06 0.0135947
+3200 time 9.72271e-06 0.0136318
+3200 time 9.4676e-06 0.0136226
+3200 time 1.04451e-05 0.0136769
+3200 time 9.77993e-06 0.0136959
+3200 time 1.15013e-05 0.0136967
+3200 time 1.10841e-05 0.0137647
+3300 time 9.66311e-06 0.0135442
+3300 time 9.66549e-06 0.0135943
+3300 time 9.73701e-06 0.0136291
+3300 time 1.01376e-05 0.0136475
+3300 time 1.03998e-05 0.013696
+3300 time 1.06931e-05 0.0136434
+3300 time 1.02091e-05 0.0137282
+3300 time 1.01852e-05 0.0138151
+3400 time 1.04332e-05 0.0135759
+3400 time 9.48429e-06 0.0136232
+3400 time 1.03879e-05 0.0136258
+3400 time 1.01328e-05 0.0136421
+3400 time 1.00541e-05 0.0137493
+3400 time 1.03188e-05 0.0137366
+3400 time 1.09506e-05 0.0137656
+3400 time 1.01829e-05 0.0137742
+3500 time 9.53913e-06 0.0135771
+3500 time 9.91821e-06 0.0136133
+3500 time 9.77993e-06 0.0136066
+3500 time 9.6941e-06 0.0136407
+3500 time 1.06621e-05 0.0137001
+3500 time 1.01018e-05 0.0137132
+3500 time 1.00589e-05 0.0137482
+3500 time 9.88007e-06 0.0137798
+3600 time 9.86576e-06 0.0135812
+3600 time 9.70125e-06 0.0136812
+3600 time 1.05596e-05 0.0136426
+3600 time 1.00136e-05 0.0136752
+3600 time 9.63688e-06 0.013694
+3600 time 1.10292e-05 0.0137131
+3600 time 9.75847e-06 0.0137368
+3600 time 9.93252e-06 0.0137685
+3700 time 1.03045e-05 0.0136431
+3700 time 9.92298e-06 0.0136634
+3700 time 1.13058e-05 0.0136589
+3700 time 1.03331e-05 0.0136833
+3700 time 1.07002e-05 0.0136703
+3700 time 9.95874e-06 0.0137196
+3700 time 9.67741e-06 0.0137232
+3700 time 1.02377e-05 0.0137499
+3800 time 1.01995e-05 0.0136094
+3800 time 9.52482e-06 0.0136329
+3800 time 1.01304e-05 0.013655
+3800 time 1.01829e-05 0.0137091
+3800 time 1.01066e-05 0.0137199
+3800 time 1.03712e-05 0.0137525
+3800 time 1.06072e-05 0.0137857
+3800 time 1.01709e-05 0.013813
+3900 time 9.65595e-06 0.0135871
+3900 time 9.82761e-06 0.0136206
+3900 time 9.66072e-06 0.0136404
+3900 time 1.02949e-05 0.0136673
+3900 time 9.94205e-06 0.0136924
+3900 time 1.09839e-05 0.0136884
+3900 time 9.7084e-06 0.0137477
+3900 time 1.03116e-05 0.0137378
+4000 time 9.41515e-06 0.0135986
+4000 time 1.12915e-05 0.0136471
+4000 time 1.02901e-05 0.0136607
+4000 time 1.00255e-05 0.0136681
+4000 time 1.06406e-05 0.0136982
+4000 time 1.02377e-05 0.0137245
+4000 time 9.33409e-06 0.0137784
+4000 time 1.01638e-05 0.0137687
+[CUDA] worker0 cuda mem usage: 59.73 GB
+    [Step(average) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.013675
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.80 MB | remote nbytes    6.52 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     0.000000 | refresh duration   0.000000
+    [Step(average) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001586
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(average) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000251 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.001314 | cache combine cache 0.000330 | cache combine remote 0.000640
+        L3  label extract  0.000000
+    [Profiler Level Percentiles E2 S7999]
+        p50.00_tail_logl2featcopy=0.001572
+        p90.00_tail_logl2featcopy=0.001605
+        p95.00_tail_logl2featcopy=0.001616
+        p99.00_tail_logl2featcopy=0.001927
+        p99.90_tail_logl2featcopy=0.005867
