@@ -1,0 +1,1109 @@
+environ({'SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL': 'MPSPhase', 'TF_CPP_MIN_LOG_LEVEL': '2', 'HUGECTR_LOG_LEVEL': '0', 'SAMGRAPH_LOG_LEVEL': 'warn', 'PROFILE_SEQ_BUCKET_SZ': '1000', 'SAMGRAPH_PROFILE_LEVEL': '3', 'SAMGRAPH_COLL_CACHE_CONCURRENT_LINK': '1', 'COLL_CACHE_SCALE': '16', 'COLL_NUM_REPLICA': '8', 'SAMGRAPH_EMPTY_FEAT': '24', 'NPP_VERSION': '11.7.4.75', 'SHELL': '/bin/bash', 'NVIDIA_VISIBLE_DEVICES': 'all', 'JUPYTER_CONFIG_DIR': '/tmp/.jupyter', 'DALI_BUILD': '4921308', 'CUSOLVER_VERSION': '11.4.0.1', 'CUBLAS_VERSION': '11.10.3.66', 'TMUX': '/tmp/tmux-0/default,191,0', 'HOSTNAME': '3724b9b1b880', 'SOK_COMPILE_UNIT_TEST': 'ON', 'CUFFT_VERSION': '10.7.2.91', 'NVIDIA_REQUIRE_CUDA': 'cuda>=9.0', 'CUDA_CACHE_DISABLE': '1', 'NCCL_VERSION': '2.12.12', 'CUSPARSE_VERSION': '11.7.4.91', 'ENV': '/etc/shinit_v2', 'PWD': '/hugectr_dev/study/exp-overview-8a100', 'OPENUCX_VERSION': '1.12.0', 'NSIGHT_SYSTEMS_VERSION': '2022.1.3.3', 'NVIDIA_DRIVER_CAPABILITIES': 'compute,utility,video', 'TRT_VERSION': '8.2.5.1+cuda11.4.2.006', 'NVIDIA_PRODUCT_NAME': 'Triton Server Base', 'RDMACORE_VERSION': '36.0', 'CUDA_CUDA_LIBRARY': '/usr/local/cuda/lib64/stubs', 'HOME': '/root', 'LANG': 'C.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'CUDA_VERSION': '11.7.1.014', 'CURAND_VERSION': '10.2.10.91', 'PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION': 'python', 'JUPYTER_DATA_DIR': '/tmp/.jupyter', 'CUTENSOR_VERSION': '1.5.0.3', 'HPCX_VERSION': '2.10', 'DLPROF_VERSION': '', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'JUPYTER_RUNTIME_DIR': '/tmp/.jupyter', 'PYTHONPATH': ':/usr/local/lib/python3.8/dist-packages/', 'TERM': 'screen', 'GUROBI_HOME': '/opt/gurobi-install/gurobi-latest/linux64', 'GDRCOPY_VERSION': '2.3', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'root', 'OPENMPI_VERSION': '4.1.2rc4', 'TMUX_PANE': '%4', 'NVJPEG_VERSION': '11.8.0.2', 'LIBRARY_PATH': '/usr/local/hugectr/lib:/usr/local/hugectr/lib:/usr/local/cuda/lib64/stubs::/opt/gurobi-install/gurobi-latest/linux64/lib', 'CUDA_PATH': '/usr/local/cuda', 'SHLVL': '3', 'BASH_ENV': '/etc/bash.bashrc', 'CUDNN_VERSION': '8.4.1.50+cuda11.6', 'NVIDIA_TRITON_SERVER_BASE_VERSION': '22.06', 'NSIGHT_COMPUTE_VERSION': '2022.2.1.3', 'DALI_VERSION': '1.14.0', 'LD_LIBRARY_PATH': '/usr/local/hugectr/lib:/usr/local/hugectr/lib:/usr/local/cuda/compat/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:/usr/local/lib:/repos/dist/lib:/opt/tritonserver/lib:/opt/gurobi-install/gurobi-latest/linux64/lib', 'NVIDIA_BUILD_ID': '39726160', 'OMPI_MCA_coll_hcoll_enable': '0', 'OPAL_PREFIX': '/opt/hpcx/ompi', 'CUDA_DRIVER_VERSION': '515.48.08', '_CUDA_COMPAT_PATH': '/usr/local/cuda/compat', 'CUDA_HOME': '/usr/local/cuda', 'PATH': '/opt/tritonserver/bin:/usr/local/cuda/lib64/:/usr/local/mpi/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/ucx/bin:/usr/local/cuda/bin::/opt/gurobi-install/gurobi-latest/linux64/bin', 'MOFED_VERSION': '5.4-rdmacore36.0', 'TRTOSS_VERSION': '22.05', 'DEBIAN_FRONTEND': 'noninteractive', 'GRB_LICENSE_FILE': '/opt/gurobi-install/gurobi.lic', 'OLDPWD': '/hugectr_dev/study/exp-refresh-8a100', '_': '/usr/bin/python', 'TF2_BEHAVIOR': '1'})
+config:eval_tsp="2023-04-17 13:45:29"
+config:gpu_num=8
+config:iter_num=4000
+config:slot_num=100
+config:embed_vec_size=128
+config:dense_dim=13
+config:global_batch_size=65536
+config:iteration_per_epoch=1000
+config:coll_cache_enable_iter=1000
+config:coll_cache_refresh_iter=1000
+config:coll_cache_enable_refresh=False
+config:coll_cache_policy=coll_asymm
+config:model=dlrm
+config:combiner=mean
+config:optimizer=plugin_adam
+config:np_key_type=<class 'numpy.int32'>
+config:np_vector_type=<class 'numpy.float32'>
+config:tf_key_type=<dtype: 'int32'>
+config:tf_vector_type=<dtype: 'float32'>
+config:ps_config_file=run-configs/COLL_dlrm_SP_02_S100_C800m_policy_CollAsymm_cache_rate_0.04_batch_size_65536_mock_800000000_128_concurrent_impl_MPSPhase_scale_nb_16_bucket_1000.json
+config:cache_percent=0.04
+config:dense_model_path=plain
+config:dataset_path=/nvme/songxiaoniu/hps-dataset/criteo_like_uniform/saved_dataset
+config:sok_use_hashtable=False
+config:random_request=True
+config:alpha=0.2
+config:max_vocabulary_size=800000000
+config:vocabulary_range_per_slot=[[0, 8000000], [8000000, 16000000], [16000000, 24000000], [24000000, 32000000], [32000000, 40000000], [40000000, 48000000], [48000000, 56000000], [56000000, 64000000], [64000000, 72000000], [72000000, 80000000], [80000000, 88000000], [88000000, 96000000], [96000000, 104000000], [104000000, 112000000], [112000000, 120000000], [120000000, 128000000], [128000000, 136000000], [136000000, 144000000], [144000000, 152000000], [152000000, 160000000], [160000000, 168000000], [168000000, 176000000], [176000000, 184000000], [184000000, 192000000], [192000000, 200000000], [200000000, 208000000], [208000000, 216000000], [216000000, 224000000], [224000000, 232000000], [232000000, 240000000], [240000000, 248000000], [248000000, 256000000], [256000000, 264000000], [264000000, 272000000], [272000000, 280000000], [280000000, 288000000], [288000000, 296000000], [296000000, 304000000], [304000000, 312000000], [312000000, 320000000], [320000000, 328000000], [328000000, 336000000], [336000000, 344000000], [344000000, 352000000], [352000000, 360000000], [360000000, 368000000], [368000000, 376000000], [376000000, 384000000], [384000000, 392000000], [392000000, 400000000], [400000000, 408000000], [408000000, 416000000], [416000000, 424000000], [424000000, 432000000], [432000000, 440000000], [440000000, 448000000], [448000000, 456000000], [456000000, 464000000], [464000000, 472000000], [472000000, 480000000], [480000000, 488000000], [488000000, 496000000], [496000000, 504000000], [504000000, 512000000], [512000000, 520000000], [520000000, 528000000], [528000000, 536000000], [536000000, 544000000], [544000000, 552000000], [552000000, 560000000], [560000000, 568000000], [568000000, 576000000], [576000000, 584000000], [584000000, 592000000], [592000000, 600000000], [600000000, 608000000], [608000000, 616000000], [616000000, 624000000], [624000000, 632000000], [632000000, 640000000], [640000000, 648000000], [648000000, 656000000], [656000000, 664000000], [664000000, 672000000], [672000000, 680000000], [680000000, 688000000], [688000000, 696000000], [696000000, 704000000], [704000000, 712000000], [712000000, 720000000], [720000000, 728000000], [728000000, 736000000], [736000000, 744000000], [744000000, 752000000], [752000000, 760000000], [760000000, 768000000], [768000000, 776000000], [776000000, 784000000], [784000000, 792000000], [792000000, 800000000]]
+config:_empty_feat=25
+[INFO] hierarchical_parameter_server is imported
+worker 0 at process 27738
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 4 at process 27742
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 2 at process 27740
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 6 at process 27744
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 1 at process 27739
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 3 at process 27741
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 7 at process 27745
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 5 at process 27743
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+[GPU5] 100 time 1.70875e-05 0.23822
+[GPU1] 100 time 1.41287e-05 0.239045
+[GPU7] 100 time 1.44196e-05 0.253591
+[GPU0] 100 time 1.62625e-05 0.253702
+[GPU3] 100 time 1.45245e-05 0.253968
+[GPU2] 100 time 1.3411e-05 0.254169
+[GPU4] 100 time 1.38545e-05 0.255003
+[GPU6] 100 time 1.40667e-05 0.256121
+[GPU5] 200 time 1.30129e-05 0.0232459
+[GPU7] 200 time 1.30033e-05 0.0240952
+[GPU2] 200 time 1.27649e-05 0.0243053
+[GPU0] 200 time 1.27745e-05 0.0244696
+[GPU4] 200 time 1.33967e-05 0.0244796
+[GPU6] 200 time 1.24645e-05 0.0245531
+[GPU3] 200 time 1.5676e-05 0.024979
+[GPU1] 200 time 1.28102e-05 0.0256324
+[GPU0] 300 time 1.51896e-05 0.0238338
+[GPU7] 300 time 1.35159e-05 0.0243418
+[GPU6] 300 time 1.42908e-05 0.0243461
+[GPU2] 300 time 1.1971e-05 0.0244356
+[GPU5] 300 time 1.52874e-05 0.0246395
+[GPU3] 300 time 1.26314e-05 0.0247019
+[GPU4] 300 time 1.39117e-05 0.0252208
+[GPU1] 300 time 1.26982e-05 0.0253159
+[GPU0] 400 time 1.29986e-05 0.02127
+[GPU4] 400 time 1.39403e-05 0.021936
+[GPU2] 400 time 1.36423e-05 0.0222936
+[GPU7] 400 time 1.25289e-05 0.0225029
+[GPU3] 400 time 1.3237e-05 0.0227377
+[GPU6] 400 time 1.54972e-05 0.0228372
+[GPU1] 400 time 1.27101e-05 0.0230222
+[GPU5] 400 time 1.20544e-05 0.023117
+[GPU0] 500 time 1.3535e-05 0.0221731
+[GPU2] 500 time 1.23525e-05 0.0224727
+[GPU4] 500 time 1.43027e-05 0.0226316
+[GPU7] 500 time 1.33586e-05 0.0228808
+[GPU1] 500 time 1.2517e-05 0.0232903
+[GPU3] 500 time 1.42407e-05 0.0232952
+[GPU5] 500 time 1.40834e-05 0.0233172
+[GPU6] 500 time 1.42932e-05 0.023287
+[GPU5] 600 time 1.2536e-05 0.0246497
+[GPU6] 600 time 1.30987e-05 0.0251237
+[GPU2] 600 time 1.26076e-05 0.025288
+[GPU3] 600 time 1.3001e-05 0.0254813
+[GPU7] 600 time 1.26433e-05 0.0256395
+[GPU0] 600 time 1.2598e-05 0.0258346
+[GPU4] 600 time 1.39928e-05 0.0261481
+[GPU1] 600 time 1.34397e-05 0.0268621
+[GPU2] 700 time 1.28651e-05 0.0203904
+[GPU6] 700 time 1.22881e-05 0.0207633
+[GPU3] 700 time 1.32442e-05 0.0208518
+[GPU4] 700 time 1.29008e-05 0.0210362
+[GPU7] 700 time 1.37448e-05 0.0211526
+[GPU0] 700 time 1.27316e-05 0.0212069
+[GPU5] 700 time 1.55425e-05 0.0213518
+[GPU1] 700 time 1.28269e-05 0.02162
+[GPU0] 800 time 1.23024e-05 0.0210473
+[GPU4] 800 time 1.26481e-05 0.0210404
+[GPU7] 800 time 1.28222e-05 0.0212753
+[GPU5] 800 time 1.2207e-05 0.0213222
+[GPU2] 800 time 1.40333e-05 0.0216601
+[GPU3] 800 time 1.28794e-05 0.0217691
+[GPU6] 800 time 1.41168e-05 0.0219648
+[GPU1] 800 time 1.38283e-05 0.0224669
+[GPU2] 900 time 1.31607e-05 0.0213072
+[GPU0] 900 time 1.23692e-05 0.0214346
+[GPU4] 900 time 1.52636e-05 0.0214348
+[GPU7] 900 time 1.27268e-05 0.021662
+[GPU6] 900 time 1.21856e-05 0.0218465
+[GPU3] 900 time 1.20902e-05 0.0219414
+[GPU1] 900 time 1.22356e-05 0.0222356
+[GPU5] 900 time 1.42622e-05 0.0223038
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID
+Set parameter TimeLimit to value 200
+Set parameter MIPGap to value 0.05
+Set parameter LogFile to value "cppsolver.log"
+Set parameter Threads to value 40
+Academic license - for non-commercial use only - registered to bessss-zyw@sjtu.edu.cn
+Gurobi Optimizer version 9.5.1 build v9.5.1rc2 (linux64)
+Thread count: 56 physical cores, 112 logical processors, using up to 40 threads
+Academic license - for non-commercial use only - registered to bessss-zyw@sjtu.edu.cn
+Optimize a model with 424624 rows, 60524 columns and 1042800 nonzeros
+Model fingerprint: 0x7c7afdf5
+Variable types: 9 continuous, 60515 integer (60515 binary)
+Coefficient statistics:
+  Matrix range     [6e-10, 2e+04]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+04]
+Warning: Model contains large matrix coefficient range
+         Consider reformulating model or setting NumericFocus parameter
+         to avoid numerical issues.
+Found heuristic solution: objective 2.000000e+09
+Presolve removed 365542 rows and 592 columns
+Presolve time: 0.87s
+Presolved: 59082 rows, 59932 columns, 288429 nonzeros
+Found heuristic solution: objective 63578.078892
+Variable types: 1 continuous, 59931 integer (59930 binary)
+
+Deterministic concurrent LP optimizer: primal and dual simplex
+Showing first log only...
+
+
+Use crossover to convert LP symmetric solution to basic solution...
+Concurrent spin time: 0.08s
+
+Solved with dual simplex
+
+Root relaxation: objective 1.495040e+03, 19637 iterations, 0.57 seconds (0.78 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+*    0     0               0    1495.0400001 1495.04000  0.00%     -    5s
+
+Explored 1 nodes (37758 simplex iterations) in 5.15 seconds (7.50 work units)
+Thread count was 40 (of 112 available processors)
+
+Solution count 3: 1495.04 63578.1 2e+09 
+
+Optimal solution found (tolerance 5.00e-02)
+Best objective 1.495040000086e+03, best bound 1.495040000086e+03, gap 0.0000%
+coll_cache:optimal_local_rate=0.929603,0.928418,0.928952,0.928718,0.929457,0.929778,0.931878,0.929407,
+coll_cache:optimal_remote_rate=0.0703973,0.0715825,0.071048,0.0712817,0.0705428,0.0702224,0.0681221,0.0705932,
+coll_cache:optimal_cpu_rate=7.62942e-13,7.62942e-13,7.62942e-13,7.62942e-13,7.62942e-13,7.62942e-13,7.62942e-13,7.62942e-13,
+z=1495.04
+test_result:init:feat_nbytes=409600000000
+test_result:init:cache_nbytes=16793599488
+[GPU2] 1000 time 1.37448e-05 0.657124
+[GPU0] 1000 time 1.72997e-05 0.657123
+[GPU4] 1000 time 1.25861e-05 0.657143
+[GPU5] 1000 time 1.18113e-05 0.657155
+[GPU3] 1000 time 1.25027e-05 0.657146
+[GPU6] 1000 time 1.36113e-05 0.657136
+[GPU7] 1000 time 1.39666e-05 0.657151
+[GPU1] 1000 time 1.23501e-05 0.657184
+[GPU0] 1100 time 1.17016e-05 0.00414264
+[GPU2] 1100 time 1.08528e-05 0.00420237
+[GPU1] 1100 time 1.06955e-05 0.00422101
+[GPU7] 1100 time 1.1909e-05 0.00422174
+[GPU4] 1100 time 1.20187e-05 0.00424975
+[GPU3] 1100 time 1.11318e-05 0.00427634
+[GPU5] 1100 time 1.08576e-05 0.00432297
+[GPU6] 1100 time 1.1096e-05 0.00434321
+[GPU3] 1200 time 1.06382e-05 0.00396672
+[GPU6] 1200 time 1.05381e-05 0.00399697
+[GPU1] 1200 time 1.24621e-05 0.00401731
+[GPU7] 1200 time 1.07837e-05 0.00403149
+[GPU4] 1200 time 1.10006e-05 0.00405013
+[GPU5] 1200 time 1.21593e-05 0.00403852
+[GPU0] 1200 time 1.12224e-05 0.00404589
+[GPU2] 1200 time 1.20544e-05 0.00409453
+[GPU1] 1300 time 1.122e-05 0.0040086
+[GPU3] 1300 time 1.08504e-05 0.00401624
+[GPU5] 1300 time 1.11413e-05 0.00403291
+[GPU2] 1300 time 1.15991e-05 0.00405528
+[GPU6] 1300 time 1.06382e-05 0.00404034
+[GPU4] 1300 time 1.04403e-05 0.00407431
+[GPU7] 1300 time 1.2145e-05 0.00417331
+[GPU0] 1300 time 1.09744e-05 0.0041222
+[GPU1] 1400 time 1.01876e-05 0.00396154
+[GPU3] 1400 time 1.07932e-05 0.00395164
+[GPU0] 1400 time 1.11103e-05 0.00399726
+[GPU2] 1400 time 1.01972e-05 0.00402922
+[GPU6] 1400 time 1.086e-05 0.00404491
+[GPU5] 1400 time 1.1096e-05 0.00405297
+[GPU7] 1400 time 1.08099e-05 0.00407159
+[GPU4] 1400 time 1.1003e-05 0.00409175
+[GPU1] 1500 time 1.06263e-05 0.00393542
+[GPU7] 1500 time 1.02663e-05 0.00399984
+[GPU3] 1500 time 1.04117e-05 0.00400156
+[GPU6] 1500 time 1.09291e-05 0.00400649
+[GPU0] 1500 time 1.07169e-05 0.00405486
+[GPU5] 1500 time 1.07288e-05 0.00406337
+[GPU4] 1500 time 1.09458e-05 0.00410214
+[GPU2] 1500 time 1.07956e-05 0.00406874
+[GPU2] 1600 time 1.02067e-05 0.00396828
+[GPU3] 1600 time 1.02615e-05 0.00399074
+[GPU6] 1600 time 1.02711e-05 0.00398359
+[GPU1] 1600 time 1.21498e-05 0.00404093
+[GPU0] 1600 time 1.06668e-05 0.00406893
+[GPU7] 1600 time 1.17707e-05 0.00407394
+[GPU4] 1600 time 1.16706e-05 0.00407006
+[GPU5] 1600 time 1.21546e-05 0.00418562
+[GPU0] 1700 time 1.01995e-05 0.00396444
+[GPU2] 1700 time 1.07765e-05 0.00399858
+[GPU1] 1700 time 1.17469e-05 0.0040058
+[GPU6] 1700 time 1.07169e-05 0.00404078
+[GPU7] 1700 time 1.17111e-05 0.00403672
+[GPU3] 1700 time 1.25599e-05 0.00404598
+[GPU5] 1700 time 1.14751e-05 0.00406475
+[GPU4] 1700 time 1.01256e-05 0.00419873
+[GPU3] 1800 time 1.03951e-05 0.00394466
+[GPU0] 1800 time 1.15466e-05 0.00398217
+[GPU2] 1800 time 1.03951e-05 0.004004
+[GPU6] 1800 time 1.08838e-05 0.004001
+[GPU1] 1800 time 1.02687e-05 0.0040026
+[GPU7] 1800 time 1.07002e-05 0.00405061
+[GPU5] 1800 time 1.04213e-05 0.00405843
+[GPU4] 1800 time 1.05047e-05 0.00408851
+[GPU2] 1900 time 1.03354e-05 0.0039417
+[GPU0] 1900 time 1.21951e-05 0.00397209
+[GPU1] 1900 time 1.05476e-05 0.0040018
+[GPU3] 1900 time 1.15156e-05 0.0040246
+[GPU6] 1900 time 1.0736e-05 0.00400602
+[GPU5] 1900 time 1.1394e-05 0.00403576
+[GPU4] 1900 time 9.72509e-06 0.00404314
+[GPU7] 1900 time 1.19448e-05 0.00409524
+[GPU2] 2000 time 1.12605e-05 0.00398438
+[GPU0] 2000 time 1.03116e-05 0.00398783
+[GPU6] 2000 time 1.07241e-05 0.00400429
+[GPU3] 2000 time 1.15991e-05 0.00400143
+[GPU4] 2000 time 1.03235e-05 0.00400852
+[GPU1] 2000 time 1.2846e-05 0.00399147
+[GPU5] 2000 time 1.12557e-05 0.00403776
+[GPU7] 2000 time 1.2579e-05 0.00412929
+[GPU3] 2100 time 1.12247e-05 0.00396734
+[GPU6] 2100 time 1.03164e-05 0.00398421
+[GPU1] 2100 time 1.13273e-05 0.00399455
+[GPU7] 2100 time 1.01709e-05 0.0040152
+[GPU4] 2100 time 1.01256e-05 0.00401615
+[GPU0] 2100 time 1.09601e-05 0.00405023
+[GPU2] 2100 time 1.10555e-05 0.00408098
+[GPU5] 2100 time 1.1301e-05 0.00408142
+[GPU4] 2200 time 1.00613e-05 0.00397837
+[GPU6] 2200 time 1.00756e-05 0.00398823
+[GPU0] 2200 time 1.05262e-05 0.00397265
+[GPU1] 2200 time 1.03402e-05 0.00399803
+[GPU7] 2200 time 1.05238e-05 0.00407158
+[GPU2] 2200 time 1.46556e-05 0.00406153
+[GPU5] 2200 time 1.16467e-05 0.0041142
+[GPU3] 2200 time 1.40572e-05 0.00408614
+[GPU1] 2300 time 1.11389e-05 0.00395384
+[GPU0] 2300 time 9.89199e-06 0.00396211
+[GPU4] 2300 time 1.02615e-05 0.00400887
+[GPU2] 2300 time 1.05619e-05 0.00397477
+[GPU3] 2300 time 1.05548e-05 0.00400445
+[GPU6] 2300 time 1.03331e-05 0.00398634
+[GPU5] 2300 time 1.08433e-05 0.00408402
+[GPU7] 2300 time 1.21069e-05 0.00411127
+[GPU1] 2400 time 1.086e-05 0.00394535
+[GPU0] 2400 time 1.04523e-05 0.00394338
+[GPU6] 2400 time 1.00541e-05 0.00399645
+[GPU7] 2400 time 1.04427e-05 0.0039994
+[GPU2] 2400 time 1.03307e-05 0.00403422
+[GPU3] 2400 time 1.10507e-05 0.00404029
+[GPU5] 2400 time 1.10936e-05 0.0040533
+[GPU4] 2400 time 1.11723e-05 0.00407428
+[GPU1] 2500 time 1.05762e-05 0.00393447
+[GPU2] 2500 time 1.01352e-05 0.00397166
+[GPU6] 2500 time 1.06978e-05 0.00399154
+[GPU3] 2500 time 1.04809e-05 0.00402231
+[GPU5] 2500 time 1.02329e-05 0.00401738
+[GPU7] 2500 time 1.03235e-05 0.00402297
+[GPU4] 2500 time 1.01137e-05 0.00405869
+[GPU0] 2500 time 1.02139e-05 0.00409958
+[GPU6] 2600 time 1.01709e-05 0.00392408
+[GPU0] 2600 time 1.10459e-05 0.00400666
+[GPU7] 2600 time 1.08981e-05 0.00400184
+[GPU3] 2600 time 1.14059e-05 0.00400479
+[GPU5] 2600 time 1.07765e-05 0.00405059
+[GPU2] 2600 time 1.07574e-05 0.00402259
+[GPU4] 2600 time 1.03712e-05 0.00406486
+[GPU1] 2600 time 1.05405e-05 0.00417126
+[GPU6] 2700 time 1.02043e-05 0.00392943
+[GPU4] 2700 time 1.02997e-05 0.00397508
+[GPU5] 2700 time 1.01137e-05 0.00400529
+[GPU0] 2700 time 1.12915e-05 0.00400167
+[GPU7] 2700 time 9.77039e-06 0.00402297
+[GPU1] 2700 time 1.00541e-05 0.00406736
+[GPU2] 2700 time 1.15895e-05 0.00403731
+[GPU3] 2700 time 1.266e-05 0.00407947
+[GPU6] 2800 time 1.18136e-05 0.0039571
+[GPU5] 2800 time 1.00708e-05 0.00396853
+[GPU7] 2800 time 1.07145e-05 0.00399749
+[GPU3] 2800 time 1.09863e-05 0.00399268
+[GPU0] 2800 time 1.17683e-05 0.00401934
+[GPU1] 2800 time 1.11532e-05 0.00403378
+[GPU2] 2800 time 1.11604e-05 0.00406361
+[GPU4] 2800 time 1.27625e-05 0.00410462
+[GPU6] 2900 time 1.03807e-05 0.00394577
+[GPU0] 2900 time 1.12605e-05 0.00393497
+[GPU2] 2900 time 1.0047e-05 0.00400548
+[GPU3] 2900 time 1.05381e-05 0.00395034
+[GPU7] 2900 time 1.03927e-05 0.00401956
+[GPU5] 2900 time 1.14179e-05 0.00401382
+[GPU1] 2900 time 1.11556e-05 0.00403363
+[GPU4] 2900 time 1.12796e-05 0.00401825
+[GPU3] 3000 time 1.11914e-05 0.00397608
+[GPU2] 3000 time 1.02401e-05 0.00401155
+[GPU5] 3000 time 1.06573e-05 0.00400611
+[GPU7] 3000 time 9.79185e-06 0.00402678
+[GPU0] 3000 time 1.07169e-05 0.00403869
+[GPU1] 3000 time 1.07384e-05 0.00398545
+[GPU6] 3000 time 1.07932e-05 0.00403809
+[GPU4] 3000 time 1.07408e-05 0.00411433
+[GPU5] 3100 time 9.92537e-06 0.00390625
+[GPU1] 3100 time 1.10316e-05 0.00395761
+[GPU3] 3100 time 1.17874e-05 0.00400528
+[GPU0] 3100 time 1.1549e-05 0.00395841
+[GPU7] 3100 time 9.7537e-06 0.00401256
+[GPU2] 3100 time 1.18828e-05 0.00400769
+[GPU6] 3100 time 1.10197e-05 0.0040436
+[GPU4] 3100 time 1.15323e-05 0.00402249
+[GPU0] 3200 time 1.03331e-05 0.00392226
+[GPU7] 3200 time 1.14489e-05 0.00393708
+[GPU3] 3200 time 1.07145e-05 0.00397616
+[GPU1] 3200 time 1.12677e-05 0.00397695
+[GPU2] 3200 time 1.04237e-05 0.00400142
+[GPU4] 3200 time 1.04451e-05 0.00401617
+[GPU6] 3200 time 1.06788e-05 0.00398346
+[GPU5] 3200 time 1.08552e-05 0.00405209
+[GPU3] 3300 time 1.07026e-05 0.00391805
+[GPU7] 3300 time 1.1034e-05 0.00400455
+[GPU2] 3300 time 1.08051e-05 0.00400032
+[GPU5] 3300 time 1.18876e-05 0.00398352
+[GPU6] 3300 time 1.01042e-05 0.00399178
+[GPU4] 3300 time 1.03188e-05 0.00400024
+[GPU0] 3300 time 1.14107e-05 0.00400294
+[GPU1] 3300 time 1.1344e-05 0.00403457
+[GPU2] 3400 time 1.06478e-05 0.0039401
+[GPU0] 3400 time 1.0252e-05 0.00394505
+[GPU3] 3400 time 1.01161e-05 0.00397597
+[GPU4] 3400 time 1.06025e-05 0.00398235
+[GPU1] 3400 time 1.00875e-05 0.00403592
+[GPU5] 3400 time 1.32966e-05 0.00402982
+[GPU7] 3400 time 1.22643e-05 0.00405199
+[GPU6] 3400 time 1.10364e-05 0.00407866
+[GPU3] 3500 time 1.15347e-05 0.00394575
+[GPU0] 3500 time 9.99212e-06 0.00396436
+[GPU1] 3500 time 1.02282e-05 0.00397778
+[GPU6] 3500 time 1.10388e-05 0.00401543
+[GPU2] 3500 time 1.09005e-05 0.00403228
+[GPU5] 3500 time 1.15848e-05 0.0040223
+[GPU7] 3500 time 1.01304e-05 0.00402357
+[GPU4] 3500 time 1.16277e-05 0.00401026
+[GPU3] 3600 time 1.05739e-05 0.00392582
+[GPU1] 3600 time 1.03092e-05 0.00397784
+[GPU6] 3600 time 1.08385e-05 0.00396874
+[GPU2] 3600 time 1.07408e-05 0.00398052
+[GPU0] 3600 time 1.01972e-05 0.00400436
+[GPU4] 3600 time 1.11794e-05 0.00398346
+[GPU5] 3600 time 1.00923e-05 0.00402566
+[GPU7] 3600 time 1.02973e-05 0.00408436
+[GPU3] 3700 time 1.08147e-05 0.00396055
+[GPU5] 3700 time 1.10626e-05 0.00401392
+[GPU4] 3700 time 1.13988e-05 0.00399921
+[GPU2] 3700 time 1.22046e-05 0.00405188
+[GPU6] 3700 time 1.07837e-05 0.0040335
+[GPU1] 3700 time 1.08171e-05 0.00404248
+[GPU0] 3700 time 1.14059e-05 0.00409966
+[GPU7] 3700 time 1.05596e-05 0.00413484
+[GPU0] 3800 time 1.01352e-05 0.0039863
+[GPU5] 3800 time 9.95159e-06 0.00395859
+[GPU3] 3800 time 1.06525e-05 0.0040174
+[GPU6] 3800 time 1.08838e-05 0.00398487
+[GPU2] 3800 time 1.261e-05 0.00400625
+[GPU1] 3800 time 1.06025e-05 0.00402874
+[GPU4] 3800 time 1.08123e-05 0.00403316
+[GPU7] 3800 time 1.05572e-05 0.00404584
+[GPU2] 3900 time 1.04594e-05 0.00395168
+[GPU5] 3900 time 1.04141e-05 0.00397819
+[GPU0] 3900 time 1.07002e-05 0.00398417
+[GPU3] 3900 time 1.09887e-05 0.00399254
+[GPU6] 3900 time 1.06835e-05 0.00403779
+[GPU1] 3900 time 1.08624e-05 0.00403127
+[GPU7] 3900 time 1.04332e-05 0.00405095
+[GPU4] 3900 time 1.11961e-05 0.00404021
+[GPU3] 4000 time 1.01995e-05 0.00394347
+[GPU5] 4000 time 1.02234e-05 0.00396589
+[GPU1] 4000 time 1.06645e-05 0.0039697
+[GPU0] 4000 time 1.00875e-05 0.00396883
+[GPU7] 4000 time 1.06239e-05 0.00400516
+[GPU2] 4000 time 1.07741e-05 0.00402004
+[GPU6] 4000 time 1.04141e-05 0.00401633
+[GPU4] 4000 time 1.19114e-05 0.00407844
+[CUDA] worker0 cuda mem usage: 27.53 GB
+    [Step(average) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.004009
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.63 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     0.000000 | refresh duration   0.000000
+    [Step(average) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001257
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(average) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000247 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000996 | cache combine cache 0.000345 | cache combine remote 0.000287
+        L3  label extract  0.000000
+    [Profiler Level Percentiles E2 S7999]
+        p50.00_tail_logl2featcopy=0.001250
+        p90.00_tail_logl2featcopy=0.001295
+        p95.00_tail_logl2featcopy=0.001315
+        p99.00_tail_logl2featcopy=0.001494
+        p99.90_tail_logl2featcopy=0.004366
+    [Step(Seq_0) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.004211
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.63 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     0.000001 | refresh duration   0.000000
+    [Step(Seq_0) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001345
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_0) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000265 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.001058 | cache combine cache 0.000358 | cache combine remote 0.000313
+        L3  label extract  0.000000
+    [Step(Seq_1) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.004049
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.62 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     0.583094 | refresh duration   0.000000
+    [Step(Seq_1) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001277
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_1) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000247 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.001004 | cache combine cache 0.000350 | cache combine remote 0.000303
+        L3  label extract  0.000000
+    [Step(Seq_2) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.004036
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.63 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     1.149021 | refresh duration   0.000000
+    [Step(Seq_2) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001264
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_2) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000248 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.001005 | cache combine cache 0.000335 | cache combine remote 0.000301
+        L3  label extract  0.000000
+    [Step(Seq_3) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.004022
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.63 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     1.705131 | refresh duration   0.000000
+    [Step(Seq_3) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001271
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_3) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000247 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000998 | cache combine cache 0.000359 | cache combine remote 0.000287
+        L3  label extract  0.000000
+    [Step(Seq_4) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.004052
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.63 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     2.270253 | refresh duration   0.000000
+    [Step(Seq_4) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001268
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_4) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000247 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.001000 | cache combine cache 0.000349 | cache combine remote 0.000291
+        L3  label extract  0.000000
+    [Step(Seq_5) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.004026
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.63 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     2.834804 | refresh duration   0.000000
+    [Step(Seq_5) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001256
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_5) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000247 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.001001 | cache combine cache 0.000335 | cache combine remote 0.000296
+        L3  label extract  0.000000
+    [Step(Seq_6) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.004026
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.63 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     3.394870 | refresh duration   0.000000
+    [Step(Seq_6) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001270
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_6) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000246 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000998 | cache combine cache 0.000348 | cache combine remote 0.000292
+        L3  label extract  0.000000
+    [Step(Seq_7) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.004010
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.62 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     3.954596 | refresh duration   0.000000
+    [Step(Seq_7) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001261
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_7) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000248 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.001000 | cache combine cache 0.000339 | cache combine remote 0.000294
+        L3  label extract  0.000000
+    [Step(Seq_8) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.004034
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.62 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     4.527114 | refresh duration   0.000000
+    [Step(Seq_8) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001259
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_8) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000246 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.001002 | cache combine cache 0.000339 | cache combine remote 0.000292
+        L3  label extract  0.000000
+    [Step(Seq_9) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.004013
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.63 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     5.082684 | refresh duration   0.000000
+    [Step(Seq_9) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001262
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_9) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000246 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000997 | cache combine cache 0.000352 | cache combine remote 0.000288
+        L3  label extract  0.000000
+    [Step(Seq_10) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.004017
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.62 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     5.643814 | refresh duration   0.000000
+    [Step(Seq_10) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001260
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_10) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000247 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.001000 | cache combine cache 0.000343 | cache combine remote 0.000293
+        L3  label extract  0.000000
+    [Step(Seq_11) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.004011
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.62 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     6.194446 | refresh duration   0.000000
+    [Step(Seq_11) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001258
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_11) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000247 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000994 | cache combine cache 0.000342 | cache combine remote 0.000283
+        L3  label extract  0.000000
+    [Step(Seq_12) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.004029
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.62 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     6.762246 | refresh duration   0.000000
+    [Step(Seq_12) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001255
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_12) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000247 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000996 | cache combine cache 0.000345 | cache combine remote 0.000288
+        L3  label extract  0.000000
+    [Step(Seq_13) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.004030
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.62 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     7.323371 | refresh duration   0.000000
+    [Step(Seq_13) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001265
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_13) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000251 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000997 | cache combine cache 0.000346 | cache combine remote 0.000288
+        L3  label extract  0.000000
+    [Step(Seq_14) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.003978
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.62 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     7.883551 | refresh duration   0.000000
+    [Step(Seq_14) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001248
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_14) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000246 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000993 | cache combine cache 0.000345 | cache combine remote 0.000282
+        L3  label extract  0.000000
+    [Step(Seq_15) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.004025
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.63 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     8.435614 | refresh duration   0.000000
+    [Step(Seq_15) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001258
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_15) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000246 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000997 | cache combine cache 0.000350 | cache combine remote 0.000284
+        L3  label extract  0.000000
+    [Step(Seq_16) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.003993
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.83 MB | remote nbytes   21.63 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     9.000278 | refresh duration   0.000000
+    [Step(Seq_16) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001253
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_16) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000246 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000995 | cache combine cache 0.000346 | cache combine remote 0.000286
+        L3  label extract  0.000000
+    [Step(Seq_17) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.003988
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.63 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     9.549472 | refresh duration   0.000000
+    [Step(Seq_17) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001252
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_17) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000245 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000999 | cache combine cache 0.000338 | cache combine remote 0.000289
+        L3  label extract  0.000000
+    [Step(Seq_18) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.004000
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.62 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration    10.107279 | refresh duration   0.000000
+    [Step(Seq_18) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001262
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_18) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000251 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000993 | cache combine cache 0.000349 | cache combine remote 0.000284
+        L3  label extract  0.000000
+    [Step(Seq_19) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.003994
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.63 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration    10.649543 | refresh duration   0.000000
+    [Step(Seq_19) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001254
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_19) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000246 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000999 | cache combine cache 0.000340 | cache combine remote 0.000291
+        L3  label extract  0.000000
+    [Step(Seq_20) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.003997
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.62 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration    11.218278 | refresh duration   0.000000
+    [Step(Seq_20) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001251
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_20) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000246 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000993 | cache combine cache 0.000341 | cache combine remote 0.000283
+        L3  label extract  0.000000
+    [Step(Seq_21) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.004040
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.63 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration    11.778387 | refresh duration   0.000000
+    [Step(Seq_21) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001261
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_21) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000246 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000996 | cache combine cache 0.000353 | cache combine remote 0.000284
+        L3  label extract  0.000000
+    [Step(Seq_22) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.003998
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.63 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration    12.335969 | refresh duration   0.000000
+    [Step(Seq_22) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001253
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_22) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000247 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000994 | cache combine cache 0.000344 | cache combine remote 0.000285
+        L3  label extract  0.000000
+    [Step(Seq_23) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.004003
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes       7.84 MB | remote nbytes   21.63 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration    12.884390 | refresh duration   0.000000
+    [Step(Seq_23) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001263
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(Seq_23) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000250 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000997 | cache combine cache 0.000347 | cache combine remote 0.000290
+        L3  label extract  0.000000

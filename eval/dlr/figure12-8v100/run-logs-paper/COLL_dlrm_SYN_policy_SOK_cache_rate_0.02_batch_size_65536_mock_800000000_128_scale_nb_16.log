@@ -1,0 +1,334 @@
+environ({'EPOCH': '2', 'ITERATION_PER_EPOCH': '1000', 'TF_CPP_MIN_LOG_LEVEL': '2', 'HUGECTR_LOG_LEVEL': '0', 'SAMGRAPH_LOG_LEVEL': 'warn', 'SAMGRAPH_PROFILE_LEVEL': '3', 'SAMGRAPH_COLL_CACHE_CONCURRENT_LINK': '0', 'COLL_CACHE_SCALE': '16', 'COLL_NUM_REPLICA': '8', 'SAMGRAPH_EMPTY_FEAT': '24', 'NPP_VERSION': '11.7.4.75', 'SHELL': '/bin/bash', 'NVIDIA_VISIBLE_DEVICES': 'all', 'JUPYTER_CONFIG_DIR': '/tmp/.jupyter', 'DALI_BUILD': '4921308', 'CUSOLVER_VERSION': '11.4.0.1', 'CUBLAS_VERSION': '11.10.3.66', 'TMUX': '/tmp//tmux-0/default,136,0', 'HOSTNAME': 'd6ae270dfeda', 'SOK_COMPILE_UNIT_TEST': 'ON', 'CUFFT_VERSION': '10.7.2.91', 'NVIDIA_REQUIRE_CUDA': 'cuda>=9.0', 'CUDA_CACHE_DISABLE': '1', 'NCCL_VERSION': '2.12.12', 'CUSPARSE_VERSION': '11.7.4.91', 'ENV': '/etc/shinit_v2', 'PWD': '/hugectr_dev/study/exp-overview-8v100', 'OPENUCX_VERSION': '1.12.0', 'NSIGHT_SYSTEMS_VERSION': '2022.1.3.3', 'NVIDIA_DRIVER_CAPABILITIES': 'compute,utility,video', 'TRT_VERSION': '8.2.5.1+cuda11.4.2.006', 'NVIDIA_PRODUCT_NAME': 'Triton Server Base', 'RDMACORE_VERSION': '36.0', 'CUDA_CUDA_LIBRARY': '/usr/local/cuda/lib64/stubs', 'HOME': '/root', 'LANG': 'C.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'CUDA_VERSION': '11.7.1.014', 'CURAND_VERSION': '10.2.10.91', 'PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION': 'python', 'JUPYTER_DATA_DIR': '/tmp/.jupyter', 'CUTENSOR_VERSION': '1.5.0.3', 'HPCX_VERSION': '2.10', 'DLPROF_VERSION': '', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'JUPYTER_RUNTIME_DIR': '/tmp/.jupyter', 'PYTHONPATH': ':/usr/local/lib/python3.8/dist-packages/', 'TERM': 'screen', 'GUROBI_HOME': '/opt/gurobi-install/gurobi-latest/linux64', 'GDRCOPY_VERSION': '2.3', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'root', 'OPENMPI_VERSION': '4.1.2rc4', 'TMUX_PANE': '%0', 'NVJPEG_VERSION': '11.8.0.2', 'LIBRARY_PATH': '/usr/local/hugectr/lib:/usr/local/hugectr/lib:/usr/local/cuda/compat/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:/usr/local/lib:/repos/dist/lib:/opt/tritonserver/lib:/opt/gurobi-install/gurobi-latest/linux64/lib:/opt/gurobi-install/gurobi-latest/linux64/lib', 'CUDA_PATH': '/usr/local/cuda', 'SHLVL': '3', 'BASH_ENV': '/etc/bash.bashrc', 'CUDNN_VERSION': '8.4.1.50+cuda11.6', 'NVIDIA_TRITON_SERVER_BASE_VERSION': '22.06', 'NSIGHT_COMPUTE_VERSION': '2022.2.1.3', 'DALI_VERSION': '1.14.0', 'LD_LIBRARY_PATH': '/usr/local/hugectr/lib:/usr/local/hugectr/lib:/usr/local/cuda/compat/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:/usr/local/lib:/repos/dist/lib:/opt/tritonserver/lib:/opt/gurobi-install/gurobi-latest/linux64/lib', 'NVIDIA_BUILD_ID': '39726160', 'OMPI_MCA_coll_hcoll_enable': '0', 'OPAL_PREFIX': '/opt/hpcx/ompi', 'CUDA_DRIVER_VERSION': '515.48.08', '_CUDA_COMPAT_PATH': '/usr/local/cuda/compat', 'CUDA_HOME': '/usr/local/cuda', 'PATH': '/opt/tritonserver/bin:/usr/local/cuda/lib64/:/usr/local/mpi/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/ucx/bin:/usr/local/cuda/bin::/opt/gurobi-install/gurobi-latest/linux64/bin', 'MOFED_VERSION': '5.4-rdmacore36.0', 'TRTOSS_VERSION': '22.05', 'DEBIAN_FRONTEND': 'noninteractive', 'GRB_LICENSE_FILE': '/opt/gurobi-install/gurobi.lic', 'OLDPWD': '/hugectr_dev/hierarchical_parameter_server', '_': '/usr/bin/python', 'TF2_BEHAVIOR': '1'})
+config:eval_tsp="2023-04-14 16:04:55"
+config:gpu_num=8
+config:iter_num=2000
+config:slot_num=100
+config:embed_vec_size=128
+config:dense_dim=13
+config:global_batch_size=65536
+config:iteration_per_epoch=1000
+config:coll_cache_enable_iter=0
+config:coll_cache_refresh_iter=1000
+config:coll_cache_enable_refresh=False
+config:coll_cache_policy=sok
+config:model=dlrm
+config:combiner=mean
+config:optimizer=plugin_adam
+config:np_key_type=<class 'numpy.int32'>
+config:np_vector_type=<class 'numpy.float32'>
+config:tf_key_type=<dtype: 'uint32'>
+config:tf_vector_type=<dtype: 'float32'>
+config:ps_config_file=
+config:cache_percent=0.02
+config:dense_model_path=plain
+config:dataset_path=/nvme/songxiaoniu/hps-dataset/criteo_like_uniform/saved_dataset
+config:sok_use_hashtable=True
+config:random_request=True
+config:alpha=0.2
+config:max_vocabulary_size=800000000
+config:vocabulary_range_per_slot=[[0, 8000000], [8000000, 16000000], [16000000, 24000000], [24000000, 32000000], [32000000, 40000000], [40000000, 48000000], [48000000, 56000000], [56000000, 64000000], [64000000, 72000000], [72000000, 80000000], [80000000, 88000000], [88000000, 96000000], [96000000, 104000000], [104000000, 112000000], [112000000, 120000000], [120000000, 128000000], [128000000, 136000000], [136000000, 144000000], [144000000, 152000000], [152000000, 160000000], [160000000, 168000000], [168000000, 176000000], [176000000, 184000000], [184000000, 192000000], [192000000, 200000000], [200000000, 208000000], [208000000, 216000000], [216000000, 224000000], [224000000, 232000000], [232000000, 240000000], [240000000, 248000000], [248000000, 256000000], [256000000, 264000000], [264000000, 272000000], [272000000, 280000000], [280000000, 288000000], [288000000, 296000000], [296000000, 304000000], [304000000, 312000000], [312000000, 320000000], [320000000, 328000000], [328000000, 336000000], [336000000, 344000000], [344000000, 352000000], [352000000, 360000000], [360000000, 368000000], [368000000, 376000000], [376000000, 384000000], [384000000, 392000000], [392000000, 400000000], [400000000, 408000000], [408000000, 416000000], [416000000, 424000000], [424000000, 432000000], [432000000, 440000000], [440000000, 448000000], [448000000, 456000000], [456000000, 464000000], [464000000, 472000000], [472000000, 480000000], [480000000, 488000000], [488000000, 496000000], [496000000, 504000000], [504000000, 512000000], [512000000, 520000000], [520000000, 528000000], [528000000, 536000000], [536000000, 544000000], [544000000, 552000000], [552000000, 560000000], [560000000, 568000000], [568000000, 576000000], [576000000, 584000000], [584000000, 592000000], [592000000, 600000000], [600000000, 608000000], [608000000, 616000000], [616000000, 624000000], [624000000, 632000000], [632000000, 640000000], [640000000, 648000000], [648000000, 656000000], [656000000, 664000000], [664000000, 672000000], [672000000, 680000000], [680000000, 688000000], [688000000, 696000000], [696000000, 704000000], [704000000, 712000000], [712000000, 720000000], [720000000, 728000000], [728000000, 736000000], [736000000, 744000000], [744000000, 752000000], [752000000, 760000000], [760000000, 768000000], [768000000, 776000000], [776000000, 784000000], [784000000, 792000000], [792000000, 800000000]]
+config:_empty_feat=25
+[INFO]: sparse_operation_kit is imported
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:107] Mapping from local_replica_id to device_id:
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:109] 0 -> 0
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:84] Global seed is 1056194391
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:85] Local GPU Count: 1
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:86] Global GPU Count: 8
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:127] Global Replica Id: 0; Local Replica Id: 0
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:107] Mapping from local_replica_id to device_id:
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:109] 0 -> 2
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:107] Mapping from local_replica_id to device_id:
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:84] Global seed is 1056194391
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:109] 0 -> 1
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:85] Local GPU Count: 1
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:84] Global seed is 1056194391
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:86] Global GPU Count: 8
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:85] Local GPU Count: 1
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:86] Global GPU Count: 8
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:127] Global Replica Id: 1; Local Replica Id: 0
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:127] Global Replica Id: 2; Local Replica Id: 0
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:107] Mapping from local_replica_id to device_id:
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:109] 0 -> 5
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:107] Mapping from local_replica_id to device_id:
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:84] Global seed is 1056194391
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:109] 0 -> 6
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:85] Local GPU Count: 1
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:86] Global GPU Count: 8
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:84] Global seed is 1056194391
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:85] Local GPU Count: 1
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:86] Global GPU Count: 8
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:107] Mapping from local_replica_id to device_id:
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:109] 0 -> 4
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:84] Global seed is 1056194391
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:85] Local GPU Count: 1
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:127] Global Replica Id: 5; Local Replica Id: 0
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:86] Global GPU Count: 8
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:107] Mapping from local_replica_id to device_id:
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:127] Global Replica Id: 6; Local Replica Id: 0
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:109] 0 -> 3
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:84] Global seed is 1056194391
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:85] Local GPU Count: 1
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:86] Global GPU Count: 8
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:127] Global Replica Id: 4; Local Replica Id: 0
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:127] Global Replica Id: 3; Local Replica Id: 0
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:107] Mapping from local_replica_id to device_id:
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:109] 0 -> 7
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:84] Global seed is 1056194391
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:85] Local GPU Count: 1
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:86] Global GPU Count: 8
+2023-04-14 16:05:05.488305: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:127] Global Replica Id: 7; Local Replica Id: 0
+ITERATION_PER_EPOCH = 1000
+EPOCH = 2
+2023-04-14 16:05:07.488307: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_manager.cc:132] Created embedding variable whose name is EmbeddingVariable
+ITERATION_PER_EPOCH = 1000
+EPOCH = 2
+2023-04-14 16:05:07.488307: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_manager.cc:132] Created embedding variable whose name is EmbeddingVariable
+ITERATION_PER_EPOCH = 1000
+EPOCH = 2
+2023-04-14 16:05:07.488307: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_manager.cc:132] Created embedding variable whose name is EmbeddingVariable
+ITERATION_PER_EPOCH = 1000
+EPOCH = 2
+2023-04-14 16:05:07.488307: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_manager.cc:132] Created embedding variable whose name is EmbeddingVariable
+ITERATION_PER_EPOCH = 1000
+EPOCH = 2
+2023-04-14 16:05:07.488307: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_manager.cc:132] Created embedding variable whose name is EmbeddingVariable
+ITERATION_PER_EPOCH = 1000
+EPOCH = 2
+2023-04-14 16:05:07.488307: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_manager.cc:132] Created embedding variable whose name is EmbeddingVariable
+ITERATION_PER_EPOCH = 1000
+EPOCH = 2
+2023-04-14 16:05:07.488307: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_manager.cc:132] Created embedding variable whose name is EmbeddingVariable
+ITERATION_PER_EPOCH = 1000
+EPOCH = 2
+2023-04-14 16:05:07.488307: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_manager.cc:132] Created embedding variable whose name is EmbeddingVariable
+worker 6 at process 246681
+[INFO] hierarchical_parameter_server is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 1 at process 246676
+[INFO] hierarchical_parameter_server is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 2 at process 246677
+[INFO] hierarchical_parameter_server is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 7 at process 246682
+[INFO] hierarchical_parameter_server is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 5 at process 246680
+[INFO] hierarchical_parameter_server is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 3 at process 246678
+[INFO] hierarchical_parameter_server is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 0 at process 246675
+[INFO] hierarchical_parameter_server is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 4 at process 246679
+[INFO] hierarchical_parameter_server is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+2023-04-14 16:06:36.488396: I sparse_operation_kit/kit_cc/kit_cc_infra/src/facade.cc:272] SparseOperationKit allocated internal memory.
+2023-04-14 16:06:37.488397: I sparse_operation_kit/kit_cc/kit_cc_infra/src/facade.cc:272] SparseOperationKit allocated internal memory.
+2023-04-14 16:06:37.488397: I sparse_operation_kit/kit_cc/kit_cc_infra/src/facade.cc:272] SparseOperationKit allocated internal memory.
+2023-04-14 16:06:37.488397: I sparse_operation_kit/kit_cc/kit_cc_infra/src/facade.cc:272] SparseOperationKit allocated internal memory.
+2023-04-14 16:06:37.488397: I sparse_operation_kit/kit_cc/kit_cc_infra/src/facade.cc:272] SparseOperationKit allocated internal memory.
+2023-04-14 16:06:37.488397: I sparse_operation_kit/kit_cc/kit_cc_infra/src/facade.cc:272] SparseOperationKit allocated internal memory.
+2023-04-14 16:06:37.488397: I sparse_operation_kit/kit_cc/kit_cc_infra/src/facade.cc:272] SparseOperationKit allocated internal memory.
+2023-04-14 16:06:37.488397: I sparse_operation_kit/kit_cc/kit_cc_infra/src/facade.cc:272] SparseOperationKit allocated internal memory.
+100 time 1.07694e-05 0.543323
+100 time 1.19376e-05 0.543259
+100 time 1.05143e-05 0.543392
+100 time 1.09076e-05 0.543372
+100 time 1.11246e-05 0.543408
+100 time 1.08814e-05 0.543418
+100 time 1.09816e-05 0.543401
+100 time 1.04666e-05 0.543407
+200 time 1.04475e-05 0.0195643
+200 time 1.06001e-05 0.0195923
+200 time 1.0643e-05 0.0195991
+200 time 1.08886e-05 0.0196137
+200 time 1.04761e-05 0.0196137
+200 time 1.10722e-05 0.0195802
+200 time 1.08027e-05 0.0196172
+200 time 1.06955e-05 0.0196215
+300 time 1.02353e-05 0.0198313
+300 time 1.13869e-05 0.0197654
+300 time 1.18804e-05 0.0197738
+300 time 1.13845e-05 0.0197916
+300 time 1.11485e-05 0.0198281
+300 time 1.05381e-05 0.0198449
+300 time 1.08314e-05 0.0198039
+300 time 1.0891e-05 0.0197925
+400 time 1.06788e-05 0.019577
+400 time 1.18899e-05 0.0194511
+400 time 1.10126e-05 0.0195811
+400 time 1.1332e-05 0.0195546
+400 time 1.03903e-05 0.0195942
+400 time 1.05691e-05 0.019599
+400 time 1.11151e-05 0.0196018
+400 time 1.12867e-05 0.0195642
+500 time 1.07098e-05 0.0196365
+500 time 1.11723e-05 0.0196201
+500 time 1.12915e-05 0.0195837
+500 time 1.23429e-05 0.0195617
+500 time 1.05143e-05 0.0196497
+500 time 1.091e-05 0.0196469
+500 time 1.07884e-05 0.0196675
+500 time 1.23167e-05 0.0196023
+600 time 1.02115e-05 0.0197647
+600 time 1.16611e-05 0.019759
+600 time 1.19066e-05 0.0197244
+600 time 1.04165e-05 0.0197868
+600 time 1.05119e-05 0.0197247
+600 time 1.05691e-05 0.0197664
+600 time 1.12557e-05 0.0197352
+600 time 1.16944e-05 0.0197308
+700 time 1.04284e-05 0.0199562
+700 time 1.06692e-05 0.0199503
+700 time 1.21713e-05 0.0199233
+700 time 1.06883e-05 0.0199714
+700 time 1.08576e-05 0.0199627
+700 time 1.0736e-05 0.0199325
+700 time 1.24025e-05 0.0199337
+700 time 1.091e-05 0.0199611
+800 time 1.06001e-05 0.0195462
+800 time 1.17421e-05 0.0195734
+800 time 1.13201e-05 0.0196145
+800 time 1.06645e-05 0.0196091
+800 time 1.24931e-05 0.0195982
+800 time 1.17016e-05 0.0195497
+800 time 1.05381e-05 0.0196575
+800 time 1.0674e-05 0.0196086
+900 time 1.08671e-05 0.0199729
+900 time 1.07002e-05 0.0198457
+900 time 1.17445e-05 0.0199109
+900 time 1.11079e-05 0.0199562
+900 time 1.23215e-05 0.0199269
+900 time 1.07837e-05 0.0199824
+900 time 1.09315e-05 0.0199752
+900 time 1.03235e-05 0.0200206
+1000 time 1.08576e-05 0.0197518
+1000 time 1.04022e-05 0.0197638
+1000 time 1.06192e-05 0.0196866
+1000 time 1.08266e-05 0.0195702
+1000 time 1.04856e-05 0.0197605
+1000 time 1.17993e-05 0.0197167
+1000 time 1.10579e-05 0.0197546
+1000 time 1.15776e-05 0.0197513
+1100 time 1.09148e-05 0.0196114
+1100 time 1.18876e-05 0.0194832
+1100 time 1.14965e-05 0.0195771
+1100 time 1.04022e-05 0.0196557
+1100 time 1.19972e-05 0.0195964
+1100 time 1.17159e-05 0.0195973
+1100 time 1.12844e-05 0.0196031
+1100 time 1.11151e-05 0.0196099
+1200 time 1.05929e-05 0.0198376
+1200 time 1.17445e-05 0.0197608
+1200 time 1.122e-05 0.0197964
+1200 time 1.11938e-05 0.0198337
+1200 time 1.02925e-05 0.0198846
+1200 time 1.18375e-05 0.0197611
+1200 time 1.08933e-05 0.0197897
+1200 time 1.2157e-05 0.0197557
+1300 time 1.06382e-05 0.019979
+1300 time 1.18518e-05 0.0199302
+1300 time 1.13034e-05 0.0199599
+1300 time 1.15061e-05 0.0199663
+1300 time 1.03998e-05 0.0199975
+1300 time 1.32585e-05 0.019861
+1300 time 1.68443e-05 0.0198395
+1300 time 1.25909e-05 0.0199647
+1400 time 1.16682e-05 0.0198728
+1400 time 1.17707e-05 0.019869
+1400 time 1.13463e-05 0.0199063
+1400 time 1.08075e-05 0.0199303
+1400 time 1.03378e-05 0.0199472
+1400 time 1.06001e-05 0.0199579
+1400 time 1.2939e-05 0.0198486
+1400 time 1.22213e-05 0.019746
+1500 time 1.15991e-05 0.0198934
+1500 time 1.23715e-05 0.0199047
+1500 time 1.25957e-05 0.0198795
+1500 time 1.19591e-05 0.0199309
+1500 time 1.2393e-05 0.0198936
+1500 time 1.17373e-05 0.0198831
+1500 time 1.07145e-05 0.0199635
+1500 time 1.22404e-05 0.0199027
+1600 time 1.13726e-05 0.0198271
+1600 time 1.20044e-05 0.0197815
+1600 time 1.15633e-05 0.0198034
+1600 time 1.06049e-05 0.0198813
+1600 time 1.0705e-05 0.0198568
+1600 time 1.06478e-05 0.0198938
+1600 time 1.16515e-05 0.0198183
+1600 time 1.23191e-05 0.0197178
+1700 time 1.30677e-05 0.0197547
+1700 time 1.12772e-05 0.019745
+1700 time 1.16301e-05 0.0197733
+1700 time 1.10364e-05 0.0197777
+1700 time 1.1332e-05 0.0197193
+1700 time 1.12963e-05 0.0197903
+1700 time 1.27316e-05 0.0197398
+1700 time 1.1754e-05 0.0197428
+1800 time 1.06621e-05 0.019789
+1800 time 1.12152e-05 0.0197613
+1800 time 1.11222e-05 0.0197041
+1800 time 1.22213e-05 0.0197314
+1800 time 1.18446e-05 0.0197784
+1800 time 1.32513e-05 0.0197356
+1800 time 1.12081e-05 0.0197739
+1800 time 1.18279e-05 0.0197923
+1900 time 1.04213e-05 0.0193485
+1900 time 1.10173e-05 0.0193189
+1900 time 1.24002e-05 0.0192852
+1900 time 1.1189e-05 0.0193121
+1900 time 1.01733e-05 0.019371
+1900 time 1.07956e-05 0.019345
+1900 time 1.13344e-05 0.0192342
+1900 time 1.07002e-05 0.0193642
+2000 time 1.03521e-05 0.019706
+2000 time 1.23024e-05 0.0196
+2000 time 1.11842e-05 0.0196757
+2000 time 1.08695e-05 0.0196813
+2000 time 1.0488e-05 0.0197319
+2000 time 1.14131e-05 0.0196645
+2000 time 1.05047e-05 0.019733
+2000 time 1.18804e-05 0.0197195
+[CUDA] worker0 cuda mem usage: 20.02 GB
+    [Step(average) Profiler Level 1 E1 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.019912
+        L1  feature nbytes 0.00 Bytes | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes    0.00 Bytes | remote nbytes 0.00 Bytes
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     0.000000 | refresh duration 21855187000203696.000000
+    [Step(average) Profiler Level 2 E1 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.014038
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(average) Profiler Level 3 E1 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000000 | cache copy_index   0.000529 | cache extract_miss  0.001454
+        L3  cache copy_miss  0.010452 | cache combine_miss 0.001597 | cache combine cache 0.000000 | cache combine remote 0.000000
+        L3  label extract  0.000000
+[INFO] hierarchical_parameter_server is imported
