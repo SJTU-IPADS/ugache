@@ -11,7 +11,7 @@ cur_common_base = (ConfigList()
   .override('root_path', ['/datasets_dlr/'])
   .override('epoch', [3])
   .override('gpu_num', [4])
-  .override('logdir', ['run-logs'])
+  .override('logdir', ['run-logs-paper'])
   .override('confdir', ['run-configs'])
   .override('profile_level', [3])
   .override('multi_gpu', [True])
@@ -42,6 +42,11 @@ cfg_list_collector.hyper_override(
     [CachePolicy.sok, '', '', True],
   ]
 )
+
+# special case
+for cfg in cfg_list_collector.conf_list:
+  if cfg.dataset == Dataset.syn and cfg.coll_cache_policy == CachePolicy.sok and cfg.model == Model.dcn:
+    cfg.cache_percent = 0.01
 
 if __name__ == '__main__':
   from sys import argv
