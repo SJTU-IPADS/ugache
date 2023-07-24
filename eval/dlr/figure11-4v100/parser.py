@@ -4,7 +4,7 @@ from common_parser import *
 from runner_helper import *
 from runner import cfg_list_collector
 
-selected_col = ['app_short']
+selected_col = ['short_app']
 selected_col += ['policy_impl']
 selected_col += ['dataset_short']
 selected_col += ['step.train']
