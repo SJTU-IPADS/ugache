@@ -56,19 +56,21 @@ set tics textcolor "black"
 eval(handle_multiplot_location(0,0))
 set key outside left Right top enhanced nobox # autotitles columnhead
 set key samplen 4 spacing 0 height 3 width 4 font ',16' maxrows 1 center at graph 1, graph 1.1 #maxrows 1 at graph 0.02, graph 0.975  noopaque
-unset xtics
+set xtics nomirror offset 0,0.3
+set ylabel "E2E Time(ms)" offset 2.,0
 set yrange [0:20]
+set xlabel "DLRM" offset 0,0.3
 plot cmd_filter_dat_by_policy(dat_file, "dlrm", ".*", "^HPS*",         ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_A lc rgb "#af2318" t "HPS", \
      cmd_filter_dat_by_policy(dat_file, "dlrm", ".*", "^SOK*",         ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_A lc rgb "#f19e38" t "SOK", \
      cmd_filter_dat_by_policy(dat_file, "dlrm", ".*", "UGache*", ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_A lc rgb "#0080ff" t "UGache"
 
 unset key
 unset label
+unset ylabel
 
 eval(handle_multiplot_location(0,1))
 set yrange [0:50]
+set xlabel "DCN" offset 0,0.3
 plot cmd_filter_dat_by_policy(dat_file, "dcn", ".*", "^HPS*",          ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_A lc rgb "#af2318" t "HPS", \
      cmd_filter_dat_by_policy(dat_file, "dcn", ".*", "^SOK*",          ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_A lc rgb "#f19e38" t "SOK", \
      cmd_filter_dat_by_policy(dat_file, "dcn", ".*", "UGache*",  ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_A lc rgb "#0080ff" t "UGache"
-
-unset key

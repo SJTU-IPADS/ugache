@@ -1,15 +1,17 @@
 import os, sys, copy
 sys.path.append(os.getcwd()+'/../common')
-from runner_helper import System, Model, Dataset, CachePolicy, RunConfig, ConfigList, RandomDataset, percent_gen
+from runner_helper import System, Model, Dataset, CachePolicy, ConfigList
 
 do_mock = False
 durable_log = True
+retry = False
+fail_only = False
 
 cur_common_base = (ConfigList()
   .override('root_path', ['/datasets_dlr/'])
   .override('epoch', [3])
   .override('gpu_num', [4])
-  .override('logdir', ['run-logs-paper'])
+  .override('logdir', ['run-logs'])
   .override('confdir', ['run-configs'])
   .override('profile_level', [3])
   .override('multi_gpu', [True])
@@ -38,12 +40,11 @@ cfg_list_collector.hyper_override(
     [CachePolicy.coll_cache_asymm_link, '', 'MPSPhase', None],
     [CachePolicy.hps, '', '', None],
     [CachePolicy.sok, '', '', True],
-  ])
+  ]
+)
 
 if __name__ == '__main__':
   from sys import argv
-  retry = False
-  fail_only = False
   for arg in argv[1:]:
     if arg == '-m' or arg == '--mock':
       do_mock = True
