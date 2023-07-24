@@ -26,3 +26,5 @@ ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/ugache/build:${GUROBI_HOME}/lib"
 ENV LIBRARY_PATH="${LIBRARY_PATH}:/ugache/build:${GUROBI_HOME}/lib"
 ENV C_INCLUDE_PATH="/ugache:${GUROBI_HOME}/include"
 ENV CPLUS_INCLUDE_PATH="/ugache:${GUROBI_HOME}/include"
+
+WORKDIR /ugache/eval
