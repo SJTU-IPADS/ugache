@@ -262,7 +262,7 @@ class BenchInstance:
     self.vals['cache_percentage'] = 100 * cfg.cache_percent
     self.vals['sample_type'] = cfg.sample_type.name
     self.vals['app'] = cfg.app.name
-    self.vals['short_app'] = cfg.app.short()
+    self.vals['app_short'] = cfg.app.short()
     self.vals['system_short'] = cfg.system.short()
   
   def get_optimal(self):
@@ -334,7 +334,7 @@ class BenchInstance:
 
   def short_app_name(self):
     suffix = "_unsup" if self.get_val('unsupervised') else "_sup"
-    self.vals['short_app'] = self.get_val('short_app') + suffix
+    self.vals['short_app'] = self.get_val('app_short') + suffix
 
   def full_policy_name(self):
     self.vals['policy_impl'] = self.get_val('coll_cache_concurrent_link') + self.get_val('cache_policy_short')
