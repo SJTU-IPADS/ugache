@@ -1,0 +1,333 @@
+environ({'TF_CPP_MIN_LOG_LEVEL': '2', 'HUGECTR_LOG_LEVEL': '0', 'SAMGRAPH_LOG_LEVEL': 'warn', 'SAMGRAPH_PROFILE_LEVEL': '3', 'SAMGRAPH_COLL_CACHE_CONCURRENT_LINK': '0', 'COLL_CACHE_SCALE': '16', 'COLL_NUM_REPLICA': '8', 'SAMGRAPH_EMPTY_FEAT': '24', 'NPP_VERSION': '11.7.4.75', 'SHELL': '/bin/bash', 'NVIDIA_VISIBLE_DEVICES': 'all', 'JUPYTER_CONFIG_DIR': '/tmp/.jupyter', 'DALI_BUILD': '4921308', 'CUSOLVER_VERSION': '11.4.0.1', 'CUBLAS_VERSION': '11.10.3.66', 'TMUX': '/tmp/tmux-0/default,191,0', 'HOSTNAME': '3724b9b1b880', 'SOK_COMPILE_UNIT_TEST': 'ON', 'CUFFT_VERSION': '10.7.2.91', 'NVIDIA_REQUIRE_CUDA': 'cuda>=9.0', 'CUDA_CACHE_DISABLE': '1', 'NCCL_VERSION': '2.12.12', 'CUSPARSE_VERSION': '11.7.4.91', 'ENV': '/etc/shinit_v2', 'PWD': '/hugectr_dev/study/exp-overview-8a100', 'OPENUCX_VERSION': '1.12.0', 'NSIGHT_SYSTEMS_VERSION': '2022.1.3.3', 'NVIDIA_DRIVER_CAPABILITIES': 'compute,utility,video', 'TRT_VERSION': '8.2.5.1+cuda11.4.2.006', 'NVIDIA_PRODUCT_NAME': 'Triton Server Base', 'RDMACORE_VERSION': '36.0', 'CUDA_CUDA_LIBRARY': '/usr/local/cuda/lib64/stubs', 'HOME': '/root', 'LANG': 'C.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'CUDA_VERSION': '11.7.1.014', 'CURAND_VERSION': '10.2.10.91', 'PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION': 'python', 'JUPYTER_DATA_DIR': '/tmp/.jupyter', 'CUTENSOR_VERSION': '1.5.0.3', 'HPCX_VERSION': '2.10', 'DLPROF_VERSION': '', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'JUPYTER_RUNTIME_DIR': '/tmp/.jupyter', 'PYTHONPATH': ':/usr/local/lib/python3.8/dist-packages/', 'TERM': 'screen', 'GUROBI_HOME': '/opt/gurobi-install/gurobi-latest/linux64', 'GDRCOPY_VERSION': '2.3', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'root', 'OPENMPI_VERSION': '4.1.2rc4', 'TMUX_PANE': '%4', 'NVJPEG_VERSION': '11.8.0.2', 'LIBRARY_PATH': '/usr/local/hugectr/lib:/usr/local/hugectr/lib:/usr/local/cuda/lib64/stubs::/opt/gurobi-install/gurobi-latest/linux64/lib', 'CUDA_PATH': '/usr/local/cuda', 'SHLVL': '3', 'BASH_ENV': '/etc/bash.bashrc', 'CUDNN_VERSION': '8.4.1.50+cuda11.6', 'NVIDIA_TRITON_SERVER_BASE_VERSION': '22.06', 'NSIGHT_COMPUTE_VERSION': '2022.2.1.3', 'DALI_VERSION': '1.14.0', 'LD_LIBRARY_PATH': '/usr/local/hugectr/lib:/usr/local/hugectr/lib:/usr/local/cuda/compat/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:/usr/local/lib:/repos/dist/lib:/opt/tritonserver/lib:/opt/gurobi-install/gurobi-latest/linux64/lib', 'NVIDIA_BUILD_ID': '39726160', 'OMPI_MCA_coll_hcoll_enable': '0', 'OPAL_PREFIX': '/opt/hpcx/ompi', 'CUDA_DRIVER_VERSION': '515.48.08', '_CUDA_COMPAT_PATH': '/usr/local/cuda/compat', 'CUDA_HOME': '/usr/local/cuda', 'PATH': '/opt/tritonserver/bin:/usr/local/cuda/lib64/:/usr/local/mpi/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/ucx/bin:/usr/local/cuda/bin::/opt/gurobi-install/gurobi-latest/linux64/bin', 'MOFED_VERSION': '5.4-rdmacore36.0', 'TRTOSS_VERSION': '22.05', 'DEBIAN_FRONTEND': 'noninteractive', 'GRB_LICENSE_FILE': '/opt/gurobi-install/gurobi.lic', 'OLDPWD': '/opt/tritonserver', '_': '/usr/bin/python', 'TF2_BEHAVIOR': '1'})
+config:eval_tsp="2023-04-14 15:46:02"
+config:gpu_num=8
+config:iter_num=3000
+config:slot_num=100
+config:embed_vec_size=128
+config:dense_dim=13
+config:global_batch_size=65536
+config:iteration_per_epoch=1000
+config:coll_cache_enable_iter=0
+config:coll_cache_refresh_iter=1000
+config:coll_cache_enable_refresh=False
+config:coll_cache_policy=hps
+config:model=dlrm
+config:combiner=mean
+config:optimizer=plugin_adam
+config:np_key_type=<class 'numpy.int32'>
+config:np_vector_type=<class 'numpy.float32'>
+config:tf_key_type=<dtype: 'int32'>
+config:tf_vector_type=<dtype: 'float32'>
+config:ps_config_file=run-configs/COLL_dlrm_SP_02_S100_C800m_policy_HPS_cache_rate_0.12_batch_size_65536_mock_800000000_128_scale_nb_16.json
+config:cache_percent=0.12
+config:dense_model_path=plain
+config:dataset_path=/nvme/songxiaoniu/hps-dataset/criteo_like_uniform/saved_dataset
+config:sok_use_hashtable=False
+config:random_request=True
+config:alpha=0.2
+config:max_vocabulary_size=800000000
+config:vocabulary_range_per_slot=[[0, 8000000], [8000000, 16000000], [16000000, 24000000], [24000000, 32000000], [32000000, 40000000], [40000000, 48000000], [48000000, 56000000], [56000000, 64000000], [64000000, 72000000], [72000000, 80000000], [80000000, 88000000], [88000000, 96000000], [96000000, 104000000], [104000000, 112000000], [112000000, 120000000], [120000000, 128000000], [128000000, 136000000], [136000000, 144000000], [144000000, 152000000], [152000000, 160000000], [160000000, 168000000], [168000000, 176000000], [176000000, 184000000], [184000000, 192000000], [192000000, 200000000], [200000000, 208000000], [208000000, 216000000], [216000000, 224000000], [224000000, 232000000], [232000000, 240000000], [240000000, 248000000], [248000000, 256000000], [256000000, 264000000], [264000000, 272000000], [272000000, 280000000], [280000000, 288000000], [288000000, 296000000], [296000000, 304000000], [304000000, 312000000], [312000000, 320000000], [320000000, 328000000], [328000000, 336000000], [336000000, 344000000], [344000000, 352000000], [352000000, 360000000], [360000000, 368000000], [368000000, 376000000], [376000000, 384000000], [384000000, 392000000], [392000000, 400000000], [400000000, 408000000], [408000000, 416000000], [416000000, 424000000], [424000000, 432000000], [432000000, 440000000], [440000000, 448000000], [448000000, 456000000], [456000000, 464000000], [464000000, 472000000], [472000000, 480000000], [480000000, 488000000], [488000000, 496000000], [496000000, 504000000], [504000000, 512000000], [512000000, 520000000], [520000000, 528000000], [528000000, 536000000], [536000000, 544000000], [544000000, 552000000], [552000000, 560000000], [560000000, 568000000], [568000000, 576000000], [576000000, 584000000], [584000000, 592000000], [592000000, 600000000], [600000000, 608000000], [608000000, 616000000], [616000000, 624000000], [624000000, 632000000], [632000000, 640000000], [640000000, 648000000], [648000000, 656000000], [656000000, 664000000], [664000000, 672000000], [672000000, 680000000], [680000000, 688000000], [688000000, 696000000], [696000000, 704000000], [704000000, 712000000], [712000000, 720000000], [720000000, 728000000], [728000000, 736000000], [736000000, 744000000], [744000000, 752000000], [752000000, 760000000], [760000000, 768000000], [768000000, 776000000], [776000000, 784000000], [784000000, 792000000], [792000000, 800000000]]
+config:_empty_feat=25
+[INFO] hierarchical_parameter_server is imported
+worker 0 at process 90627
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 4 at process 90631
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 5 at process 90632
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 7 at process 90634
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 3 at process 90630
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 2 at process 90629
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 6 at process 90633
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+worker 1 at process 90628
+[INFO]: sparse_operation_kit is imported
+Generating random dataset
+creating tf dataset
+creating tf dataset - done
+100 time 1.22952e-05 0.227351
+100 time 1.17064e-05 0.22826
+100 time 1.31655e-05 0.238222
+100 time 1.369e-05 0.23868
+100 time 1.47223e-05 0.238782
+100 time 1.35612e-05 0.238789
+100 time 1.36566e-05 0.239061
+100 time 1.21284e-05 0.239246
+200 time 1.20664e-05 0.0113306
+200 time 1.34873e-05 0.0115991
+200 time 1.2455e-05 0.0117231
+200 time 1.38879e-05 0.0117392
+200 time 1.25074e-05 0.0118964
+200 time 1.19948e-05 0.0120677
+200 time 1.21951e-05 0.0121975
+200 time 1.27459e-05 0.0124714
+300 time 1.22213e-05 0.0107638
+300 time 1.20735e-05 0.0107775
+300 time 1.19853e-05 0.0108778
+300 time 1.24264e-05 0.0110841
+300 time 1.23978e-05 0.011257
+300 time 1.21164e-05 0.0112803
+300 time 1.36995e-05 0.0113951
+300 time 1.20711e-05 0.0117071
+400 time 1.17469e-05 0.0102502
+400 time 1.24788e-05 0.0105193
+400 time 1.27149e-05 0.0106957
+400 time 1.16205e-05 0.010779
+400 time 1.26362e-05 0.0107203
+400 time 1.19853e-05 0.0108344
+400 time 1.17183e-05 0.0110896
+400 time 1.31011e-05 0.0110964
+500 time 1.15037e-05 0.0100247
+500 time 1.21284e-05 0.0100289
+500 time 1.19972e-05 0.010252
+500 time 1.32108e-05 0.010224
+500 time 1.20735e-05 0.0104818
+500 time 1.18256e-05 0.0105916
+500 time 1.29223e-05 0.0107705
+500 time 1.14536e-05 0.0108072
+600 time 1.18208e-05 0.00986472
+600 time 1.1754e-05 0.00987319
+600 time 1.17612e-05 0.0100007
+600 time 1.25766e-05 0.0100463
+600 time 1.21093e-05 0.0101678
+600 time 1.19615e-05 0.0103027
+600 time 1.19472e-05 0.0105907
+600 time 1.38378e-05 0.0106331
+700 time 1.26481e-05 0.00955125
+700 time 1.14632e-05 0.00953597
+700 time 1.22976e-05 0.00974285
+700 time 1.18375e-05 0.0098998
+700 time 1.25647e-05 0.00989883
+700 time 1.24288e-05 0.00994581
+700 time 1.14059e-05 0.0104065
+700 time 1.20807e-05 0.0104669
+800 time 1.16467e-05 0.00944638
+800 time 1.24812e-05 0.00949981
+800 time 1.29557e-05 0.00977071
+800 time 1.24264e-05 0.00982232
+800 time 1.19829e-05 0.00986299
+800 time 1.20616e-05 0.00998975
+800 time 1.15132e-05 0.0100499
+800 time 1.2145e-05 0.0103296
+900 time 1.14202e-05 0.00921031
+900 time 1.29795e-05 0.00956638
+900 time 1.25098e-05 0.00957873
+900 time 1.17636e-05 0.00956296
+900 time 1.23429e-05 0.0096917
+900 time 1.2269e-05 0.0097143
+900 time 1.12391e-05 0.00997075
+900 time 1.23787e-05 0.0102163
+1000 time 1.2219e-05 0.0092835
+1000 time 1.17469e-05 0.00935745
+1000 time 1.17588e-05 0.00937638
+1000 time 1.23882e-05 0.0094318
+1000 time 1.23096e-05 0.00950474
+1000 time 1.2939e-05 0.00955112
+1000 time 1.16324e-05 0.00976052
+1000 time 1.20473e-05 0.0100106
+1100 time 1.12677e-05 0.00895546
+1100 time 1.22094e-05 0.00906948
+1100 time 1.21164e-05 0.00923263
+1100 time 1.29485e-05 0.00924215
+1100 time 1.25861e-05 0.00944282
+1100 time 1.20592e-05 0.00949285
+1100 time 1.19996e-05 0.00958965
+1100 time 1.23739e-05 0.00962353
+1200 time 1.12486e-05 0.00893839
+1200 time 1.24478e-05 0.00906075
+1200 time 1.14942e-05 0.00912757
+1200 time 1.13797e-05 0.00922643
+1200 time 1.2126e-05 0.00933657
+1200 time 1.13726e-05 0.00933986
+1200 time 1.23191e-05 0.00944993
+1200 time 1.23572e-05 0.00966674
+1300 time 1.10173e-05 0.00895787
+1300 time 1.15108e-05 0.00900182
+1300 time 1.09243e-05 0.0092246
+1300 time 1.17302e-05 0.00927923
+1300 time 1.13463e-05 0.0093176
+1300 time 1.19519e-05 0.00930788
+1300 time 1.13559e-05 0.00940242
+1300 time 1.18756e-05 0.00958222
+1400 time 1.1375e-05 0.00880985
+1400 time 1.19495e-05 0.0089715
+1400 time 1.22499e-05 0.00902817
+1400 time 1.15585e-05 0.00910135
+1400 time 1.1425e-05 0.00912645
+1400 time 1.20544e-05 0.00930588
+1400 time 1.18136e-05 0.00933203
+1400 time 1.18971e-05 0.00935691
+1500 time 1.17493e-05 0.00877329
+1500 time 1.27459e-05 0.00888533
+1500 time 1.2989e-05 0.00893801
+1500 time 1.17588e-05 0.00900519
+1500 time 1.15013e-05 0.00909854
+1500 time 1.12653e-05 0.00912521
+1500 time 1.19781e-05 0.00916084
+1500 time 1.13702e-05 0.00918728
+1600 time 1.11675e-05 0.00859017
+1600 time 1.16634e-05 0.00879621
+1600 time 1.18947e-05 0.00884232
+1600 time 1.19066e-05 0.00890113
+1600 time 1.23143e-05 0.00899446
+1600 time 1.15156e-05 0.00903894
+1600 time 1.14489e-05 0.00908618
+1600 time 1.19066e-05 0.00932321
+1700 time 1.18232e-05 0.00867398
+1700 time 1.17946e-05 0.00880092
+1700 time 1.09363e-05 0.00894171
+1700 time 1.19877e-05 0.00892765
+1700 time 1.18566e-05 0.00896223
+1700 time 1.19925e-05 0.009051
+1700 time 1.15323e-05 0.00909608
+1700 time 1.16181e-05 0.00928971
+1800 time 1.12653e-05 0.00862336
+1800 time 1.14799e-05 0.00875006
+1800 time 1.19853e-05 0.00894317
+1800 time 1.22166e-05 0.00903747
+1800 time 1.20568e-05 0.00899536
+1800 time 1.18828e-05 0.00901445
+1800 time 1.25885e-05 0.00908706
+1800 time 1.22976e-05 0.00917267
+1900 time 1.10626e-05 0.00850411
+1900 time 1.2126e-05 0.00854944
+1900 time 1.08385e-05 0.008728
+1900 time 1.21689e-05 0.00878082
+1900 time 1.12295e-05 0.00879843
+1900 time 1.1704e-05 0.0088912
+1900 time 1.14989e-05 0.00887697
+1900 time 1.21188e-05 0.00893795
+2000 time 1.14608e-05 0.00850682
+2000 time 1.16515e-05 0.00860944
+2000 time 1.20139e-05 0.00863532
+2000 time 1.10221e-05 0.00866373
+2000 time 1.35016e-05 0.00876915
+2000 time 1.12438e-05 0.00887075
+2000 time 1.12867e-05 0.00898314
+2000 time 1.16277e-05 0.00906252
+2100 time 1.14751e-05 0.00844853
+2100 time 1.09839e-05 0.00879596
+2100 time 1.27244e-05 0.00879194
+2100 time 1.11818e-05 0.00882302
+2100 time 1.27196e-05 0.00885777
+2100 time 1.30343e-05 0.00892713
+2100 time 1.12271e-05 0.00910043
+2100 time 1.10173e-05 0.00919286
+2200 time 1.18732e-05 0.00856615
+2200 time 1.12367e-05 0.00860716
+2200 time 1.17111e-05 0.00860426
+2200 time 1.08314e-05 0.0087633
+2200 time 1.31178e-05 0.00874358
+2200 time 1.18756e-05 0.00891813
+2200 time 1.25527e-05 0.00895829
+2200 time 1.13344e-05 0.00898105
+2300 time 1.12653e-05 0.00846644
+2300 time 1.15681e-05 0.00848443
+2300 time 1.16944e-05 0.00861676
+2300 time 1.15228e-05 0.00869909
+2300 time 1.06764e-05 0.00876309
+2300 time 1.22046e-05 0.0087959
+2300 time 1.15085e-05 0.0088782
+2300 time 1.2548e-05 0.0090242
+2400 time 1.16467e-05 0.0084354
+2400 time 1.21737e-05 0.00865272
+2400 time 1.12724e-05 0.00873675
+2400 time 1.16992e-05 0.00873114
+2400 time 1.10126e-05 0.00877069
+2400 time 1.25098e-05 0.0088797
+2400 time 1.22333e-05 0.00888144
+2400 time 1.17826e-05 0.00891598
+2500 time 1.2455e-05 0.00846711
+2500 time 1.18256e-05 0.00860985
+2500 time 1.11961e-05 0.00862525
+2500 time 1.10483e-05 0.00864572
+2500 time 1.11365e-05 0.00873186
+2500 time 1.1549e-05 0.0087707
+2500 time 1.13273e-05 0.00877161
+2500 time 1.17922e-05 0.00888127
+2600 time 1.12438e-05 0.00846636
+2600 time 1.1375e-05 0.00843595
+2600 time 1.16444e-05 0.00862649
+2600 time 1.16062e-05 0.00861953
+2600 time 1.11914e-05 0.00869622
+2600 time 1.12152e-05 0.00876721
+2600 time 1.18923e-05 0.00873997
+2600 time 1.12057e-05 0.0089065
+2700 time 1.17564e-05 0.00845924
+2700 time 1.14083e-05 0.00848751
+2700 time 1.24288e-05 0.00855486
+2700 time 1.22476e-05 0.00860647
+2700 time 1.19448e-05 0.00872627
+2700 time 1.19066e-05 0.00869939
+2700 time 1.18327e-05 0.00881493
+2700 time 1.18589e-05 0.00887039
+2800 time 1.08266e-05 0.00844635
+2800 time 1.13177e-05 0.00847637
+2800 time 1.19567e-05 0.00852737
+2800 time 1.23191e-05 0.00857948
+2800 time 1.24216e-05 0.00867349
+2800 time 1.15681e-05 0.00862225
+2800 time 1.07622e-05 0.00877591
+2800 time 1.21212e-05 0.00888815
+2900 time 1.24478e-05 0.00850071
+2900 time 1.10793e-05 0.00859396
+2900 time 1.23715e-05 0.00868456
+2900 time 1.24288e-05 0.00872484
+2900 time 1.15943e-05 0.00876896
+2900 time 1.15252e-05 0.00888924
+2900 time 1.11246e-05 0.00888391
+2900 time 1.14775e-05 0.00903537
+3000 time 1.16587e-05 0.00836474
+3000 time 1.20807e-05 0.00853418
+3000 time 1.21212e-05 0.00860766
+3000 time 1.17421e-05 0.00865704
+3000 time 1.12033e-05 0.00872413
+3000 time 1.14512e-05 0.00871691
+3000 time 1.16587e-05 0.00881134
+3000 time 1.08218e-05 0.00887722
+[CUDA] worker0 cuda mem usage: 53.81 GB
+    [Step(average) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.008877
+        L1  feature nbytes 0.00 Bytes | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes    0.00 Bytes | remote nbytes 0.00 Bytes
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     0.000000 | refresh duration   0.000000
+    [Step(average) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.005812
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(average) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000000 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000000 | cache combine cache 0.000000 | cache combine remote 0.000000
+        L3  label extract  0.000000

@@ -43,7 +43,7 @@ def generate_random_samples(num_samples, vocabulary_range_per_slot, dense_dim, k
 
 def criteo_tb(dir_name, replica_batch_size, iter_num, num_replica, key_type):
     fname_prefix = os.path.join(dir_name, 'day_concat')
-    print("load criteo from ", fname_prefix + ".sparse/dense/label")
+    print("load data from ", fname_prefix + ".sparse/dense/label")
     file_num_samples = os.stat(fname_prefix+".label").st_size
     assert(file_num_samples % 4 == 0)
     file_num_samples = file_num_samples // 4

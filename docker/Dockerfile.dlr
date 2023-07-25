@@ -35,4 +35,4 @@ ENV LIBRARY_PATH="/usr/local/hugectr/lib:${LIBRARY_PATH}:/ugache/build:${GUROBI_
 ENV C_INCLUDE_PATH="/ugache:${GUROBI_HOME}/include"
 ENV CPLUS_INCLUDE_PATH="/ugache:${GUROBI_HOME}/include"
 
-WORKDIR /ugache/eval
+# WORKDIR /ugache/eval
