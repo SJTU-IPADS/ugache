@@ -15,7 +15,7 @@ We follow https://en.wikipedia.org/wiki/Pareto_distribution#Generating_bounded_P
 '''
 alpha = 1.2
 dtype = np.int32
-num_entries = (1000 * 5 + 1000) * 32768
+num_entries = (1000 * 8 + 1000) * 32768
 
 def to_readable_scale(integer):
   if integer > 1000000000:
