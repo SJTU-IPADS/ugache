@@ -8,7 +8,7 @@ retry = False
 fail_only = False
 
 cur_common_base = (ConfigList()
-  .override('root_path', ['/datasets_dlr/'])
+  .override('dataset_root_path', ['/datasets_dlr/processed/'])
   .override('epoch', [2])
   .override('gpu_num', [8])
   .override('logdir', ['run-logs'])
@@ -22,7 +22,7 @@ cur_common_base = (ConfigList()
   .override('plain_dense_model', [True])
   .override('mock_embedding', [True])
   .override('random_request', [False])
-  .override('custom_env', ['SAMGRAPH_EMPTY_FEAT=24'])
+  .override('custom_env', ['SAMGRAPH_EMPTY_FEAT=24 COLL_MIN_FREQ=0.1 '])
 )
 
 cfg_list_collector = ConfigList.Empty()

@@ -8,7 +8,7 @@ retry = False
 fail_only = False
 
 cur_common_base = (ConfigList()
-  .override('root_path', ['/datasets_dlr/'])
+  .override('dataset_root_path', ['/datasets_dlr/processed/'])
   .override('epoch', [3])
   .override('gpu_num', [8])
   .override('logdir', ['run-logs'])
@@ -23,7 +23,7 @@ cur_common_base = (ConfigList()
   .override('mock_embedding', [True])
   .override('random_request', [False])
   .override('cache_percent', [0.12])
-  .override('custom_env', ['SAMGRAPH_EMPTY_FEAT=24'])
+  .override('custom_env', ['SAMGRAPH_EMPTY_FEAT=24 COLL_MIN_FREQ=0.1 '])
 )
 
 cfg_list_collector = ConfigList.Empty()
@@ -39,7 +39,7 @@ cfg_list_collector.hyper_override(
   [
     [CachePolicy.coll_cache_asymm_link, '', 'MPSPhase', None],
     [CachePolicy.hps, '', '', None],
-    [CachePolicy.sok, '', '', True],
+    [CachePolicy.sok, '', '', None],
   ]
 )
 
