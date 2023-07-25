@@ -299,15 +299,15 @@ ConcurrentLinkImpl AutoDecideConcurrentExtractImpl() {
 void AutoHandlePartImpl() {
   if (RunConfig::cache_policy != kCliquePart) return;
   if (RunConfig::coll_hash_impl == kHashImplAuto) {
-    if (RunConfig::cache_percentage * RunConfig::coll_cache_link_desc.CliqueSize() - 1 > -1e-6 &&
-        RunConfig::concurrent_link_impl == kDirectNoGroup) {
-      RunConfig::coll_skip_hash = true;
-      RunConfig::coll_hash_impl = kChunk;
-      LOG(ERROR) << "full partition, skip hash set to true";
-    } else {
+    // if (RunConfig::cache_percentage * RunConfig::coll_cache_link_desc.CliqueSize() - 1 > -1e-6 &&
+    //     RunConfig::concurrent_link_impl == kDirectNoGroup) {
+    //   RunConfig::coll_skip_hash = true;
+    //   RunConfig::coll_hash_impl = kChunk;
+    //   LOG(ERROR) << "full partition, skip hash set to true";
+    // } else {
       RunConfig::coll_skip_hash = false;
       RunConfig::coll_hash_impl = kDefault;
-    }
+    // }
   }
   if (RunConfig::coll_skip_hash) {
     CHECK(RunConfig::coll_hash_impl == kChunk || RunConfig::coll_hash_impl == kRR);

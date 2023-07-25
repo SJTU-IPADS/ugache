@@ -34,14 +34,14 @@ GraphSage
 # 1.1 unsup
 cur_common_base = (cur_common_base.copy().override('app', [App.graphsage ]).override('sample_type', [SampleType.kKHop2]))
 cur_common_base = (cur_common_base.copy().override('unsupervised', [True]).override('max_num_step', [1000]))
-cur_common_base = (cur_common_base.copy().override('batch_size', [4000]).override('custom_env', [f'SAMGRAPH_MQ_SIZE={150*1024*1024}']))
+cur_common_base = (cur_common_base.copy().override('batch_size', [4000]).override('custom_env', [f'SAMGRAPH_MQ_SIZE={150*1024*1024} CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES=1,2,3,4,5,7,0,6 ']))
 cfg_list_collector.concat(cur_common_base.copy().override('dataset', [Dataset.papers100M_undir, ]).override('cache_percent', [0.35]))
 cfg_list_collector.concat(cur_common_base.copy().override('dataset', [Dataset.friendster,       ]).override('cache_percent', [0.33]))
 cfg_list_collector.concat(cur_common_base.copy().override('dataset', [Dataset.mag240m_homo,     ]).override('cache_percent', [0.05]).override('batch_size', [2000]))
 
 # 1.2 sup
 cur_common_base = (cur_common_base.copy().override('unsupervised', [False]).override('max_num_step', [100000]))
-cur_common_base = (cur_common_base.copy().override('batch_size', [8000]).override('custom_env', [f'SAMGRAPH_MQ_SIZE={55*1024*1024}']))
+cur_common_base = (cur_common_base.copy().override('batch_size', [8000]).override('custom_env', [f'SAMGRAPH_MQ_SIZE={55*1024*1024} CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES=1,2,3,4,5,7,0,6 ']))
 cfg_list_collector.concat(cur_common_base.copy().override('dataset', [Dataset.papers100M_undir, ]).override('cache_percent', [0.35]))
 cfg_list_collector.concat(cur_common_base.copy().override('dataset', [Dataset.friendster,       ]).override('cache_percent', [0.33]))
 cfg_list_collector.concat(cur_common_base.copy().override('dataset', [Dataset.mag240m_homo,     ]).override('cache_percent', [0.05]))
