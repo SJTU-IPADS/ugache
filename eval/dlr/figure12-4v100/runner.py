@@ -39,9 +39,9 @@ cfg_list_collector.hyper_override(
   [
     [CachePolicy.clique_part, "DIRECT", "", None],
     [CachePolicy.rep_cache, "DIRECT", "", None],
-    [CachePolicy.coll_cache_asymm_link, '', 'MPSPhase', None],
-    [CachePolicy.hps, '', '', None],
     [CachePolicy.sok, '', '', True],
+    [CachePolicy.hps, '', '', None],
+    [CachePolicy.coll_cache_asymm_link, '', 'MPSPhase', None],
   ]
 )
 

@@ -36,11 +36,11 @@ cfg_list_collector.concat(cur_common_base.copy().override('dataset', [Dataset.sy
 cfg_list_collector.hyper_override(
   ['coll_cache_policy', 'coll_cache_no_group', 'coll_cache_concurrent_link', 'sok_use_hashtable'], 
   [
-    [CachePolicy.coll_cache_asymm_link, '', 'MPSPhase', None],
-    [CachePolicy.hps, '', '', None],
-    [CachePolicy.sok, '', '', True],
     [CachePolicy.clique_part, "DIRECT", "", None],
     [CachePolicy.rep_cache, "DIRECT", "", None],
+    [CachePolicy.sok, '', '', True],
+    [CachePolicy.hps, '', '', None],
+    [CachePolicy.coll_cache_asymm_link, '', 'MPSPhase', None],
   ]
 )
 
