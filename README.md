@@ -4,10 +4,6 @@ This repository contains scripts and instructions for reproducing the experiment
 
 > **NOTE:** For artifact evaluation committee, please directly jump to [Reproducing the Results](#reproducing-the-results) section and reproduce the results on the provided server. For other readers, please follow the instructions below to setup the environment and reproduce the results on your own server.
 
-## Table of Contents
-
-[TOC]
-
 ## Project Structure
 
 ```
@@ -29,8 +25,8 @@ This repository contains scripts and instructions for reproducing the experiment
 ```
 
 ## Hardware Requirements
-
-UGache natively supports, and is evaluated on these 3 platforms:
+UGache aims to speed up embedding access in multi-GPU platform with NVLink support.
+In this artifact, UGache only natively supports, and is evaluated on these 3 platforms:
 - Server A with hard-wired NVLink
   - CPU: 2 x Intel Xeon Gold 6138 CPUs (20 cores each)
   - GPU: 4 x NVIDIA V100 (16GB) GPUs with symmetric fully-connected NVLink topology
@@ -41,15 +37,16 @@ UGache natively supports, and is evaluated on these 3 platforms:
   - CPU: 2 x Intel Xeon Gold 6348 CPU (28 cores each)
   - GPU: 8 x NVIDIA A100 (80GB) GPUs, connected via NVSwitch
 
-## Setting up the Environment
+Later we will provide a detailed description of how to support other multi-GPU platforms with NVLink.
+
+## Setting up the Software Environment
 
 We use NVIDIA's Merlin container as base environment for UGache.
+Most software dependencies has been prepared inside the image(e.g. PyTorch, TensorFlow, CUDA, cuDNN).
 Please first make sure that your docker service supports CUDA.
 Here is a [reference](https://stackoverflow.com/questions/59691207) to solve Docker building images with CUDA support.
 Due to conflicts in dependencies, GNN and DLR evaluations are conducted in different containers(merlin-pytorch and merlin-tensorflow).
 
-<!-- ## Installation on Bare Metal Server
-We provide an one-click script to setup the environment on bare metal server. The script requires sudo permission and will install the required packages and Brainstorm itself. -->
 
 The docker images can be built by the following command:
 ```bash
@@ -95,6 +92,9 @@ Place the license file to `/opt/gurobi/gurobi.lic` in container, and verify lice
 
 ## Preparing the Dataset:
 We provide scripts to prepare DLR and GNN datasets in `datagen`.
+Due to limited time and disk volume, the preprocessing of embeddings is not included.
+In this artifact, the embeddings are initialized without loading correct embedding values from dataset.
+This only affects the numerical correctness of training/inference, and does not affect the computation workflow.
 
 ### GNN Datasets
 By default, GNN datasets will be placed in `/datasets_gnn`:
@@ -156,7 +156,13 @@ tree /ugache/eval -L 2
 /ugache/eval
 ├── dlr
 │   ├── common
-│   └── figurexx
+│   ├── figure11-4v100
+│   ├── figure11-8a100
+│   ├── figure11-8v100
+│   ├── figure12-4v100
+│   ├── figure12-8a100
+│   ├── figure12-8v100
+│   ├── figure16
 └── gnn
     ├── common
     ├── common_gnnlab
@@ -172,19 +178,69 @@ tree /ugache/eval -L 2
     ├── figure14
     └── figure15
 ```
+The additional `gnn/figure11-8a100-fix-cache-rate` and `gnn/figure12-8a100-fix-cache-rate` is for the purpose of fixing mis-configured cache rate.
+On server C, GNNLab, Rep_U and UGache should be able to cache all embeddings of Papers100M and Com-Friendster, since the GPU has 80GB memory.
+We accidentally used a smaller cache rate during submission.
 
-In each `figurexx` folder, execute following commands. Take figure13 for exmaple:
+### Rreproducing all experiments
+We provide a one-click script to reproduce the results on multi-gpu server.
+xxx
+
+### Reproducing single figure
+In each `figurexx` folder, execute following commands. Take figure11-4v100 for exmaple:
 ```bash
 # evals in gnn folder should be run in gnn container
-cd /ugache/eval/gnn/figure13
-make run
-make plot
+$ cd /ugache/eval/gnn/figure13
+$ make run
+$ make plot
+$ ls data*
+data.dat	data.eps
+$ cat data.dat
+short_app	policy_impl	dataset_short	epoch_e2e_time
+sage_unsup	Cliq	PA	5.137098
+sage_unsup	Coll	PA	4.433856
+sage_unsup	Cliq	CF	7.197985
+sage_unsup	Coll	CF	6.035764
+sage_unsup	Cliq	MAG	22.249095
+sage_unsup	Coll	MAG	22.575602
+sage_sup	Cliq	PA	0.663522
+sage_sup	Coll	PA	0.572377
+sage_sup	Cliq	CF	0.922484
+sage_sup	Coll	CF	0.804951
+sage_sup	Cliq	MAG	1.585167
+sage_sup	Coll	MAG	1.389422
+sage_unsup	GNNLab	PA	8.6040
+sage_unsup	GNNLab	CF	14.1925
+sage_unsup	GNNLab	MAG	47.0257
+sage_sup	GNNLab	PA	1.0986
+sage_sup	GNNLab	CF	2.0982
+sage_sup	GNNLab	MAG	3.0826
 ```
 
-The `run` command runs all tests, and logs will be saved to `run-logs` folder.
-The `plot` command will parse logs in `run-logs` folder, and plot corresponding figure to `data.eps`.
+The `make run` command runs all tests, and logs will be saved to `run-logs` folder.
+The `make plot` command will first parse logs in `run-logs` folder to produce a `data.dat` file, then plot corresponding figure to `data.eps`.
 
 > We recommand the `eps-preview` extension in vscode to quickly preview eps figures.
 
 We also provide original log files used in our paper submission in `run-logs-paper` folder.
 You may `make plot-paper` to directly plot figures using these log files to quickly reproduce figures in paper before actually run all tests.
+
+Each figure should be evaluated on designated platform. The following table shows the platform and estimated time for each figure:
+|       Figure       | Platform | Estimated Time |
+| :----------------: | :------: | -------------- |
+| dlr/figure11-4v100 | Server A | xxx            |
+| dlr/figure11-8v100 | Server B | xxx            |
+| dlr/figure11-8a100 | Server C | xxx            |
+| dlr/figure12-4v100 | Server A | xxx            |
+| dlr/figure12-8v100 | Server B | xxx            |
+| dlr/figure12-8a100 | Server C | xxx            |
+| dlr/figure16       | Server C | xxx            |
+| gnn/figure11-4v100 | Server A | xxx            |
+| gnn/figure11-8v100 | Server B | xxx            |
+| gnn/figure11-8a100 | Server C | xxx            |
+| gnn/figure12-4v100 | Server A | xxx            |
+| gnn/figure12-8v100 | Server B | xxx            |
+| gnn/figure12-8a100 | Server C | xxx            |
+| gnn/figure13       | Server C | xxx            |
+| gnn/figure14       | Server C | xxx            |
+| gnn/figure15       | Server C | xxx            |
