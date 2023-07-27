@@ -273,7 +273,7 @@ class RunConfig:
       msg += f' hash_impl={self.coll_hash_impl}'
     if self.coll_skip_hash != "":
       msg += f' skip_hash={self.coll_skip_hash}'
-    return datetime.datetime.now().strftime('[%H:%M:%S]') + msg + '.'
+    return msg + '.'
 
   def form_cmd(self, durable_log=True):
     assert((self.epoch * self.iteration_per_epoch + self.coll_cache_enable_iter) == self.iter_num)

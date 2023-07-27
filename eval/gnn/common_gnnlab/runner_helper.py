@@ -543,7 +543,7 @@ class RunConfig:
       msg += f' concurrent_link={self.coll_cache_concurrent_link}'
     if self.coll_cache_scale != "":
       msg += f' scale_nb={self.coll_cache_scale}'
-    return datetime.datetime.now().strftime('[%H:%M:%S]') + msg
+    return msg
 
   def run(self, mock=False, durable_log=True, callback = None, fail_only=False):
     '''

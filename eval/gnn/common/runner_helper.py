@@ -260,7 +260,7 @@ class RunConfig:
       msg += f' hash_impl={self.coll_hash_impl}'
     if self.coll_skip_hash != "":
       msg += f' skip_hash={self.coll_skip_hash}'
-    return datetime.datetime.now().strftime('[%H:%M:%S]') + msg + '.'
+    return msg + '.'
 
   def run(self, mock=False, durable_log=True, callback = None, fail_only=False):
     '''
