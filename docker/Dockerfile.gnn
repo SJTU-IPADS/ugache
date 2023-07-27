@@ -16,7 +16,8 @@ RUN apt update -y --fix-missing && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
-COPY setup_* /tmp/
+COPY setup_docker.sh /tmp/
+COPY setup_docker.gnn.sh /tmp/
 
 ENV WHOLEGRAPH_PATH=/wholegraph
 ENV PYTHONPATH=/wholegraph/python:/wholegraph/build:$PYTHONPATH
