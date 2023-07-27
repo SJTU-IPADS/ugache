@@ -225,7 +225,7 @@ class BenchInstance:
     content = file.readlines()
     for lno, line in enumerate(content):
       if line.endswith('refresh done\n'): 
-        m = re.match(r'^\[GPU0\] ([0-9]+) time ([0-9e\-\.]+) ([0-9\.]+)', content[lno - 1])
+        m = re.match(r'^\[GPU[0-9]\] ([0-9]+) time ([0-9e\-\.]+) ([0-9\.]+)', content[lno - 1])
         if m: self.vals['refresh_stop'] = m.group(1)
         break
 
