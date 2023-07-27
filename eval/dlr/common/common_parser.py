@@ -144,6 +144,7 @@ class BenchInstance:
       self.cfg = cfg
       # self.prepare_torch_summary(cfg)
       # self.prepare_sam_workspace(cfg)
+      self.get_refresh_end(cfg)
       self.prepare_init(cfg)
       self.prepare_epoch_eval(cfg)
       self.prepare_coll_cache(cfg)
@@ -218,6 +219,15 @@ class BenchInstance:
         if abs(percent - self.vals['cache_percentage']) < 1e-4:
           return hit_rate*100
     raise Exception("can not find optimal cache hit rate")
+
+  def get_refresh_end(self, cfg):
+    file = open(cfg.get_log_fname() + '.log')
+    content = file.readlines()
+    for lno, line in enumerate(content):
+      if line.endswith('refresh done\n'): 
+        m = re.match(r'^\[GPU0\] ([0-9]+) time ([0-9e\-\.]+) ([0-9\.]+)', content[lno - 1])
+        if m: self.vals['refresh_stop'] = m.group(1)
+        break
 
   def prepare_init(self, cfg):
     self.vals['init:presample'] = math.nan
