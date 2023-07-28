@@ -135,8 +135,8 @@ By default, DLR datasets will be placed in `/datasets_dlr`:
 tree /datasets_dlr -L 2
 /datasets_dlr
 ├── data-raw                     # original downloaded dataset
-│   ├── crite_tb
-└── processed
+│   ├── criteo_tb
+└── processed                    # converted dataset
     ├── criteo_tb
     └── syn_a12_s100_c800m
 ```
