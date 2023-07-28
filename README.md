@@ -126,6 +126,9 @@ python friendster.py
 python mag240M.py
 python papers100M.py
 ```
+Apart from downloading ~300GB raw data, the preprocess may take around 1 hour.
+The final dataset in `gnnlab` and `wholegraph` occupies 130GB, while the `data-raw` directory occupies up to 600GB.
+
 ### DLR Datasets
 By default, DLR datasets will be placed in `/datasets_dlr`:
 ```bash
@@ -141,12 +144,13 @@ tree /datasets_dlr -L 2
 Since there's no permanent url to download criteo TB dataset, please download it manually from [ailab.criteo.com](https://ailab.criteo.com/download-criteo-1tb-click-logs-dataset) or [aliyun](https://tianchi.aliyun.com/dataset/144736), and place `day_0.gz` ~ `day_23.gz` under `/datasets_dlr/data-raw/criteo_tb/.
 Then, Run the following commands to process DLR datasets:
 ```bash
-# run following commands in GNN container
+# run following commands in DLR container
 cd /ugache/datagen/dlr
 python syn.py
 cd criteo
 bash criteo.sh
 ```
+Depending on your network, downloading and preprocessing full criteo TB dataset may take up to 24 hours and around 2TB disk volume. The final dataset in `processed` occupies 700GB.
 
 ## Reproducing the Results
 Our experiments have been automated by scripts. Each figure in our paper is treated as one experiment and is associated with a subdirectory in `ugache/eval`. The script will automatically run the experiment, save the logs into files, parse the output data from the files, and plot corresponding figure.
@@ -184,10 +188,16 @@ We accidentally used a smaller cache rate during submission.
 
 ### Rreproducing all experiments
 We provide a one-click script to reproduce the results on multi-gpu server.
-xxx
+These scripts simply chain commands in following "Reproducing single figure" section.
+
+```bash
+$ cd /ugache/eval/gnn        # evals in gnn folder should be run in gnn container
+                             # for dlr, enter /ugache/eva/dlr in dlr container
+$ bash run-all-4v100.sh      # run scripts that match the platform: run-all-(4v100,8v100,8a100).sh
+```
 
 ### Reproducing single figure
-In each `figurexx` folder, execute following commands. Take figure11-4v100 for exmaple:
+In each `figure*` folder, execute following commands. Take `gnn/figure13`` for exmaple:
 ```bash
 # evals in gnn folder should be run in gnn container
 $ cd /ugache/eval/gnn/figure13
@@ -227,20 +237,35 @@ You may `make plot-paper` to directly plot figures using these log files to quic
 
 Each figure should be evaluated on designated platform. The following table shows the platform and estimated time for each figure:
 |       Figure       | Platform | Estimated Time |
-| :----------------: | :------: | -------------- |
-| dlr/figure11-4v100 | Server A | xxx            |
-| dlr/figure11-8v100 | Server B | xxx            |
-| dlr/figure11-8a100 | Server C | xxx            |
-| dlr/figure12-4v100 | Server A | xxx            |
-| dlr/figure12-8v100 | Server B | xxx            |
-| dlr/figure12-8a100 | Server C | xxx            |
-| dlr/figure16       | Server C | xxx            |
-| gnn/figure11-4v100 | Server A | xxx            |
-| gnn/figure11-8v100 | Server B | xxx            |
-| gnn/figure11-8a100 | Server C | xxx            |
-| gnn/figure12-4v100 | Server A | xxx            |
-| gnn/figure12-8v100 | Server B | xxx            |
-| gnn/figure12-8a100 | Server C | xxx            |
-| gnn/figure13       | Server C | xxx            |
-| gnn/figure14       | Server C | xxx            |
-| gnn/figure15       | Server C | xxx            |
+| :----------------- | :------: | -------------: |
+| dlr/figure11-4v100 | Server A |     30 min     |
+| dlr/figure11-8v100 | Server B |     30 min     |
+| dlr/figure11-8a100 | Server C |     30 min     |
+| dlr/figure12-4v100 | Server A |     30 min     |
+| dlr/figure12-8v100 | Server B |     30 min     |
+| dlr/figure12-8a100 | Server C |     20 min     |
+| dlr/figure16       | Server C |     10 min     |
+| gnn/figure11-4v100 | Server A |     60 min     |
+| gnn/figure11-8v100 | Server B |     60 min     |
+| gnn/figure11-8a100 | Server C |     30 min     |
+| gnn/figure12-4v100 | Server A |     50 min     |
+| gnn/figure12-8v100 | Server B |     50 min     |
+| gnn/figure12-8a100 | Server C |     30 min     |
+| gnn/figure13       | Server C |     70 min     |
+| gnn/figure14       | Server C |     40 min     |
+| gnn/figure15       | Server C |      0 min     |
+
+> **Note**: Due to the inability to access server B and server C, we provide the screencasts for the results on these platforms.
+> The table below shows our experimental results after screen recording.
+
+|  Server  | APP |                                              Screencast                                             |                                           Log & Script Archive                                            |                md5                 |
+| :------: | :-: | :-------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------: | :--------------------------------: |
+| Server B | GNN | [gnn-8v100.mp4](https://ipads.se.sjtu.edu.cn:1313/d/640a7ad8121648c1a90f/files/?p=%2Fgnn-8v100.mp4) | [gnn-8v100.tar.gz](https://ipads.se.sjtu.edu.cn:1313/d/640a7ad8121648c1a90f/files/?p=%2Fgnn-8v100.tar.gz) | `d7b73603be17d5168363cf9810322b7c` |
+| Server B | DLR | [dlr-8v100.mp4](https://ipads.se.sjtu.edu.cn:1313/d/640a7ad8121648c1a90f/files/?p=%2Fdlr-8v100.mp4) | [dlr-8v100.tar.gz](https://ipads.se.sjtu.edu.cn:1313/d/640a7ad8121648c1a90f/files/?p=%2Fdlr-8v100.tar.gz) | `67e35f264a63be94ef23d2676375879c` |
+| Server C | GNN | [gnn-8a100.mp4](https://ipads.se.sjtu.edu.cn:1313/d/640a7ad8121648c1a90f/files/?p=%2Fgnn-8a100.mp4) | [gnn-8a100.tar.gz](https://ipads.se.sjtu.edu.cn:1313/d/640a7ad8121648c1a90f/files/?p=%2Fgnn-8a100.tar.gz) | `6269cb2fbef963314d5a468e83798973` |
+| Server C | DLR | [dlr-8a100.mp4](https://ipads.se.sjtu.edu.cn:1313/d/640a7ad8121648c1a90f/files/?p=%2Fdlr-8a100.mp4) | [dlr-8a100.tar.gz](https://ipads.se.sjtu.edu.cn:1313/d/640a7ad8121648c1a90f/files/?p=%2Fdlr-8a100.tar.gz) | `8fc5ebcc8a6a1a02d4a248c6b2326817` |
+
+> In the screeencast, we will first display the branch information of the code repository, then start the experiment using a one-click script.
+> The script will delete all previours `run-logs` first.
+> After running all experiments, the entire directory is compressed, with its corresponding md5 value printed.
+> Reviewers can use this value to verify consistency between the provided tar and the one in the screen recording, and run `make plot` in each evaluted figure to plot figures and examine results..
