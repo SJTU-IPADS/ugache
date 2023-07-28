@@ -197,34 +197,28 @@ $ bash run-all-4v100.sh      # run scripts that match the platform: run-all-(4v1
 ```
 
 ### Reproducing single figure
-In each `figure*` folder, execute following commands. Take `gnn/figure13`` for exmaple:
+In each `figure*` folder, execute following commands. Take `dlr/figure11-4v100` for exmaple:
 ```bash
-# evals in gnn folder should be run in gnn container
-$ cd /ugache/eval/gnn/figure13
+# evals in dlr folder should be run in dlr container
+$ cd /ugache/eval/dlr/figure11-4v100
 $ make run
 $ make plot
 $ ls data*
 data.dat	data.eps
 $ cat data.dat
-short_app	policy_impl	dataset_short	epoch_e2e_time
-sage_unsup	Cliq	PA	5.137098
-sage_unsup	Coll	PA	4.433856
-sage_unsup	Cliq	CF	7.197985
-sage_unsup	Coll	CF	6.035764
-sage_unsup	Cliq	MAG	22.249095
-sage_unsup	Coll	MAG	22.575602
-sage_sup	Cliq	PA	0.663522
-sage_sup	Coll	PA	0.572377
-sage_sup	Cliq	CF	0.922484
-sage_sup	Coll	CF	0.804951
-sage_sup	Cliq	MAG	1.585167
-sage_sup	Coll	MAG	1.389422
-sage_unsup	GNNLab	PA	8.6040
-sage_unsup	GNNLab	CF	14.1925
-sage_unsup	GNNLab	MAG	47.0257
-sage_sup	GNNLab	PA	1.0986
-sage_sup	GNNLab	CF	2.0982
-sage_sup	GNNLab	MAG	3.0826
+short_app	policy_impl	dataset_short	step.train
+dlrm	SOK	CR	0.005778
+dlrm	HPS	CR	0.004299
+dlrm	UGache	CR	0.002626
+dcn	SOK	CR	0.007870
+dcn	HPS	CR	0.006381
+dcn	UGache	CR	0.004722
+dlrm	SOK	SYN	0.014536
+dlrm	HPS	SYN	0.018224
+dlrm	UGache	SYN	0.008524
+dcn	SOK	SYN	0.047721
+dcn	HPS	SYN	0.046759
+dcn	UGache	SYN	0.037482
 ```
 
 The `make run` command runs all tests, and logs will be saved to `run-logs` folder.
