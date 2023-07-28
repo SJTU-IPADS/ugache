@@ -38,7 +38,7 @@ In this artifact, UGache only natively supports, and is evaluated on these 3 pla
   - GPU: 8 x NVIDIA A100 (80GB) GPUs, connected via NVSwitch
 
 These platforms are currently hard-coded in UGache.
-We will try to provide a detailed description of how to support other multi-GPU platforms with NVLink in the near future.
+For other undocumented multi-GPU platforms with NVLink interconnects, we provides preliminary support in this [document](https://github.com/SJTU-IPADS/ugache-artifacts/blob/sosp23ae/platform-support.md).
 
 ## Setting up the Software Environment
 
@@ -58,7 +58,6 @@ docker build --pull -t ugache-dlr -f Dockerfile.dlr --build-arg RELEASE=false .
 
 Then launch containers using the following command:
 ```bash
-# fixme: run in background rather than interactive
 docker run  --shm-size=200g --ulimit memlock=-1 --ulimit core=0 --runtime=nvidia --privileged=true --cap-add=SYS_ADMIN --cap-add=SYS_NICE --ipc=host --name ugache-ae-gnn -it ugache-gnn bash
 docker run  --shm-size=200g --ulimit memlock=-1 --ulimit core=0 --runtime=nvidia --privileged=true --cap-add=SYS_ADMIN --cap-add=SYS_NICE --ipc=host --name ugache-ae-dlr -it ugache-dlr bash
 ```
@@ -162,7 +161,6 @@ Our experiments have been automated using scripts. Each figure in our paper is c
 tree /ugache/eval -L 2
 /ugache/eval
 ├── dlr
-│   ├── common
 │   ├── figure11-4v100
 │   ├── figure11-8a100
 │   ├── figure11-8v100
@@ -171,8 +169,6 @@ tree /ugache/eval -L 2
 │   ├── figure12-8v100
 │   ├── figure16
 └── gnn
-    ├── common
-    ├── common_gnnlab
     ├── figure11-4v100
     ├── figure11-8a100
     ├── figure11-8a100-fix-cache-rate
@@ -199,7 +195,7 @@ $ cd /ugache/eval/gnn        # GNN tests in gnn folder should be run in gnn cont
 $ bash run-all-4v100.sh      # run scripts that match the platform: run-all-(4v100,8v100,8a100).sh
 ```
 
-### Reproducing single figure
+### Reproducing a single figure
 In each `figure*` folder, execute the following commands. Take `dlr/figure11-4v100` for exmaple:
 
 ```bash
@@ -227,6 +223,12 @@ dcn	UGache	SYN	0.037482
 
 The `make run` command runs all tests, and logs will be saved to the `run-logs` folder.
 The `make plot` command will first parse logs in `run-logs` folder to produce a `data.dat` file, then plot corresponding figure to `data.eps`.
+
+> Each figure folder containers a `runner.py` file, and the `make run` is simply an alias of `python runner.py`.
+> The python script iterates all configurations, generates a command for each configuration and runs them via `os.system`.
+> You may execute `python runner.py -m` to see what command it generates and manually run one configuration.
+> Note that manually run a configuration requires launching [NVIDIA-MPS service](https://docs.nvidia.com/deploy/mps/index.html#topic_5_1) separately.
+> Since our runner automatically handles this, we recommand using `make run` or `python runner.py` to run all configurations.
 
 > We recommand the `eps-preview` extension in vscode to quickly preview eps figures.
 
@@ -264,6 +266,8 @@ Each figure should be evaluated on the designated platform. The following table 
 | Server C | DLR | [dlr-8a100.mp4](https://ipads.se.sjtu.edu.cn:1313/d/640a7ad8121648c1a90f/files/?p=%2Fdlr-8a100.mp4) | [dlr-8a100.tar.gz](https://ipads.se.sjtu.edu.cn:1313/d/640a7ad8121648c1a90f/files/?p=%2Fdlr-8a100.tar.gz) | `8fc5ebcc8a6a1a02d4a248c6b2326817` |
 
 > In the screeencast, we will first display the branch information of the code repository, then start the experiment using a one-click script.
-> The script will delete all previours `run-logs` first.
+> The script will delete all previous `run-logs` first.
 > After running all experiments, the entire directory is compressed, with its corresponding MD5 value printed.
 > Reviewers can use this value to verify consistency between the provided tar and the one in the screen recording, and run `make plot` in each evaluted figure to plot figures and examine results.
+> These screencasts were evaluated a few commits before the latest version.
+> This does not invalidate these screencast, since the newer commits only update documents, or add preliminary support for other platforms that does not affect the execution flow for these three platforms

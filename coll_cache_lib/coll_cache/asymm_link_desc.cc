@@ -152,6 +152,93 @@ void AsymmLinkDesc::BuildAsymmHardWire(int num_trainer) {
   CHECK(false) << "Unsupported configuration";
 }
 
+AsymmLinkDesc build_from_file(std::string fname, int num_total_sm, int num_trainer, std::string gpu_model) {
+  std::ifstream f(fname);
+  auto getline = [&f]()mutable->std::string{
+    std::string ret;
+    while (std::getline(f, ret)) {
+      if (ret == "" || ret[0] == '#') continue;
+      break;
+    }
+    if (ret.find('#') != ret.npos) {
+      ret = ret.substr(0, ret.find('#'));
+    }
+    return ret;
+  };
+  auto sum_fn = [](std::vector<int> arr){ return std::accumulate(arr.begin(), arr.end(), 0); };
+  AsymmLinkDesc desc;
+  size_t num_gpu = std::stoi(getline());
+  CHECK(num_gpu == std::stoi(GetEnvStrong("COLL_NUM_REPLICA")));
+  double local_bw = std::stod(getline());
+  double cpu_bw   = std::stod(getline());
+  RunConfig::coll_cache_hyperparam_T_local = 1;
+  RunConfig::coll_cache_hyperparam_T_cpu = local_bw / cpu_bw;
+  // read topo
+  for (int gpu_i = 0; gpu_i < num_gpu; gpu_i++) {
+    std::string line = getline();
+    std::stringstream ss(line);
+    int neighbour_g = -1;
+    desc.link_src.push_back({});
+    while(ss >> neighbour_g) {
+      CHECK(neighbour_g != -1);
+      desc.link_src.back().push_back({neighbour_g});
+    }
+  }
+  // read bandwidth/link_time
+  std::vector<std::vector<double>> link_bw_array;
+  for (int gpu_i = 0; gpu_i < num_gpu; gpu_i++) {
+    std::string line = getline();
+    std::stringstream ss(line);
+    double link_bw = 0;
+    link_bw_array.push_back({});
+    desc.link_time.push_back({});
+    desc.compute_percent.push_back({});
+    while(ss >> link_bw) {
+      link_bw_array.back().push_back(link_bw);
+      desc.link_time.back().push_back(local_bw / link_bw);
+    }
+    CHECK(desc.link_time[gpu_i].size() == desc.link_src[gpu_i].size());
+    double bw_sum = std::accumulate(link_bw_array.back().begin(), link_bw_array.back().end(), 0.);
+    for (double link_bw : link_bw_array.back()) {
+      desc.compute_percent.back().push_back(link_bw / bw_sum);
+    }
+    RunConfig::coll_cache_hyperparam_T_remote = local_bw / bw_sum;
+  }
+  desc._topo_type = AsymmLinkDesc::kHardWiredAsymm;
+  int cpu_sm_decision = 0;
+  int remote_sm_decision = 0;
+  if (gpu_model.find("A100") != std::string::npos) {
+    cpu_sm_decision = 10;
+    remote_sm_decision = 56;
+  } else if (gpu_model.find("V100") != std::string::npos) {
+    cpu_sm_decision = 8;
+    remote_sm_decision = 72;
+  } else {
+    // at least 8 sm for cpu; sm assignment must be even
+    num_total_sm /= 2;
+    cpu_sm_decision = 4;
+    for (cpu_sm_decision = 4; ; cpu_sm_decision++) {
+      desc.cpu_sm.clear();desc.total_sm_for_remote.clear();desc.local_sm.clear();desc.link_sm.clear();
+      desc.cpu_sm.resize(num_trainer, cpu_sm_decision);
+      desc.total_sm_for_remote.resize(num_trainer, remote_sm_decision);
+      desc.local_sm.resize(desc.cpu_sm.size(), num_total_sm - desc.cpu_sm[0]);
+      desc.SMPercentToNum(num_total_sm);
+      bool cur_setting_works = true;
+      for (int gpu_i = 0; gpu_i < num_trainer; gpu_i++) {
+        if (sum_fn(desc.link_sm[gpu_i]) + 4 > num_total_sm) cur_setting_works = false;
+      }
+      if (cur_setting_works) break;
+    }
+    cpu_sm_decision *= 2;
+    num_total_sm *= 2;
+    remote_sm_decision = num_total_sm - cpu_sm_decision;
+    desc.cpu_sm.clear();desc.total_sm_for_remote.clear();desc.local_sm.clear();desc.link_sm.clear();
+  }
+  desc.cpu_sm.resize(num_trainer, cpu_sm_decision);
+  desc.total_sm_for_remote.resize(num_trainer, remote_sm_decision);
+  return desc;
+}
+
 AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
                                        std::string gpu_model) {
   int cpu_sm_decision = 0;
@@ -243,7 +330,12 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(Context ctx) {
     num_total_sm = std::stoi(GetEnv("COLL_OVERRIDE_GPU_SM"));
     LOG(ERROR) << "overriding gpu sm with " << num_total_sm;
   }
-  auto desc = AutoBuild(RunConfig::num_device, total_gpu, gpu_model);
+  AsymmLinkDesc desc;
+  if (GetEnv("COLL_TOPO_FILE") != "") {
+    desc = build_from_file(GetEnv("COLL_TOPO_FILE"), num_total_sm, RunConfig::num_device, gpu_model);
+  } else {
+    desc = AutoBuild(RunConfig::num_device, total_gpu, gpu_model);
+  }
   desc.local_sm.resize(desc.cpu_sm.size(), num_total_sm - desc.cpu_sm[0]);
   // desc.SMPercentToNum(prop.multiProcessorCount - desc.cpu_sm[0]);
   desc.SMPercentToNum(desc.total_sm_for_remote[0]);

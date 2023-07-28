@@ -4,9 +4,9 @@ This directory contains tools to preprocess Criteo dataset.
 
 In Criteo dataset, each input consists of 1 label, 13 decimal feature and 26 sparse feature.
 
-To download Criteo TB dataset, follow the [link](https://ailab.criteo.com/download-criteo-1tb-click-logs-dataset/). After unzip the downloaded zip file and getting day_0.gz ~ day_23.gz, you can run scripts to preprocess this dataset. To transfer the raw Criteo(Kaggle or TB) dataset into a UGache dataset, simply run `bash build.sh`. Note that day_0.gz ~ day_23.gz should be placed under `/datasets_dlr/data-raw/criteo_tb/`. The output should be like:
+To download Criteo TB dataset, follow the [link](https://ailab.criteo.com/download-criteo-1tb-click-logs-dataset/). After unzip the downloaded zip file and getting day_0.gz ~ day_23.gz, you can run scripts to preprocess this dataset. To transfer the raw Criteo(Kaggle or TB) dataset into a UGache dataset, simply run `bash criteo.sh`. Note that day_0.gz ~ day_23.gz should be placed under `/datasets_dlr/data-raw/criteo_tb/`. The output should be like:
 ```bash
-> bash build.sh
+> bash criteo.sh
 Processing data files under root directory '/datasets_dlr/'..
 gzip -cd /datasets_dlr/data-raw/criteo_tb/day_0.gz > /datasets_dlr/data-raw/criteo_tb/day_0...
 gzip -cd /datasets_dlr/data-raw/criteo_tb/day_1.gz > /datasets_dlr/data-raw/criteo_tb/day_1...
@@ -23,7 +23,7 @@ And finally you should get `day_concat.label`, `day_concat.dense` and `day_conca
 
 # Preprocess Criteo dataset in detail
 
-If you run into errors using `build.sh`, you can try run preprocessing scripts by yourself. Before running the following steps, use `gzip -cd day_$i.gz > day_$i` to decompress day_0.gz ~ day_23.gz. Then run the following 3 steps:
+If you run into errors using `criteo.sh`, you can try run preprocessing scripts by yourself. Before running the following steps, use `gzip -cd day_$i.gz > day_$i` to decompress day_0.gz ~ day_23.gz. Then run the following 3 steps:
 
 1. record unique keys in each slot, use `./step_1_unique_keys.out [input_dir] [output_dir] [input_file1] [input_file2] ...` to generate unique key files for each slot. 
 For example: `./step_1_unique_keys.out /datasets_dlr/data-raw/criteo_tb/ /datasets_dlr/data-raw/criteo_tb/ day_1 day_2` will calculate all the  unique keys appeared in file `/datasets_dlr/data-raw/criteo_tb/day_1` and `/datasets_dlr/data-raw/criteo_tb/day_2`, and port unique keys of each slot into `/datasets_dlr/data-raw/criteo_tb/`.
