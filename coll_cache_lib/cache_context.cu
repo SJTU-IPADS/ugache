@@ -3489,7 +3489,7 @@ void RefreshSession::refresh_after_solve(bool foreground) {
   _cache_ctx->compare_hashtable(stream);
   CUDA_CALL(cudaStreamSynchronize(cu_stream));
 
-  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "refresh done";
+  if (_cache_ctx->_local_location_id == 0) LOG(INFO) << "refresh done";
 
   _cache_ctx->_cache_nodes = num_new_local_node;
   _cache_ctx->_local_node_list_tensor = new_local_node_list_cpu;
@@ -3831,7 +3831,7 @@ void RefreshSession::refresh_after_solve_old(bool foreground) {
 
   AnonymousBarrier::_refresh_instance->Wait();
 
-  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "refresh done";
+  if (_cache_ctx->_local_location_id == 0) LOG(INFO) << "refresh done";
 
   _cache_ctx->_cache_nodes = num_new_local_node;
   _cache_ctx->_local_node_list_tensor = new_local_node_list_cpu;
@@ -3996,7 +3996,7 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
 
   AnonymousBarrier::_refresh_instance->Wait();
 
-  if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "refresh done";
+  if (_cache_ctx->_local_location_id == 0) LOG(INFO) << "refresh done";
 
   _new_hash_table->_cached_keys = key_list_of_each_src[_local_location_id];
   _new_hash_table->_remote_keys = new_rkeys;

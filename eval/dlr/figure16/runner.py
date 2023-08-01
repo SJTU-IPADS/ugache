@@ -7,46 +7,32 @@ durable_log = True
 retry = False
 fail_only = False
 
-cur_common_base = (ConfigList()
+cfg_list_collector = (ConfigList()
   .override('dataset_root_path', ['/datasets_dlr/processed/'])
-  .override('epoch', [3])
-  .override('gpu_num', [4])
+  .override('epoch', [50])
+  .override('gpu_num', [8])
   .override('logdir', ['run-logs'])
   .override('confdir', ['run-configs'])
   .override('profile_level', [3])
   .override('multi_gpu', [True])
   .override('coll_cache_scale', [16])
-  .override('model', [Model.dlrm, Model.dcn,])
+  .override('model', [Model.dlrm,])
   .override('system', [System.collcache])
-  .override('global_batch_size', [32768])
+  .override('global_batch_size', [65536])
   .override('plain_dense_model', [True])
   .override('mock_embedding', [True])
   .override('random_request', [False])
-  .override('cache_percent', [0.02])
-  .override('custom_env', ['SAMGRAPH_EMPTY_FEAT=24 COLL_MIN_FREQ=0.1 '])
-  )
-
-cfg_list_collector = ConfigList.Empty()
-
-'''
-DLRM && DCN
-'''
-cfg_list_collector.concat(cur_common_base.copy().override('dataset', [Dataset.criteo_tb]))
-cfg_list_collector.concat(cur_common_base.copy().override('dataset', [Dataset.syn]))
-
-cfg_list_collector.hyper_override(
-  ['coll_cache_policy', 'coll_cache_no_group', 'coll_cache_concurrent_link', 'sok_use_hashtable'], 
-  [
-    [CachePolicy.sok, '', '', True],
-    [CachePolicy.hps, '', '', None],
-    [CachePolicy.coll_cache_asymm_link, '', 'MPSPhase', None],
-  ]
+  .override('cache_percent', [0.01])
+  .override('custom_env', ['SAMGRAPH_EMPTY_FEAT=24'])
+  .override('coll_cache_enable_refresh', [False, True])
+  .override('coll_cache_refresh_iter', [20000])
+  .override('coll_cache_refresh_seq_bucket_sz', [8000])
+  .override('dataset', [Dataset.criteo_tb])
+  .override('coll_cache_policy', [CachePolicy.coll_cache_asymm_link])
+  .override('coll_cache_no_group', [''])
+  .override('coll_cache_concurrent_link', ['MPSPhase'])
+  .override('log_level', ['info'])
 )
-
-# special case
-for cfg in cfg_list_collector.conf_list:
-  if cfg.dataset == Dataset.syn and cfg.coll_cache_policy == CachePolicy.sok and cfg.model == Model.dcn:
-    cfg.cache_percent = 0.01
 
 if __name__ == '__main__':
   from sys import argv
