@@ -43,6 +43,7 @@ class Framework(Enum):
 
 class Model(Enum):
   sage = 0
+  gcn  = 1
 
 class Dataset(Enum):
   def __new__(cls, *args, **kwds):
@@ -116,9 +117,9 @@ class RunConfig:
     self.skip_epoch             = 2
     self.local_step             = 1002
     self.presc_epoch            = 1
-    self.neighbors              = "10,25"
+    # self.neighbors              = "10,25"
     self.hiddensize             = 256
-    self.layernum               = 2
+    # self.layernum               = 2
     self.model                  = model
     self.framework              = framework
     self.dataloaderworkers      = 0       # number of workers for dataloader
@@ -171,10 +172,16 @@ class RunConfig:
     if self.custom_env != '':
       cmd_line += f'{self.custom_env} '
 
-    if self.unsupervised:
-      cmd_line += f'python ../common/gnnlab_sage_unsup.py'
-    else:
-      cmd_line += f'python ../common/gnnlab_sage_sup.py'
+    if self.model == Model.sage:
+      if self.unsupervised:
+        cmd_line += f'python ../common/gnnlab_sage_unsup.py'
+      else:
+        cmd_line += f'python ../common/gnnlab_sage_sup.py'
+    elif self.model == Model.gcn:
+      if self.unsupervised:
+        cmd_line += f'python ../common/gcn_unsup.py'
+      else:
+        cmd_line += f'python ../common/gcn_sup.py'
     
     # parameters
     cmd_line += f' --num_workers {self.num_workers} '
@@ -189,7 +196,7 @@ class RunConfig:
     cmd_line += f' --skip_epoch {self.skip_epoch} '
     cmd_line += f' --local_step {self.local_step} '
     cmd_line += f' --presc_epoch {self.presc_epoch} '
-    cmd_line += f' --neighbors {self.neighbors} '
+    # cmd_line += f' --neighbors {self.neighbors} '
     cmd_line += f' --model {self.model.name} '
     cmd_line += f' --framework {self.framework.name} '
     cmd_line += f' --omp_thread_num {self.omp_thread_num} '
