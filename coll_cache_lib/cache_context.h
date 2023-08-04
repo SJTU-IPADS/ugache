@@ -249,6 +249,7 @@ struct ExtractionThreadCtx {
   std::thread v2_launch();
   void create_ctx(int dev_id, int num_sm, int priority = 0);
   void create_stream(int dev_id, int priority = 0);
+  void create_stream_sm_mask_v1(int dev_id, uint64_t mask, int priority = 0);
 };
 
 class CollCache;

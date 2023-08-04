@@ -144,6 +144,8 @@ void RunConfig::LoadConfigFromEnv() {
     RunConfig::concurrent_link_impl = kMPSForLandC;
   } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "MPSPhase") {
     RunConfig::concurrent_link_impl = kMPSPhase;
+  } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "SMMaskPhase") {
+    RunConfig::concurrent_link_impl = kSMMaskPhase;
   } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "DIRECT") {
     RunConfig::concurrent_link_impl = kDirectNoGroup;
   } else if (GetEnv("SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL") == "ORDERED") {

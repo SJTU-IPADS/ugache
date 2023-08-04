@@ -256,6 +256,7 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
     }
     if (RunConfig::concurrent_link_impl == kMPS || 
         RunConfig::concurrent_link_impl == kMPSPhase || 
+        RunConfig::concurrent_link_impl == kSMMaskPhase || 
         RunConfig::concurrent_link_impl == kMPSForLandC || 
         RunConfig::concurrent_link_impl == kMultiKernelNumBlock || 
         RunConfig::concurrent_link_impl == kMultiKernelNumBlockOld) {
@@ -277,6 +278,7 @@ AsymmLinkDesc AsymmLinkDesc::AutoBuild(int num_trainer, int total_gpu,
     }
     if (RunConfig::concurrent_link_impl == kMPS || 
         RunConfig::concurrent_link_impl == kMPSPhase || 
+        RunConfig::concurrent_link_impl == kSMMaskPhase || 
         RunConfig::concurrent_link_impl == kMPSForLandC || 
         RunConfig::concurrent_link_impl == kMultiKernelNumBlock || 
         RunConfig::concurrent_link_impl == kMultiKernelNumBlockOld) {

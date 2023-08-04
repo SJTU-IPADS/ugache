@@ -97,6 +97,7 @@ enum ConcurrentLinkImpl {
   /** mix location extraction for baselines */
   kDirectNoGroup,
   kOrderedNoGroup,
+  kSMMaskPhase,
 };
 
 enum HashImpl {

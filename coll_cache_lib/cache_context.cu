@@ -1371,7 +1371,8 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       _remote_syncer->on_send_job()->on_wait_job_done();
       combine_times[1] = t_remote.Passed();
       _cpu_syncer->on_wait_job_done();
-    } else if (RunConfig::concurrent_link_impl == kMPSPhase) {
+    } else if (RunConfig::concurrent_link_impl == kMPSPhase ||
+               RunConfig::concurrent_link_impl == kSMMaskPhase) {
       auto call_combine = [idx_store, group_offset, this, output, num_nodes](int location_id, StreamHandle stream, bool sync=true){
         if (group_offset[location_id+1] - group_offset[location_id] == 0) return;
         Timer t;
@@ -2753,6 +2754,45 @@ ExtractSession::ExtractSession(std::shared_ptr<CacheContext> cache_ctx) : _cache
     });
     this->LaunchWaitAllSyncer();
     CUDA_CALL(cudaStreamCreate(&_local_ext_stream));
+  } else if (RunConfig::concurrent_link_impl == kSMMaskPhase) {
+    _remote_syncer = ParallelJobSync::create<SemJobSync>(num_link);
+    // _remote_syncer = new BarJobSync(num_link);
+    _cpu_syncer = new SpinJobSync;
+    auto print_binary = [this](uint64_t mask){
+      if (_local_location_id != 0) return;
+      std::bitset<64> bs(mask);
+      std::cerr << " mask is " << bs << "\n";
+    };
+    auto sm_id_range_to_mask = [](int small_include, int large_exclude) -> uint64_t {
+      CHECK(small_include % 2 == 0);
+      CHECK(large_exclude % 2 == 0);
+      // note that zero means use that core
+      return ~((1ull << (large_exclude/2)) - (1ull << (small_include/2)));
+    };
+    int current_used_sm = 0;
+    auto mask_next_sms = [&current_used_sm, &sm_id_range_to_mask, &print_binary](int num_sm) -> uint64_t {
+      uint64_t ret = sm_id_range_to_mask(current_used_sm, current_used_sm + num_sm);
+      current_used_sm += num_sm;
+      print_binary(ret);
+      return ret;
+    };
+    {
+      uint64_t cpu_sm_mask = mask_next_sms(link_desc.cpu_sm[_local_location_id]);
+      this->launch_thread(_cpu_location_id, _cpu_syncer->get_worker_handle(), [this, link_desc, cpu_sm_mask](ExtractionThreadCtx* ctx){
+        ctx->create_stream_sm_mask_v1(_local_location_id, cpu_sm_mask, -5);
+      });
+    }
+    for (int link_id = 0; link_id < num_link; link_id++) {
+      CHECK(link_src[link_id].size() == 1);
+      int src_loc = link_src[link_id][0];
+      int num_sm = RunConfig::coll_cache_link_desc.link_sm[_local_location_id][link_id];
+      uint64_t mask = mask_next_sms(num_sm);
+      this->launch_thread(src_loc, _remote_syncer->get_worker_handle(link_id), [this, mask](ExtractionThreadCtx* ctx){
+        ctx->create_stream_sm_mask_v1(_local_location_id, mask, -5);
+      });
+    }
+    this->LaunchWaitAllSyncer();
+    CUDA_CALL(cudaStreamCreate(&_local_ext_stream));
   } else if (RunConfig::concurrent_link_impl != common::kNoConcurrentLink) {
     _concurrent_stream_array.resize(RunConfig::num_device - 1);
     for (auto & stream : _concurrent_stream_array) {
@@ -4058,6 +4098,70 @@ void ExtractionThreadCtx::create_stream(int dev_id, int priority) {
   } else {
     CUDA_CALL(cudaStreamCreateWithPriority(&stream_, cudaStreamNonBlocking, priority));
   }
+  log_mem_usage(dev_id, "after create stream, mem is ");
+}
+
+
+#define CU_UUID_CONST static const
+#define CU_CHAR(x) (char)((x) & 0xff)
+// Define the symbol as exportable to other translation units, and
+// initialize the value.  Inner set of parens is necessary because
+// "bytes" array needs parens within the struct initializer, which
+// also needs parens.  
+#define CU_DEFINE_UUID(name, a, b, c, d0, d1, d2, d3, d4, d5, d6, d7)          \
+    CU_UUID_CONST CUuuid name =                                                \
+    {                                                                          \
+      {                                                                        \
+        CU_CHAR(a), CU_CHAR((a) >> 8), CU_CHAR((a) >> 16), CU_CHAR((a) >> 24), \
+        CU_CHAR(b), CU_CHAR((b) >> 8),                                         \
+        CU_CHAR(c), CU_CHAR((c) >> 8),                                         \
+        CU_CHAR(d0),                                                           \
+        CU_CHAR(d1),                                                           \
+        CU_CHAR(d2),                                                           \
+        CU_CHAR(d3),                                                           \
+        CU_CHAR(d4),                                                           \
+        CU_CHAR(d5),                                                           \
+        CU_CHAR(d6),                                                           \
+        CU_CHAR(d7)                                                            \
+      }                                                                        \
+    }
+
+
+#define ASSERT_GPU_ERROR(cmd)\
+{\
+    CUresult error = cmd;\
+    if (error == CUDA_ERROR_DEINITIALIZED) {\
+        fprintf(stderr, "[WARN] cuda result %d: cuda driver is shutting down at %s:%d\n", error, __FILE__, __LINE__); \
+    } else if (error != CUDA_SUCCESS) {\
+        const char* str;\
+        cuGetErrorString(error, &str);\
+        std::string err_str(str);\
+        fprintf(stderr, "[ERR] cuda error %d: %s at %s:%d\n", error, str, __FILE__, __LINE__); \
+        exit(EXIT_FAILURE);\
+    }\
+}
+
+CU_DEFINE_UUID(CU_ETID_SmDisableMask,
+    0x8b7e90eb, 0x8cf2, 0x4a00, 0xb1, 0xd1, 0x08, 0xaa, 0x53, 0x55, 0x90, 0xdb);
+
+
+void set_stream_sm_mask(CUstream s, unsigned int maskUpper, unsigned int maskLower) {
+  const void* exportTable;
+  ASSERT_GPU_ERROR(cuGetExportTable(&exportTable, &CU_ETID_SmDisableMask));
+  CUresult (*set_mask)(CUstream, unsigned int, unsigned int) = (CUresult (*)(CUstream, unsigned int, unsigned int))(*(unsigned long int*)((uint8_t*)(exportTable) + (8*1)));
+  ASSERT_GPU_ERROR(set_mask(s, maskUpper, maskLower));
+  // printf("set mask: %08x, %08x\n", maskUpper, maskLower);
+}
+
+void ExtractionThreadCtx::create_stream_sm_mask_v1(int dev_id, uint64_t mask, int priority) {
+  CUDA_CALL(cudaSetDevice(dev_id));
+  log_mem_usage(dev_id, "before create stream, mem is ");
+  if (priority == 0) {
+    CUDA_CALL(cudaStreamCreate(&stream_));
+  } else {
+    CUDA_CALL(cudaStreamCreateWithPriority(&stream_, cudaStreamNonBlocking, priority));
+  }
+  set_stream_sm_mask(stream_, mask >> 32, mask & 0x0ffffffff);
   log_mem_usage(dev_id, "after create stream, mem is ");
 }
 } // namespace coll_cache_lib
