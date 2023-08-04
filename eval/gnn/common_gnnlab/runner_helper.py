@@ -258,30 +258,28 @@ class SampleType(Enum):
     return name_list[self.value]
 
 class Dataset(Enum):
-  reddit = 0
-  products = 1
-  papers100M = 2
-  friendster = 3
-  uk_2006_05 = 5
-  twitter = 6
-
-  papers100M_undir = 7
-  mag240m_homo = 8
-
+  def __new__(cls, *args, **kwds):
+    value = len(cls.__members__) + 1
+    obj = object.__new__(cls)
+    obj._value_ = value
+    return obj
+  def __init__(self, human_name, short_name, feat_GB):
+    self.human_name = human_name if human_name else self.name
+    self.short_name = short_name if short_name else self.name
+    self.feat_GB = feat_GB if feat_GB else None
   def __str__(self):
-    if self is Dataset.friendster:
-      return 'com-friendster'
-    elif self is Dataset.uk_2006_05:
-      return 'uk-2006-05'
-    elif self is Dataset.papers100M_undir:
-      return 'papers100M-undir'
-    elif self is Dataset.mag240m_homo:
-      return 'mag240m-homo'
-    return self.name
-  def FeatGB(self):
-    return [0.522,0.912,52.96,34.22, None ,74.14,39.72, 52.96,349.27][self.value]
-  def TopoGB(self):
-    return [math.nan, 0.4700, 6.4326, 13.7007, math.nan , 11.3358, 5.6252, 12.4394, 13.7785][self.value]
+    return self.human_name
+  def short(self):
+    return self.short_name
+  reddit           = None, None, None
+  products         = 'products',        'PR',  None
+  papers100M       = None, None, None
+  friendster       = 'com-friendster',  'CF',  62.5690136
+  papers100M_300   = None, None, None
+  uk_2006_05       = None, None, None
+  twitter          = None, None, None
+  papers100M_undir = 'papers100M-undir', 'PA',  52.95751381
+  mag240m_homo     = 'mag240m-homo',    'MAG', 349.27439547
 
 class RunConfig:
   def __init__(self, app:App, dataset:Dataset, 

@@ -45,21 +45,23 @@ class Model(Enum):
   sage = 0
 
 class Dataset(Enum):
-  products = 0
-  papers100M_undir = 1
-  friendster = 2
-  mag240m_homo = 3
-
+  def __new__(cls, *args, **kwds):
+    value = len(cls.__members__) + 1
+    obj = object.__new__(cls)
+    obj._value_ = value
+    return obj
+  def __init__(self, human_name, short_name, feat_GB):
+    self.human_name = human_name if human_name else self.name
+    self.short_name = short_name if short_name else self.name
+    self.feat_GB = feat_GB if feat_GB else None
   def __str__(self):
-    if self is Dataset.friendster:
-      return 'com-friendster'
-    elif self is Dataset.papers100M_undir:
-      return 'ogbn-papers100M'
-    elif self is Dataset.mag240m_homo:
-      return 'mag240m-homo'
-    return self.name
+    return self.human_name
   def short(self):
-    return ['PR', 'PA', 'CF', 'MAG'][self.value]
+    return self.short_name
+  products         = 'products',        'PR',  None
+  papers100M_undir = 'ogbn-papers100M', 'PA',  52.95751381
+  friendster       = 'com-friendster',  'CF',  62.5690136
+  mag240m_homo     = 'mag240m-homo',    'MAG', 349.27439547
 
 # class CachePolicy(Enum):
 #   pre_sample = 0
