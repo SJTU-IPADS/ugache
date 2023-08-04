@@ -58,9 +58,9 @@ def criteo_tb(dir_name, replica_batch_size, iter_num, num_replica, key_type):
     dense_features = np.memmap(fname_prefix+".dense", dtype='float32', mode='r', shape=(file_num_samples, 13))
     labels = np.memmap(fname_prefix+".label", dtype='int32', mode='r', shape=(file_num_samples, 1))
 
-    sparse_keys = sparse_keys[:iter_num * replica_batch_size * num_replica, :]
-    dense_features = dense_features[:iter_num * replica_batch_size * num_replica, :]
-    labels = labels[:iter_num * replica_batch_size * num_replica, :]
+    # sparse_keys = sparse_keys[:iter_num * replica_batch_size * num_replica, :]
+    # dense_features = dense_features[:iter_num * replica_batch_size * num_replica, :]
+    # labels = labels[:iter_num * replica_batch_size * num_replica, :]
 
     def sequential_batch_gen():
         for i in range(0, replica_batch_size * iter_num * num_replica, replica_batch_size):
@@ -91,9 +91,9 @@ def syn(dir_name, replica_batch_size, iter_num, num_replica, key_type, slot_num=
     dense_features = np.memmap(fname_prefix+".dense", dtype='float32', mode='r', shape=(file_num_samples, dense_dim))
     labels = np.memmap(fname_prefix+".label", dtype='int32', mode='r', shape=(file_num_samples, 1))
 
-    sparse_keys = sparse_keys[:iter_num * replica_batch_size * num_replica, :]
-    dense_features = dense_features[:iter_num * replica_batch_size * num_replica, :]
-    labels = labels[:iter_num * replica_batch_size * num_replica, :]
+    # sparse_keys = sparse_keys[:iter_num * replica_batch_size * num_replica, :]
+    # dense_features = dense_features[:iter_num * replica_batch_size * num_replica, :]
+    # labels = labels[:iter_num * replica_batch_size * num_replica, :]
 
     def sequential_batch_gen():
         for i in range(0, replica_batch_size * iter_num * num_replica, replica_batch_size):
