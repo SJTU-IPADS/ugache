@@ -436,10 +436,10 @@ class RunConfig:
       if durable_log:
         os.system('mkdir -p {}'.format(self.logdir))
       while True:
-        os.system('echo quit | nvidia-cuda-mps-control 2> /dev/null; sleep 0.5')
-        os.system('nvidia-cuda-mps-control -d; sleep 0.5')
+        # os.system('echo quit | nvidia-cuda-mps-control 2> /dev/null; sleep 0.5')
+        # os.system('nvidia-cuda-mps-control -d; sleep 0.5')
         status = os.system(self.form_cmd(durable_log))
-        os.system('echo quit | nvidia-cuda-mps-control 2> /dev/null')
+        # os.system('echo quit | nvidia-cuda-mps-control 2> /dev/null')
         if os.WEXITSTATUS(status) != 0:
           if retry:
             print("FAILED and Retry!")

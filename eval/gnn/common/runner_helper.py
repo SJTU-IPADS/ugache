@@ -285,13 +285,13 @@ class RunConfig:
     else:
       print(self.beauty())
 
-      os.system('echo quit | nvidia-cuda-mps-control 2> /dev/null; sleep 0.5')
-      os.system('nvidia-cuda-mps-control -d; sleep 0.5')
+      # os.system('echo quit | nvidia-cuda-mps-control 2> /dev/null; sleep 0.5')
+      # os.system('nvidia-cuda-mps-control -d; sleep 0.5')
 
       if durable_log:
         os.system('mkdir -p {}'.format(self.logdir))
       status = os.system('ulimit -c 0;' + self.form_cmd(durable_log))
-      os.system('echo quit | nvidia-cuda-mps-control 2> /dev/null')
+      # os.system('echo quit | nvidia-cuda-mps-control 2> /dev/null')
       if os.WEXITSTATUS(status) != 0:
         print("FAILED!")
         if durable_log:
