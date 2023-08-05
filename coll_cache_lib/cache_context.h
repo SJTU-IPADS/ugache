@@ -285,7 +285,8 @@ class CacheContext {
   std::vector<void*> _device_cache_data;
   std::vector<void*> _device_cache_data_clique;
   MemHandle _device_cache_data_local_handle;
-  std::vector<BucketO2N*> _remote_hash_table;
+  std::vector<BucketO2N*> _remote_hash_table_simple;
+  std::vector<BucketFlat*> _remote_hash_table_flat;
   CacheEntryManager* _new_hash_table = nullptr;
 #ifdef COLL_HASH_VALID_LEGACY
   std::vector<HashTableEntryLocation*> _remote_hash_table_location;

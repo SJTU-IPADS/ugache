@@ -209,13 +209,54 @@ class DeviceSimpleHashTable {
   friend class SimpleHashTable;
 };
 
+class DeviceFlatHashTable {
+ public:
+  // 1| 111...111 -> Default state, this bucket is not used yet
+  //          insert may use this, search must stop at this
+  // 1| xxx...xxx -> Invalid bucket,
+  //          insert may use this, but search must proceed beyond this
+  // 0| xxx...xxx -> bucket inuse,
+  //          insert cannot use this, but search must proceed beyond this
+  using BucketFlat = BucketFlat;
+
+  typedef const BucketFlat *ConstIterator;
+
+  DeviceFlatHashTable(const DeviceFlatHashTable &other) = default;
+  DeviceFlatHashTable &operator=(const DeviceFlatHashTable &other) =
+      default;
+
+  inline __device__ IdType SearchForPositionO2N(const IdType id) const {
+    if (_flat_table[id].val.data == kEmptyPos) return kEmptyPos;
+    return id;
+  }
+
+  inline __device__ ConstIterator SearchO2N(const IdType id) const {
+    IdType pos = HashO2N(id);
+    if (_flat_table[pos].val.data == kEmptyPos) return nullptr;
+    return &_flat_table[pos];
+  }
+  const BucketFlat *_flat_table;
+ protected:
+  const size_t _flat_size;
+
+  explicit DeviceFlatHashTable(const BucketFlat *const flat_table,
+                                  const size_t flat_size);
+
+
+  inline __device__ IdType HashO2N(const IdType id) const {
+    return id;
+  }
+
+  friend class FlatHashTable;
+};
+
 namespace {
 
-template <size_t BLOCK_SIZE, size_t TILE_SIZE, typename Helper>
+template <size_t BLOCK_SIZE, size_t TILE_SIZE, typename Helper, typename DeviceHashTable_T>
 __global__ void lookup_hashmap_with_helper(const IdType *const items,
                              const size_t num_items,
                              Helper helper,
-                             DeviceSimpleHashTable table) {
+                             DeviceHashTable_T table) {
   assert(BLOCK_SIZE == blockDim.x);
 
   const size_t block_start = TILE_SIZE * blockIdx.x;
@@ -290,6 +331,60 @@ class SimpleHashTable {
   MemHandle _o2n_table_handle;
 };
 
+class FlatHashTable {
+ public:
+  using BucketFlat = typename DeviceFlatHashTable::BucketFlat;
+
+  FlatHashTable(const size_t size, Context ctx,
+                   StreamHandle stream);
+  FlatHashTable(BucketFlat* table, const size_t size, Context ctx,
+                   StreamHandle stream);
+  FlatHashTable(std::function<MemHandle(size_t)> allocator, const size_t size, Context ctx,
+                   StreamHandle stream);
+
+  ~FlatHashTable();
+
+  // Disable copying
+  FlatHashTable(const FlatHashTable &other) = delete;
+  FlatHashTable &operator=(const FlatHashTable &other) = delete;
+
+  void FillWithUnique(const IdType *const input, 
+                      const ValType *const vals,
+                      const size_t num_input,
+                      StreamHandle stream);
+  template<typename ValMaker>
+  void InsertUnique(const IdType *const input, ValMaker val_maker, const size_t num_input, StreamHandle stream);
+  void EvictWithUnique(const IdType *const input, const size_t num_input,
+                      StreamHandle stream);
+  void LookupIfExist(const IdType* const input, const size_t num_input, IdType * pos, StreamHandle stream);
+  // void LookupVal(const IdType* const input, const size_t num_input, ValType * vals, StreamHandle stream);
+  template<typename DefValMaker>
+  void LookupValWithDef(const IdType* const input, const size_t num_input, ValType * vals, DefValMaker default_val_maker, StreamHandle stream);
+  template<typename Helper>
+  void LookupValCustom(const IdType* const input, const size_t num_input, Helper helper, StreamHandle stream) {
+    const size_t num_tiles = RoundUpDiv(num_input, Constant::kCudaTileSize);
+    const dim3 grid(num_tiles);
+    const dim3 block(Constant::kCudaBlockSize);
+
+    auto device_table = DeviceHandle();
+    auto cu_stream = static_cast<cudaStream_t>(stream);
+
+    lookup_hashmap_with_helper<Constant::kCudaBlockSize, Constant::kCudaTileSize>
+        <<<grid, block, 0, cu_stream>>>(input, num_input, helper, device_table);
+    // Device::Get(_ctx)->StreamSync(_ctx, stream);
+  }
+  void CountEntries(StreamHandle stream);
+
+  DeviceFlatHashTable DeviceHandle() const;
+
+  BucketFlat *_flat_table;
+ private:
+  Context _ctx;
+
+  size_t _flat_size;
+  MemHandle _flat_table_handle;
+};
+
 struct CPUFallback {
   int cpu_location_id;
   CPUFallback(int cpu_loc) : cpu_location_id(cpu_loc) {}
@@ -301,7 +396,8 @@ namespace HashTableLookupHelper {
 struct OffsetOnly {
   IdType *offset_list;
   OffsetOnly(IdType* offset_list) : offset_list(offset_list) {}
-  inline __host__ __device__ void operator()(const IdType & idx, const IdType & key, const DeviceSimpleHashTable::BucketO2N* val) {
+  template<typename Bucket_T>
+  inline __host__ __device__ void operator()(const IdType & idx, const IdType & key, const Bucket_T* val) {
     if (val) {
       offset_list[idx] = val->val.off();
     } else {
@@ -313,7 +409,8 @@ struct OffsetOnlyMock {
   IdType *offset_list;
   size_t empty_feat;
   OffsetOnlyMock(IdType* offset_list) : offset_list(offset_list) { empty_feat = RunConfig::option_empty_feat; }
-  inline __host__ __device__ void operator()(const IdType & idx, const IdType & key, const DeviceSimpleHashTable::BucketO2N* val) {
+  template<typename Bucket_T>
+  inline __host__ __device__ void operator()(const IdType & idx, const IdType & key, const Bucket_T* val) {
     if (val) {
       offset_list[idx] = val->val.off();
     } else {
@@ -325,7 +422,8 @@ struct LocOnly {
   IdType *loc_list;
   int fallback_loc;
   LocOnly(IdType* loc_list, int fallback_loc) : loc_list(loc_list), fallback_loc(fallback_loc) {}
-  inline __host__ __device__ void operator()(const IdType & idx, const IdType & key, const DeviceSimpleHashTable::BucketO2N* val) {
+  template<typename Bucket_T>
+  inline __host__ __device__ void operator()(const IdType & idx, const IdType & key, const Bucket_T* val) {
     if (val) {
       loc_list[idx] = val->val.loc();
     } else {
@@ -338,7 +436,8 @@ struct SepLocOffset {
   IdType *offset_list;
   int fallback_loc;
   SepLocOffset(IdType* loc_list, IdType* offset_list, int fallback_loc) : loc_list(loc_list), offset_list(offset_list), fallback_loc(fallback_loc) {}
-  inline __host__ __device__ void operator()(const IdType & idx, const IdType & key, const DeviceSimpleHashTable::BucketO2N* val) {
+  template<typename Bucket_T>
+  inline __host__ __device__ void operator()(const IdType & idx, const IdType & key, const Bucket_T* val) {
     if (val) {
       loc_list[idx] = val->val.loc();
       offset_list[idx] = val->val.off();
@@ -354,7 +453,8 @@ struct SepLocOffsetEmpty {
   int fallback_loc;
   IdType fallback_off_mask;
   SepLocOffsetEmpty(IdType* loc_list, IdType* offset_list, int fallback_loc, IdType fallback_off_mask) : loc_list(loc_list), offset_list(offset_list), fallback_loc(fallback_loc), fallback_off_mask(fallback_off_mask) {}
-  inline __host__ __device__ void operator()(const IdType & idx, const IdType & key, const DeviceSimpleHashTable::BucketO2N* val) {
+  template<typename Bucket_T>
+  inline __host__ __device__ void operator()(const IdType & idx, const IdType & key, const Bucket_T* val) {
     if (val) {
       loc_list[idx] = val->val.loc();
       offset_list[idx] = val->val.off();
@@ -368,7 +468,8 @@ struct EmbedVal {
   ValType *val_list;
   int fallback_loc;
   EmbedVal(ValType* val_list, IdType* offset_list, int fallback_loc) : val_list(val_list), fallback_loc(fallback_loc) {}
-  inline __host__ __device__ void operator()(const IdType & idx, const IdType & key, const DeviceSimpleHashTable::BucketO2N* val) {
+  template<typename Bucket_T>
+  inline __host__ __device__ void operator()(const IdType & idx, const IdType & key, const Bucket_T* val) {
     if (val) {
       val_list[idx] = val->val;
     } else {
@@ -382,7 +483,8 @@ struct LookupHelper {
   int fallback_loc_;
   size_t empty_feat_;
   LookupHelper(int fallback_loc) : fallback_loc_(fallback_loc), empty_feat_(RunConfig::option_empty_feat) {}
-  inline __host__ __device__ void operator()(const IdType & idx, const IdType & key, const DeviceSimpleHashTable::BucketO2N* val) {
+  template<typename Bucket_T>
+  inline __host__ __device__ void operator()(const IdType & idx, const IdType & key, const Bucket_T* val) {
     idx_store.set_dst_off(idx, idx);
     if (val) {
       idx_store.set_src(idx, val->val.loc(), val->val.off());
@@ -444,11 +546,21 @@ class CacheEntryManager {
   TensorPtr _cached_keys;
   TensorPtr _remote_keys;
   TensorPtr _free_offsets;
-  std::shared_ptr<SimpleHashTable> _hash_table;
+  std::shared_ptr<SimpleHashTable> _simple_hash_table = nullptr;
+  std::shared_ptr<FlatHashTable> _flat_hash_table = nullptr;
   IdType _cache_space_capacity;
   IdType num_total_key;
   int cpu_location_id;
   TensorPtr _keys_for_each_src[9];
+  #define COLL_SWITCH_HASH_TABLE(hash_alias, ...)                  \
+  {                                                                \
+    if (RunConfig::use_flat_hashtable) {                           \
+      auto hash_alias = _flat_hash_table.get(); { __VA_ARGS__ ; }  \
+    } else {                                                       \
+      auto hash_alias = _simple_hash_table.get(); { __VA_ARGS__ ; }\
+    }                                                              \
+  }
+
 #ifdef DEAD_CODE
   void Lookup(TensorPtr keys, TensorPtr vals, StreamHandle stream) {
     CHECK(sizeof(ValType) == 4);
@@ -462,10 +574,10 @@ class CacheEntryManager {
   void LookupOffset(TensorPtr keys, TensorPtr off, StreamHandle stream) {
     if (RunConfig::option_empty_feat == 0) {
       auto helper = HashTableLookupHelper::OffsetOnly(off->Ptr<IdType>());
-      _hash_table->LookupValCustom(keys->CPtr<IdType>(), keys->NumItem(), helper, stream);
+      COLL_SWITCH_HASH_TABLE(_hash_table, {_hash_table->LookupValCustom(keys->CPtr<IdType>(), keys->NumItem(), helper, stream);});
     } else {
       auto helper = HashTableLookupHelper::OffsetOnlyMock(off->Ptr<IdType>());
-      _hash_table->LookupValCustom(keys->CPtr<IdType>(), keys->NumItem(), helper, stream);
+      COLL_SWITCH_HASH_TABLE(_hash_table, {_hash_table->LookupValCustom(keys->CPtr<IdType>(), keys->NumItem(), helper, stream);});
     }
   }
   template<typename IdxStore_T=IdxStoreAPI>
@@ -473,11 +585,11 @@ class CacheEntryManager {
     if (RunConfig::option_empty_feat == 0) {
       auto helper = HashTableLookupHelper::LookupHelper<false, IdxStore_T>(fallback_loc);
       helper.idx_store = idx_store;
-      _hash_table->LookupValCustom(keys, num_keys, helper, stream);
+      COLL_SWITCH_HASH_TABLE(_hash_table, {_hash_table->LookupValCustom(keys, num_keys, helper, stream);});
     } else {
       auto helper = HashTableLookupHelper::LookupHelper<true, IdxStore_T>(fallback_loc);
       helper.idx_store = idx_store;
-      _hash_table->LookupValCustom(keys, num_keys, helper, stream);
+      COLL_SWITCH_HASH_TABLE(_hash_table, {_hash_table->LookupValCustom(keys, num_keys, helper, stream);});
     }
   }
 #ifdef DEAD_CODE
@@ -488,11 +600,11 @@ class CacheEntryManager {
 #endif
   void InsertWithLoc(TensorPtr keys, TensorPtr off, int loc, StreamHandle stream) {
     auto helper = HashTableInsertHelper::SingleLoc(off->CPtr<IdType>(), loc);
-    _hash_table->InsertUnique(keys->CPtr<IdType>(), helper, keys->NumItem(), stream);
+    COLL_SWITCH_HASH_TABLE(_hash_table, {_hash_table->InsertUnique(keys->CPtr<IdType>(), helper, keys->NumItem(), stream);});
   }
   void InsertSeqOffWithLoc(TensorPtr keys, int loc, StreamHandle stream) {
     auto helper = HashTableInsertHelper::SingleLocSeqOff(loc);
-    _hash_table->InsertUnique(keys->CPtr<IdType>(), helper, keys->NumItem(), stream);
+    COLL_SWITCH_HASH_TABLE(_hash_table, {_hash_table->InsertUnique(keys->CPtr<IdType>(), helper, keys->NumItem(), stream);});
   }
 #ifdef DEAD_CODE
   TensorPtr EvictLocal(TensorPtr keys_to_evict, StreamHandle stream) {
@@ -505,11 +617,11 @@ class CacheEntryManager {
 #endif
   void EvictRemote(TensorPtr keys_to_evict, StreamHandle stream) {
     CHECK(sizeof(ValType) == 4);
-    _hash_table->EvictWithUnique(keys_to_evict->CPtr<IdType>(), keys_to_evict->NumItem(), stream);
+    COLL_SWITCH_HASH_TABLE(_hash_table, {_hash_table->EvictWithUnique(keys_to_evict->CPtr<IdType>(), keys_to_evict->NumItem(), stream);});
   }
   void Evict(TensorPtr keys_to_evict, StreamHandle stream) {
     CHECK(sizeof(ValType) == 4);
-    _hash_table->EvictWithUnique(keys_to_evict->CPtr<IdType>(), keys_to_evict->NumItem(), stream);
+    COLL_SWITCH_HASH_TABLE(_hash_table, {_hash_table->EvictWithUnique(keys_to_evict->CPtr<IdType>(), keys_to_evict->NumItem(), stream);});
   }
   void SortFreeOffsets() {
 #ifdef __linux__

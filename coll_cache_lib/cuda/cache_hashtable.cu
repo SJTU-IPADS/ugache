@@ -145,6 +145,74 @@ class MutableDeviceSimpleHashTable : public DeviceSimpleHashTable {
 
 };
 
+class MutableDeviceFlatHashTable : public DeviceFlatHashTable {
+  static inline __host__ __device__ uint32_t high32(uint64_t val) {
+    constexpr uint64_t kI32Mask = 0xffffffff;
+    return (val >> 32) & kI32Mask;
+  }
+  static inline __host__ __device__ uint32_t low32(uint64_t val) {
+    constexpr uint64_t kI32Mask = 0xffffffff;
+    return val & kI32Mask;
+  }
+  static inline __host__ __device__ uint64_t uint_to_ll(uint32_t low, uint32_t high) {
+    return (((uint64_t)high) << 32) + low;
+  }
+ public:
+  typedef typename DeviceFlatHashTable::BucketFlat *IteratorO2N;
+
+  explicit MutableDeviceFlatHashTable(FlatHashTable *const host_table)
+      : DeviceFlatHashTable(host_table->DeviceHandle()) {}
+
+  inline __device__ IteratorO2N SearchO2N(const IdType id) {
+    IdType pos = HashO2N(id);
+
+    assert(pos < _flat_size);
+    if (_flat_table[pos].val.data == kEmptyPos) {
+      return nullptr;
+    }
+    return const_cast<IteratorO2N>(_flat_table + pos);
+  }
+
+  enum InsertStatus {
+    kConflict = 0,
+    kFirstSuccess,
+    kDupSuccess,
+  };
+  inline __device__ InsertStatus AttemptInsertAtO2N(const IdType pos, const IdType id,
+                                            const ValType val) {
+    auto iter = GetMutableO2N(pos);
+    //fixme: replace with normal store
+    if (atomicCAS(&(iter->val.data), kEmptyPos, val.data) == kEmptyPos) {
+      return kFirstSuccess;
+    }
+    assert(false);
+  }
+
+  /** Return corresponding bucket on first insertion.
+   *  Duplicate attemps return nullptr
+   */
+  inline __device__ IteratorO2N InsertO2N(const IdType id, const ValType val) {
+    InsertStatus ret;
+    IdType pos = id;
+    ret = AttemptInsertAtO2N(pos, id, val);
+    assert(ret == kFirstSuccess);
+    return GetMutableO2N(pos);
+  }
+
+  inline __device__ IdType IterO2NToPos(const IteratorO2N iter) {
+    return iter - _flat_table;
+  }
+
+//  private:
+  inline __device__ IteratorO2N GetMutableO2N(const IdType pos) {
+    assert(pos < this->_flat_size);
+    // The parent class Device is read-only, but we ensure this can only be
+    // constructed from a mutable version of FlatHashTable, making this
+    // a safe cast to perform.
+    return const_cast<IteratorO2N>(this->_flat_table + pos);
+  }
+};
+
 /**
  * Calculate the number of buckets in the hashtable. To guarantee we can
  * fill the hashtable in the worst case, we must use a number of buckets which
@@ -156,14 +224,14 @@ size_t TableSize(const size_t num, const size_t scale) {
   return next_pow2 << scale;
 }
 
-template <size_t BLOCK_SIZE, size_t TILE_SIZE>
+template <size_t BLOCK_SIZE, size_t TILE_SIZE, typename MutableDeviceHashTable_T>
 __global__ void generate_hashmap_unique(const IdType *const items,
                                         const ValType* const vals,
                                         const size_t num_items,
-                                        MutableDeviceSimpleHashTable table) {
+                                        MutableDeviceHashTable_T table) {
   assert(BLOCK_SIZE == blockDim.x);
 
-  using IteratorO2N = typename MutableDeviceSimpleHashTable::IteratorO2N;
+  using IteratorO2N = typename MutableDeviceHashTable_T::IteratorO2N;
 
   const size_t block_start = TILE_SIZE * blockIdx.x;
   const size_t block_end = TILE_SIZE * (blockIdx.x + 1);
@@ -178,14 +246,14 @@ __global__ void generate_hashmap_unique(const IdType *const items,
     }
   }
 }
-template <size_t BLOCK_SIZE, size_t TILE_SIZE, typename ValMaker>
+template <size_t BLOCK_SIZE, size_t TILE_SIZE, typename ValMaker, typename MutableDeviceHashTable_T>
 __global__ void insert_hashmap_unique(const IdType *const items,
                                         ValMaker val_maker,
                                         const size_t num_items,
-                                        MutableDeviceSimpleHashTable table) {
+                                        MutableDeviceHashTable_T table) {
   assert(BLOCK_SIZE == blockDim.x);
 
-  using IteratorO2N = typename MutableDeviceSimpleHashTable::IteratorO2N;
+  using IteratorO2N = typename MutableDeviceHashTable_T::IteratorO2N;
 
   const size_t block_start = TILE_SIZE * blockIdx.x;
   const size_t block_end = TILE_SIZE * (blockIdx.x + 1);
@@ -219,10 +287,30 @@ __global__ void evict_hashmap_unique(const IdType *const items,
   }
 }
 template <size_t BLOCK_SIZE, size_t TILE_SIZE>
+__global__ void evict_hashmap_unique(const IdType *const items,
+                                    const size_t num_items,
+                                    MutableDeviceFlatHashTable table) {
+  assert(BLOCK_SIZE == blockDim.x);
+
+  using IteratorO2N = typename MutableDeviceFlatHashTable::IteratorO2N;
+
+  const size_t block_start = TILE_SIZE * blockIdx.x;
+  const size_t block_end = TILE_SIZE * (blockIdx.x + 1);
+
+#pragma unroll
+  for (size_t index = threadIdx.x + block_start; index < block_end;
+       index += BLOCK_SIZE) {
+    if (index < num_items) {
+      const IteratorO2N bucket = table.SearchO2N(items[index]);
+      bucket->val.data = kEmptyPos;
+    }
+  }
+}
+template <size_t BLOCK_SIZE, size_t TILE_SIZE, typename MutableDeviceHashTable_T>
 __global__ void lookup_hashmap_ifexist(const IdType *const items,
                              const size_t num_items,
                              IdType* pos,
-                             MutableDeviceSimpleHashTable table) {
+                             MutableDeviceHashTable_T table) {
   assert(BLOCK_SIZE == blockDim.x);
 
   const size_t block_start = TILE_SIZE * blockIdx.x;
@@ -238,11 +326,11 @@ __global__ void lookup_hashmap_ifexist(const IdType *const items,
   }
 }
 
-template <size_t BLOCK_SIZE, size_t TILE_SIZE>
+template <size_t BLOCK_SIZE, size_t TILE_SIZE, typename MutableDeviceHashTable_T>
 __global__ void lookup_val_hashmap(const IdType *const items,
                              const size_t num_items,
                              ValType* vals,
-                             MutableDeviceSimpleHashTable table) {
+                             MutableDeviceHashTable_T table) {
   assert(BLOCK_SIZE == blockDim.x);
 
   const size_t block_start = TILE_SIZE * blockIdx.x;
@@ -257,12 +345,12 @@ __global__ void lookup_val_hashmap(const IdType *const items,
     }
   }
 }
-template <size_t BLOCK_SIZE, size_t TILE_SIZE, typename DefValMaker>
+template <size_t BLOCK_SIZE, size_t TILE_SIZE, typename DefValMaker, typename MutableDeviceHashTable_T>
 __global__ void lookup_hashmap_with_def(const IdType *const items,
                              const size_t num_items,
                              ValType* vals,
                              DefValMaker def_val_maker,
-                             MutableDeviceSimpleHashTable table) {
+                             MutableDeviceHashTable_T table) {
   assert(BLOCK_SIZE == blockDim.x);
 
   const size_t block_start = TILE_SIZE * blockIdx.x;
@@ -453,6 +541,156 @@ void SimpleHashTable::LookupValWithDef<CPUFallback>(const IdType* const input, c
 template void SimpleHashTable::LookupValCustom<HashTableLookupHelper::EmbedVal>(const IdType* const input, const size_t num_input, HashTableLookupHelper::EmbedVal helper, StreamHandle stream);
 template void SimpleHashTable::LookupValCustom<HashTableLookupHelper::OffsetOnly>(const IdType* const input, const size_t num_input, HashTableLookupHelper::OffsetOnly helper, StreamHandle stream);
 template void SimpleHashTable::LookupValCustom<HashTableLookupHelper::SepLocOffset>(const IdType* const input, const size_t num_input, HashTableLookupHelper::SepLocOffset helper, StreamHandle stream);
+
+// DeviceFlatHashTable implementation
+DeviceFlatHashTable::DeviceFlatHashTable(const BucketFlat *const o2n_table,
+                                               const size_t o2n_size)
+    : _flat_table(o2n_table),
+      _flat_size(o2n_size) {}
+
+DeviceFlatHashTable FlatHashTable::DeviceHandle() const {
+  return DeviceFlatHashTable(_flat_table,
+      _flat_size);
+}
+
+// FlatHashTable implementation
+FlatHashTable::FlatHashTable(const size_t size, Context ctx,
+                                   StreamHandle stream)
+    : _flat_table(nullptr),
+      _flat_size(size),
+      _ctx(ctx) {
+  // make sure we will at least as many buckets as items.
+  auto device = Device::Get(_ctx);
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+
+  LOG(INFO) << "FlatHashTable allocating " << ToReadableSize(sizeof(BucketFlat) * _flat_size);
+  _flat_table = static_cast<BucketFlat *>(
+      device->AllocDataSpace(_ctx, sizeof(BucketFlat) * _flat_size));
+
+  CUDA_CALL(cudaMemsetAsync(_flat_table, (int)kEmptyPos,
+                       sizeof(BucketFlat) * _flat_size, cu_stream));
+  device->StreamSync(_ctx, stream);
+  LOG(INFO) << "cuda hashtable init with " << _flat_size
+            << " O2N table size";
+}
+
+// FlatHashTable implementation
+FlatHashTable::FlatHashTable(BucketFlat* table, const size_t size, Context ctx,
+                                   StreamHandle stream)
+    : _flat_table(table),
+      _flat_size(size),
+      _ctx(ctx) {
+  // make sure we will at least as many buckets as items.
+  LOG(INFO) << "cuda hashtable init with " << _flat_size
+            << " O2N table size";
+}
+// FlatHashTable implementation
+FlatHashTable::FlatHashTable(std::function<MemHandle(size_t)> allocator, const size_t size, Context ctx,
+                                   StreamHandle stream)
+    : _flat_table(nullptr),
+      _flat_size(size),
+      _ctx(ctx) {
+  LOG(ERROR) << "create a hashtable with " << _flat_size;
+  // make sure we will at least as many buckets as items.
+  auto device = Device::Get(_ctx);
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+
+  LOG(ERROR) << "FlatHashTable allocating " << ToReadableSize(sizeof(BucketFlat) * _flat_size);
+  _flat_table_handle = (allocator(sizeof(BucketFlat) * _flat_size));
+  _flat_table = _flat_table_handle->ptr<BucketFlat>();
+
+  CUDA_CALL(cudaMemsetAsync(_flat_table, (int)kEmptyPos,
+                       sizeof(BucketFlat) * _flat_size, cu_stream));
+  device->StreamSync(_ctx, stream);
+  LOG(INFO) << "cuda hashtable init with " << _flat_size
+            << " O2N table size";
+}
+
+FlatHashTable::~FlatHashTable() {
+  this->_flat_table_handle = nullptr;
+}
+
+void FlatHashTable::FillWithUnique(const IdType *const input,
+                                      const ValType *const vals,
+                                      const size_t num_input,
+                                      StreamHandle stream) {
+  const size_t num_tiles = RoundUpDiv(num_input, Constant::kCudaTileSize);
+  const dim3 grid(num_tiles);
+  const dim3 block(Constant::kCudaBlockSize);
+
+  auto device_table = MutableDeviceFlatHashTable(this);
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+
+  generate_hashmap_unique<Constant::kCudaBlockSize, Constant::kCudaTileSize>
+      <<<grid, block, 0, cu_stream>>>(input, vals, num_input, device_table);
+  // Device::Get(_ctx)->StreamSync(_ctx, stream);
+}
+
+template<typename ValMaker>
+void FlatHashTable::InsertUnique(const IdType *const input, ValMaker val_maker, const size_t num_input, StreamHandle stream) {
+  const size_t num_tiles = RoundUpDiv(num_input, Constant::kCudaTileSize);
+  const dim3 grid(num_tiles);
+  const dim3 block(Constant::kCudaBlockSize);
+
+  auto device_table = MutableDeviceFlatHashTable(this);
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+
+  insert_hashmap_unique<Constant::kCudaBlockSize, Constant::kCudaTileSize>
+      <<<grid, block, 0, cu_stream>>>(input, val_maker, num_input, device_table);
+  // Device::Get(_ctx)->StreamSync(_ctx, stream);
+}
+template void FlatHashTable::InsertUnique<HashTableInsertHelper::SingleLoc>(const IdType *const input, HashTableInsertHelper::SingleLoc val_maker, const size_t num_input, StreamHandle stream);
+template void FlatHashTable::InsertUnique<HashTableInsertHelper::SingleLocSeqOff>(const IdType *const input, HashTableInsertHelper::SingleLocSeqOff val_maker, const size_t num_input, StreamHandle stream);
+
+void FlatHashTable::EvictWithUnique(const IdType *const input,
+                                       const size_t num_input,
+                                       StreamHandle stream) {
+  if (num_input == 0) return;
+  const size_t num_tiles = RoundUpDiv(num_input, Constant::kCudaTileSize);
+  const dim3 grid(num_tiles);
+  const dim3 block(Constant::kCudaBlockSize);
+
+  auto device_table = MutableDeviceFlatHashTable(this);
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+
+  evict_hashmap_unique<Constant::kCudaBlockSize, Constant::kCudaTileSize>
+      <<<grid, block, 0, cu_stream>>>(input, num_input, device_table);
+  // Device::Get(_ctx)->StreamSync(_ctx, stream);
+}
+
+void FlatHashTable::LookupIfExist(const IdType *const input, const size_t num_input, IdType *pos, StreamHandle stream) {
+  const size_t num_tiles = RoundUpDiv(num_input, Constant::kCudaTileSize);
+  const dim3 grid(num_tiles);
+  const dim3 block(Constant::kCudaBlockSize);
+
+  auto device_table = MutableDeviceFlatHashTable(this);
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+
+  lookup_hashmap_ifexist<Constant::kCudaBlockSize, Constant::kCudaTileSize>
+      <<<grid, block, 0, cu_stream>>>(input, num_input, pos, device_table);
+  // Device::Get(_ctx)->StreamSync(_ctx, stream);
+}
+
+template<typename DefValMaker>
+void FlatHashTable::LookupValWithDef(const IdType* const input, const size_t num_input, ValType * vals, DefValMaker default_val_maker, StreamHandle stream){
+  const size_t num_tiles = RoundUpDiv(num_input, Constant::kCudaTileSize);
+  const dim3 grid(num_tiles);
+  const dim3 block(Constant::kCudaBlockSize);
+
+  auto device_table = MutableDeviceFlatHashTable(this);
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+
+  lookup_hashmap_with_def<Constant::kCudaBlockSize, Constant::kCudaTileSize>
+      <<<grid, block, 0, cu_stream>>>(input, num_input, vals, default_val_maker, device_table);
+  // Device::Get(_ctx)->StreamSync(_ctx, stream);
+}
+template
+void FlatHashTable::LookupValWithDef<CPUFallback>(const IdType* const input, const size_t num_input, ValType * vals, CPUFallback default_val_maker, StreamHandle stream);
+
+
+template void FlatHashTable::LookupValCustom<HashTableLookupHelper::EmbedVal>(const IdType* const input, const size_t num_input, HashTableLookupHelper::EmbedVal helper, StreamHandle stream);
+template void FlatHashTable::LookupValCustom<HashTableLookupHelper::OffsetOnly>(const IdType* const input, const size_t num_input, HashTableLookupHelper::OffsetOnly helper, StreamHandle stream);
+template void FlatHashTable::LookupValCustom<HashTableLookupHelper::SepLocOffset>(const IdType* const input, const size_t num_input, HashTableLookupHelper::SepLocOffset helper, StreamHandle stream);
 
 template <size_t BLOCK_SIZE, size_t TILE_SIZE>
 __global__ void check_cuda_array_(const IdType* array, IdType cmp, IdType num_items, bool exp) {

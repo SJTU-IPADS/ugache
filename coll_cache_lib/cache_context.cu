@@ -2398,7 +2398,8 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
   auto cpu_device = Device::Get(CPU(CPU_CUDA_HOST_MALLOC_DEVICE));
 
   _remote_new_hash_table.resize(_num_location, nullptr);
-  _remote_hash_table.resize(_num_location, nullptr);
+  _remote_hash_table_flat.resize(_num_location, nullptr);
+  _remote_hash_table_simple.resize(_num_location, nullptr);
   _device_cache_data.resize(_num_location, nullptr);
   _device_cache_data[_cpu_location_id] = cpu_data;
 
@@ -2448,7 +2449,23 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
 
       LOG(INFO) << "CollCacheManager: fix offset of local nodes in hash table";
       if (RunConfig::coll_skip_hash == false) {
-        _new_hash_table->_hash_table = std::make_shared<SimpleHashTable>(_eager_gpu_mem_allocator, (size_t)(num_total_nodes - num_cpu_nodes), _trainer_ctx, stream);
+        if (TableSize(num_total_nodes - num_cpu_nodes) > num_total_nodes / 2) {
+          RunConfig::use_flat_hashtable = true;
+          LOG(ERROR) << "simple hashtable too large, use flat hashtable";
+          _new_hash_table->_flat_hash_table = std::make_shared<FlatHashTable>(_eager_gpu_mem_allocator, num_total_nodes, _trainer_ctx, stream);
+        } else {
+          RunConfig::use_flat_hashtable = false;
+          LOG(ERROR) << "simple hashtable small enough, use simple hashtable";
+          _new_hash_table->_simple_hash_table = std::make_shared<SimpleHashTable>(_eager_gpu_mem_allocator, (size_t)(num_total_nodes - num_cpu_nodes), _trainer_ctx, stream);
+        }
+        // if (TableSize(num_total_nodes - num_cpu_nodes) > num_total_nodes / 2) {
+        //   LOG(ERROR) << "simple hashtable too large, use flat hashtable";
+        //   _new_hash_table->_flat_hash_table = std::make_shared<FlatHashTable>(_eager_gpu_mem_allocator, num_total_nodes, _trainer_ctx, stream);
+        //   use_flat_hashtable = true;
+        // } else {
+        //   _new_hash_table->_simple_hash_table = std::make_shared<SimpleHashTable>(_eager_gpu_mem_allocator, (size_t)(num_total_nodes - num_cpu_nodes), _trainer_ctx, stream);
+        //   use_flat_hashtable = false;
+        // }
         _new_hash_table->InsertSeqOffWithLoc(cache_node_list, location_id, stream);
         gpu_device->StreamSync(gpu_ctx, stream);
       }
@@ -2461,7 +2478,11 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
 
   // wait until all device's hashtable is ready
   if (RunConfig::coll_skip_hash == false) {
-    hash_table_list.signin(_local_location_id, _new_hash_table->_hash_table->_o2n_table);
+    if (RunConfig::use_flat_hashtable) {
+      hash_table_list.signin(_local_location_id, _new_hash_table->_flat_hash_table->_flat_table);
+    } else {
+      hash_table_list.signin(_local_location_id, _new_hash_table->_simple_hash_table->_o2n_table);
+    }
   }
   if (num_cached_nodes > 0) {
     device_cache_data_list.signin(_local_location_id, _device_cache_data[_local_location_id]);
@@ -2483,10 +2504,15 @@ void CacheContext::build_with_advise_new_hash(int location_id, std::shared_ptr<C
       if (RunConfig::coll_skip_hash) {
         continue;
       }
-      _remote_hash_table[dev_id] = (BucketO2N * )hash_table_list.extract(dev_id);
       _remote_new_hash_table[dev_id] = new CacheEntryManager;
       CacheEntryManager &remote_cache_manager = *_remote_new_hash_table[dev_id];
-      remote_cache_manager._hash_table = std::make_shared<SimpleHashTable>(_remote_hash_table[dev_id], (size_t)(num_total_nodes - num_cpu_nodes), _trainer_ctx, stream);
+      if (RunConfig::use_flat_hashtable) {
+        _remote_hash_table_flat[dev_id] = (BucketFlat * )hash_table_list.extract(dev_id);
+        remote_cache_manager._flat_hash_table = std::make_shared<FlatHashTable>(_remote_hash_table_flat[dev_id], num_total_nodes, _trainer_ctx, stream);
+      } else {
+        _remote_hash_table_simple[dev_id] = (BucketO2N * )hash_table_list.extract(dev_id);
+        remote_cache_manager._simple_hash_table = std::make_shared<SimpleHashTable>(_remote_hash_table_simple[dev_id], (size_t)(num_total_nodes - num_cpu_nodes), _trainer_ctx, stream);
+      }
       if (keys_for_each_source[dev_id] == nullptr || keys_for_each_source[dev_id]->NumItem() == 0 || dev_id == _local_location_id) continue;
       auto keys = Tensor::CopyToExternal(keys_for_each_source[dev_id], _eager_gpu_mem_allocator, _trainer_ctx, stream);
       auto off = Tensor::EmptyExternal(kI32, keys->Shape(), _eager_gpu_mem_allocator, _trainer_ctx, "");
@@ -3967,7 +3993,8 @@ void RefreshSession::refresh_after_solve_new(bool foreground) {
           nullptr, // _cache_ctx->_coll_cache->_block_placement,
           _local_location_id, _cache_ctx->_cpu_location_id
         ),
-      _new_hash_table->_hash_table->max_efficient_size - _new_hash_table->_cached_keys->NumItem()
+       old_rkeys->NumItem()
+      // _new_hash_table->_hash_table->max_efficient_size - _new_hash_table->_cached_keys->NumItem()
     );
   if (_cache_ctx->_local_location_id == 0) LOG(ERROR) << "evicting remote nodes - key detected, now evict " << remote_keys_to_evict->NumItem();
   if (remote_keys_to_evict->NumItem() > 0) {

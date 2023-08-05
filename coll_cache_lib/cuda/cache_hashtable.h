@@ -13,7 +13,9 @@
 namespace coll_cache_lib {
 namespace common {
 class SimpleHashTable;
+class FlatHashTable;
 constexpr IdType kEmptyPos = 0xffffffff;
+size_t TableSize(const size_t num, const size_t scale = 2);
 
 struct EmbCacheOff {
   IdType data;
@@ -43,6 +45,11 @@ struct alignas(unsigned long long) BucketO2N {
   // don't change the position of version and key
   //   which used for efficient insert operation
   IdType state_key;
+  ValType val;
+};
+struct alignas(unsigned int) BucketFlat {
+  // don't change the position of version and key
+  //   which used for efficient insert operation
   ValType val;
 };
 class CacheEntryManager;

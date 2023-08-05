@@ -79,6 +79,8 @@ coll_cache::AsymmLinkDesc RunConfig::coll_cache_link_desc;
 
 RollingPolicy        RunConfig::rolling = AutoRolling;
 
+bool                 RunConfig::use_flat_hashtable = true;
+
 void RunConfig::LoadConfigFromEnv() {
   std::unordered_set<std::string> ture_values = {"TRUE", "1", "ON"};
   if (IsEnvSet(Constant::kEnvProfileCuda)) {

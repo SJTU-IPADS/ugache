@@ -91,6 +91,8 @@ struct RunConfig {
 
   static ConcurrentLinkImpl   concurrent_link_impl;
 
+  static bool use_flat_hashtable;
+
   static inline uint64_t GetBatchKey(uint64_t epoch, uint64_t step) {
     return epoch * num_global_step_per_epoch + step;
   }
