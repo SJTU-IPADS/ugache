@@ -1,0 +1,353 @@
+[HCTR][14:09:12.523][ERROR][RK0][main]: using mock embedding with 800000000 * 128 elements
+[HCTR][14:09:12.537][ERROR][RK0][main]: using mock embedding with 800000000 * 128 elements
+[HCTR][14:09:12.558][ERROR][RK0][main]: using mock embedding with 800000000 * 128 elements
+[HCTR][14:09:12.571][ERROR][RK0][main]: using mock embedding with 800000000 * 128 elements
+warmup run: 0it [00:00, ?it/s]warmup run: 0it [00:00, ?it/s]warmup run: 0it [00:00, ?it/s]warmup run: 0it [00:00, ?it/s]warmup run: 1it [00:00,  3.39it/s]warmup run: 1it [00:00,  3.37it/s]warmup run: 1it [00:00,  3.34it/s]warmup run: 1it [00:00,  3.51it/s]warmup run: 86it [00:00, 278.95it/s]warmup run: 82it [00:00, 265.45it/s]warmup run: 87it [00:00, 279.14it/s]warmup run: 83it [00:00, 275.54it/s]warmup run: 158it [00:00, 418.08it/s]warmup run: 153it [00:00, 404.67it/s]warmup run: 156it [00:00, 407.83it/s]warmup run: 156it [00:00, 421.09it/s]warmup run: 228it [00:00, 503.97it/s]warmup run: 224it [00:00, 498.41it/s]warmup run: 228it [00:00, 503.50it/s]warmup run: 228it [00:00, 513.46it/s]warmup run: 297it [00:00, 560.71it/s]warmup run: 294it [00:00, 560.10it/s]warmup run: 300it [00:00, 567.89it/s]warmup run: 298it [00:00, 570.10it/s]warmup run: 369it [00:00, 606.92it/s]warmup run: 364it [00:00, 600.86it/s]warmup run: 367it [00:00, 559.23it/s]warmup run: 365it [00:00, 598.70it/s]warmup run: 439it [00:00, 634.39it/s]warmup run: 434it [00:00, 628.27it/s]warmup run: 434it [00:00, 590.88it/s]warmup run: 439it [00:00, 640.25it/s]warmup run: 511it [00:01, 657.74it/s]warmup run: 505it [00:01, 651.67it/s]warmup run: 505it [00:01, 624.59it/s]warmup run: 508it [00:00, 646.36it/s]warmup run: 583it [00:01, 674.69it/s]warmup run: 576it [00:01, 666.46it/s]warmup run: 579it [00:01, 656.30it/s]warmup run: 580it [00:01, 667.87it/s]warmup run: 648it [00:01, 681.91it/s]warmup run: 653it [00:01, 672.04it/s]warmup run: 652it [00:01, 676.09it/s]warmup run: 649it [00:01, 653.70it/s]warmup run: 720it [00:01, 690.79it/s]warmup run: 722it [00:01, 655.99it/s]warmup run: 722it [00:01, 682.97it/s]warmup run: 716it [00:01, 645.22it/s]warmup run: 791it [00:01, 687.34it/s]warmup run: 791it [00:01, 664.23it/s]warmup run: 793it [00:01, 689.09it/s]warmup run: 787it [00:01, 662.07it/s]warmup run: 861it [00:01, 690.67it/s]warmup run: 863it [00:01, 678.80it/s]warmup run: 866it [00:01, 699.44it/s]warmup run: 858it [00:01, 673.78it/s]warmup run: 932it [00:01, 693.83it/s]warmup run: 936it [00:01, 691.71it/s]warmup run: 938it [00:01, 705.09it/s]warmup run: 930it [00:01, 684.67it/s]warmup run: 1004it [00:01, 699.22it/s]warmup run: 1009it [00:01, 702.85it/s]warmup run: 1011it [00:01, 711.40it/s]warmup run: 1003it [00:01, 695.11it/s]warmup run: 1075it [00:01, 700.96it/s]warmup run: 1084it [00:01, 714.47it/s]warmup run: 1083it [00:01, 701.55it/s]warmup run: 1076it [00:01, 703.54it/s]warmup run: 1146it [00:01, 701.11it/s]warmup run: 1164it [00:01, 738.48it/s]warmup run: 1155it [00:01, 706.65it/s]warmup run: 1147it [00:01, 702.08it/s]warmup run: 1244it [00:02, 754.56it/s]warmup run: 1217it [00:02, 673.85it/s]warmup run: 1228it [00:02, 711.75it/s]warmup run: 1218it [00:02, 668.79it/s]warmup run: 1324it [00:02, 765.93it/s]warmup run: 1285it [00:02, 663.72it/s]warmup run: 1301it [00:02, 716.71it/s]warmup run: 1286it [00:02, 659.01it/s]warmup run: 1404it [00:02, 774.55it/s]warmup run: 1358it [00:02, 681.72it/s]warmup run: 1374it [00:02, 719.01it/s]warmup run: 1356it [00:02, 668.73it/s]warmup run: 1483it [00:02, 776.34it/s]warmup run: 1434it [00:02, 701.61it/s]warmup run: 1446it [00:02, 719.21it/s]warmup run: 1426it [00:02, 677.22it/s]warmup run: 1562it [00:02, 778.28it/s]warmup run: 1508it [00:02, 712.19it/s]warmup run: 1518it [00:02, 717.52it/s]warmup run: 1500it [00:02, 694.32it/s]warmup run: 1640it [00:02, 750.24it/s]warmup run: 1581it [00:02, 715.37it/s]warmup run: 1591it [00:02, 719.72it/s]warmup run: 1573it [00:02, 703.01it/s]warmup run: 1654it [00:02, 718.59it/s]warmup run: 1666it [00:02, 727.57it/s]warmup run: 1716it [00:02, 741.92it/s]warmup run: 1645it [00:02, 706.07it/s]warmup run: 1727it [00:02, 721.15it/s]warmup run: 1791it [00:02, 734.05it/s]warmup run: 1739it [00:02, 712.09it/s]warmup run: 1719it [00:02, 713.54it/s]warmup run: 1800it [00:02, 719.08it/s]warmup run: 1811it [00:02, 707.18it/s]warmup run: 1865it [00:02, 715.62it/s]warmup run: 1791it [00:02, 714.83it/s]warmup run: 1872it [00:02, 710.98it/s]warmup run: 1884it [00:02, 713.27it/s]warmup run: 1938it [00:02, 717.78it/s]warmup run: 1863it [00:02, 713.16it/s]warmup run: 1947it [00:03, 722.10it/s]warmup run: 2020it [00:03, 744.23it/s]warmup run: 1956it [00:03, 697.03it/s]warmup run: 1935it [00:03, 713.32it/s]warmup run: 2020it [00:03, 721.40it/s]warmup run: 2095it [00:03, 744.49it/s]warmup run: 2029it [00:03, 703.83it/s]warmup run: 2007it [00:03, 714.23it/s]warmup run: 2093it [00:03, 723.31it/s]warmup run: 2105it [00:03, 719.59it/s]warmup run: 2170it [00:03, 733.49it/s]warmup run: 2081it [00:03, 719.55it/s]warmup run: 2166it [00:03, 717.00it/s]warmup run: 2178it [00:03, 713.13it/s]warmup run: 2244it [00:03, 726.94it/s]warmup run: 2154it [00:03, 721.23it/s]warmup run: 2238it [00:03, 698.56it/s]warmup run: 2251it [00:03, 717.03it/s]warmup run: 2319it [00:03, 730.85it/s]warmup run: 2227it [00:03, 705.97it/s]warmup run: 2311it [00:03, 705.39it/s]warmup run: 2325it [00:03, 721.58it/s]warmup run: 2394it [00:03, 734.57it/s]warmup run: 2299it [00:03, 707.90it/s]warmup run: 2384it [00:03, 711.21it/s]warmup run: 2398it [00:03, 722.38it/s]warmup run: 2468it [00:03, 717.30it/s]warmup run: 2370it [00:03, 701.42it/s]warmup run: 2457it [00:03, 714.96it/s]warmup run: 2471it [00:03, 720.74it/s]warmup run: 2540it [00:03, 702.77it/s]warmup run: 2441it [00:03, 702.72it/s]warmup run: 2529it [00:03, 716.26it/s]warmup run: 2544it [00:03, 721.27it/s]warmup run: 2618it [00:03, 722.64it/s]warmup run: 2515it [00:03, 712.93it/s]warmup run: 2602it [00:03, 718.26it/s]warmup run: 2617it [00:03, 721.91it/s]warmup run: 2701it [00:03, 753.41it/s]warmup run: 2589it [00:03, 719.01it/s]warmup run: 2676it [00:04, 722.45it/s]warmup run: 2690it [00:04, 721.79it/s]warmup run: 2782it [00:04, 768.88it/s]warmup run: 2662it [00:04, 720.55it/s]warmup run: 2749it [00:04, 706.04it/s]warmup run: 2763it [00:04, 706.50it/s]warmup run: 2860it [00:04, 748.26it/s]warmup run: 2735it [00:04, 719.57it/s]warmup run: 2820it [00:04, 706.79it/s]warmup run: 2834it [00:04, 707.06it/s]warmup run: 2936it [00:04, 739.02it/s]warmup run: 2807it [00:04, 715.80it/s]warmup run: 2892it [00:04, 709.98it/s]warmup run: 2906it [00:04, 709.51it/s]warmup run: 2880it [00:04, 717.43it/s]warmup run: 3011it [00:04, 718.15it/s]warmup run: 2964it [00:04, 697.24it/s]warmup run: 2979it [00:04, 713.95it/s]warmup run: 2952it [00:04, 711.26it/s]warmup run: 3084it [00:04, 693.30it/s]warmup run: 3042it [00:04, 720.27it/s]warmup run: 3051it [00:04, 712.99it/s]warmup run: 3026it [00:04, 717.13it/s]warmup run: 3154it [00:04, 691.13it/s]warmup run: 3120it [00:04, 736.21it/s]warmup run: 3126it [00:04, 723.77it/s]warmup run: 3098it [00:04, 714.30it/s]warmup run: 3227it [00:04, 700.96it/s]warmup run: 3199it [00:04, 750.89it/s]warmup run: 3199it [00:04, 713.19it/s]warmup run: 3170it [00:04, 709.94it/s]warmup run: 3303it [00:04, 715.68it/s]warmup run: 3275it [00:04, 734.66it/s]warmup run: 3271it [00:04, 710.97it/s]warmup run: 3242it [00:04, 712.06it/s]warmup run: 3379it [00:04, 726.91it/s]warmup run: 3343it [00:04, 708.27it/s]warmup run: 3349it [00:05, 720.23it/s]warmup run: 3315it [00:04, 715.63it/s]warmup run: 3452it [00:05, 704.10it/s]warmup run: 3422it [00:05, 721.49it/s]warmup run: 3414it [00:05, 685.11it/s]warmup run: 3387it [00:05, 713.30it/s]warmup run: 3524it [00:05, 705.79it/s]warmup run: 3496it [00:05, 725.69it/s]warmup run: 3488it [00:05, 699.08it/s]warmup run: 3459it [00:05, 712.63it/s]warmup run: 3595it [00:05, 703.26it/s]warmup run: 3569it [00:05, 722.17it/s]warmup run: 3562it [00:05, 709.74it/s]warmup run: 3531it [00:05, 690.47it/s]warmup run: 3668it [00:05, 710.78it/s]warmup run: 3642it [00:05, 719.25it/s]warmup run: 3636it [00:05, 716.95it/s]warmup run: 3606it [00:05, 703.77it/s]warmup run: 3741it [00:05, 713.11it/s]warmup run: 3722it [00:05, 742.52it/s]warmup run: 3712it [00:05, 729.00it/s]warmup run: 3690it [00:05, 743.23it/s]warmup run: 3813it [00:05, 714.77it/s]warmup run: 3804it [00:05, 765.29it/s]warmup run: 3786it [00:05, 729.28it/s]warmup run: 3774it [00:05, 770.15it/s]warmup run: 3885it [00:05, 715.66it/s]warmup run: 3881it [00:05, 756.29it/s]warmup run: 3859it [00:05, 693.57it/s]warmup run: 3852it [00:05, 766.86it/s]warmup run: 3962it [00:05, 730.04it/s]warmup run: 4000it [00:05, 688.49it/s]warmup run: 3957it [00:05, 732.80it/s]warmup run: 3929it [00:05, 671.52it/s]warmup run: 3929it [00:05, 751.67it/s]warmup run: 4000it [00:05, 678.48it/s]warmup run: 4000it [00:05, 671.93it/s]warmup run: 4000it [00:05, 675.11it/s]
+
+
+warmup should be done:   0%|          | 0/4000 [00:00<?, ?it/s]
+warmup should be done:   0%|          | 0/4000 [00:00<?, ?it/s]warmup should be done:   0%|          | 0/4000 [00:00<?, ?it/s]warmup should be done:   0%|          | 0/4000 [00:00<?, ?it/s]warmup should be done:   4%|▍         | 170/4000 [00:00<00:02, 1696.01it/s]warmup should be done:   4%|▍         | 175/4000 [00:00<00:02, 1742.48it/s]warmup should be done:   3%|▎         | 114/4000 [00:00<00:03, 1131.61it/s]warmup should be done:   3%|▎         | 114/4000 [00:00<00:03, 1131.59it/s]warmup should be done:   9%|▉         | 351/4000 [00:00<00:02, 1758.94it/s]warmup should be done:   9%|▉         | 356/4000 [00:00<00:02, 1777.41it/s]warmup should be done:   6%|▋         | 252/4000 [00:00<00:02, 1273.50it/s]warmup should be done:   6%|▌         | 228/4000 [00:00<00:03, 1130.27it/s]warmup should be done:  11%|█         | 430/4000 [00:00<00:02, 1500.44it/s]warmup should be done:  10%|█         | 407/4000 [00:00<00:02, 1426.60it/s]warmup should be done:  13%|█▎        | 527/4000 [00:00<00:01, 1743.54it/s]warmup should be done:  13%|█▎        | 534/4000 [00:00<00:01, 1757.65it/s]warmup should be done:  15%|█▌        | 602/4000 [00:00<00:02, 1586.29it/s]warmup should be done:  14%|█▍        | 580/4000 [00:00<00:02, 1544.09it/s]warmup should be done:  18%|█▊        | 706/4000 [00:00<00:01, 1760.82it/s]warmup should be done:  18%|█▊        | 712/4000 [00:00<00:01, 1766.30it/s]warmup should be done:  19%|█▉        | 779/4000 [00:00<00:01, 1651.30it/s]warmup should be done:  19%|█▉        | 757/4000 [00:00<00:01, 1625.11it/s]warmup should be done:  22%|██▏       | 885/4000 [00:00<00:01, 1770.55it/s]warmup should be done:  22%|██▏       | 891/4000 [00:00<00:01, 1773.28it/s]warmup should be done:  24%|██▍       | 957/4000 [00:00<00:01, 1694.14it/s]warmup should be done:  23%|██▎       | 934/4000 [00:00<00:01, 1672.32it/s]warmup should be done:  27%|██▋       | 1063/4000 [00:00<00:01, 1755.47it/s]warmup should be done:  27%|██▋       | 1069/4000 [00:00<00:01, 1763.39it/s]warmup should be done:  28%|██▊       | 1134/4000 [00:00<00:01, 1717.49it/s]warmup should be done:  28%|██▊       | 1106/4000 [00:00<00:01, 1685.82it/s]warmup should be done:  31%|███       | 1241/4000 [00:00<00:01, 1762.59it/s]warmup should be done:  31%|███       | 1247/4000 [00:00<00:01, 1768.18it/s]warmup should be done:  33%|███▎      | 1313/4000 [00:00<00:01, 1738.97it/s]warmup should be done:  32%|███▏      | 1281/4000 [00:00<00:01, 1705.08it/s]warmup should be done:  36%|███▌      | 1425/4000 [00:00<00:01, 1771.86it/s]warmup should be done:  35%|███▌      | 1418/4000 [00:00<00:01, 1764.28it/s]warmup should be done:  37%|███▋      | 1492/4000 [00:00<00:01, 1753.96it/s]warmup should be done:  36%|███▋      | 1457/4000 [00:00<00:01, 1719.39it/s]warmup should be done:  40%|████      | 1603/4000 [00:00<00:01, 1769.43it/s]warmup should be done:  40%|███▉      | 1595/4000 [00:00<00:01, 1749.85it/s]warmup should be done:  42%|████▏     | 1668/4000 [00:01<00:01, 1755.52it/s]warmup should be done:  41%|████      | 1629/4000 [00:01<00:01, 1718.88it/s]warmup should be done:  45%|████▍     | 1782/4000 [00:01<00:01, 1773.32it/s]warmup should be done:  44%|████▍     | 1773/4000 [00:01<00:01, 1756.11it/s]warmup should be done:  46%|████▌     | 1847/4000 [00:01<00:01, 1763.09it/s]warmup should be done:  45%|████▌     | 1804/4000 [00:01<00:01, 1727.13it/s]warmup should be done:  49%|████▉     | 1961/4000 [00:01<00:01, 1777.90it/s]warmup should be done:  49%|████▉     | 1953/4000 [00:01<00:01, 1767.66it/s]warmup should be done:  51%|█████     | 2025/4000 [00:01<00:01, 1766.96it/s]warmup should be done:  49%|████▉     | 1979/4000 [00:01<00:01, 1732.41it/s]warmup should be done:  53%|█████▎    | 2139/4000 [00:01<00:01, 1774.12it/s]warmup should be done:  53%|█████▎    | 2130/4000 [00:01<00:01, 1767.55it/s]warmup should be done:  54%|█████▍    | 2153/4000 [00:01<00:01, 1731.81it/s]warmup should be done:  55%|█████▌    | 2202/4000 [00:01<00:01, 1751.56it/s]warmup should be done:  58%|█████▊    | 2317/4000 [00:01<00:00, 1751.12it/s]warmup should be done:  58%|█████▊    | 2307/4000 [00:01<00:00, 1706.71it/s]warmup should be done:  58%|█████▊    | 2329/4000 [00:01<00:00, 1737.72it/s]warmup should be done:  60%|█████▉    | 2380/4000 [00:01<00:00, 1758.43it/s]warmup should be done:  62%|██████▏   | 2499/4000 [00:01<00:00, 1769.62it/s]warmup should be done:  62%|██████▏   | 2486/4000 [00:01<00:00, 1730.69it/s]warmup should be done:  63%|██████▎   | 2505/4000 [00:01<00:00, 1743.88it/s]warmup should be done:  64%|██████▍   | 2560/4000 [00:01<00:00, 1769.07it/s]warmup should be done:  67%|██████▋   | 2677/4000 [00:01<00:00, 1771.93it/s]warmup should be done:  66%|██████▋   | 2660/4000 [00:01<00:00, 1731.80it/s]warmup should be done:  67%|██████▋   | 2680/4000 [00:01<00:00, 1739.21it/s]warmup should be done:  68%|██████▊   | 2737/4000 [00:01<00:00, 1763.18it/s]warmup should be done:  71%|███████▏  | 2859/4000 [00:01<00:00, 1784.99it/s]warmup should be done:  71%|███████   | 2843/4000 [00:01<00:00, 1759.17it/s]warmup should be done:  71%|███████▏  | 2856/4000 [00:01<00:00, 1743.40it/s]warmup should be done:  73%|███████▎  | 2917/4000 [00:01<00:00, 1771.96it/s]warmup should be done:  76%|███████▌  | 3040/4000 [00:01<00:00, 1790.79it/s]warmup should be done:  76%|███████▌  | 3026/4000 [00:01<00:00, 1779.85it/s]warmup should be done:  76%|███████▌  | 3033/4000 [00:01<00:00, 1748.75it/s]warmup should be done:  77%|███████▋  | 3096/4000 [00:01<00:00, 1777.33it/s]warmup should be done:  80%|████████  | 3220/4000 [00:01<00:00, 1780.32it/s]warmup should be done:  80%|████████  | 3205/4000 [00:01<00:00, 1772.34it/s]warmup should be done:  80%|████████  | 3208/4000 [00:01<00:00, 1696.39it/s]warmup should be done:  82%|████████▏ | 3274/4000 [00:01<00:00, 1688.63it/s]warmup should be done:  85%|████████▍ | 3399/4000 [00:01<00:00, 1703.98it/s]warmup should be done:  85%|████████▍ | 3383/4000 [00:01<00:00, 1685.64it/s]warmup should be done:  85%|████████▍ | 3389/4000 [00:02<00:00, 1727.28it/s]warmup should be done:  86%|████████▌ | 3448/4000 [00:02<00:00, 1701.74it/s]warmup should be done:  90%|████████▉ | 3585/4000 [00:02<00:00, 1746.95it/s]warmup should be done:  89%|████████▉ | 3553/4000 [00:02<00:00, 1685.91it/s]warmup should be done:  89%|████████▉ | 3566/4000 [00:02<00:00, 1737.25it/s]warmup should be done:  90%|█████████ | 3619/4000 [00:02<00:00, 1680.82it/s]warmup should be done:  94%|█████████▍| 3761/4000 [00:02<00:00, 1734.84it/s]warmup should be done:  93%|█████████▎| 3729/4000 [00:02<00:00, 1705.57it/s]warmup should be done:  94%|█████████▎| 3740/4000 [00:02<00:00, 1736.40it/s]warmup should be done:  95%|█████████▍| 3788/4000 [00:02<00:00, 1674.18it/s]warmup should be done:  98%|█████████▊| 3935/4000 [00:02<00:00, 1725.20it/s]warmup should be done:  98%|█████████▊| 3912/4000 [00:02<00:00, 1739.52it/s]warmup should be done: 100%|██████████| 4000/4000 [00:02<00:00, 1759.36it/s]warmup should be done: 100%|██████████| 4000/4000 [00:02<00:00, 1740.33it/s]warmup should be done:  98%|█████████▊| 3918/4000 [00:02<00:00, 1748.62it/s]warmup should be done:  99%|█████████▉| 3957/4000 [00:02<00:00, 1676.34it/s]warmup should be done: 100%|██████████| 4000/4000 [00:02<00:00, 1694.67it/s]warmup should be done: 100%|██████████| 4000/4000 [00:02<00:00, 1690.88it/s]
+
+
+warmup should be done:   0%|          | 0/4000 [00:00<?, ?it/s]warmup should be done:   0%|          | 0/4000 [00:00<?, ?it/s]warmup should be done:   0%|          | 0/4000 [00:00<?, ?it/s]
+warmup should be done:   0%|          | 0/4000 [00:00<?, ?it/s]warmup should be done:   5%|▍         | 187/4000 [00:00<00:02, 1865.60it/s]warmup should be done:   5%|▍         | 185/4000 [00:00<00:02, 1847.62it/s]warmup should be done:   4%|▍         | 178/4000 [00:00<00:02, 1778.98it/s]warmup should be done:   4%|▍         | 173/4000 [00:00<00:02, 1725.18it/s]warmup should be done:   9%|▉         | 371/4000 [00:00<00:01, 1854.64it/s]warmup should be done:   9%|▉         | 364/4000 [00:00<00:01, 1825.61it/s]warmup should be done:   9%|▊         | 346/4000 [00:00<00:02, 1705.58it/s]warmup should be done:   9%|▉         | 374/4000 [00:00<00:02, 1785.14it/s]warmup should be done:  13%|█▎        | 519/4000 [00:00<00:02, 1715.99it/s]warmup should be done:  14%|█▎        | 547/4000 [00:00<00:01, 1808.83it/s]warmup should be done:  14%|█▍        | 557/4000 [00:00<00:01, 1788.93it/s]warmup should be done:  14%|█▍        | 553/4000 [00:00<00:01, 1781.29it/s]warmup should be done:  18%|█▊        | 731/4000 [00:00<00:01, 1819.41it/s]warmup should be done:  17%|█▋        | 693/4000 [00:00<00:01, 1722.62it/s]warmup should be done:  19%|█▊        | 744/4000 [00:00<00:01, 1818.77it/s]warmup should be done:  19%|█▊        | 741/4000 [00:00<00:01, 1819.06it/s]warmup should be done:  23%|██▎       | 913/4000 [00:00<00:01, 1818.59it/s]warmup should be done:  22%|██▏       | 866/4000 [00:00<00:01, 1719.89it/s]warmup should be done:  23%|██▎       | 929/4000 [00:00<00:01, 1829.38it/s]warmup should be done:  23%|██▎       | 929/4000 [00:00<00:01, 1840.36it/s]warmup should be done:  27%|██▋       | 1097/4000 [00:00<00:01, 1823.77it/s]warmup should be done:  26%|██▌       | 1040/4000 [00:00<00:01, 1723.30it/s]warmup should be done:  28%|██▊       | 1115/4000 [00:00<00:01, 1837.37it/s]warmup should be done:  28%|██▊       | 1117/4000 [00:00<00:01, 1850.97it/s]warmup should be done:  30%|███       | 1214/4000 [00:00<00:01, 1726.35it/s]warmup should be done:  32%|███▏      | 1280/4000 [00:00<00:01, 1801.69it/s]warmup should be done:  33%|███▎      | 1301/4000 [00:00<00:01, 1841.98it/s]warmup should be done:  33%|███▎      | 1305/4000 [00:00<00:01, 1857.94it/s]warmup should be done:  35%|███▍      | 1387/4000 [00:00<00:01, 1715.96it/s]warmup should be done:  37%|███▋      | 1461/4000 [00:00<00:01, 1790.74it/s]warmup should be done:  37%|███▋      | 1487/4000 [00:00<00:01, 1846.39it/s]warmup should be done:  37%|███▋      | 1493/4000 [00:00<00:01, 1861.80it/s]warmup should be done:  39%|███▉      | 1561/4000 [00:00<00:01, 1721.52it/s]warmup should be done:  42%|████▏     | 1673/4000 [00:00<00:01, 1848.20it/s]warmup should be done:  41%|████      | 1641/4000 [00:00<00:01, 1786.35it/s]warmup should be done:  42%|████▏     | 1680/4000 [00:00<00:01, 1833.31it/s]warmup should be done:  43%|████▎     | 1734/4000 [00:01<00:01, 1721.35it/s]warmup should be done:  46%|████▋     | 1858/4000 [00:01<00:01, 1847.87it/s]warmup should be done:  47%|████▋     | 1867/4000 [00:01<00:01, 1843.90it/s]warmup should be done:  46%|████▌     | 1820/4000 [00:01<00:01, 1722.68it/s]warmup should be done:  48%|████▊     | 1907/4000 [00:01<00:01, 1723.48it/s]warmup should be done:  51%|█████     | 2043/4000 [00:01<00:01, 1848.09it/s]warmup should be done:  51%|█████▏    | 2052/4000 [00:01<00:01, 1845.55it/s]warmup should be done:  50%|█████     | 2005/4000 [00:01<00:01, 1758.03it/s]warmup should be done:  52%|█████▏    | 2082/4000 [00:01<00:01, 1729.43it/s]warmup should be done:  56%|█████▌    | 2228/4000 [00:01<00:00, 1844.02it/s]warmup should be done:  56%|█████▌    | 2238/4000 [00:01<00:00, 1847.71it/s]warmup should be done:  55%|█████▍    | 2183/4000 [00:01<00:01, 1764.35it/s]warmup should be done:  56%|█████▋    | 2257/4000 [00:01<00:01, 1732.84it/s]warmup should be done:  60%|██████    | 2413/4000 [00:01<00:00, 1842.70it/s]warmup should be done:  61%|██████    | 2424/4000 [00:01<00:00, 1848.86it/s]warmup should be done:  59%|█████▉    | 2368/4000 [00:01<00:00, 1789.42it/s]warmup should be done:  61%|██████    | 2431/4000 [00:01<00:00, 1733.09it/s]warmup should be done:  65%|██████▍   | 2598/4000 [00:01<00:00, 1841.05it/s]warmup should be done:  65%|██████▌   | 2610/4000 [00:01<00:00, 1849.90it/s]warmup should be done:  64%|██████▍   | 2554/4000 [00:01<00:00, 1808.82it/s]warmup should be done:  65%|██████▌   | 2605/4000 [00:01<00:00, 1733.61it/s]warmup should be done:  70%|██████▉   | 2783/4000 [00:01<00:00, 1836.79it/s]warmup should be done:  70%|██████▉   | 2796/4000 [00:01<00:00, 1851.51it/s]warmup should be done:  69%|██████▊   | 2743/4000 [00:01<00:00, 1831.64it/s]warmup should be done:  69%|██████▉   | 2779/4000 [00:01<00:00, 1720.39it/s]warmup should be done:  74%|███████▍  | 2967/4000 [00:01<00:00, 1834.64it/s]warmup should be done:  75%|███████▍  | 2983/4000 [00:01<00:00, 1854.35it/s]warmup should be done:  73%|███████▎  | 2929/4000 [00:01<00:00, 1839.87it/s]warmup should be done:  74%|███████▍  | 2953/4000 [00:01<00:00, 1725.37it/s]warmup should be done:  79%|███████▉  | 3151/4000 [00:01<00:00, 1835.38it/s]warmup should be done:  79%|███████▉  | 3169/4000 [00:01<00:00, 1854.68it/s]warmup should be done:  78%|███████▊  | 3116/4000 [00:01<00:00, 1848.85it/s]warmup should be done:  78%|███████▊  | 3127/4000 [00:01<00:00, 1728.92it/s]warmup should be done:  84%|████████▍ | 3356/4000 [00:01<00:00, 1857.01it/s]warmup should be done:  83%|████████▎ | 3335/4000 [00:01<00:00, 1805.75it/s]warmup should be done:  83%|████████▎ | 3301/4000 [00:01<00:00, 1846.83it/s]warmup should be done:  83%|████████▎ | 3303/4000 [00:01<00:00, 1737.16it/s]warmup should be done:  88%|████████▊ | 3522/4000 [00:01<00:00, 1822.78it/s]warmup should be done:  87%|████████▋ | 3486/4000 [00:01<00:00, 1847.00it/s]warmup should be done:  89%|████████▊ | 3542/4000 [00:01<00:00, 1798.62it/s]warmup should be done:  87%|████████▋ | 3478/4000 [00:02<00:00, 1738.06it/s]warmup should be done:  93%|█████████▎| 3705/4000 [00:02<00:00, 1816.26it/s]warmup should be done:  92%|█████████▏| 3672/4000 [00:02<00:00, 1848.41it/s]warmup should be done:  93%|█████████▎| 3723/4000 [00:02<00:00, 1795.86it/s]warmup should be done:  91%|█████████▏| 3652/4000 [00:02<00:00, 1737.93it/s]warmup should be done:  97%|█████████▋| 3888/4000 [00:02<00:00, 1819.81it/s]warmup should be done:  96%|█████████▋| 3858/4000 [00:02<00:00, 1849.50it/s]warmup should be done:  98%|█████████▊| 3912/4000 [00:02<00:00, 1821.72it/s]warmup should be done: 100%|██████████| 4000/4000 [00:02<00:00, 1836.66it/s]warmup should be done: 100%|██████████| 4000/4000 [00:02<00:00, 1831.46it/s]warmup should be done: 100%|██████████| 4000/4000 [00:02<00:00, 1815.55it/s]warmup should be done:  96%|█████████▌| 3827/4000 [00:02<00:00, 1740.56it/s]warmup should be done: 100%|██████████| 4000/4000 [00:02<00:00, 1729.01it/s]
+WARNING:tensorflow:AutoGraph could not transform <bound method DCNHPS.call of <tensorflow.python.eager.function.TfMethodTarget object at 0x7f35334448b0>> and will run it as-is.
+Cause: mangled names are not yet supported
+To silence this warning, decorate the function with @tf.autograph.experimental.do_not_convert
+
+WARNING:tensorflow:AutoGraph could not transform <bound method DCNHPS.call of <tensorflow.python.eager.function.TfMethodTarget object at 0x7f3630fff490>> and will run it as-is.
+Cause: mangled names are not yet supported
+To silence this warning, decorate the function with @tf.autograph.experimental.do_not_convert
+
+WARNING:tensorflow:AutoGraph could not transform <bound method DCNHPS.call of <tensorflow.python.eager.function.TfMethodTarget object at 0x7f3533445a30>> and will run it as-is.
+Cause: mangled names are not yet supported
+To silence this warning, decorate the function with @tf.autograph.experimental.do_not_convert
+
+WARNING:tensorflow:AutoGraph could not transform <bound method DCNHPS.call of <tensorflow.python.eager.function.TfMethodTarget object at 0x7f363100b340>> and will run it as-is.
+Cause: mangled names are not yet supported
+To silence this warning, decorate the function with @tf.autograph.experimental.do_not_convert
+[HCTR][14:10:43.119][ERROR][RK0][tid #139852909631232]: coll ps creation, with 4 devices, using policy coll_cache_asymm_link
+[HCTR][14:10:43.126][ERROR][RK0][tid #139852909631232]: coll ps creation done
+[HCTR][14:10:43.167][ERROR][RK0][tid #139852884453120]: coll ps creation, with 4 devices, using policy coll_cache_asymm_link
+[HCTR][14:10:43.173][ERROR][RK0][tid #139852884453120]: coll ps creation done
+[HCTR][14:10:43.218][ERROR][RK0][tid #139852901238528]: coll ps creation, with 4 devices, using policy coll_cache_asymm_link
+[HCTR][14:10:43.225][ERROR][RK0][tid #139852901238528]: coll ps creation done
+[HCTR][14:10:43.247][ERROR][RK0][tid #139852884453120]: coll ps creation, with 4 devices, using policy coll_cache_asymm_link
+[HCTR][14:10:43.254][ERROR][RK0][tid #139852884453120]: coll ps creation done
+[HCTR][14:10:43.254][ERROR][RK0][tid #139852909631232]: replica 0 preparing frequency
+[2023-08-08 14:10:43.254297: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1279615 into 0
+[2023-08-08 14:10:43.260586: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 235855430
+[2023-08-08 14:10:43.260896: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1279274 into 1279615
+[2023-08-08 14:10:43.267145: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 128476280
+[2023-08-08 14:10:43.267455: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1278740 into 2558889
+[2023-08-08 14:10:43.273681: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 91301528
+[2023-08-08 14:10:43.273994: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1277915 into 3837629
+[2023-08-08 14:10:43.280250: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 72739144
+[2023-08-08 14:10:43.280572: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1278560 into 5115544
+[2023-08-08 14:10:43.286827: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 61652728
+[2023-08-08 14:10:43.287137: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1277681 into 6394104
+[2023-08-08 14:10:43.293364: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 54248258
+[2023-08-08 14:10:43.293676: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1278914 into 7671785
+[2023-08-08 14:10:43.299913: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 48940907
+[2023-08-08 14:10:43.300220: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1277819 into 8950699
+[2023-08-08 14:10:43.306462: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 44939562
+[2023-08-08 14:10:43.306766: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1280555 into 10228518
+[2023-08-08 14:10:43.313001: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 41798327
+[2023-08-08 14:10:43.313315: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1279685 into 11509073
+[2023-08-08 14:10:43.319560: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 39247836
+[HCTR][14:10:43.319][ERROR][RK0][tid #139852884453120]: replica 1 preparing frequency
+[2023-08-08 14:10:43.319906: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1278478 into 12788758
+[2023-08-08 14:10:43.326153: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 235863069
+[2023-08-08 14:10:43.326439: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1278127 into 14067236
+[2023-08-08 14:10:43.332643: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 128463649
+[2023-08-08 14:10:43.332922: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1278902 into 15345363
+[2023-08-08 14:10:43.339156: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 91317081
+[2023-08-08 14:10:43.339454: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1277406 into 16624265
+[2023-08-08 14:10:43.345659: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 72751362
+[2023-08-08 14:10:43.345959: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1279857 into 17901671
+[2023-08-08 14:10:43.352195: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 61644555
+[2023-08-08 14:10:43.352489: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1278312 into 19181528
+[2023-08-08 14:10:43.358713: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 54230266
+[2023-08-08 14:10:43.359014: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1278023 into 20459840
+[2023-08-08 14:10:43.365225: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 48955245
+[2023-08-08 14:10:43.365522: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1280045 into 21737863
+[2023-08-08 14:10:43.371771: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 44936476
+[2023-08-08 14:10:43.372064: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1278780 into 23017908
+[2023-08-08 14:10:43.378265: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 41789145
+[2023-08-08 14:10:43.378575: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1279112 into 24296688
+[2023-08-08 14:10:43.384785: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 39249152
+[HCTR][14:10:43.385][ERROR][RK0][tid #139852901238528]: replica 2 preparing frequency
+[2023-08-08 14:10:43.385141: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1278581 into 25575800
+[2023-08-08 14:10:43.391397: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 235847734
+[2023-08-08 14:10:43.391702: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1278998 into 26854381
+[2023-08-08 14:10:43.397913: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 128492171
+[2023-08-08 14:10:43.398219: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1278571 into 28133379
+[2023-08-08 14:10:43.404450: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 91302962
+[2023-08-08 14:10:43.404772: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1278226 into 29411950
+[2023-08-08 14:10:43.410998: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 72740566
+[2023-08-08 14:10:43.411301: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1276323 into 30690176
+[2023-08-08 14:10:43.417508: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 61635551
+[2023-08-08 14:10:43.417811: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1279862 into 31966499
+[2023-08-08 14:10:43.424047: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 54240586
+[2023-08-08 14:10:43.424346: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1278298 into 33246361
+[2023-08-08 14:10:43.430575: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 48945958
+[2023-08-08 14:10:43.430869: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1277939 into 34524659
+[2023-08-08 14:10:43.437168: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 44932619
+[2023-08-08 14:10:43.437476: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1278823 into 35802598
+[2023-08-08 14:10:43.443794: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 41800927
+[2023-08-08 14:10:43.444099: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1279741 into 37081421
+[2023-08-08 14:10:43.450514: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 39260926
+[HCTR][14:10:43.450][ERROR][RK0][tid #139852884453120]: replica 3 preparing frequency
+[2023-08-08 14:10:43.450879: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1279032 into 38361162
+[2023-08-08 14:10:43.457113: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 235845011
+[2023-08-08 14:10:43.457417: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1280208 into 39640194
+[2023-08-08 14:10:43.463673: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 128474040
+[2023-08-08 14:10:43.463978: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1279022 into 40920402
+[2023-08-08 14:10:43.470186: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 91317791
+[2023-08-08 14:10:43.470493: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1279004 into 42199424
+[2023-08-08 14:10:43.476784: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 72741956
+[2023-08-08 14:10:43.477278: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1278836 into 43478428
+[2023-08-08 14:10:43.483519: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 61648164
+[2023-08-08 14:10:43.483823: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1278594 into 44757264
+[2023-08-08 14:10:43.490055: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 54232553
+[2023-08-08 14:10:43.490355: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1278944 into 46035858
+[2023-08-08 14:10:43.496562: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 48951203
+[2023-08-08 14:10:43.496870: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1280099 into 47314802
+[2023-08-08 14:10:43.503093: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 44943459
+[2023-08-08 14:10:43.503386: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1279581 into 48594901
+[2023-08-08 14:10:43.512089: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 41797439
+[2023-08-08 14:10:43.512584: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1278996 into 49874482
+[2023-08-08 14:10:43.518806: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 39248384
+[2023-08-08 14:10:43.519113: E /ugache/coll_cache_lib/freq_recorder.cc:266] freq recorder global combining
+[2023-08-08 14:10:47.380912: E /ugache/coll_cache_lib/freq_recorder.cc:269] freq recorder global combine from 51153478 to 32565524
+[2023-08-08 14:10:47.758621: E /ugache/coll_cache_lib/freq_recorder.cc:286] top 5 freq is 7953707,7953370,7953308,7953220,7953216
+[HCTR][14:10:47.799][ERROR][RK0][tid #139852909631232]: Calling build_v2
+[HCTR][14:10:47.799][ERROR][RK0][tid #139852909631232]: cudaDevAttrCanUseHostPointerForRegisteredMem is 1
+[HCTR][14:10:47.799][ERROR][RK0][tid #139852901238528]: Calling build_v2
+[HCTR][14:10:47.799][ERROR][RK0][tid #139852884453120]: Calling build_v2
+[HCTR][14:10:47.799][ERROR][RK0][tid #139852884453120]: Calling build_v2
+[HCTR][14:10:47.799][ERROR][RK0][tid #139852901238528]: cudaDevAttrCanUseHostPointerForRegisteredMem is 1
+[HCTR][14:10:47.799][ERROR][RK0][tid #139852884453120]: cudaDevAttrCanUseHostPointerForRegisteredMem is 1
+[HCTR][14:10:47.799][ERROR][RK0][tid #139852884453120]: cudaDevAttrCanUseHostPointerForRegisteredMem is 1
+[2023-08-08 14:10:47.799502: E /ugache/coll_cache_lib/run_config.cc:160] using concurrent impl 11
+[2023-08-08 14:10:47.799573: E /ugache/coll_cache_lib/facade.cc:422] [[[before scale, dtype is 0, dim is 1282023-08-08 14:10:472023-08-08 14:10:472023-08-08 14:10:47
+...799569799574799569[: : : 2023-08-08 14:10:47EEE.   799628/ugache/coll_cache_lib/run_config.cc/ugache/coll_cache_lib/run_config.cc/ugache/coll_cache_lib/run_config.cc: :::E160160160 ] ] ] /ugache/coll_cache_lib/facade.ccusing concurrent impl 11using concurrent impl 11using concurrent impl 11:
+
+
+428] after scale, dtype is 7, new dim is 32
+[[[2023-08-08 14:10:472023-08-08 14:10:472023-08-08 14:10:47...799767799767799769: : : EEE   /ugache/coll_cache_lib/facade.cc/ugache/coll_cache_lib/facade.cc/ugache/coll_cache_lib/facade.cc:::422422422] ] ] before scale, dtype is 0, dim is 128before scale, dtype is 0, dim is 128before scale, dtype is 0, dim is 128
+
+
+[[2023-08-08 14:10:47[2023-08-08 14:10:47.2023-08-08 14:10:47.799852.799854: 799855: E: E E /ugache/coll_cache_lib/facade.cc /ugache/coll_cache_lib/facade.cc:/ugache/coll_cache_lib/facade.cc:428:428] 428] after scale, dtype is 7, new dim is 32] after scale, dtype is 7, new dim is 32
+after scale, dtype is 7, new dim is 32
+
+[2023-08-08 14:10:47.800349: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:297] assigning 8 to cpu
+[2023-08-08 14:10:47.800402: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:314] build symm link desc with 4X Tesla V100-SXM2-16GB out of 4
+[2023-08-08 14:10:47.800448: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:315] remote time is 9.21053
+[2023-08-08 14:10:47.800480: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:316] cpu time is 31.8182
+[2023-08-08 14:10:47.800528: E /ugache/coll_cache_lib/facade.cc:439] registering cpu data with 16.00 GB
+[2023-08-08 14:10:47.800878: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:297] assigning 8 to cpu[
+2023-08-08 14:10:47.800902: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:297] assigning 8 to cpu
+[2023-08-08 14:10:47.800929: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:297] [assigning 8 to cpu2023-08-08 14:10:47
+.800950: E [/ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc2023-08-08 14:10:47:.314800967] : build symm link desc with 4X Tesla V100-SXM2-16GB out of 4E
+ /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:314] build symm link desc with 4X Tesla V100-SXM2-16GB out of 4
+[[2023-08-08 14:10:472023-08-08 14:10:47..801004[801009: 2023-08-08 14:10:47: E.E 801019 /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc: /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:E:314 315] /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc] build symm link desc with 4X Tesla V100-SXM2-16GB out of 4:remote time is 9.21053
+315
+] remote time is 9.21053
+[[2023-08-08 14:10:47[2023-08-08 14:10:47.2023-08-08 14:10:47.801085.801085: 801090: E: E E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:/ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:316:315] 316] cpu time is 31.8182] remote time is 9.21053
+cpu time is 31.8182
+
+[2023-08-08 14:10:47.801166: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc[:2023-08-08 14:10:47[316.2023-08-08 14:10:47] 801178.cpu time is 31.8182: 801183
+E:  E/ugache/coll_cache_lib/facade.cc :/ugache/coll_cache_lib/facade.cc439:] 439registering cpu data with 16.00 GB] [
+registering cpu data with 16.00 GB2023-08-08 14:10:47
+.801231: E /ugache/coll_cache_lib/facade.cc:439] registering cpu data with 16.00 GB
+[2023-08-08 14:10:55.478491: E /ugache/coll_cache_lib/facade.cc:441] registering cpu data done.
+[2023-08-08 14:10:55.478646: E /ugache/coll_cache_lib/facade.cc:178] creating solver
+[2023-08-08 14:10:55.478703: E /ugache/coll_cache_lib/facade.cc:222] solver created. now build & solve
+[2023-08-08 14:10:55.496838: E /ugache/coll_cache_lib/facade.cc:441] registering cpu data done.
+[2023-08-08 14:10:55.509534: E /ugache/coll_cache_lib/facade.cc:441] registering cpu data done.
+[2023-08-08 14:10:55.517323: E /ugache/coll_cache_lib/facade.cc:441] registering cpu data done.
+[2023-08-08 14:10:55.916121: W /ugache/coll_cache_lib/cpu/cpu_device.cc:43] WORKER[0] alloc host memory 2.98 GB
+[2023-08-08 14:10:55.916239: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:309] reconfigured max freq to be 7.95371e+06
+[2023-08-08 14:10:55.916271: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:311] reconfigured num slot to be 88
+[2023-08-08 14:10:55.916301: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:318] counting slots...
+[2023-08-08 14:10:59.834493: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:367] Final num slot is 96
+[2023-08-08 14:10:59.834681: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:371] preparing block granularity...
+[2023-08-08 14:10:59.834742: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 0 has 100 nodes, max_size set to 25, #slice=4
+[2023-08-08 14:10:59.834797: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 4 has 100 nodes, max_size set to 25, #slice=4
+[2023-08-08 14:10:59.834851: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 6 has 100 nodes, max_size set to 25, #slice=4
+[2023-08-08 14:10:59.834905: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 8 has 100 nodes, max_size set to 25, #slice=4
+[2023-08-08 14:10:59.834959: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 10 has 100 nodes, max_size set to 25, #slice=4
+[2023-08-08 14:10:59.835012: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 11 has 100 nodes, max_size set to 25, #slice=4
+[2023-08-08 14:10:59.835066: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 12 has 100 nodes, max_size set to 25, #slice=4
+[2023-08-08 14:10:59.835119: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 13 has 100 nodes, max_size set to 25, #slice=4
+[2023-08-08 14:10:59.835172: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 14 has 100 nodes, max_size set to 25, #slice=4
+[2023-08-08 14:10:59.835225: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 15 has 152 nodes, max_size set to 38, #slice=4
+[2023-08-08 14:10:59.835278: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 16 has 148 nodes, max_size set to 37, #slice=4
+[2023-08-08 14:10:59.835332: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 17 has 200 nodes, max_size set to 50, #slice=4
+[2023-08-08 14:10:59.835386: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 18 has 200 nodes, max_size set to 50, #slice=4
+[2023-08-08 14:10:59.835439: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 19 has 200 nodes, max_size set to 50, #slice=4
+[2023-08-08 14:10:59.835492: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 20 has 300 nodes, max_size set to 75, #slice=4
+[2023-08-08 14:10:59.835546: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 21 has 300 nodes, max_size set to 75, #slice=4
+[2023-08-08 14:10:59.835600: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 22 has 395 nodes, max_size set to 99, #slice=4
+[2023-08-08 14:10:59.835654: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 23 has 392 nodes, max_size set to 98, #slice=4
+[2023-08-08 14:10:59.835707: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 24 has 413 nodes, max_size set to 104, #slice=4
+[2023-08-08 14:10:59.835778: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 25 has 505 nodes, max_size set to 127, #slice=4
+[2023-08-08 14:10:59.835832: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 26 has 595 nodes, max_size set to 149, #slice=4
+[2023-08-08 14:10:59.835886: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 27 has 698 nodes, max_size set to 175, #slice=4
+[2023-08-08 14:10:59.835940: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 28 has 745 nodes, max_size set to 187, #slice=4
+[2023-08-08 14:10:59.835994: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 29 has 866 nodes, max_size set to 217, #slice=4
+[2023-08-08 14:10:59.836048: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 30 has 996 nodes, max_size set to 249, #slice=4
+[2023-08-08 14:10:59.836102: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 31 has 1121 nodes, max_size set to 281, #slice=4
+[2023-08-08 14:10:59.836156: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 32 has 1280 nodes, max_size set to 320, #slice=4
+[2023-08-08 14:10:59.836210: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 33 has 1475 nodes, max_size set to 369, #slice=4
+[2023-08-08 14:10:59.836264: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 34 has 1671 nodes, max_size set to 418, #slice=4
+[2023-08-08 14:10:59.836319: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 35 has 1891 nodes, max_size set to 473, #slice=4
+[2023-08-08 14:10:59.836373: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 36 has 2159 nodes, max_size set to 540, #slice=4
+[2023-08-08 14:10:59.836426: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 37 has 2478 nodes, max_size set to 620, #slice=4
+[2023-08-08 14:10:59.836480: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 38 has 2799 nodes, max_size set to 700, #slice=4
+[2023-08-08 14:10:59.836534: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 39 has 3188 nodes, max_size set to 797, #slice=4
+[2023-08-08 14:10:59.836587: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 40 has 3652 nodes, max_size set to 913, #slice=4
+[2023-08-08 14:10:59.836641: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 41 has 4157 nodes, max_size set to 1040, #slice=4
+[2023-08-08 14:10:59.836694: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 42 has 4708 nodes, max_size set to 1177, #slice=4
+[2023-08-08 14:10:59.836748: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 43 has 5369 nodes, max_size set to 1343, #slice=4
+[2023-08-08 14:10:59.836801: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 44 has 6158 nodes, max_size set to 1540, #slice=4
+[2023-08-08 14:10:59.836855: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 45 has 6956 nodes, max_size set to 1739, #slice=4
+[2023-08-08 14:10:59.836909: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 46 has 7914 nodes, max_size set to 1979, #slice=4
+[2023-08-08 14:10:59.836962: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 47 has 9125 nodes, max_size set to 2282, #slice=4
+[2023-08-08 14:10:59.837017: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 48 has 10307 nodes, max_size set to 2577, #slice=4
+[2023-08-08 14:10:59.837071: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 49 has 11821 nodes, max_size set to 2956, #slice=4
+[2023-08-08 14:10:59.837124: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 50 has 13305 nodes, max_size set to 3327, #slice=4
+[2023-08-08 14:10:59.837177: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 51 has 15385 nodes, max_size set to 3847, #slice=4
+[2023-08-08 14:10:59.837238: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 52 has 17442 nodes, max_size set to 4361, #slice=4
+[2023-08-08 14:10:59.837293: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 53 has 19552 nodes, max_size set to 4888, #slice=4
+[2023-08-08 14:10:59.837346: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 54 has 22585 nodes, max_size set to 5647, #slice=4
+[2023-08-08 14:10:59.837401: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 55 has 25913 nodes, max_size set to 6479, #slice=4
+[2023-08-08 14:10:59.837455: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 56 has 29477 nodes, max_size set to 7370, #slice=4
+[2023-08-08 14:10:59.837509: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 57 has 32892 nodes, max_size set to 8223, #slice=4
+[2023-08-08 14:10:59.837563: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 58 has 38160 nodes, max_size set to 9540, #slice=4
+[2023-08-08 14:10:59.837617: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 59 has 43130 nodes, max_size set to 10783, #slice=4
+[2023-08-08 14:10:59.837671: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 60 has 50293 nodes, max_size set to 12574, #slice=4
+[2023-08-08 14:10:59.837725: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 61 has 54348 nodes, max_size set to 13587, #slice=4
+[2023-08-08 14:10:59.837778: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 62 has 66889 nodes, max_size set to 16723, #slice=4
+[2023-08-08 14:10:59.837833: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 63 has 69874 nodes, max_size set to 17469, #slice=4
+[2023-08-08 14:10:59.837887: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 64 has 88292 nodes, max_size set to 22073, #slice=4
+[2023-08-08 14:10:59.837939: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 65 has 91143 nodes, max_size set to 22786, #slice=4
+[2023-08-08 14:10:59.837993: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 66 has 109832 nodes, max_size set to 27458, #slice=4
+[2023-08-08 14:10:59.838047: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 67 has 133770 nodes, max_size set to 33443, #slice=4
+[2023-08-08 14:10:59.838100: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 68 has 130558 nodes, max_size set to 32640, #slice=4
+[2023-08-08 14:10:59.838155: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 69 has 179985 nodes, max_size set to 44997, #slice=4
+[2023-08-08 14:10:59.838209: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 70 has 203681 nodes, max_size set to 50921, #slice=4
+[2023-08-08 14:10:59.838263: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 71 has 211459 nodes, max_size set to 52865, #slice=4
+[2023-08-08 14:10:59.838317: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 72 has 184710 nodes, max_size set to 46178, #slice=4
+[2023-08-08 14:10:59.838372: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 73 has 391965 nodes, max_size set to 97992, #slice=4
+[2023-08-08 14:10:59.838450: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 74 has 178742 nodes, max_size set to 44686, #slice=4
+[2023-08-08 14:10:59.838503: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 75 has 481311 nodes, max_size set to 120328, #slice=4
+[2023-08-08 14:10:59.838557: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 76 has 338322 nodes, max_size set to 84581, #slice=4
+[2023-08-08 14:10:59.838610: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 77 has 448817 nodes, max_size set to 112205, #slice=4
+[2023-08-08 14:10:59.838664: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 78 has 628613 nodes, max_size set to 157154, #slice=4
+[2023-08-08 14:10:59.838724: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 79 has 956740 nodes, max_size set to 239185, #slice=4
+[2023-08-08 14:10:59.838779: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 81 has 1671208 nodes, max_size set to 417802, #slice=4
+[2023-08-08 14:10:59.838833: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 83 has 3903339 nodes, max_size set to 800000, #slice=8
+[2023-08-08 14:10:59.838888: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 86 has 21637558 nodes, max_size set to 800000, #slice=28
+[2023-08-08 14:10:59.838941: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 87 has 7673851 nodes, max_size set to 800000, #slice=12
+[2023-08-08 14:10:59.838996: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 88 has 7673445 nodes, max_size set to 800000, #slice=12
+[2023-08-08 14:10:59.839050: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 89 has 7677769 nodes, max_size set to 800000, #slice=12
+[2023-08-08 14:10:59.839104: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 90 has 7673749 nodes, max_size set to 800000, #slice=12
+[2023-08-08 14:10:59.839156: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 91 has 7674075 nodes, max_size set to 800000, #slice=12
+[2023-08-08 14:10:59.839210: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 92 has 7676618 nodes, max_size set to 7676618, #slice=1
+[2023-08-08 14:10:59.839263: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 93 has 7677520 nodes, max_size set to 7677520, #slice=1
+[2023-08-08 14:10:59.839316: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 94 has 7671005 nodes, max_size set to 7671005, #slice=1
+[2023-08-08 14:10:59.839369: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 95 has 7673827 nodes, max_size set to 7673827, #slice=1
+[2023-08-08 14:10:59.839423: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 96 has 7676429 nodes, max_size set to 7676429, #slice=1
+[2023-08-08 14:10:59.839477: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 97 has 76749705 nodes, max_size set to 76749705, #slice=1
+[2023-08-08 14:10:59.839531: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 98 has 76738465 nodes, max_size set to 76738465, #slice=1
+[2023-08-08 14:10:59.839585: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 99 has 76738001 nodes, max_size set to 76738001, #slice=1
+[2023-08-08 14:10:59.839638: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 100 has 76739425 nodes, max_size set to 76739425, #slice=1
+[2023-08-08 14:10:59.839691: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 101 has 76744406 nodes, max_size set to 76744406, #slice=1
+[2023-08-08 14:10:59.839745: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 102 has 76738191 nodes, max_size set to 76738191, #slice=1
+[2023-08-08 14:10:59.839798: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 103 has 76758717 nodes, max_size set to 76758717, #slice=1
+[2023-08-08 14:10:59.839851: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 104 has 76746554 nodes, max_size set to 76746554, #slice=1
+[2023-08-08 14:10:59.839905: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 105 has 76732724 nodes, max_size set to 76732724, #slice=1
+[2023-08-08 14:10:59.839959: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:405] counting blocks...
+[2023-08-08 14:11:00.932949: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:425] Final num block is 410
+[2023-08-08 14:11:00.933044: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:430] counting freq and density...
+[2023-08-08 14:11:01. 46063: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:479] averaging freq and density...
+[2023-08-08 14:11:01. 46159: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:480] 410
+[2023-08-08 14:11:01. 59082: E /ugache/coll_cache_lib/facade.cc:226] solver built. now solve
+[2023-08-08 14:11:01. 59168: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:893] constructing optimal solver, device=4, stream=1
+410 blocks, 4 devices
+[2023-08-08 14:11:02.163993: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1080] Add Var...
+[2023-08-08 14:11:02.171050: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1098] Capacity...
+[2023-08-08 14:11:02.171587: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1101] Connect CPU...
+[2023-08-08 14:11:02.176635: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1103] Connect Access To Storage...
+[2023-08-08 14:11:02.216025: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1107] Time...
+[2023-08-08 14:11:02.216851: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1069] dst 0, total sm is 80
+[2023-08-08 14:11:02.217773: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1069] dst 1, total sm is 80
+[2023-08-08 14:11:02.218697: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1069] dst 2, total sm is 80
+[2023-08-08 14:11:02.219610: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1069] dst 3, total sm is 80
+[2023-08-08 14:11:02.528429: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1132] Coll Cache init block placement array
+[2023-08-08 14:11:02.529849: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1208] Coll Cache init block placement array done
+[2023-08-08 14:11:02.529941: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1210] Coll Cache model reset done
+[2023-08-08 14:11:02.534976: E /ugache/coll_cache_lib/facade.cc:230] solver solved
+[2023-08-08 14:11:02.535041: E /ugache/coll_cache_lib/facade.cc:451] 0 solved master
+[2023-08-08 14:11:02.535076: E /ugache/coll_cache_lib/facade.cc:458] 0 solved
+[2023-08-08 14:11:02.535108: E /ugache/coll_cache_lib/facade.cc:461] worker 0 thread 0 initing device 0
+[2023-08-08 14:11:02.536739: E /ugache/coll_cache_lib/cache_context.cu:2388] Building Coll Cache with ... num gpu device is 4
+[2023-08-08 14:11:02.538586: E /ugache/coll_cache_lib/cuda/cache_hashtable.cuh:764] per src size local is 17246992
+[2023-08-08 14:11:02.779589: E /ugache/coll_cache_lib/cache_context.cu:2431] num cpu nodes is 767434476
+[2023-08-08 14:11:02.785817: E /ugache/coll_cache_lib/facade.cc:458] 2 solved
+[2023-08-08 14:11:02.785930: E /ugache/coll_cache_lib/facade.cc:461] worker 0 thread 2 initing device 2
+[2023-08-08 14:11:02.786874: E /ugache/coll_cache_lib/cache_context.cu:2388] Building Coll Cache with ... num gpu device is 4
+[2023-08-08 14:11:02.809383: E /ugache/coll_cache_lib/facade.cc:458] 3 solved
+[2023-08-08 14:11:02.809496: E /ugache/coll_cache_lib/facade.cc:461] worker 0 thread 3 initing device 3
+[2023-08-08 14:11:02.810451: E /ugache/coll_cache_lib/cache_context.cu:2388] Building Coll Cache with ... num gpu device is 4
+[2023-08-08 14:11:02.813360: E /ugache/coll_cache_lib/facade.cc:458] 1 solved
+[2023-08-08 14:11:02.813436: E /ugache/coll_cache_lib/facade.cc:461] worker 0 thread 1 initing device 1
+[2023-08-08 14:11:02.814390: E /ugache/coll_cache_lib/cache_context.cu:2388] Building Coll Cache with ... num gpu device is 4
+[2023-08-08 14:11:03. 60562: E /ugache/coll_cache_lib/cache_context.cu:2431] num cpu nodes is 767434476
+[2023-08-08 14:11:03. 92164: E /ugache/coll_cache_lib/cache_context.cu:2431] num cpu nodes is 767434476
+[2023-08-08 14:11:03. 92308: E /ugache/coll_cache_lib/cache_context.cu:2431] num cpu nodes is 767434476
+[2023-08-08 14:11:03.461232: E /ugache/coll_cache_lib/cache_context.cu:2458] simple hashtable small enough, use simple hashtable
+[2023-08-08 14:11:03.461424: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:443] create a hashtable with 32565524 possible elem, scale to 67108864
+[2023-08-08 14:11:03.461465: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:448] SimpleHashTable allocating 512.00 MB
+[2023-08-08 14:11:03.757314: E /ugache/coll_cache_lib/cache_context.cu:2458] simple hashtable small enough, use simple hashtable
+[2023-08-08 14:11:03.757423: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:443] create a hashtable with 32565524 possible elem, scale to 67108864
+[2023-08-08 14:11:03.757465: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:448] SimpleHashTable allocating 512.00 MB
+[2023-08-08 14:11:03.796301: E /ugache/coll_cache_lib/cache_context.cu:2458] simple hashtable small enough, use simple hashtable
+[2023-08-08 14:11:03.796393: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:443] create a hashtable with 32565524 possible elem, scale to 67108864
+[2023-08-08 14:11:03.796433: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:448] SimpleHashTable allocating 512.00 MB
+[2023-08-08 14:11:03.802679: E /ugache/coll_cache_lib/cache_context.cu:2458] simple hashtable small enough, use simple hashtable
+[2023-08-08 14:11:03.802765: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:443] create a hashtable with 32565524 possible elem, scale to 67108864
+[2023-08-08 14:11:03.802801: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:448] SimpleHashTable allocating 512.00 MB
+[2023-08-08 14:11:03.839826: E /ugache/coll_cache_lib/cache_context.cu:2522] 400002576,920074|400002605,920103|400002615,920113|400002616,920114|400002632,920130|
+[2023-08-08 14:11:03.881808: E /ugache/coll_cache_lib/cache_context.cu:2522] 400002783,395983|400002803,396001|400002900,396079|400002927,396100|400002943,396110|
+[2023-08-08 14:11:03.914761: E /ugache/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?16799999->863333
+[2023-08-08 14:11:03.914912: E /ugache/coll_cache_lib/cache_context.cu:2522] 400003447,1182989|400003574,1183107|400003581,1183114|400003658,1183184|400003767,1183275|
+[2023-08-08 14:11:03.921858: E /ugache/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?16799999->1060468
+[2023-08-08 14:11:03.922076: E /ugache/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?16799999->1121006
+[2023-08-08 14:11:03.924953: E /ugache/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?16799999->984454
+[2023-08-08 14:11:03.990463: E /ugache/coll_cache_lib/cache_context.cu:2554] Asymm Coll cache (policy: coll_cache_asymm_link) | local 15739531 / 800000000 nodes ( 1.97 %~2.00 %) | remote 16825993 / 800000000 nodes ( 2.10 %) | cpu 767434476 / 800000000 nodes ( 95.93 %) | 8.01 GB | 1.17602 secs 
+[2023-08-08 14:11:03.994926: E /ugache/coll_cache_lib/cache_context.cu:2554] Asymm Coll cache (policy: coll_cache_asymm_link) | local 15678993 / 800000000 nodes ( 1.96 %~2.00 %) | remote 16886531 / 800000000 nodes ( 2.11 %) | cpu 767434476 / 800000000 nodes ( 95.93 %) | 8.01 GB | 1.4356 secs 
+ mask is 1111111111111111111111111111111111111111111111111111111111110000
+ mask is 1111111111111111111111111111111111111111111111110000000000001111
+ mask is 1111111111111111111111111111111111110000000000001111111111111111
+[2023-08-08 14:11:03.997710: W /ugache/coll_cache_lib/cache_context.cu:4105] before create stream, mem is 14.20 GB
+[[2023-08-08 14:11:032023-08-08 14:11:03.997812: E ./ugache/coll_cache_lib/cache_context.cu:2554] 997808Asymm Coll cache (policy: coll_cache_asymm_link) | local 15815545 / 800000000 nodes ( 1.98 %~2.00 %) | remote 16749979 / 800000000 nodes ( 2.09 %) | cpu 767434476 / 800000000 nodes ( 95.93 %) | 8.01 GB | 1.18732 secs 
+: W /ugache/coll_cache_lib/cache_context.cu:4105] before create stream, mem is 14.20 GB
+[2023-08-08 14:11:04. 10555: W /ugache/coll_cache_lib/cache_context.cu:4105] after create stream, mem is 14.20 GB
+[2023-08-08 14:11:03.998543: W /ugache/coll_cache_lib/cache_context.cu:4105] after create stream, mem is 14.20 GB
+ mask is [2023-08-08 14:11:03.998485: W 1111111111111111111111110000000000001111111111111111111111111111
+/ugache/coll_cache_lib/cache_context.cu:4105] before create stream, mem is 14.20 GB
+[2023-08-08 14:11:04. 10788: W /ugache/coll_cache_lib/cache_context.cu:4105] after create stream, mem is 14.20 GB
+[2023-08-08 14:11:04. 10866: W /ugache/coll_cache_lib/cache_context.cu:4105] before create stream, mem is 14.20 GB
+[2023-08-08 14:11:04. 10952: W /ugache/coll_cache_lib/cache_context.cu:4105] after create stream, mem is 14.20 GB
+[2023-08-08 14:11:04. 17871: E /ugache/coll_cache_lib/cache_context.cu:2554] Asymm Coll cache (policy: coll_cache_asymm_link) | local 15936666 / 800000000 nodes ( 1.99 %~2.00 %) | remote 16628858 / 800000000 nodes ( 2.08 %) | cpu 767434476 / 800000000 nodes ( 95.93 %) | 8.01 GB | 1.23096 secs 
+[HCTR][14:11:04.061][ERROR][RK0][tid #139852909631232]: 2 allocated 6553600 at 0x7f1458238400
+[HCTR][14:11:04.061][ERROR][RK0][main]: 1 allocated 6553600 at 0x7f145c238400
+[HCTR][14:11:04.061][ERROR][RK0][main]: 0 allocated 6553600 at 0x7f140c320000
+[HCTR][14:11:04.061][ERROR][RK0][main]: 1 allocated 6553600 at 0x7f145c878400
+[HCTR][14:11:04.061][ERROR][RK0][tid #139852909631232]: 2 allocated 6553600 at 0x7f1458878400
+[HCTR][14:11:04.061][ERROR][RK0][main]: 0 allocated 6553600 at 0x7f140c960000
+[HCTR][14:11:04.061][ERROR][RK0][tid #139852884453120]: 3 allocated 6553600 at 0x7f145c238400
+[HCTR][14:11:04.061][ERROR][RK0][tid #139852884453120]: 3 allocated 6553600 at 0x7f145c878400

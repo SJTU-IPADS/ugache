@@ -48,7 +48,7 @@ fs_pattern_C = 3
 
 handle_multiplot_location(row, col) = sprintf("set size 0.35, 0.33; set origin %d*0.35, 0.3-(%d+1)*0.3;", col,row)
 
-set xrange[-0.75:1.75]
+set xrange[-0.75:2.75]
 
 set label "{/Helvetica-Italic Server A}" at graph 0.05, graph 0.9 textcolor rgb "#006000"
 set border lc rgb "#006000" lw 2
@@ -70,7 +70,7 @@ unset label
 unset ylabel
 
 eval(handle_multiplot_location(0,1))
-set yrange [0:50]
+unset yrange; set yrange [0:]
 set xlabel "DCN" offset 0,0.3
 plot cmd_filter_dat_by_policy(dat_file, "dcn", ".*", "^HPS*",          ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_A lc rgb "#af2318" t "HPS", \
      cmd_filter_dat_by_policy(dat_file, "dcn", ".*", "^SOK*",          ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_A lc rgb "#f19e38" t "SOK", \

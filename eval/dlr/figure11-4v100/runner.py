@@ -33,19 +33,21 @@ DLRM && DCN
 '''
 cfg_list_collector.concat(cur_common_base.copy().override('dataset', [Dataset.criteo_tb]))
 cfg_list_collector.concat(cur_common_base.copy().override('dataset', [Dataset.syn]))
+cfg_list_collector.concat(cur_common_base.copy().override('dataset', [Dataset.syn_14]))
 
 cfg_list_collector.hyper_override(
   ['coll_cache_policy', 'coll_cache_no_group', 'coll_cache_concurrent_link', 'sok_use_hashtable'], 
   [
     [CachePolicy.sok, '', '', True],
     [CachePolicy.hps, '', '', None],
-    [CachePolicy.coll_cache_asymm_link, '', 'MPSPhase', None],
+    # [CachePolicy.coll_cache_asymm_link, '', 'MPSPhase', None],
+    [CachePolicy.coll_cache_asymm_link, '', 'SMMaskPhase', None],
   ]
 )
 
 # special case
 for cfg in cfg_list_collector.conf_list:
-  if cfg.dataset == Dataset.syn and cfg.coll_cache_policy == CachePolicy.sok and cfg.model == Model.dcn:
+  if (cfg.dataset == Dataset.syn or cfg.dataset == Dataset.syn_14) and cfg.coll_cache_policy == CachePolicy.sok and cfg.model == Model.dcn:
     cfg.cache_percent = 0.01
 
 if __name__ == '__main__':

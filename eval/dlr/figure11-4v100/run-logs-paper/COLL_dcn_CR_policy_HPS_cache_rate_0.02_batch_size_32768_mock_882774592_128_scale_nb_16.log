@@ -1,5 +1,5 @@
-environ({'TF_CPP_MIN_LOG_LEVEL': '2', 'HUGECTR_LOG_LEVEL': '0', 'SAMGRAPH_LOG_LEVEL': 'warn', 'SAMGRAPH_PROFILE_LEVEL': '3', 'SAMGRAPH_COLL_CACHE_CONCURRENT_LINK': '0', 'COLL_CACHE_SCALE': '16', 'COLL_NUM_REPLICA': '4', 'SAMGRAPH_EMPTY_FEAT': '24', 'NPP_VERSION': '11.7.4.75', 'SHELL': '/bin/bash', 'NVIDIA_VISIBLE_DEVICES': 'all', 'JUPYTER_CONFIG_DIR': '/tmp/.jupyter', 'DALI_BUILD': '4921308', 'CUSOLVER_VERSION': '11.4.0.1', 'CUBLAS_VERSION': '11.10.3.66', 'TMUX': '/tmp/tmux-0/default,124,0', 'HOSTNAME': '10d9a492ee6d', 'SOK_COMPILE_UNIT_TEST': 'ON', 'CUFFT_VERSION': '10.7.2.91', 'NVIDIA_REQUIRE_CUDA': 'cuda>=9.0', 'CUDA_CACHE_DISABLE': '1', 'NCCL_VERSION': '2.12.12', 'CUSPARSE_VERSION': '11.7.4.91', 'ENV': '/etc/shinit_v2', 'PWD': '/hugectr_dev/study/exp-overview-4v100', 'OPENUCX_VERSION': '1.12.0', 'NSIGHT_SYSTEMS_VERSION': '2022.1.3.3', 'NVIDIA_DRIVER_CAPABILITIES': 'compute,utility,video', 'TRT_VERSION': '8.2.5.1+cuda11.4.2.006', 'NVIDIA_PRODUCT_NAME': 'Triton Server Base', 'RDMACORE_VERSION': '36.0', 'CUDA_CUDA_LIBRARY': '/usr/local/cuda/lib64/stubs', 'HOME': '/root', 'LANG': 'C.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'CUDA_VERSION': '11.7.1.014', 'CUDA_MPS_PIPE_DIRECTORY': '/tmp/nvidia-mps', 'CURAND_VERSION': '10.2.10.91', 'PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION': 'python', 'JUPYTER_DATA_DIR': '/tmp/.jupyter', 'CUTENSOR_VERSION': '1.5.0.3', 'HPCX_VERSION': '2.10', 'DLPROF_VERSION': '', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'JUPYTER_RUNTIME_DIR': '/tmp/.jupyter', 'PYTHONPATH': ':/usr/local/lib/python3.8/dist-packages/', 'TERM': 'screen', 'GUROBI_HOME': '/opt/gurobi-install/gurobi-latest/linux64', 'GDRCOPY_VERSION': '2.3', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'root', 'OPENMPI_VERSION': '4.1.2rc4', 'TMUX_PANE': '%0', 'NVJPEG_VERSION': '11.8.0.2', 'LIBRARY_PATH': '/usr/local/hugectr/lib:/usr/local/hugectr/lib:/usr/local/cuda/lib64/stubs::/opt/gurobi-install/gurobi-latest/linux64/lib', 'CUDA_PATH': '/usr/local/cuda', 'SHLVL': '3', 'BASH_ENV': '/etc/bash.bashrc', 'CUDNN_VERSION': '8.4.1.50+cuda11.6', 'NVIDIA_TRITON_SERVER_BASE_VERSION': '22.06', 'NSIGHT_COMPUTE_VERSION': '2022.2.1.3', 'DALI_VERSION': '1.14.0', 'LD_LIBRARY_PATH': '/usr/local/hugectr/lib:/usr/local/hugectr/lib:/usr/local/cuda/compat/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:/usr/local/lib:/repos/dist/lib:/opt/tritonserver/lib:/opt/gurobi-install/gurobi-latest/linux64/lib', 'NVIDIA_BUILD_ID': '39726160', 'OMPI_MCA_coll_hcoll_enable': '0', 'OPAL_PREFIX': '/opt/hpcx/ompi', 'CUDA_DRIVER_VERSION': '515.48.08', '_CUDA_COMPAT_PATH': '/usr/local/cuda/compat', 'CUDA_HOME': '/usr/local/cuda', 'PATH': '/opt/tritonserver/bin:/usr/local/cuda/lib64/:/usr/local/mpi/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/ucx/bin:/usr/local/cuda/bin::/opt/gurobi-install/gurobi-latest/linux64/bin', 'MOFED_VERSION': '5.4-rdmacore36.0', 'TRTOSS_VERSION': '22.05', 'DEBIAN_FRONTEND': 'noninteractive', 'OLDPWD': '/hugectr_dev/sparse_operation_kit', '_': '/usr/bin/python', 'TF2_BEHAVIOR': '1'})
-config:eval_tsp="2023-04-14 17:23:26"
+environ({'TF_CPP_MIN_LOG_LEVEL': '2', 'COLL_LOG_BASE': 'run-logs/COLL_dcn_CR_policy_HPS_cache_rate_0.02_batch_size_32768_mock_882774592_128_scale_nb_16', 'HUGECTR_LOG_LEVEL': '0', 'SAMGRAPH_LOG_LEVEL': 'warn', 'SAMGRAPH_PROFILE_LEVEL': '3', 'COLL_CACHE_SCALE': '16', 'COLL_NUM_REPLICA': '4', 'COLL_MIN_FREQ': '0.1', 'SAMGRAPH_EMPTY_FEAT': '24', 'SHELL': '/bin/bash', 'MAKE_TERMOUT': '/dev/pts/1', 'PWD': '/ugache/eval/dlr/figure11-4v100', 'LOGNAME': 'root', '_': '/usr/bin/python', 'MOTD_SHOWN': 'pam', 'HOME': '/root', 'LANG': 'C.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'LC_TERMINAL': 'iTerm2', 'SSH_CONNECTION': '172.17.0.1 49312 172.17.0.19 22', 'MFLAGS': '-w', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'MAKEFLAGS': 'w', 'TERM': 'screen', 'CPLUS_INCLUDE_PATH': '/ugache:/opt/gurobi-install/linux64/include', 'GUROBI_HOME': '/opt/gurobi-install/linux64', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'root', 'LIBRARY_PATH': '/usr/local/hugectr/lib::/ugache/build:/opt/gurobi-install/linux64/lib', 'MAKE_TERMERR': '/dev/pts/1', 'LC_TERMINAL_VERSION': '3.4.19', 'SHLVL': '3', 'MAKELEVEL': '1', 'LD_LIBRARY_PATH': '/usr/local/hugectr/lib::/ugache/build:/opt/gurobi-install/linux64/lib', 'SSH_CLIENT': '172.17.0.1 49312 22', '_CUDA_COMPAT_PATH': '/usr/local/cuda/compat', 'PATH': '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin', 'C_INCLUDE_PATH': '/ugache:/opt/gurobi-install/linux64/include', 'SSH_TTY': '/dev/pts/1', 'OLDPWD': '/ugache', 'TF2_BEHAVIOR': '1'})
+config:eval_tsp="2023-07-28 17:41:06"
 config:gpu_num=4
 config:iter_num=3000
 config:slot_num=26
@@ -21,157 +21,161 @@ config:tf_vector_type=<dtype: 'float32'>
 config:ps_config_file=run-configs/COLL_dcn_CR_policy_HPS_cache_rate_0.02_batch_size_32768_mock_882774592_128_scale_nb_16.json
 config:cache_percent=0.02
 config:dense_model_path=plain
-config:dataset_path=/nvme/songxiaoniu/hps-dataset/criteo_tb/saved_dataset
+config:dataset_path=/datasets_dlr/processed/criteo_tb
 config:sok_use_hashtable=False
 config:random_request=False
 config:alpha=None
 config:max_vocabulary_size=882774592
 config:_empty_feat=25
 [INFO] hierarchical_parameter_server is imported
-worker 3 at process 247319
+worker 2 at process 86923
 [INFO]: sparse_operation_kit is imported
 Loading Criteo TB
-load criteo from  /nvme/songxiaoniu/criteo-TB/processed/day_concat.sparse
+load data from  /datasets_dlr/processed/criteo_tb/day_concat.sparse/dense/label
 250000000
-worker 2 at process 247318
+worker 0 at process 86921
 [INFO]: sparse_operation_kit is imported
 Loading Criteo TB
-load criteo from  /nvme/songxiaoniu/criteo-TB/processed/day_concat.sparse
+load data from  /datasets_dlr/processed/criteo_tb/day_concat.sparse/dense/label
 250000000
-worker 0 at process 247316
+worker 1 at process 86922
 [INFO]: sparse_operation_kit is imported
 Loading Criteo TB
-load criteo from  /nvme/songxiaoniu/criteo-TB/processed/day_concat.sparse
+load data from  /datasets_dlr/processed/criteo_tb/day_concat.sparse/dense/label
 250000000
-worker 1 at process 247317
+worker 3 at process 86924
 [INFO]: sparse_operation_kit is imported
 Loading Criteo TB
-load criteo from  /nvme/songxiaoniu/criteo-TB/processed/day_concat.sparse
+load data from  /datasets_dlr/processed/criteo_tb/day_concat.sparse/dense/label
 250000000
-100 time 1.32895e-05 0.0670212
-100 time 1.33443e-05 0.0700544
-100 time 1.29652e-05 0.0702187
-100 time 1.36137e-05 0.0702184
-200 time 1.18256e-05 0.00655757
-200 time 1.23191e-05 0.00663755
-200 time 1.47843e-05 0.00668968
-200 time 1.38712e-05 0.00673102
-300 time 1.1611e-05 0.00638145
-300 time 1.31726e-05 0.00639738
-300 time 1.30868e-05 0.00659033
-300 time 1.4298e-05 0.00663299
-400 time 1.26815e-05 0.00639028
-400 time 1.29986e-05 0.00644398
-400 time 1.37186e-05 0.00641665
-400 time 1.21188e-05 0.00660291
-500 time 1.10364e-05 0.00633639
-500 time 1.27411e-05 0.00629566
-500 time 1.21379e-05 0.00632882
-500 time 1.20425e-05 0.00650006
-600 time 1.6346e-05 0.00630987
-600 time 1.29175e-05 0.00639282
-600 time 1.31869e-05 0.0064107
-600 time 1.31011e-05 0.00636434
-700 time 1.30844e-05 0.00641305
-700 time 1.36447e-05 0.00634652
-700 time 1.51348e-05 0.00644303
-700 time 1.27459e-05 0.00646791
-800 time 1.24335e-05 0.00629393
-800 time 1.25432e-05 0.00632384
-800 time 1.15776e-05 0.00641781
-800 time 1.32179e-05 0.0063846
-900 time 1.19185e-05 0.00640336
-900 time 1.40762e-05 0.00642891
-900 time 1.28102e-05 0.00650867
-900 time 1.22023e-05 0.00658772
-1000 time 1.29676e-05 0.00645553
-1000 time 1.3237e-05 0.00645732
-1000 time 1.32394e-05 0.00651496
-1000 time 1.35779e-05 0.00653717
-1100 time 1.24502e-05 0.00632775
-1100 time 1.29175e-05 0.00640048
-1100 time 1.45888e-05 0.00646097
-1100 time 1.2517e-05 0.00646716
-1200 time 1.39594e-05 0.00635104
-1200 time 1.20187e-05 0.00644444
-1200 time 1.34754e-05 0.00650082
-1200 time 1.20544e-05 0.00658945
-1300 time 1.29437e-05 0.00632476
-1300 time 1.69659e-05 0.00633568
-1300 time 1.20115e-05 0.00642195
-1300 time 1.18589e-05 0.00651197
-1400 time 1.27482e-05 0.00639885
-1400 time 1.29032e-05 0.00639684
-1400 time 1.2579e-05 0.00653363
-1400 time 1.43766e-05 0.00645487
-1500 time 1.34635e-05 0.00630594
-1500 time 1.29533e-05 0.00641199
-1500 time 1.27554e-05 0.00641623
-1500 time 1.3237e-05 0.00646152
-1600 time 1.28579e-05 0.00638244
-1600 time 1.40929e-05 0.00637131
-1600 time 1.29914e-05 0.00655284
-1600 time 1.28579e-05 0.00649217
-1700 time 1.34301e-05 0.00627036
-1700 time 1.32227e-05 0.00633184
-1700 time 1.22738e-05 0.00643449
-1700 time 1.21999e-05 0.0065286
-1800 time 1.42932e-05 0.00623763
-1800 time 1.26624e-05 0.00636183
-1800 time 1.3001e-05 0.00644923
-1800 time 1.20425e-05 0.00660091
-1900 time 1.18828e-05 0.00622919
-1900 time 1.20234e-05 0.00631268
-1900 time 1.31059e-05 0.00634466
-1900 time 1.29247e-05 0.00651908
-2000 time 1.29771e-05 0.00623153
-2000 time 1.41978e-05 0.0064079
-2000 time 1.27029e-05 0.00650888
-2000 time 1.31845e-05 0.00653343
-2100 time 1.27029e-05 0.00615359
-2100 time 1.22738e-05 0.00623175
-2100 time 1.28245e-05 0.00646202
-2100 time 1.29175e-05 0.00650831
-2200 time 1.23596e-05 0.00624245
-2200 time 1.30463e-05 0.00624827
-2200 time 1.3113e-05 0.00639315
-2200 time 1.29652e-05 0.00652668
-2300 time 1.3299e-05 0.00617264
-2300 time 1.30367e-05 0.00635703
-2300 time 1.32585e-05 0.00637833
-2300 time 1.29724e-05 0.00655623
-2400 time 1.27506e-05 0.0062229
-2400 time 1.4298e-05 0.00640241
-2400 time 1.31464e-05 0.0064559
-2400 time 1.24931e-05 0.00646015
-2500 time 1.86491e-05 0.00613401
-2500 time 1.38974e-05 0.00629412
-2500 time 1.21856e-05 0.00632329
-2500 time 1.2629e-05 0.006558
-2600 time 1.51324e-05 0.00617878
-2600 time 1.29199e-05 0.00635196
-2600 time 1.22857e-05 0.00641892
-2600 time 1.37019e-05 0.00650495
-2700 time 1.19662e-05 0.00611928
-2700 time 1.23644e-05 0.00627103
-2700 time 1.29342e-05 0.00635651
-2700 time 1.23477e-05 0.00645239
-2800 time 1.25933e-05 0.00626858
-2800 time 1.28961e-05 0.00619322
-2800 time 1.38187e-05 0.00644258
-2800 time 1.23096e-05 0.0065309
-2900 time 1.37901e-05 0.00621119
-2900 time 1.3566e-05 0.00627693
-2900 time 1.34706e-05 0.00636288
-2900 time 1.21045e-05 0.00642852
-3000 time 1.27816e-05 0.00610747
-3000 time 1.20378e-05 0.00629533
-3000 time 1.27864e-05 0.00649419
-3000 time 1.31059e-05 0.00653193
+no proxy in env
+no proxy in env
+no proxy in env
+no proxy in env
+[GPU0] 100 time 1.50299e-05 0.0660625
+[GPU1] 100 time 1.51563e-05 0.0662512
+[GPU3] 100 time 1.38736e-05 0.0672582
+[GPU2] 100 time 1.42336e-05 0.0686154
+[GPU0] 200 time 1.27435e-05 0.00660892
+[GPU1] 200 time 1.32036e-05 0.00665279
+[GPU3] 200 time 1.34778e-05 0.00667084
+[GPU2] 200 time 1.50061e-05 0.00695144
+[GPU0] 300 time 1.24955e-05 0.00644803
+[GPU1] 300 time 1.31011e-05 0.00643512
+[GPU3] 300 time 1.21951e-05 0.00657531
+[GPU2] 300 time 1.32799e-05 0.00669359
+[GPU1] 400 time 1.23477e-05 0.00637611
+[GPU0] 400 time 1.32656e-05 0.00642504
+[GPU3] 400 time 1.28484e-05 0.00654717
+[GPU2] 400 time 1.4298e-05 0.0065766
+[GPU3] 500 time 1.27387e-05 0.00646622
+[GPU0] 500 time 1.28794e-05 0.00657799
+[GPU2] 500 time 1.40905e-05 0.00656199
+[GPU1] 500 time 1.38044e-05 0.00657161
+[GPU1] 600 time 1.28007e-05 0.0064617
+[GPU3] 600 time 1.27769e-05 0.00649899
+[GPU2] 600 time 1.4751e-05 0.00658011
+[GPU0] 600 time 1.28293e-05 0.00662834
+[GPU0] 700 time 1.30343e-05 0.00646487
+[GPU1] 700 time 1.41191e-05 0.0064663
+[GPU3] 700 time 1.44243e-05 0.00652694
+[GPU2] 700 time 1.36495e-05 0.00672971
+[GPU1] 800 time 1.27912e-05 0.00631896
+[GPU3] 800 time 1.29867e-05 0.00653964
+[GPU0] 800 time 1.32298e-05 0.00657219
+[GPU2] 800 time 1.33562e-05 0.00690044
+[GPU3] 900 time 1.29199e-05 0.00648696
+[GPU1] 900 time 1.27673e-05 0.00647942
+[GPU0] 900 time 1.3659e-05 0.00657043
+[GPU2] 900 time 1.21164e-05 0.00673822
+[GPU3] 1000 time 1.29557e-05 0.00643188
+[GPU0] 1000 time 1.24598e-05 0.00651157
+[GPU1] 1000 time 1.36948e-05 0.00672907
+[GPU2] 1000 time 2.96903e-05 0.00678269
+[GPU0] 1100 time 1.25718e-05 0.00647907
+[GPU1] 1100 time 1.29032e-05 0.00645486
+[GPU3] 1100 time 1.36518e-05 0.00652103
+[GPU2] 1100 time 1.51777e-05 0.0066507
+[GPU3] 1200 time 1.28675e-05 0.00648457
+[GPU0] 1200 time 1.40691e-05 0.00649082
+[GPU1] 1200 time 1.40834e-05 0.00653866
+[GPU2] 1200 time 1.33944e-05 0.00656389
+[GPU3] 1300 time 1.34063e-05 0.00637081
+[GPU1] 1300 time 1.5974e-05 0.00644738
+[GPU0] 1300 time 1.34087e-05 0.00644082
+[GPU2] 1300 time 1.2939e-05 0.00690773
+[GPU1] 1400 time 1.261e-05 0.00651975
+[GPU0] 1400 time 1.29914e-05 0.0064839
+[GPU3] 1400 time 1.25027e-05 0.00657256
+[GPU2] 1400 time 1.44458e-05 0.00661777
+[GPU1] 1500 time 1.39213e-05 0.00638703
+[GPU3] 1500 time 1.37472e-05 0.00646842
+[GPU0] 1500 time 1.39236e-05 0.00652013
+[GPU2] 1500 time 1.30391e-05 0.00680948
+[GPU1] 1600 time 1.19352e-05 0.00631536
+[GPU0] 1600 time 1.31321e-05 0.00637176
+[GPU3] 1600 time 1.25813e-05 0.00646886
+[GPU2] 1600 time 1.19328e-05 0.00670629
+[GPU3] 1700 time 1.2579e-05 0.00645463
+[GPU0] 1700 time 1.35589e-05 0.00645367
+[GPU1] 1700 time 1.28365e-05 0.00645218
+[GPU2] 1700 time 1.32942e-05 0.00662962
+[GPU0] 1800 time 1.26505e-05 0.0063572
+[GPU1] 1800 time 1.34277e-05 0.00649764
+[GPU3] 1800 time 1.33491e-05 0.00653716
+[GPU2] 1800 time 1.22023e-05 0.00669868
+[GPU0] 1900 time 1.34182e-05 0.00636112
+[GPU1] 1900 time 1.32608e-05 0.00638012
+[GPU3] 1900 time 1.33514e-05 0.00650387
+[GPU2] 1900 time 1.2598e-05 0.00665787
+[GPU1] 2000 time 1.27602e-05 0.00632276
+[GPU0] 2000 time 1.26719e-05 0.00634442
+[GPU3] 2000 time 1.29652e-05 0.00648752
+[GPU2] 2000 time 1.40309e-05 0.00671115
+[GPU3] 2100 time 1.38879e-05 0.00642989
+[GPU1] 2100 time 1.35612e-05 0.00648835
+[GPU0] 2100 time 1.33324e-05 0.00652225
+[GPU2] 2100 time 1.24621e-05 0.00661987
+[GPU0] 2200 time 1.28579e-05 0.00629177
+[GPU3] 2200 time 1.261e-05 0.00639722
+[GPU1] 2200 time 1.36137e-05 0.00632272
+[GPU2] 2200 time 1.42097e-05 0.0065033
+[GPU1] 2300 time 1.24049e-05 0.00632314
+[GPU0] 2300 time 1.34373e-05 0.00636736
+[GPU3] 2300 time 1.32966e-05 0.00652717
+[GPU2] 2300 time 1.25742e-05 0.00655268
+[GPU0] 2400 time 1.2722e-05 0.00635696
+[GPU1] 2400 time 1.28603e-05 0.00639003
+[GPU3] 2400 time 1.41668e-05 0.00646261
+[GPU2] 2400 time 1.24311e-05 0.0065997
+[GPU3] 2500 time 1.26171e-05 0.00640396
+[GPU0] 2500 time 1.333e-05 0.00634556
+[GPU1] 2500 time 1.31202e-05 0.00652323
+[GPU2] 2500 time 1.34182e-05 0.00669025
+[GPU1] 2600 time 1.33395e-05 0.00626904
+[GPU3] 2600 time 1.25003e-05 0.00634873
+[GPU0] 2600 time 1.39141e-05 0.00636414
+[GPU2] 2600 time 1.21164e-05 0.00660776
+[GPU1] 2700 time 1.34134e-05 0.00626248
+[GPU0] 2700 time 1.31369e-05 0.00634348
+[GPU3] 2700 time 1.39761e-05 0.00640887
+[GPU2] 2700 time 1.27459e-05 0.00670301
+[GPU1] 2800 time 1.28365e-05 0.00627684
+[GPU0] 2800 time 1.34254e-05 0.00639341
+[GPU3] 2800 time 1.38044e-05 0.00647334
+[GPU2] 2800 time 1.36662e-05 0.0067209
+[GPU0] 2900 time 1.2629e-05 0.00627192
+[GPU3] 2900 time 1.32799e-05 0.00636152
+[GPU1] 2900 time 1.30415e-05 0.00636872
+[GPU2] 2900 time 1.24335e-05 0.00662777
+[GPU0] 3000 time 1.22905e-05 0.00630202
+[GPU1] 3000 time 1.23191e-05 0.00629203
+[GPU3] 3000 time 1.28651e-05 0.00642707
+[GPU2] 3000 time 1.43099e-05 0.00681481
 [CUDA] worker0 cuda mem usage: 11.40 GB
     [Step(average) Profiler Level 1 E2 S3999]
         L1  sample           0.000000 | send           0.000000
-        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.006381
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.006477
         L1  feature nbytes 0.00 Bytes | label nbytes 0.00 Bytes
         L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
         L1  miss nbytes    0.00 Bytes | remote nbytes 0.00 Bytes
@@ -179,7 +183,7 @@ load criteo from  /nvme/songxiaoniu/criteo-TB/processed/day_concat.sparse
         L1  seq duration     0.000000 | refresh duration   0.000000
     [Step(average) Profiler Level 2 E2 S3999]
         L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
-        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.002154
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.002143
         L2  last layer sample time 0.000000 | size 0.000000
     [Step(average) Profiler Level 3 E2 S3999]
         L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000

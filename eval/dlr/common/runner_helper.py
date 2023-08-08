@@ -74,6 +74,8 @@ class Dataset(Enum):
   simple_uniform            = None,                      None,          None,         100000000, 25
   criteo_tb                 = "criteo_tb",               "CR",          "CR",         882774592, 26
   syn                       = "syn_a12_s100_c800m",      "SYN",         "SYN-A",      800000000, 100
+  syn_14                    = "syn_a14_s100_c800m",      "SYN_14",      "SYN-B",      800000000, 100
+  syn_14_50                 = "syn_a14_s50_c800m",       "SYN_14_50",   "SYN_14_50",  800000000, 50
   criteo_kaggle             = "criteo_kaggle",           "CK",          "CK",         33762604, 26
 
 class RandomDataset:
