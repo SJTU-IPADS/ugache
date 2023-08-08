@@ -1,0 +1,212 @@
+[2023-08-06 10:30:34.667728: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cpu/mmap_cpu_device.cc:113] mmap allocating space 13.46 GB
+[2023-08-06 10:30:34.667808: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cpu/mmap_cpu_device.cc:118] mmap allocating space 13.46 GB done
+[2023-08-06 10:30:34.667819: E /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/common.cc:229] From MMAP reading disk 13.46 GB
+[2023-08-06 10:30:39.369370: E /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/common.cc:243] From MMAP reading done
+[2023-08-06 10:30:45. 38854: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cpu/cpu_device.cc:39] WORKER[0] alloc host memory 13.46 GB
+[2023-08-06 10:30:45.530287: E /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/engine.cc:277] Train set size 15.29 MB
+[2023-08-06 10:30:45.530607: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cpu/mmap_cpu_device.cc:113] mmap allocating space 146.78 GB
+[2023-08-06 10:30:45.530627: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cpu/mmap_cpu_device.cc:118] mmap allocating space 146.78 GB done
+/usr/lib/python3/dist-packages/requests/__init__.py:89: RequestsDependencyWarning: urllib3 (1.26.12) or chardet (3.0.4) doesn't match a supported version!
+  warnings.warn("urllib3 ({}) or chardet ({}) doesn't match a supported "
+[2023-08-06 10:30:49.134652: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:687] Trainer[0] initializing...
+[2023-08-06 10:30:49.200641: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:687] Trainer[5] initializing...
+[2023-08-06 10:30:49.236836: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:687] Trainer[2] initializing...
+[2023-08-06 10:30:49.285341: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:687] Trainer[4] initializing...
+[2023-08-06 10:30:49.367179: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:687] Trainer[3] initializing...
+[2023-08-06 10:30:49.404579: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:687] Trainer[1] initializing...
+[2023-08-06 10:30:50.825199: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:691] Trainer[0] pin memory queue...
+[2023-08-06 10:30:50.840437: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:691] Trainer[5] pin memory queue...
+[2023-08-06 10:30:50.857617: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:691] Trainer[2] pin memory queue...
+[2023-08-06 10:30:50.865988: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:691] Trainer[4] pin memory queue...
+[2023-08-06 10:30:50.876699: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:691] Trainer[3] pin memory queue...
+[2023-08-06 10:30:50.877232: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:691] Trainer[1] pin memory queue...
+[2023-08-06 10:31:33. 92165: E /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:85] Running on A100
+[2023-08-06 10:31:33. 92632: E /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:85] Running on A100
+[2023-08-06 10:31:33. 93309: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:726] Trainer[4] register host memory...
+[2023-08-06 10:31:33. 93722: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:726] Trainer[2] register host memory...
+[2023-08-06 10:31:33. 93831: E /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:85] Running on A100
+[2023-08-06 10:31:33. 94735: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:726] Trainer[1] register host memory...
+[2023-08-06 10:31:33.102228: E /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:85] Running on A100
+[2023-08-06 10:31:33.102997: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:726] Trainer[0] register host memory...
+[2023-08-06 10:31:33.163746: E /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:85] Running on A100
+[2023-08-06 10:31:33.163971: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:726] Trainer[5] register host memory...
+[2023-08-06 10:31:33.186180: E /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:85] Running on A100
+[2023-08-06 10:31:33.186254: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:726] Trainer[3] register host memory...
+[2023-08-06 10:31:33.311780: E /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:85] Running on A100
+[2023-08-06 10:31:33.311859: [E2023-08-06 10:31:33 ./nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc311888:: 85W]  Running on A100/nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cpu/cpu_device.cc
+:39] WORKER[0] alloc host memory 15.29 MB
+[2023-08-06 10:31:33.317323: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cuda/cuda_device.cc:49] GPU[6] alloc cuda memory 250.28 MB
+[2023-08-06 10:31:33.374614: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cuda/cuda_device.cc:49] GPU[6] alloc cuda memory 13.46 GB
+[2023-08-06 10:31:35.314505: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cpu/cpu_device.cc:39] WORKER[0] alloc host memory 19.12 MB
+[2023-08-06 10:31:35.320733: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cuda/cuda_device.cc:49] GPU[6] alloc cuda memory 512.00 MB
+[2023-08-06 10:31:35.321648: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cuda/cuda_device.cc:49] GPU[6] alloc cuda memory 48.34 MB
+[2023-08-06 10:31:35.322203: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cuda/cuda_device.cc:49] GPU[6] alloc cuda memory 36.25 MB
+[2023-08-06 10:31:35.322281: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cpu/cpu_device.cc:39] WORKER[0] alloc host memory 19.12 MB
+[2023-08-06 10:31:35.326536: E /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/pre_sampler.cc:41] Dist Presampler making shuffler...
+[2023-08-06 10:31:35.326570: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cpu/cpu_device.cc:39] WORKER[0] alloc host memory 19.12 MB
+[2023-08-06 10:31:35.331228: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cuda/cuda_device.cc:49] GPU[6] alloc cuda memory 19.12 MB
+[2023-08-06 10:31:35.331252: E /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/pre_sampler.cc:44] Dist Presampler making shuffler...Done
+[2023-08-06 10:31:35.331263: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cpu/cpu_device.cc:39] WORKER[0] alloc host memory 500.55 MB
+[2023-08-06 10:31:35.403811: E /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/pre_sampler.cc:85] Dist Presampler doing presample epoch 0
+[2023-08-06 10:31:35.461699: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cuda/cuda_device.cc:49] GPU[6] alloc cuda memory 36.62 MB
+[2023-08-06 10:31:35.461852: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cuda/cuda_device.cc:49] GPU[6] alloc cuda memory 36.62 MB
+[2023-08-06 10:31:35.461980: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cuda/cuda_device.cc:49] GPU[6] alloc cuda memory 36.62 MB
+[2023-08-06 10:31:35.462116: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cuda/cuda_device.cc:49] GPU[6] alloc cuda memory 36.62 MB
+[2023-08-06 10:31:35.467672: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cuda/cuda_device.cc:49] GPU[6] alloc cuda memory 36.30 MB
+[2023-08-06 10:31:35.468606: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cpu/cpu_device.cc:39] WORKER[0] alloc host memory 30.76 MB
+[2023-08-06 10:31:53.404754: E /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/pre_sampler.cc:129] presample spend 8.33809 on sample, 0.995017 on copy, 8.65368 on count
+[2023-08-06 10:31:53.404846: E /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/pre_sampler.cc:85] Dist Presampler doing presample epoch 1
+[2023-08-06 10:32:11.880700: E /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/pre_sampler.cc:129] presample spend 16.6771 on sample, 1.98777 on copy, 17.7838 on count
+[2023-08-06 10:32:11.880846: E /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/pre_sampler.cc:136] max_num_inputs = 6475099, min_num_inputs = 6363078
+[2023-08-06 10:32:11.991545: E /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/pre_sampler.cc:148] presample spend 0.110597 on sort freq.
+[2023-08-06 10:32:12. 76130: E /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:549] pre sample done, delete it
+[[[[[2023-08-06 10:32:122023-08-06 10:32:122023-08-06 10:32:122023-08-06 10:32:12.2023-08-06 10:32:12 87006....:  87008 87011 87013 87015W: : : :  WWW[W/nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc    2023-08-06 10:32:12:/nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc/nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc/nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc/nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc.736:::: 87029] 736Trainer[4] building cache...736736736: ] 
+Trainer[2] building cache...] ] ] W
+Trainer[1] building cache...Trainer[0] building cache...Trainer[5] building cache... 
+
+
+/nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/dist/dist_engine.cc:736] Trainer[3] building cache...
+[[[2023-08-06 10:32:122023-08-06 10:32:122023-08-06 10:32:12... 88132 88133 88132: : : EEE   /ugache/coll_cache_lib/run_config.cc/ugache/coll_cache_lib/run_config.cc/ugache/coll_cache_lib/run_config.cc:::160160160] ] ] using concurrent impl 9using concurrent impl 9using concurrent impl 9
+
+
+[[[2023-08-06 10:32:122023-08-06 10:32:122023-08-06 10:32:12... 88194 88194 88194: : : EEE   /ugache/coll_cache_lib/facade.cc/ugache/coll_cache_lib/facade.cc/ugache/coll_cache_lib/facade.cc:::309309309] ] ] before scale, dtype is 0, dim is 256before scale, dtype is 0, dim is 256before scale, dtype is 0, dim is 256
+
+
+[[2023-08-06 10:32:12[2023-08-06 10:32:12.2023-08-06 10:32:12. 88228. 88228:  88229: E: E E /ugache/coll_cache_lib/facade.cc /ugache/coll_cache_lib/facade.cc:/ugache/coll_cache_lib/facade.cc:315:315] [315] after scale, dtype is 7, new dim is 642023-08-06 10:32:12] after scale, dtype is 7, new dim is 64
+.after scale, dtype is 7, new dim is 64
+ 88244
+: E /ugache/coll_cache_lib/run_config.cc:160] using concurrent impl 9
+[2023-08-06 10:32:12. 88292: E /ugache/coll_cache_lib/facade.cc:309] before scale, dtype is 0, dim is 256
+[2023-08-06 10:32:12. 88303: E /ugache/coll_cache_lib/facade.cc:315] after scale, dtype is 7, new dim is 64
+[2023-08-06 10:32:12. 89309: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:297] assigning 0 to cpu
+[2023-08-06 10:32:12. 89339: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:314] build symm link desc with 6X NVIDIA A100-SXM4-80GB out of 8
+[2023-08-06 10:32:12. 89366: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:315] remote time is 24.3333
+[2023-08-06 10:32:12. 89377: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:316] cpu time is 91.25
+[2023-08-06 10:32:12. 89404: E /ugache/coll_cache_lib/facade.cc:326] registering cpu data with 32.00 GB
+[2023-08-06 10:32:12. 89599: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:297] assigning 0 to cpu
+[2023-08-06 10:32:12. 89609: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:297] assigning 0 to cpu
+[2023-08-06 10:32:12. 89623: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:314] build symm link desc with 6X NVIDIA A100-SXM4-80GB out of 8
+[2023-08-06 10:32:12. 89631: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:314] build symm link desc with 6X NVIDIA A100-SXM4-80GB out of 8
+[2023-08-06 10:32:12. 89645: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:315] remote time is 24.3333
+[2023-08-06 10:32:12. 89652: E[ 2023-08-06 10:32:12/ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc.: 89656315: ] Eremote time is 24.3333 
+/ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:316] cpu time is 91.25
+[2023-08-06 10:32:12. 89675: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:316] cpu time is 91.25
+[[2023-08-06 10:32:122023-08-06 10:32:12.. 89694 89702: : EE  /ugache/coll_cache_lib/facade.cc/ugache/coll_cache_lib/facade.cc::326326] ] registering cpu data with 32.00 GBregistering cpu data with 32.00 GB
+
+[2023-08-06 10:32:12. 89856: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:297] assigning 0 to cpu
+[2023-08-06 10:32:12. 89882: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:314] build symm link desc with 6X NVIDIA A100-SXM4-80GB out of 8
+[2023-08-06 10:32:12. 89917: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:315] remote time is 24.3333
+[2023-08-06 10:32:12. 89928: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:316] cpu time is 91.25
+[2023-08-06 10:32:12. 89956: E /ugache/coll_cache_lib/facade.cc:326] registering cpu data with 32.00 GB
+[[2023-08-06 10:32:12.2023-08-06 10:32:12194393.: 194394E:  E/ugache/coll_cache_lib/run_config.cc :/ugache/coll_cache_lib/run_config.cc160:] 160] using concurrent impl 9using concurrent impl 9
+
+[[2023-08-06 10:32:122023-08-06 10:32:12..194456194457: : EE  /ugache/coll_cache_lib/facade.cc/ugache/coll_cache_lib/facade.cc::309309] ] before scale, dtype is 0, dim is 256before scale, dtype is 0, dim is 256
+
+[[2023-08-06 10:32:122023-08-06 10:32:12..194477194477: : EE  /ugache/coll_cache_lib/facade.cc/ugache/coll_cache_lib/facade.cc::315315] ] after scale, dtype is 7, new dim is 64after scale, dtype is 7, new dim is 64
+
+[2023-08-06 10:32:12.195560: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:297] assigning 0 to cpu
+[2023-08-06 10:32:12.195587: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:314] build symm link desc with 6X NVIDIA A100-SXM4-80GB out of 8
+[2023-08-06 10:32:12.195616: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:315] remote time is 24.3333
+[2023-08-06 10:32:12.195627: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:316] cpu time is 91.25
+[2023-08-06 10:32:12.195655: E /ugache/coll_cache_lib/facade.cc:326] registering cpu data with 32.00 GB
+[2023-08-06 10:32:12.195683: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:297] assigning 0 to cpu
+[2023-08-06 10:32:12.195760: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:314] build symm link desc with 6X NVIDIA A100-SXM4-80GB out of 8
+[2023-08-06 10:32:12.195784: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:315] remote time is 24.3333
+[2023-08-06 10:32:12.195795: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:316] cpu time is 91.25
+[2023-08-06 10:32:12.195819: E /ugache/coll_cache_lib/facade.cc:326] registering cpu data with 32.00 GB
+[2023-08-06 10:32:17.244543: E /ugache/coll_cache_lib/facade.cc:328] registering cpu data done.
+[2023-08-06 10:32:17.244628: E /ugache/coll_cache_lib/facade.cc:328] registering cpu data done.
+[2023-08-06 10:32:17.244908: E /ugache/coll_cache_lib/facade.cc:328] registering cpu data done.
+[2023-08-06 10:32:17.253754: E /ugache/coll_cache_lib/facade.cc:328] registering cpu data done.
+[2023-08-06 10:32:17.269930: E /ugache/coll_cache_lib/facade.cc:328] registering cpu data done.
+[2023-08-06 10:32:17.277217: E /ugache/coll_cache_lib/facade.cc:328] registering cpu data done.
+[2023-08-06 10:32:17.277259: E /ugache/coll_cache_lib/facade.cc:109] creating solver
+[2023-08-06 10:32:17.277270: E /ugache/coll_cache_lib/facade.cc:153] solver created. now build & solve
+[2023-08-06 10:32:17.314939: E /ugache/coll_cache_lib/facade.cc:158] solver built. now solve
+[2023-08-06 10:32:17.314970: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1860] num_cached_nodes = 28867681
+[2023-08-06 10:32:17.486566: E /ugache/coll_cache_lib/facade.cc:162] solver solved
+[2023-08-06 10:32:17.486637: E /ugache/coll_cache_lib/facade.cc:338] 0 solved master
+[2023-08-06 10:32:17.486662: E /ugache/coll_cache_lib/facade.cc:345] 0 solved
+[2023-08-06 10:32:17.486675: E /ugache/coll_cache_lib/facade.cc:348] worker 0 thread 0 initing device 0
+[2023-08-06 10:32:17.488001: E /ugache/coll_cache_lib/cache_context.cu:2388] Building Coll Cache with ... num gpu device is 6
+[2023-08-06 10:32:17.488090: E /ugache/coll_cache_lib/cuda/cache_hashtable.cuh:764] per src size local is 31754549
+[2023-08-06 10:32:17.496976: E /ugache/coll_cache_lib/facade.cc:345] 3 solved
+[2023-08-06 10:32:17.497002: E /ugache/coll_cache_lib/facade.cc:348] worker 3 thread 3 initing device 3
+[2023-08-06 10:32:17.497038: E[ 2023-08-06 10:32:17/ugache/coll_cache_lib/facade.cc.:497044345: ] E2 solved 
+/ugache/coll_cache_lib/facade.cc:345] 4 solved[
+2023-08-06 10:32:17.497069: E [/ugache/coll_cache_lib/facade.cc2023-08-06 10:32:17:.348497074] : worker 2 thread 2 initing device 2E
+ /ugache/coll_cache_lib/facade.cc:348] worker 4 thread 4 initing device 4
+[[[2023-08-06 10:32:172023-08-06 10:32:172023-08-06 10:32:17...498292498292498292: : : EEE   /ugache/coll_cache_lib/cache_context.cu/ugache/coll_cache_lib/cache_context.cu/ugache/coll_cache_lib/cache_context.cu:::238823882388] ] ] Building Coll Cache with ... num gpu device is 6Building Coll Cache with ... num gpu device is 6Building Coll Cache with ... num gpu device is 6
+
+
+[[2023-08-06 10:32:17.2023-08-06 10:32:17504209.: 504209E:  E/ugache/coll_cache_lib/facade.cc :/ugache/coll_cache_lib/facade.cc345:] 345] 5 solved1 solved
+
+[[2023-08-06 10:32:172023-08-06 10:32:17..504260504260: : EE  /ugache/coll_cache_lib/facade.cc/ugache/coll_cache_lib/facade.cc::348348] ] worker 1 thread 1 initing device 1worker 5 thread 5 initing device 5
+
+[[2023-08-06 10:32:172023-08-06 10:32:17..505302505302: : EE  /ugache/coll_cache_lib/cache_context.cu/ugache/coll_cache_lib/cache_context.cu::23882388] ] Building Coll Cache with ... num gpu device is 6Building Coll Cache with ... num gpu device is 6
+
+[2023-08-06 10:32:17.567831: E /ugache/coll_cache_lib/common.cc:261] making a tensor with 0 num item
+[2023-08-06 10:32:17.567898: E /ugache/coll_cache_lib/cache_context.cu:2431] num cpu nodes is 36740685
+[2023-08-06 10:32:17.568219: E /ugache/coll_cache_lib/common.cc:261] making a tensor with 0 num item
+[2023-08-06 10:32:17.568253: E /ugache/coll_cache_lib/cache_context.cu:2431] num cpu nodes is 36740685
+[2023-08-06 10:32:17.568457: E /ugache/coll_cache_lib/common.cc:261] making a tensor with 0 num item
+[2023-08-06 10:32:17.568487: E /ugache/coll_cache_lib/cache_context.cu:2431] num cpu nodes is 36740685
+[2023-08-06 10:32:17.570114: E /ugache/coll_cache_lib/common.cc:261] making a tensor with 0 num item
+[2023-08-06 10:32:17.570166: E /ugache/coll_cache_lib/cache_context.cu:2431] num cpu nodes is 36740685
+[2023-08-06 10:32:17.574499: E /ugache/coll_cache_lib/common.cc:261] making a tensor with 0 num item
+[2023-08-06 10:32:17.574536: E /ugache/coll_cache_lib/cache_context.cu:2431] num cpu nodes is 36740685
+[2023-08-06 10:32:17.588907: E /ugache/coll_cache_lib/common.cc:261] making a tensor with 0 num item
+[2023-08-06 10:32:17.588941: E /ugache/coll_cache_lib/cache_context.cu:2431] num cpu nodes is 36740685
+[2023-08-06 10:32:20. 40941: E /ugache/coll_cache_lib/cache_context.cu:2454] simple hashtable too large, use flat hashtable
+[2023-08-06 10:32:20. 40993: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:593] create a hashtable with 65608366
+[2023-08-06 10:32:20. 41017: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:598] FlatHashTable allocating 250.28 MB
+[2023-08-06 10:32:20. 42488: E /ugache/coll_cache_lib/cache_context.cu:2454] simple hashtable too large, use flat hashtable
+[2023-08-06 10:32:20. 42521: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:593] create a hashtable with 65608366
+[2023-08-06 10:32:20. 42536: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:598] FlatHashTable allocating 250.28 MB
+[2023-08-06 10:32:20. 43681: E /ugache/coll_cache_lib/cache_context.cu:2454] simple hashtable too large, use flat hashtable
+[2023-08-06 10:32:20. 43735: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:593] create a hashtable with 65608366
+[2023-08-06 10:32:20. 43757: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:598] FlatHashTable allocating 250.28 MB
+[2023-08-06 10:32:20. 44264: E /ugache/coll_cache_lib/cache_context.cu:2454] simple hashtable too large, use flat hashtable
+[2023-08-06 10:32:20. 44296: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:593] create a hashtable with 65608366
+[2023-08-06 10:32:20. 44312: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:598] FlatHashTable allocating 250.28 MB
+[2023-08-06 10:32:20. 47177: E /ugache/coll_cache_lib/cache_context.cu:2454] simple hashtable too large, use flat hashtable
+[2023-08-06 10:32:20. 47213: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:593] create a hashtable with 65608366
+[2023-08-06 10:32:20. 47229: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:598] FlatHashTable allocating 250.28 MB
+[2023-08-06 10:32:20. 49178: E /ugache/coll_cache_lib/cache_context.cu:2454] simple hashtable too large, use flat hashtable
+[2023-08-06 10:32:20. 49208: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:593] create a hashtable with 65608366
+[2023-08-06 10:32:20. 49223: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:598] FlatHashTable allocating 250.28 MB
+[2023-08-06 10:32:20. 66027: E /ugache/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?28933289->65608
+[2023-08-06 10:32:20. 66212: E /ugache/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?28933289->65608
+[2023-08-06 10:32:20. 66397: E /ugache/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?28933289->65608
+[2023-08-06 10:32:20. 66551: E /ugache/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?28933289->65608
+[2023-08-06 10:32:20. 66727: E /ugache/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?28933289->65608
+[2023-08-06 10:32:20. 66882: E /ugache/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?28933289->65608
+[2023-08-06 10:32:20. 82114: E /ugache/coll_cache_lib/cache_context.cu:2554] Asymm Coll cache (policy: rep_cache) | local 28867681 / 65608366 nodes ( 44.00 %~44.00 %) | remote 0 / 65608366 nodes ( 0.00 %) | cpu 36740685 / 65608366 nodes ( 56.00 %) | 27.59 GB | 2.58377 secs 
+[2023-08-06 10:32:20. 83860: E /ugache/coll_cache_lib/cache_context.cu:2554] Asymm Coll cache (policy: rep_cache) | local 28867681 / 65608366 nodes ( 44.00 %~44.00 %) | remote 0 / 65608366 nodes ( 0.00 %) | cpu 36740685 / 65608366 nodes ( 56.00 %) | 27.59 GB | 2.59583 secs 
+[2023-08-06 10:32:20. 86711: E /ugache/coll_cache_lib/cache_context.cu:2554] Asymm Coll cache (policy: rep_cache) | local 28867681 / 65608366 nodes ( 44.00 %~44.00 %) | remote 0 / 65608366 nodes ( 0.00 %) | cpu 36740685 / 65608366 nodes ( 56.00 %) | 27.59 GB | 2.58836 secs 
+[2023-08-06 10:32:20. 87319: E /ugache/coll_cache_lib/cache_context.cu:2554] Asymm Coll cache (policy: rep_cache) | local 28867681 / 65608366 nodes ( 44.00 %~44.00 %) | remote 0 / 65608366 nodes ( 0.00 %) | cpu 36740685 / 65608366 nodes ( 56.00 %) | 27.59 GB | 2.58897 secs 
+[2023-08-06 10:32:20. 91854: E /ugache/coll_cache_lib/cache_context.cu:2554] Asymm Coll cache (policy: rep_cache) | local 28867681 / 65608366 nodes ( 44.00 %~44.00 %) | remote 0 / 65608366 nodes ( 0.00 %) | cpu 36740685 / 65608366 nodes ( 56.00 %) | 27.59 GB | 2.58652 secs 
+[2023-08-06 10:32:20. 92012: E /ugache/coll_cache_lib/cache_context.cu:2554] Asymm Coll cache (policy: rep_cache) | local 28867681 / 65608366 nodes ( 44.00 %~44.00 %) | remote 0 / 65608366 nodes ( 0.00 %) | cpu 36740685 / 65608366 nodes ( 56.00 %) | 27.59 GB | 2.58161 secs 
+[2023-08-06 10:32:22.790381: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cuda/cuda_device.cc:49] GPU[6] alloc cuda memory 47.38 MB
+[2023-08-06 10:32:30. 82127: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cuda/cuda_device.cc:49] GPU[0] alloc cuda memory 32.76 MB
+[2023-08-06 10:32:30. 83305: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cuda/cuda_device.cc:49] GPU[0] alloc cuda memory 39.56 MB
+[2023-08-06 10:32:30. 84370: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cuda/cuda_device.cc:49] GPU[0] alloc cuda memory 39.56 MB
+[2023-08-06 10:32:30.121527: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cuda/cuda_device.cc:49] GPU[0] alloc cuda memory 6.55 GB
+[2023-08-06 10:32:30.122520: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cuda/cuda_device.cc:49] GPU[0] alloc cuda memory 98.29 MB
+[2023-08-06 10:32:30.123415: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cuda/cuda_device.cc:49] GPU[0] alloc cuda memory 98.29 MB
+[2023-08-06 10:32:31.679670: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cuda/cuda_device.cc:49] GPU[0] alloc cuda memory 30.70 MB
+[2023-08-06 10:32:31.680820: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cuda/cuda_device.cc:49] GPU[0] alloc cuda memory 36.20 MB
+[2023-08-06 10:32:31.681886: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cuda/cuda_device.cc:49] GPU[0] alloc cuda memory 36.20 MB
+[2023-08-06 10:32:31.717000: W /nvme/songxiaoniu/ugache-sosp23ae/gnnlab/samgraph/common/cuda/cuda_device.cc:49] GPU[0] alloc cuda memory 6.55 GB
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")

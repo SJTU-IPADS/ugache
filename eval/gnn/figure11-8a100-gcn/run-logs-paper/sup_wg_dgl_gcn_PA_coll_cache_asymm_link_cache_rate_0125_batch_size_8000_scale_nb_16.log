@@ -1,0 +1,225 @@
+succeed=True
+config:eval_tsp="2023-08-06 08:10:38"
+config:num_worker=8
+config:num_intra_size=8
+config:root_dir=/datasets_gnn/wholegraph
+config:graph_name=ogbn-papers100M
+config:epochs=4
+config:batchsize=8000
+config:skip_epoch=2
+config:local_step=125
+config:presc_epoch=2
+config:neighbors=15,10,5
+config:hiddensize=256
+config:num_layer=3
+config:model=gcn
+config:framework=dgl
+config:dataloaderworkers=0
+config:dropout=0.5
+config:weight_decay=0.0005
+config:lr=0.003
+config:use_nccl=False
+config:use_amp=False
+config:use_collcache=False
+config:cache_percentage=0.25
+config:cache_policy=coll_cache_asymm_link
+config:omp_thread_num=56
+config:unsupervised=False
+config:classnum=172
+config:global_barrier=<multiprocessing.synchronize.Barrier object at 0x7f582dc79940>
+config:worker_id=0
+creating_intra_node_communicator root=0, local_size=8, world_size=8
+Rank=0, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.4941904544830322
+torch.Size([8000]) torch.Size([8000, 1])
+torch.Size([8400]) torch.Size([8400, 1])
+!!!!Train_data_list(with 18 items) enumerate latency: 3.814697265625e-06, transfer latency: 0.4633498191833496
+epoch=4 total_steps=72
+start training...
+[Epoch 0][Step 0], time=1.29007887840271, ext_time=0.0064885616302490234, train_time=1.2686750888824463
+[Epoch 0][Step 1], time=0.04486513137817383, ext_time=0.0048732757568359375, train_time=0.028496980667114258
+[Epoch 0][Step 2], time=0.04213690757751465, ext_time=0.004824399948120117, train_time=0.028509140014648438
+[Epoch 0][Step 3], time=0.041411399841308594, ext_time=0.004858493804931641, train_time=0.027758121490478516
+[Epoch 0][Step 4], time=0.04121041297912598, ext_time=0.0049326419830322266, train_time=0.027471303939819336
+[Epoch 0][Step 5], time=0.04062199592590332, ext_time=0.005167245864868164, train_time=0.026622533798217773
+[Epoch 0][Step 6], time=0.0402982234954834, ext_time=0.00514984130859375, train_time=0.026299715042114258
+[Epoch 0][Step 7], time=0.041635990142822266, ext_time=0.005056858062744141, train_time=0.02778339385986328
+[Epoch 0][Step 8], time=0.040437936782836914, ext_time=0.005019664764404297, train_time=0.026691913604736328
+[Epoch 0][Step 9], time=0.04059123992919922, ext_time=0.0052030086517333984, train_time=0.02656865119934082
+[Epoch 0][Step 10], time=0.04072451591491699, ext_time=0.005106210708618164, train_time=0.02680349349975586
+[Epoch 0][Step 11], time=0.04045915603637695, ext_time=0.005039215087890625, train_time=0.026653766632080078
+[Epoch 0][Step 12], time=0.04056429862976074, ext_time=0.00521397590637207, train_time=0.026504993438720703
+[Epoch 0][Step 13], time=0.041455745697021484, ext_time=0.005075693130493164, train_time=0.027583837509155273
+[Epoch 0][Step 14], time=0.04117107391357422, ext_time=0.005239248275756836, train_time=0.027062177658081055
+[Epoch 0][Step 15], time=0.04149198532104492, ext_time=0.0052032470703125, train_time=0.027484416961669922
+[Epoch 0][Step 16], time=0.040619611740112305, ext_time=0.004994630813598633, train_time=0.02691650390625
+[Epoch 0][Step 17], time=0.040808677673339844, ext_time=0.005217790603637695, train_time=0.026774883270263672
+[Epoch 0], time=1.991854190826416, loss=2.5756916999816895
+[Epoch 1][Step 0], time=0.04330015182495117, ext_time=0.0050048828125, train_time=0.029183149337768555
+[Epoch 1][Step 1], time=0.04075264930725098, ext_time=0.005126953125, train_time=0.026833295822143555
+[Epoch 1][Step 2], time=0.040663957595825195, ext_time=0.00502324104309082, train_time=0.026866436004638672
+[Epoch 1][Step 3], time=0.04088950157165527, ext_time=0.0050506591796875, train_time=0.0270693302154541
+[Epoch 1][Step 4], time=0.040413856506347656, ext_time=0.0051326751708984375, train_time=0.026470661163330078
+[Epoch 1][Step 5], time=0.04048323631286621, ext_time=0.005223512649536133, train_time=0.026448726654052734
+[Epoch 1][Step 6], time=0.04034137725830078, ext_time=0.005258798599243164, train_time=0.026235103607177734
+[Epoch 1][Step 7], time=0.0404047966003418, ext_time=0.0050776004791259766, train_time=0.026523828506469727
+[Epoch 1][Step 8], time=0.04043078422546387, ext_time=0.004979372024536133, train_time=0.026733875274658203
+[Epoch 1][Step 9], time=0.040610551834106445, ext_time=0.005161285400390625, train_time=0.026625394821166992
+[Epoch 1][Step 10], time=0.040676116943359375, ext_time=0.005072832107543945, train_time=0.026803016662597656
+[Epoch 1][Step 11], time=0.040494441986083984, ext_time=0.005006551742553711, train_time=0.02672433853149414
+[Epoch 1][Step 12], time=0.040619850158691406, ext_time=0.005236625671386719, train_time=0.026506662368774414
+[Epoch 1][Step 13], time=0.04065442085266113, ext_time=0.005082368850708008, train_time=0.026766061782836914
+[Epoch 1][Step 14], time=0.040630340576171875, ext_time=0.0051877498626708984, train_time=0.02655768394470215
+[Epoch 1][Step 15], time=0.04065537452697754, ext_time=0.005146026611328125, train_time=0.02671360969543457
+[Epoch 1][Step 16], time=0.04058051109313965, ext_time=0.004938364028930664, train_time=0.026925325393676758
+[Epoch 1][Step 17], time=0.04072713851928711, ext_time=0.005151271820068359, train_time=0.026765108108520508
+[Epoch 1], time=0.734389066696167, loss=2.0023787021636963
+[Epoch 2][Step 0], time=0.04209613800048828, ext_time=0.00527644157409668, train_time=0.02771472930908203
+[Epoch 2][Step 1], time=0.040801286697387695, ext_time=0.005072832107543945, train_time=0.026947021484375
+[Epoch 2][Step 2], time=0.04059886932373047, ext_time=0.005046367645263672, train_time=0.026790142059326172
+[Epoch 2][Step 3], time=0.04073953628540039, ext_time=0.005057811737060547, train_time=0.026902198791503906
+[Epoch 2][Step 4], time=0.04048776626586914, ext_time=0.0051555633544921875, train_time=0.026505470275878906
+[Epoch 2][Step 5], time=0.04049849510192871, ext_time=0.005192279815673828, train_time=0.02648615837097168
+[Epoch 2][Step 6], time=0.04030489921569824, ext_time=0.005232334136962891, train_time=0.026259660720825195
+[Epoch 2][Step 7], time=0.040422916412353516, ext_time=0.0051424503326416016, train_time=0.026480436325073242
+[Epoch 2][Step 8], time=0.04042935371398926, ext_time=0.005034446716308594, train_time=0.026679039001464844
+[Epoch 2][Step 9], time=0.04058098793029785, ext_time=0.0051174163818359375, train_time=0.026658296585083008
+[Epoch 2][Step 10], time=0.04064655303955078, ext_time=0.0050618648529052734, train_time=0.026770591735839844
+[Epoch 2][Step 11], time=0.040511369705200195, ext_time=0.0050373077392578125, train_time=0.026729583740234375
+[Epoch 2][Step 12], time=0.04060649871826172, ext_time=0.0052449703216552734, train_time=0.02649545669555664
+[Epoch 2][Step 13], time=0.04071402549743652, ext_time=0.0050868988037109375, train_time=0.026846885681152344
+[Epoch 2][Step 14], time=0.04058074951171875, ext_time=0.005092620849609375, train_time=0.026602983474731445
+[Epoch 2][Step 15], time=0.040585994720458984, ext_time=0.005148649215698242, train_time=0.026637554168701172
+[Epoch 2][Step 16], time=0.04065752029418945, ext_time=0.0049397945404052734, train_time=0.027014493942260742
+[Epoch 2][Step 17], time=0.04068708419799805, ext_time=0.0051801204681396484, train_time=0.026674985885620117
+[Epoch 2], time=0.7330210208892822, loss=1.7963883876800537
+[Epoch 3][Step 0], time=0.04352617263793945, ext_time=0.005033731460571289, train_time=0.029376506805419922
+[Epoch 3][Step 1], time=0.04077553749084473, ext_time=0.005106449127197266, train_time=0.026875734329223633
+[Epoch 3][Step 2], time=0.040812015533447266, ext_time=0.005048274993896484, train_time=0.026996850967407227
+[Epoch 3][Step 3], time=0.04115796089172363, ext_time=0.0050029754638671875, train_time=0.027376890182495117
+[Epoch 3][Step 4], time=0.04045367240905762, ext_time=0.005171060562133789, train_time=0.02644205093383789
+[Epoch 3][Step 5], time=0.04050469398498535, ext_time=0.005189418792724609, train_time=0.026500940322875977
+[Epoch 3][Step 6], time=0.04030942916870117, ext_time=0.005173921585083008, train_time=0.026307106018066406
+[Epoch 3][Step 7], time=0.04046893119812012, ext_time=0.005059242248535156, train_time=0.026618242263793945
+[Epoch 3][Step 8], time=0.04043841361999512, ext_time=0.005038022994995117, train_time=0.026689529418945312
+    [Step(average) Profiler Level 1 E3 S143]
+        L1  sample           0.010261 | send           0.000000
+        L1  recv             0.000000 | copy           0.005633 | convert time 0.000000 | train  0.024845
+        L1  feature nbytes 0.00 Bytes | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes    0.00 Bytes | remote nbytes 0.00 Bytes
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     0.000000 | refresh duration   0.000000
+    [Step(average) Profiler Level 2 E3 S143]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.005633
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(average) Profiler Level 3 E3 S143]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000000 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000000 | cache combine cache 0.000000 | cache combine remote 0.000000
+        L3  label extract  0.000000
+    [Profiler Level Percentiles E3 S143]
+        p50.00_tail_logl2featcopy=0.005558
+        p90.00_tail_logl2featcopy=0.006222
+        p95.00_tail_logl2featcopy=0.006246
+        p99.00_tail_logl2featcopy=0.012564
+        p99.90_tail_logl2featcopy=0.013518
+[CUDA] cuda: usage: 20.18 GB
+Rank=7, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.4822409152984619
+torch.Size([8000]) torch.Size([8000, 1])
+torch.Size([8400]) torch.Size([8400, 1])
+!!!!Train_data_list(with 18 items) enumerate latency: 4.0531158447265625e-06, transfer latency: 0.45645904541015625
+[Epoch 3][Step 9], time=0.04082775115966797, ext_time=0.00518488883972168, train_time=0.026827096939086914
+[Epoch 3][Step 10], time=0.04064011573791504, ext_time=0.005097866058349609, train_time=0.026735544204711914
+[Epoch 3][Step 11], time=0.04043984413146973, ext_time=0.005066394805908203, train_time=0.026587247848510742
+[Epoch 3][Step 12], time=0.04056549072265625, ext_time=0.005200862884521484, train_time=0.026482105255126953
+[Epoch 3][Step 13], time=0.04070901870727539, ext_time=0.005074262619018555, train_time=0.026811838150024414
+[Epoch 3][Step 14], time=0.04052734375, ext_time=0.005169391632080078, train_time=0.02644968032836914
+[Epoch 3][Step 15], time=0.04072380065917969, ext_time=0.0051648616790771484, train_time=0.02675175666809082
+[Epoch 3][Step 16], time=0.04056501388549805, ext_time=0.0049190521240234375, train_time=0.02692413330078125
+[Epoch 3][Step 17], time=0.0407414436340332, ext_time=0.005259275436401367, train_time=0.02663707733154297
+[Epoch 3], time=0.7353494167327881, loss=1.6955809593200684
+|===========================================================================|
+|                  PyTorch CUDA memory summary, device ID 0                 |
+|---------------------------------------------------------------------------|
+|            CUDA OOMs: 0            |        cudaMalloc retries: 0         |
+|===========================================================================|
+|        Metric         | Cur Usage  | Peak Usage | Tot Alloc  | Tot Freed  |
+|---------------------------------------------------------------------------|
+| Allocated memory      |    1200 MB |    3843 MB |     784 GB |     783 GB |
+|       from large pool |    1194 MB |    3836 MB |     782 GB |     781 GB |
+|       from small pool |       6 MB |      11 MB |       1 GB |       1 GB |
+|---------------------------------------------------------------------------|
+| Active memory         |    1200 MB |    3843 MB |     784 GB |     783 GB |
+|       from large pool |    1194 MB |    3836 MB |     782 GB |     781 GB |
+|       from small pool |       6 MB |      11 MB |       1 GB |       1 GB |
+|---------------------------------------------------------------------------|
+| GPU reserved memory   |    6724 MB |    6724 MB |    6724 MB |       0 B  |
+|       from large pool |    6708 MB |    6708 MB |    6708 MB |       0 B  |
+|       from small pool |      16 MB |      16 MB |      16 MB |       0 B  |
+|---------------------------------------------------------------------------|
+| Non-releasable memory |   99642 KB |    2878 MB |  415187 MB |  415089 MB |
+|       from large pool |   96055 KB |    2872 MB |  413352 MB |  413258 MB |
+|       from small pool |    3586 KB |       8 MB |    1834 MB |    1831 MB |
+|---------------------------------------------------------------------------|
+| Allocations           |      63    |      89    |   17172    |   17109    |
+|       from large pool |      22    |      42    |    8568    |    8546    |
+|       from small pool |      41    |      49    |    8604    |    8563    |
+|---------------------------------------------------------------------------|
+| Active allocs         |      63    |      89    |   17172    |   17109    |
+|       from large pool |      22    |      42    |    8568    |    8546    |
+|       from small pool |      41    |      49    |    8604    |    8563    |
+|---------------------------------------------------------------------------|
+| GPU reserved segments |      28    |      28    |      28    |       0    |
+|       from large pool |      20    |      20    |      20    |       0    |
+|       from small pool |       8    |       8    |       8    |       0    |
+|---------------------------------------------------------------------------|
+| Non-releasable allocs |      31    |      42    |    6658    |    6627    |
+|       from large pool |      16    |      24    |    4704    |    4688    |
+|       from small pool |      15    |      23    |    1954    |    1939    |
+|---------------------------------------------------------------------------|
+| Oversize allocations  |       0    |       0    |       0    |       0    |
+|---------------------------------------------------------------------------|
+| Oversize GPU segments |       0    |       0    |       0    |       0    |
+|===========================================================================|
+
+[TRAIN_TIME] train time is 4.195482 seconds
+[EPOCH_TIME] 1.048870 seconds, maybe large due to not enough epoch skipped.
+[EPOCH_TIME] 0.734287 seconds
+Rank=5, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.49018073081970215
+torch.Size([8000]) torch.Size([8000, 1])
+torch.Size([8400]) torch.Size([8400, 1])
+!!!!Train_data_list(with 18 items) enumerate latency: 3.5762786865234375e-06, transfer latency: 0.4656991958618164
+Rank=1, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.469588041305542
+torch.Size([8000]) torch.Size([8000, 1])
+torch.Size([8400]) torch.Size([8400, 1])
+!!!!Train_data_list(with 18 items) enumerate latency: 2.86102294921875e-06, transfer latency: 0.4477865695953369
+Rank=3, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.49660396575927734
+torch.Size([8000]) torch.Size([8000, 1])
+torch.Size([8400]) torch.Size([8400, 1])
+!!!!Train_data_list(with 18 items) enumerate latency: 4.5299530029296875e-06, transfer latency: 0.4712386131286621
+Rank=4, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.4817163944244385
+torch.Size([8000]) torch.Size([8000, 1])
+torch.Size([8400]) torch.Size([8400, 1])
+!!!!Train_data_list(with 18 items) enumerate latency: 3.5762786865234375e-06, transfer latency: 0.4655189514160156
+Rank=6, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.46904420852661133
+torch.Size([8000]) torch.Size([8000, 1])
+torch.Size([8400]) torch.Size([8400, 1])
+!!!!Train_data_list(with 18 items) enumerate latency: 2.86102294921875e-06, transfer latency: 0.44029831886291504
+Rank=2, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.5013978481292725
+torch.Size([8000]) torch.Size([8000, 1])
+torch.Size([8400]) torch.Size([8400, 1])
+!!!!Train_data_list(with 18 items) enumerate latency: 3.337860107421875e-06, transfer latency: 0.48201942443847656
+

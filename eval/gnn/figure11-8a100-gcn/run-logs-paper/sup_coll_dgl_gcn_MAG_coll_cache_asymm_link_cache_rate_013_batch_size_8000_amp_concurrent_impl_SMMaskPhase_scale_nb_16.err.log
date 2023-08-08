@@ -1,0 +1,461 @@
+/usr/lib/python3/dist-packages/requests/__init__.py:89: RequestsDependencyWarning: urllib3 (1.26.12) or chardet (3.0.4) doesn't match a supported version!
+  warnings.warn("urllib3 ({}) or chardet ({}) doesn't match a supported "
+[W socket.cpp:601] [c10d] The client socket has failed to connect to [localhost]:12335 (errno: 99 - Cannot assign requested address).
+[W socket.cpp:601] [c10d] The client socket has failed to connect to [localhost]:12335 (errno: 99 - Cannot assign requested address).
+[W socket.cpp:601] [c10d] The client socket has failed to connect to [localhost]:12335 (errno: 99 - Cannot assign requested address).
+[W socket.cpp:601] [c10d] The client socket has failed to connect to [localhost]:12335 (errno: 99 - Cannot assign requested address).
+[W socket.cpp:601] [c10d] The client socket has failed to connect to [localhost]:12335 (errno: 99 - Cannot assign requested address).
+[W socket.cpp:601] [c10d] The client socket has failed to connect to [localhost]:12335 (errno: 99 - Cannot assign requested address).
+Rank=5 done reading 30520063 embedding vectors from file /datasets_gnn/wholegraph/mag240m_homo/converted/homograph_csr_row_ptr
+Rank=4 done reading 30520063 embedding vectors from file /datasets_gnn/wholegraph/mag240m_homo/converted/homograph_csr_row_ptr
+Rank=0 done reading 30520063 embedding vectors from file /datasets_gnn/wholegraph/mag240m_homo/converted/homograph_csr_row_ptr
+Rank=1 done reading 30520063 embedding vectors from file /datasets_gnn/wholegraph/mag240m_homo/converted/homograph_csr_row_ptr
+Rank=2 done reading 30520063 embedding vectors from file /datasets_gnn/wholegraph/mag240m_homo/converted/homograph_csr_row_ptr
+Rank=3 done reading 30520063 embedding vectors from file /datasets_gnn/wholegraph/mag240m_homo/converted/homograph_csr_row_ptr
+Rank=7 done reading 30520059 embedding vectors from file /datasets_gnn/wholegraph/mag240m_homo/converted/homograph_csr_row_ptr
+Rank=6 done reading 30520063 embedding vectors from file /datasets_gnn/wholegraph/mag240m_homo/converted/homograph_csr_row_ptr
+Rank=5 done reading 431808978 embedding vectors from file /datasets_gnn/wholegraph/mag240m_homo/converted/homograph_csr_col_idx
+Rank=4 done reading 431808978 embedding vectors from file /datasets_gnn/wholegraph/mag240m_homo/converted/homograph_csr_col_idx
+Rank=0 done reading 431808978 embedding vectors from file /datasets_gnn/wholegraph/mag240m_homo/converted/homograph_csr_col_idx
+Rank=1 done reading 431808978 embedding vectors from file /datasets_gnn/wholegraph/mag240m_homo/converted/homograph_csr_col_idx
+Rank=3 done reading 431808978 embedding vectors from file /datasets_gnn/wholegraph/mag240m_homo/converted/homograph_csr_col_idx
+Rank=2 done reading 431808978 embedding vectors from file /datasets_gnn/wholegraph/mag240m_homo/converted/homograph_csr_col_idx
+Rank=6 done reading 431808978 embedding vectors from file /datasets_gnn/wholegraph/mag240m_homo/converted/homograph_csr_col_idx
+Rank=7 done reading 431808978 embedding vectors from file /datasets_gnn/wholegraph/mag240m_homo/converted/homograph_csr_col_idx
+[2023-08-06 09:46:30. 84184: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1928929 into 0
+[2023-08-06 09:46:30. 92163: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8123898
+[2023-08-06 09:46:30. 92451: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1927498 into 1928929
+[2023-08-06 09:46:30.100375: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8133016
+[2023-08-06 09:46:30.100640: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1927871 into 3856427
+[2023-08-06 09:46:30.108634: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8126709
+[2023-08-06 09:46:30.108906: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1927000 into 5784298
+[2023-08-06 09:46:30.116834: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8125110
+[2023-08-06 09:46:30.117090: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1927065 into 7711298
+[2023-08-06 09:46:30.124954: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8140216
+[2023-08-06 09:46:30.125206: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1925703 into 9638363
+[2023-08-06 09:46:30.133116: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8130027
+[2023-08-06 09:46:30.133370: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1923917 into 11564066
+[2023-08-06 09:46:30.141232: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8106817
+[2023-08-06 09:46:30.141484: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1925277 into 13487983
+[2023-08-06 09:46:30.149404: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8131490
+[2023-08-06 09:46:30.149654: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1925044 into 15413260
+[2023-08-06 09:46:30.157524: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8123414
+[2023-08-06 09:46:30.157793: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1926947 into 17338304
+[2023-08-06 09:46:30.165698: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8130291
+[2023-08-06 09:46:30.165977: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1935053 into 19265251
+[2023-08-06 09:46:30.173935: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8150784
+[2023-08-06 09:46:30.174217: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1934648 into 21200304
+[2023-08-06 09:46:30.182211: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8157751
+[2023-08-06 09:46:30.182474: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1933785 into 23134952
+[2023-08-06 09:46:30.190382: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8152225
+[2023-08-06 09:46:30.190638: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1936199 into 25068737
+[2023-08-06 09:46:30.206731: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8159704
+[2023-08-06 09:46:30.207126: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1935006 into 27004936
+[2023-08-06 09:46:30.215054: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8160952
+[2023-08-06 09:46:30.215317: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1932930 into 28939942
+[2023-08-06 09:46:30.223643: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8155097
+[2023-08-06 09:46:30.223914: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1931836 into 30872872
+[2023-08-06 09:46:30.232252: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8134182
+[2023-08-06 09:46:30.232519: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1935120 into 32804708
+[2023-08-06 09:46:30.240437: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8161374
+[2023-08-06 09:46:30.240702: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1933143 into 34739828
+[2023-08-06 09:46:30.248594: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8151466
+[2023-08-06 09:46:30.248855: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1935334 into 36672971
+[2023-08-06 09:46:30.256812: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8164712
+[2023-08-06 09:46:30.257072: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1933691 into 38608305
+[2023-08-06 09:46:30.265004: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8149092
+[2023-08-06 09:46:30.265286: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1930535 into 40541996
+[2023-08-06 09:46:30.273243: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8144828
+[2023-08-06 09:46:30.273518: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1933668 into 42472531
+[2023-08-06 09:46:30.281438: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8141603
+[2023-08-06 09:46:30.281713: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1934041 into 44406199
+[2023-08-06 09:46:30.289630: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8155991
+[2023-08-06 09:46:30.289903: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1933660 into 46340240
+[2023-08-06 09:46:30.297817: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8152705
+[2023-08-06 09:46:30.298099: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1932036 into 48273900
+[2023-08-06 09:46:30.305997: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8154358
+[2023-08-06 09:46:30.306255: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1930345 into 50205936
+[2023-08-06 09:46:30.314150: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8127593
+[2023-08-06 09:46:30.314421: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1932367 into 52136281
+[2023-08-06 09:46:30.322327: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8156703
+[2023-08-06 09:46:30.322594: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1931883 into 54068648
+[2023-08-06 09:46:30.330484: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8147801
+[2023-08-06 09:46:30.330753: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1934157 into 56000531
+[2023-08-06 09:46:30.338648: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8156303
+[2023-08-06 09:46:30.338934: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1935387 into 57934688
+[2023-08-06 09:46:30.346916: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8147639
+[2023-08-06 09:46:30.347181: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1934156 into 59870075
+[2023-08-06 09:46:30.355056: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8147309
+[2023-08-06 09:46:30.355319: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1931996 into 61804231
+[2023-08-06 09:46:30.363202: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8140511
+[2023-08-06 09:46:30.363461: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1935625 into 63736227
+[2023-08-06 09:46:30.371664: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8150777
+[2023-08-06 09:46:30.372013: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1934459 into 65671852
+[2023-08-06 09:46:30.379923: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8153824
+[2023-08-06 09:46:30.380171: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1931384 into 67606311
+[2023-08-06 09:46:30.388054: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8150923
+[2023-08-06 09:46:30.388318: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1931271 into 69537695
+[2023-08-06 09:46:30.396232: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8128864
+[2023-08-06 09:46:30.396489: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1933362 into 71468966
+[2023-08-06 09:46:30.404427: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8155764
+[2023-08-06 09:46:30.404680: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1932269 into 73402328
+[2023-08-06 09:46:30.412578: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8143363
+[2023-08-06 09:46:30.412832: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1934238 into 75334597
+[2023-08-06 09:46:30.420831: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8160106
+[2023-08-06 09:46:30.421096: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1928475 into 77268835
+[2023-08-06 09:46:30.429021: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8134135
+[2023-08-06 09:46:30.429289: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1927274 into 79197310
+[2023-08-06 09:46:30.437174: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8131617
+[2023-08-06 09:46:30.437429: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1927305 into 81124584
+[2023-08-06 09:46:30.445336: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8135249
+[2023-08-06 09:46:30.445584: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1928052 into 83051889
+[2023-08-06 09:46:30.453835: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8139730
+[2023-08-06 09:46:30.454191: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1927479 into 84979941
+[2023-08-06 09:46:30.462076: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8140428
+[2023-08-06 09:46:30.462348: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1926509 into 86907420
+[2023-08-06 09:46:30.470225: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8140671
+[2023-08-06 09:46:30.470487: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1922735 into 88833929
+[2023-08-06 09:46:30.478388: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8111637
+[2023-08-06 09:46:30.478637: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1925729 into 90756664
+[2023-08-06 09:46:30.486484: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8142054
+[2023-08-06 09:46:30.486746: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1928388 into 92682393
+[2023-08-06 09:46:30.494628: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8134358
+[2023-08-06 09:46:30.494888: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1928054 into 94610781
+[2023-08-06 09:46:30.502791: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8143471
+[2023-08-06 09:46:30.503044: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1937069 into 96538835
+[2023-08-06 09:46:30.511012: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8162907
+[2023-08-06 09:46:30.511288: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1934211 into 98475904
+[2023-08-06 09:46:30.519232: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8162573
+[2023-08-06 09:46:30.519490: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1934126 into 100410115
+[2023-08-06 09:46:30.527478: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8154585
+[2023-08-06 09:46:30.527734: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1934887 into 102344241
+[2023-08-06 09:46:30.536091: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8160806
+[2023-08-06 09:46:30.536358: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1935940 into 104279128
+[2023-08-06 09:46:30.544672: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8170160
+[2023-08-06 09:46:30.545044: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1933914 into 106215068
+[2023-08-06 09:46:30.552939: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8165073
+[2023-08-06 09:46:30.553210: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1933699 into 108148982
+[2023-08-06 09:46:30.561119: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8142329
+[2023-08-06 09:46:30.561381: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1935276 into 110082681
+[2023-08-06 09:46:30.569291: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8169189
+[2023-08-06 09:46:30.569543: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1934242 into 112017957
+[2023-08-06 09:46:30.577530: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8160098
+[2023-08-06 09:46:30.577790: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1937202 into 113952199
+[2023-08-06 09:46:30.585721: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8171272
+[2023-08-06 09:46:30.585992: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1939717 into 115889401
+[2023-08-06 09:46:30.593975: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8159951
+[2023-08-06 09:46:30.594259: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1939729 into 117829118
+[2023-08-06 09:46:30.602504: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8163666
+[2023-08-06 09:46:30.602865: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1937213 into 119768847
+[2023-08-06 09:46:30.610813: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8162189
+[2023-08-06 09:46:30.611065: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1939104 into 121706060
+[2023-08-06 09:46:30.619002: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8166576
+[2023-08-06 09:46:30.619253: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1937179 into 123645164
+[2023-08-06 09:46:30.627195: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8167698
+[2023-08-06 09:46:30.627456: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1937253 into 125582343
+[2023-08-06 09:46:30.635390: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8167663
+[2023-08-06 09:46:30.635644: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1937592 into 127519596
+[2023-08-06 09:46:30.643561: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8149191
+[2023-08-06 09:46:30.643831: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1937174 into 129457188
+[2023-08-06 09:46:30.651776: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8170511
+[2023-08-06 09:46:30.652016: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1937329 into 131394362
+[2023-08-06 09:46:30.659905: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8162537
+[2023-08-06 09:46:30.660165: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1938786 into 133331691
+[2023-08-06 09:46:30.668103: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8170971
+[2023-08-06 09:46:30.668356: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1931088 into 135270477
+[2023-08-06 09:46:30.676290: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8134549
+[2023-08-06 09:46:30.676579: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1930146 into 137201565
+[2023-08-06 09:46:30.684498: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8143206
+[2023-08-06 09:46:30.684757: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1928459 into 139131711
+[2023-08-06 09:46:30.692680: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8131781
+[2023-08-06 09:46:30.692925: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1931291 into 141060170
+[2023-08-06 09:46:30.700816: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8143632
+[2023-08-06 09:46:30.701069: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1930480 into 142991461
+[2023-08-06 09:46:30.708958: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8146251
+[2023-08-06 09:46:30.709218: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1928084 into 144921941
+[2023-08-06 09:46:30.717098: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8141934
+[2023-08-06 09:46:30.717348: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1927084 into 146850025
+[2023-08-06 09:46:30.725234: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8118674
+[2023-08-06 09:46:30.725486: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1926896 into 148777109
+[2023-08-06 09:46:30.733382: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8142260
+[2023-08-06 09:46:30.733629: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1928440 into 150704005
+[2023-08-06 09:46:30.741552: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8133730
+[2023-08-06 09:46:30.741801: E /ugache/coll_cache_lib/freq_recorder.cc:337] bulk append 1929133 into 152632445
+[2023-08-06 09:46:30.749701: E /ugache/coll_cache_lib/freq_recorder.cc:347] bulk append 8146451
+[2023-08-06 09:46:30.749960: E /ugache/coll_cache_lib/freq_recorder.cc:266] freq recorder global combining
+[[2023-08-06 09:46:30[[[[[2023-08-06 09:46:30.2023-08-06 09:46:302023-08-06 09:46:302023-08-06 09:46:302023-08-06 09:46:302023-08-06 09:46:30.749994.....749994: 749996749996749995750000749997: E: : : : : E EEEEE /ugache/coll_cache_lib/run_config.cc     /ugache/coll_cache_lib/run_config.cc:/ugache/coll_cache_lib/run_config.cc/ugache/coll_cache_lib/run_config.cc/ugache/coll_cache_lib/run_config.cc/ugache/coll_cache_lib/run_config.cc/ugache/coll_cache_lib/run_config.cc:160:::::160] 160160160160160] using concurrent impl 11] ] ] ] ] using concurrent impl 11
+using concurrent impl 11using concurrent impl 11using concurrent impl 11using concurrent impl 11using concurrent impl 11
+
+
+
+
+
+[2023-08-06 09:46:30.750135: E /ugache/coll_cache_lib/facade.cc:422] before scale, dtype is 0, dim is 384
+[[[2023-08-06 09:46:30[[2023-08-06 09:46:30[[2023-08-06 09:46:30.2023-08-06 09:46:302023-08-06 09:46:30.2023-08-06 09:46:302023-08-06 09:46:30.750141..750141..750141: 750142750142: 750142750148: E: : E: : E EE EE /ugache/coll_cache_lib/facade.cc  /ugache/coll_cache_lib/facade.cc  /ugache/coll_cache_lib/facade.cc:/ugache/coll_cache_lib/facade.cc/ugache/coll_cache_lib/facade.cc:/ugache/coll_cache_lib/facade.cc/ugache/coll_cache_lib/facade.cc:422::422::422] 422422] 422428] before scale, dtype is 0, dim is 384] ] before scale, dtype is 0, dim is 384] ] before scale, dtype is 0, dim is 384
+before scale, dtype is 0, dim is 384before scale, dtype is 0, dim is 384
+before scale, dtype is 0, dim is 384after scale, dtype is 7, new dim is 96
+
+
+[
+[
+[2023-08-06 09:46:30[[2023-08-06 09:46:302023-08-06 09:46:30[.2023-08-06 09:46:302023-08-06 09:46:30..2023-08-06 09:46:30750268..750272750275.: 750277750278: : 750281E: : EE:  EE  E/ugache/coll_cache_lib/facade.cc  /ugache/coll_cache_lib/facade.cc/ugache/coll_cache_lib/facade.cc :/ugache/coll_cache_lib/facade.cc/ugache/coll_cache_lib/facade.cc::/ugache/coll_cache_lib/facade.cc428::428428:] 428428] ] 428after scale, dtype is 7, new dim is 96] ] after scale, dtype is 7, new dim is 96after scale, dtype is 7, new dim is 96] 
+after scale, dtype is 7, new dim is 96after scale, dtype is 7, new dim is 96
+
+after scale, dtype is 7, new dim is 96
+
+
+[2023-08-06 09:46:30.751409: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:297] assigning 10 to cpu
+[2023-08-06 09:46:30.751452: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:314] build symm link desc with 8X NVIDIA A100-SXM4-80GB out of 8
+[2023-08-06 09:46:30.751480: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:315] remote time is 24.3333
+[2023-08-06 09:46:30.751491: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:316] cpu time is 91.25
+[2023-08-06 09:46:30.751518: E /ugache/coll_cache_lib/facade.cc:439] registering cpu data with 24.00 GB
+[2023-08-06 09:46:30.752045: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:297] assigning 10 to cpu
+[2023-08-06 09:46:30.752085: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:314] build symm link desc with 8X NVIDIA A100-SXM4-80GB out of 8
+[2023-08-06 09:46:30.752104: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:315] remote time is 24.3333
+[2023-08-06 09:46:30.752115: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:316] cpu time is 91.25
+[2023-08-06 09:46:30.752139: E /ugache/coll_cache_lib/facade.cc:439] registering cpu data with 24.00 GB
+[2023-08-06 09:46:30.752559: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:297] assigning 10 to cpu
+[2023-08-06 09:46:30.752607: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:314] build symm link desc with 8X NVIDIA A100-SXM4-80GB out of 8
+[2023-08-06 09:46:30.752623: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:315] remote time is 24.3333
+[2023-08-06 09:46:30.752634: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:316] cpu time is 91.25
+[2023-08-06 09:46:30.752660: E /ugache/coll_cache_lib/facade.cc:439] registering cpu data with 24.00 GB
+[2023-08-06 09:46:30.752710: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:297] assigning 10 to cpu
+[2023-08-06 09:46:30.752722: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:297] assigning 10 to cpu
+[2023-08-06 09:46:30.752751: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:314] [build symm link desc with 8X NVIDIA A100-SXM4-80GB out of 82023-08-06 09:46:30
+.752759: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:314] build symm link desc with 8X NVIDIA A100-SXM4-80GB out of 8
+[2023-08-06 09:46:30.752777: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:315] remote time is 24.3333
+[2023-08-06 09:46:30[.2023-08-06 09:46:30752787.: 752789E:  E/ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc[ :2023-08-06 09:46:30/ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc315.:] 752805316remote time is 24.3333: ] 
+Ecpu time is 91.25 
+[/ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc2023-08-06 09:46:30:.297752835] : assigning 10 to cpuE
+ /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:316] cpu time is 91.25
+[2023-08-06 09:46:30.752855: E /ugache/coll_cache_lib/facade.cc:439] registering cpu data with 24.00 GB
+[2023-08-06 09:46:30.752877: E /ugache/coll_cache_lib/facade.cc:439] [registering cpu data with 24.00 GB2023-08-06 09:46:30
+.752886: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:314] build symm link desc with 8X NVIDIA A100-SXM4-80GB out of 8
+[2023-08-06 09:46:30.752906: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:315] remote time is 24.3333
+[2023-08-06 09:46:30.752917: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:316] cpu time is 91.25
+[2023-08-06 09:46:30.752942: E /ugache/coll_cache_lib/facade.cc:439] registering cpu data with 24.00 GB
+[2023-08-06 09:46:30.753165: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:297] assigning 10 to cpu
+[2023-08-06 09:46:30.753206: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:314] build symm link desc with 8X NVIDIA A100-SXM4-80GB out of 8
+[2023-08-06 09:46:30.753222: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:315] remote time is 24.3333
+[2023-08-06 09:46:30.753233: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:316] cpu time is 91.25
+[2023-08-06 09:46:30.753258: E /ugache/coll_cache_lib/facade.cc:439] registering cpu data with 24.00 GB
+[2023-08-06 09:46:35.178328: E /ugache/coll_cache_lib/freq_recorder.cc:269] freq recorder global combine from 154561578 to 44365306
+[2023-08-06 09:46:35.494455: E /ugache/coll_cache_lib/facade.cc:441] registering cpu data done.
+[2023-08-06 09:46:35.494909: E /ugache/coll_cache_lib/facade.cc:441] registering cpu data done.
+[2023-08-06 09:46:35.494917: E /ugache/coll_cache_lib/facade.cc:441] registering cpu data done.
+[2023-08-06 09:46:35.495015: E /ugache/coll_cache_lib/facade.cc:441] registering cpu data done.
+[2023-08-06 09:46:35.497541: E /ugache/coll_cache_lib/facade.cc:441] registering cpu data done.
+[2023-08-06 09:46:35.506339: E /ugache/coll_cache_lib/facade.cc:441] registering cpu data done.
+[2023-08-06 09:46:35.510327: E /ugache/coll_cache_lib/facade.cc:441] registering cpu data done.
+[2023-08-06 09:46:35.911068: E /ugache/coll_cache_lib/freq_recorder.cc:286] top 5 freq is 272,272,272,272,272
+[2023-08-06 09:46:35.911187: E /ugache/coll_cache_lib/run_config.cc:160] using concurrent impl 11
+[2023-08-06 09:46:35.911211: E /ugache/coll_cache_lib/facade.cc:422] before scale, dtype is 0, dim is 384
+[2023-08-06 09:46:35.911225: E /ugache/coll_cache_lib/facade.cc:428] after scale, dtype is 7, new dim is 96
+[2023-08-06 09:46:35.912410: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:297] assigning 10 to cpu
+[2023-08-06 09:46:35.912452: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:314] build symm link desc with 8X NVIDIA A100-SXM4-80GB out of 8
+[2023-08-06 09:46:35.912488: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:315] remote time is 24.3333
+[2023-08-06 09:46:35.912501: E /ugache/coll_cache_lib/coll_cache/asymm_link_desc.cc:316] cpu time is 91.25
+[2023-08-06 09:46:35.912549: E /ugache/coll_cache_lib/facade.cc:439] registering cpu data with 24.00 GB
+[2023-08-06 09:46:37.584477: E /ugache/coll_cache_lib/facade.cc:441] registering cpu data done.
+[2023-08-06 09:46:37.584539: E /ugache/coll_cache_lib/facade.cc:178] creating solver
+[2023-08-06 09:46:37.584565: E /ugache/coll_cache_lib/facade.cc:222] solver created. now build & solve
+[2023-08-06 09:46:37.664403: W /ugache/coll_cache_lib/cpu/cpu_device.cc:43] WORKER[0] alloc host memory 931.40 MB
+[2023-08-06 09:46:37.664454: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:309] reconfigured max freq to be 272
+[2023-08-06 09:46:37.664469: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:311] reconfigured num slot to be 31
+[2023-08-06 09:46:37.664479: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:318] counting slots...
+[2023-08-06 09:46:38.234987: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:367] Final num slot is 45
+[2023-08-06 09:46:38.235065: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:371] preparing block granularity...
+[2023-08-06 09:46:38.235092: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 0 has 204590 nodes, max_size set to 25574, #slice=8
+[2023-08-06 09:46:38.235105: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 1 has 228849 nodes, max_size set to 28607, #slice=8
+[2023-08-06 09:46:38.235117: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 2 has 274341 nodes, max_size set to 34293, #slice=8
+[2023-08-06 09:46:38.235130: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 3 has 317303 nodes, max_size set to 39663, #slice=8
+[2023-08-06 09:46:38.235142: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 4 has 364549 nodes, max_size set to 45569, #slice=8
+[2023-08-06 09:46:38.235154: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 5 has 399799 nodes, max_size set to 49975, #slice=8
+[2023-08-06 09:46:38.235167: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 6 has 474477 nodes, max_size set to 59310, #slice=8
+[2023-08-06 09:46:38.235179: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 7 has 468828 nodes, max_size set to 58604, #slice=8
+[2023-08-06 09:46:38.235192: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 8 has 563970 nodes, max_size set to 70497, #slice=8
+[2023-08-06 09:46:38.235204: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 9 has 610481 nodes, max_size set to 76311, #slice=8
+[2023-08-06 09:46:38.235216: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 10 has 619859 nodes, max_size set to 77483, #slice=8
+[2023-08-06 09:46:38.235229: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 11 has 693954 nodes, max_size set to 86745, #slice=8
+[2023-08-06 09:46:38.235241: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 12 has 758813 nodes, max_size set to 94852, #slice=8
+[2023-08-06 09:46:38.235254: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 13 has 787432 nodes, max_size set to 98429, #slice=8
+[2023-08-06 09:46:38.235266: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 14 has 1041689 nodes, max_size set to 130212, #slice=8
+[2023-08-06 09:46:38.235278: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 15 has 1042865 nodes, max_size set to 130359, #slice=8
+[2023-08-06 09:46:38.235291: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 16 has 887184 nodes, max_size set to 110898, #slice=8
+[2023-08-06 09:46:38.235303: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 17 has 1118152 nodes, max_size set to 139769, #slice=8
+[2023-08-06 09:46:38.235315: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 18 has 1468318 nodes, max_size set to 183540, #slice=8
+[2023-08-06 09:46:38.235328: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 19 has 931292 nodes, max_size set to 116412, #slice=8
+[2023-08-06 09:46:38.235340: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 20 has 2508506 nodes, max_size set to 244160, #slice=16
+[2023-08-06 09:46:38.235353: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 21 has 1781509 nodes, max_size set to 222689, #slice=8
+[2023-08-06 09:46:38.235365: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 23 has 2429463 nodes, max_size set to 244160, #slice=16
+[2023-08-06 09:46:38.235377: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 24 has 3570373 nodes, max_size set to 244160, #slice=16
+[2023-08-06 09:46:38.235389: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 26 has 6282186 nodes, max_size set to 244160, #slice=32
+[2023-08-06 09:46:38.235402: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 29 has 14536524 nodes, max_size set to 244160, #slice=64
+[2023-08-06 09:46:38.235414: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 30 has 1999280 nodes, max_size set to 244160, #slice=16
+[2023-08-06 09:46:38.235429: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 31 has 1998471 nodes, max_size set to 244160, #slice=16
+[2023-08-06 09:46:38.235442: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 32 has 1998018 nodes, max_size set to 244160, #slice=16
+[2023-08-06 09:46:38.235454: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 33 has 1998316 nodes, max_size set to 244160, #slice=16
+[2023-08-06 09:46:38.235466: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 34 has 1998097 nodes, max_size set to 244160, #slice=16
+[2023-08-06 09:46:38.235479: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 35 has 1998881 nodes, max_size set to 244160, #slice=16
+[2023-08-06 09:46:38.235491: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 36 has 1998887 nodes, max_size set to 244160, #slice=16
+[2023-08-06 09:46:38.235503: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 37 has 1996700 nodes, max_size set to 244160, #slice=16
+[2023-08-06 09:46:38.235516: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 38 has 1999710 nodes, max_size set to 244160, #slice=16
+[2023-08-06 09:46:38.235528: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 39 has 1998679 nodes, max_size set to 244160, #slice=16
+[2023-08-06 09:46:38.235540: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 40 has 19990015 nodes, max_size set to 244160, #slice=88
+[2023-08-06 09:46:38.235553: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 41 has 19972972 nodes, max_size set to 244160, #slice=88
+[2023-08-06 09:46:38.235565: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 42 has 19978524 nodes, max_size set to 244160, #slice=88
+[2023-08-06 09:46:38.235577: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 43 has 19975899 nodes, max_size set to 244160, #slice=88
+[2023-08-06 09:46:38.235590: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 44 has 19979307 nodes, max_size set to 244160, #slice=88
+[2023-08-06 09:46:38.235602: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 45 has 19975921 nodes, max_size set to 244160, #slice=88
+[2023-08-06 09:46:38.235614: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 46 has 19980802 nodes, max_size set to 244160, #slice=88
+[2023-08-06 09:46:38.235626: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 47 has 19977844 nodes, max_size set to 244160, #slice=88
+[2023-08-06 09:46:38.235638: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:399] slot 48 has 19978870 nodes, max_size set to 244160, #slice=88
+[2023-08-06 09:46:38.235651: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:405] counting blocks...
+[2023-08-06 09:46:38.329451: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:425] Final num block is 1264
+[2023-08-06 09:46:38.329510: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:430] counting freq and density...
+[2023-08-06 09:46:38.344525: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:479] averaging freq and density...
+[2023-08-06 09:46:38.344593: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:480] 1264
+[2023-08-06 09:46:38.368956: E /ugache/coll_cache_lib/facade.cc:226] solver built. now solve
+[2023-08-06 09:46:38.368982: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:893] constructing optimal solver, device=8, stream=1
+1264 blocks, 8 devices
+[2023-08-06 09:46:38.383955: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1080] Add Var...
+[2023-08-06 09:46:38.431923: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1098] Capacity...
+[2023-08-06 09:46:38.433199: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1101] Connect CPU...
+[2023-08-06 09:46:38.455217: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1103] Connect Access To Storage...
+[2023-08-06 09:46:39.244687: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1107] Time...
+[2023-08-06 09:46:39.247123: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1069] dst 0, total sm is 108
+[2023-08-06 09:46:39.250563: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1069] dst 1, total sm is 108
+[2023-08-06 09:46:39.253885: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1069] dst 2, total sm is 108
+[2023-08-06 09:46:39.257215: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1069] dst 3, total sm is 108
+[2023-08-06 09:46:39.260578: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1069] dst 4, total sm is 108
+[2023-08-06 09:46:39.263936: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1069] dst 5, total sm is 108
+[2023-08-06 09:46:39.267291: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1069] dst 6, total sm is 108
+[2023-08-06 09:46:39.270621: E /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1069] dst 7, total sm is 108
+[2023-08-06 09:46:42.133088: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1132] Coll Cache init block placement array
+[2023-08-06 09:46:42.137833: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1208] Coll Cache init block placement array done
+[2023-08-06 09:46:42.138711: W /ugache/coll_cache_lib/coll_cache/optimal_solver_class.cc:1210] Coll Cache model reset done
+[2023-08-06 09:46:42.191763: E /ugache/coll_cache_lib/facade.cc:230] solver solved
+[2023-08-06 09:46:42.191824: E /ugache/coll_cache_lib/facade.cc:451] 0 solved master
+[2023-08-06 09:46:42.191836: E /ugache/coll_cache_lib/facade.cc:458] 0 solved
+[2023-08-06 09:46:42.191847: E /ugache/coll_cache_lib/facade.cc:461] worker 0 thread 0 initing device 0
+[2023-08-06 09:46:42.192645: E /ugache/coll_cache_lib/cache_context.cu:2388] Building Coll Cache with ... num gpu device is 8
+[2023-08-06 09:46:42.192755: E /ugache/coll_cache_lib/cuda/cache_hashtable.cuh:764] per src size local is 34849335
+[2023-08-06 09:46:42.226541: E /ugache/coll_cache_lib/facade.cc:458] 3 solved
+[2023-08-06 09:46:42.226619: E /ugache/coll_cache_lib/facade.cc:461] worker 0 thread 3 initing device 3
+[2023-08-06 09:46:42.227540: E /ugache/coll_cache_lib/cache_context.cu:2388] Building Coll Cache with ... num gpu device is 8
+[[[2023-08-06 09:46:42.2423012023-08-06 09:46:42: .E242301 : [/ugache/coll_cache_lib/facade.ccE: 458/ugache/coll_cache_lib/facade.cc] :2023-08-06 09:46:42458.4 solved] 2023-08-06 09:46:42242313
+1 solved.: 242313
+E[:  2023-08-06 09:46:42E/ugache/coll_cache_lib/facade.cc[. :2023-08-06 09:46:42242381/ugache/coll_cache_lib/facade.cc458.: :] 242384E458:  5 solved] E/ugache/coll_cache_lib/facade.cc
+2 solved :
+/ugache/coll_cache_lib/facade.cc[461:2023-08-06 09:46:42] 461[.] 2023-08-06 09:46:42242407worker 0 thread 4 initing device 4worker 0 thread 1 initing device 1.: 
+
+242410E:  E/ugache/coll_cache_lib/facade.cc :/ugache/coll_cache_lib/facade.cc461:] 461] worker 0 thread 5 initing device 5worker 0 thread 2 initing device 2
+
+[2023-08-06 09:46:42.242802: E /ugache/coll_cache_lib/cache_context.cu:2388] Building Coll Cache with ... num gpu device is 8
+[2023-08-06 09:46:42.242841: E /ugache/coll_cache_lib/cache_context.cu:2388] Building Coll Cache with ... num gpu device is 8
+[2023-08-06 09:46:42.243304: E /ugache/coll_cache_lib/cache_context.cu:2388] Building Coll Cache with ... num gpu device is 8
+[2023-08-06 09:46:42.244791: E /ugache/coll_cache_lib/cache_context.cu:2388] Building Coll Cache with ... num gpu device is 8
+[[2023-08-06 09:46:42.263002: E /ugache/coll_cache_lib/facade.cc:458] 6 solved
+2023-08-06 09:46:42.263010[: 2023-08-06 09:46:42E. 263087/ugache/coll_cache_lib/facade.cc: :E458 ] /ugache/coll_cache_lib/facade.cc:4617 solved] 
+worker 0 thread 6 initing device 6
+[2023-08-06 09:46:42.263106: E /ugache/coll_cache_lib/facade.cc:461] worker 0 thread 7 initing device 7
+[2023-08-06 09:46:42.281861: E /ugache/coll_cache_lib/cache_context.cu:2388] Building Coll Cache with ... num gpu device is 8
+[2023-08-06 09:46:42.282925: E /ugache/coll_cache_lib/cache_context.cu:2388] Building Coll Cache with ... num gpu device is 8
+[2023-08-06 09:46:42.406113: E /ugache/coll_cache_lib/cache_context.cu:2431] num cpu nodes is 194027631
+[2023-08-06 09:46:42.452673: E /ugache/coll_cache_lib/cache_context.cu:2431] num cpu nodes is 194027631
+[2023-08-06 09:46:42.453237: E /ugache/coll_cache_lib/cache_context.cu:2431] num cpu nodes is 194027631
+[2023-08-06 09:46:42.462077: E /ugache/coll_cache_lib/cache_context.cu:2431] num cpu nodes is 194027631
+[2023-08-06 09:46:42.464637: E /ugache/coll_cache_lib/cache_context.cu:2431] num cpu nodes is 194027631
+[2023-08-06 09:46:42.464996: E /ugache/coll_cache_lib/cache_context.cu:2431] num cpu nodes is 194027631
+[2023-08-06 09:46:42.466361: E /ugache/coll_cache_lib/cache_context.cu:2431] num cpu nodes is 194027631
+[2023-08-06 09:46:42.485858: E /ugache/coll_cache_lib/cache_context.cu:2431] num cpu nodes is 194027631
+[2023-08-06 09:46:46. 21517: E /ugache/coll_cache_lib/cache_context.cu:2454] simple hashtable too large, use flat hashtable
+[2023-08-06 09:46:46. 21590: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:593] create a hashtable with 244160499
+[2023-08-06 09:46:46. 21612: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:598] FlatHashTable allocating 931.40 MB
+[2023-08-06 09:46:46.307793: E /ugache/coll_cache_lib/cache_context.cu:2454] simple hashtable too large, use flat hashtable
+[2023-08-06 09:46:46.307861: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:593] create a hashtable with 244160499
+[2023-08-06 09:46:46.307882: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:598] FlatHashTable allocating 931.40 MB
+[2023-08-06 09:46:46.553832: E /ugache/coll_cache_lib/cache_context.cu:2454] simple hashtable too large, use flat hashtable
+[2023-08-06 09:46:46.553887: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:593] create a hashtable with 244160499
+[2023-08-06 09:46:46.553905: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:598] FlatHashTable allocating 931.40 MB
+[2023-08-06 09:46:46.558860: E /ugache/coll_cache_lib/cache_context.cu:2454] simple hashtable too large, use flat hashtable
+[2023-08-06 09:46:46.558903: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:593] create a hashtable with 244160499
+[2023-08-06 09:46:46.558922: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:598] FlatHashTable allocating 931.40 MB
+[2023-08-06 09:46:46.562964: E /ugache/coll_cache_lib/cache_context.cu:2454] simple hashtable too large, use flat hashtable
+[2023-08-06 09:46:46.563011: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:593] create a hashtable with 244160499
+[2023-08-06 09:46:46.563027: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:598] FlatHashTable allocating 931.40 MB
+[2023-08-06 09:46:46.563094: E /ugache/coll_cache_lib/cache_context.cu:2454] simple hashtable too large, use flat hashtable
+[2023-08-06 09:46:46.563142: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:593] create a hashtable with 244160499
+[2023-08-06 09:46:46.563160: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:598] FlatHashTable allocating 931.40 MB
+[2023-08-06 09:46:46.567425: E /ugache/coll_cache_lib/cache_context.cu:2454] simple hashtable too large, use flat hashtable
+[2023-08-06 09:46:46.567486: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:593] create a hashtable with 244160499
+[2023-08-06 09:46:46.567503: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:598] FlatHashTable allocating 931.40 MB
+[2023-08-06 09:46:46.572384: E /ugache/coll_cache_lib/cache_context.cu:2454] simple hashtable too large, use flat hashtable
+[2023-08-06 09:46:46.572425: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:593] create a hashtable with 244160499
+[2023-08-06 09:46:46.572441: E /ugache/coll_cache_lib/cuda/cache_hashtable.cu:598] FlatHashTable allocating 931.40 MB
+[2023-08-06 09:46:46.594483: E /ugache/coll_cache_lib/cache_context.cu:2522] 1,0|57,15|78,22|95,27|97,28|
+[2023-08-06 09:46:46.607852: E /ugache/coll_cache_lib/cache_context.cu:2522] 121,262182|144,262191|222,262230|245,262239|270,262252|
+[2023-08-06 09:46:46.617484: E /ugache/coll_cache_lib/cache_context.cu:2522] 139520359,393224|139520368,393227|139520403,393228|139520758,393258|139521005,393271|
+[2023-08-06 09:46:46.628797: E /ugache/coll_cache_lib/cache_context.cu:2522] 69760538,131138|69760675,131169|69760721,131176|69760770,131190|69761672,131386|
+[2023-08-06 09:46:46.642363: E /ugache/coll_cache_lib/cache_context.cu:2522] 115,262176|240,262220|241,262221|246,262223|283,262242|
+[2023-08-06 09:46:46.655873: E /ugache/coll_cache_lib/cache_context.cu:2522] 13,393223|59,393235|87,393248|227,393301|244,393310|
+[2023-08-06 09:46:46.667946: E /ugache/coll_cache_lib/cache_context.cu:2522] 104640306,131085|104640307,131086|104640348,131097|104640483,131119|104640599,131128|
+[2023-08-06 09:46:46.670098: E /ugache/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?31985025->293382
+[2023-08-06 09:46:46.670177: E /ugache/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?31985025->303902
+[2023-08-06 09:46:46.670260: E /ugache/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?31985025->390883
+[2023-08-06 09:46:46.670321: E /ugache/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?31985025->246302
+[2023-08-06 09:46:46.670852: E /ugache/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?31985025->400411
+[2023-08-06 09:46:46.671104: E /ugache/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?31985025->298449
+[2023-08-06 09:46:46.671202: E /ugache/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?31985025->373816
+[2023-08-06 09:46:46.676280: E /ugache/coll_cache_lib/common.cc:107] too many mem allocated for forcescale?31985025->358324
+[2023-08-06 09:46:46.698453: E /ugache/coll_cache_lib/cache_context.cu:2554] Asymm Coll cache (policy: coll_cache_asymm_link) | local 31594142 / 244160499 nodes ( 12.94 %~13.00 %) | remote 18538726 / 244160499 nodes ( 7.59 %) | cpu 194027631 / 244160499 nodes ( 79.47 %) | 45.75 GB | 4.45559 secs 
+[2023-08-06 09:46:46.703504: E /ugache/coll_cache_lib/cache_context.cu:2554] Asymm Coll cache (policy: coll_cache_asymm_link) | local 31681123 / 244160499 nodes ( 12.98 %~13.00 %) | remote 18451745 / 244160499 nodes ( 7.56 %) | cpu 194027631 / 244160499 nodes ( 79.47 %) | 45.75 GB | 4.51084 secs 
+[2023-08-06 09:46:46.703574: E /ugache/coll_cache_lib/cache_context.cu:2554] Asymm Coll cache (policy: coll_cache_asymm_link) | local 31738723 / 244160499 nodes ( 13.00 %~13.00 %) | remote 18394145 / 244160499 nodes ( 7.53 %) | cpu 194027631 / 244160499 nodes ( 79.47 %) | 45.75 GB | 4.46076 secs 
+ mask is 1111111111111111111111111111111111111111111111111111111111100000
+ mask is 1111111111111111111111111111111111111111111111111111111000011111
+ mask is 1111111111111111111111111111111111111111111111111110000111111111
+ mask is 1111111111111111111111111111111111111111111111100001111111111111
+ mask is 1111111111111111111111111111111111111111111000011111111111111111
+ mask is 1111111111111111111111111111111111111110000111111111111111111111
+ mask is 1111111111111111111111111111111111100001111111111111111111111111
+ mask is 1111111111111111111111111111111000011111111111111111111111111111
+[2023-08-06 09:46:46.711140: E /ugache/coll_cache_lib/cache_context.cu:2554] Asymm Coll cache (policy: coll_cache_asymm_link) | local 31686576 / 244160499 nodes ( 12.98 %~13.00 %) | remote 18446292 / 244160499 nodes ( 7.55 %) | cpu 194027631 / 244160499 nodes ( 79.47 %) | 45.75 GB | 4.48357 secs 
+[2023-08-06 09:46:46.711575: W /ugache/coll_cache_lib/cache_context.cu:4105] before create stream, mem is 53.40 GB
+[2023-08-06 09:46:46.711635: W /ugache/coll_cache_lib/cache_context.cu:4105] after create stream, mem is 53.40 GB
+[2023-08-06 09:46:46.713962: E /ugache/coll_cache_lib/cache_context.cu:2554] Asymm Coll cache (policy: coll_cache_asymm_link) | local 31611209 / 244160499 nodes ( 12.95 %~13.00 %) | remote 18521659 / 244160499 nodes ( 7.59 %) | cpu 194027631 / 244160499 nodes ( 79.47 %) | 45.75 GB | 4.46913 secs 
+[2023-08-06 09:46:46.714274: W /ugache/coll_cache_lib/cache_context.cu:4105] before create stream, mem is 53.40 GB
+[2023-08-06 09:46:46.714322: W /ugache/coll_cache_lib/cache_context.cu:4105] after create stream, mem is 53.40 GB
+[2023-08-06 09:46:46.[2023-08-06 09:46:46.716659: W /ugache/coll_cache_lib/cache_context.cu:4105] before create stream, mem is 53.40 GB
+[2023-08-06 09:46:46.716706: W /ugache/coll_cache_lib/cache_context.cu:[2023-08-06 09:46:46.716723: W /ugache/coll_cache_lib/cache_context.cu:4105] after create stream, mem is 53.40 GB
+4105] before create stream, mem is 53.40 GB
+[2023-08-06 09:46:46.716791: W /ugache/coll_cache_lib/cache_context.cu:4105] after create stream, mem is 53.40 GB
+[2023-08-06 09:46:46.716815: E /ugache/coll_cache_lib/cache_context.cu:2554] Asymm Coll cache (policy: coll_cache_asymm_link) | local 31691643 / 244160499 nodes ( 12.98 %~13.00 %) | remote 18441225 / 244160499 nodes ( 7.55 %) | cpu 194027631 / 244160499 nodes ( 79.47 %) | 45.75 GB | 4.43489 secs 
+[2023-08-06 09:46:46.717757: W /ugache/coll_cache_lib/cache_context.cu:4105] before create stream, mem is 53.40 GB
+[2023-08-06 09:46:46.717810: W /ugache/coll_cache_lib/cache_context.cu:4105] after create stream, mem is 53.40 GB
+[2023-08-06 09:46:46.717909: W /ugache/coll_cache_lib/cache_context.cu:4105] before create stream, mem is 53.40 GB
+[[2023-08-06 09:46:462023-08-06 09:46:46..717935717946: : EW  /ugache/coll_cache_lib/cache_context.cu/ugache/coll_cache_lib/cache_context.cu::25544105] ] after create stream, mem is 53.40 GBAsymm Coll cache (policy: coll_cache_asymm_link) | local 31584614 / 244160499 nodes ( 12.94 %~13.00 %) | remote 18548254 / 244160499 nodes ( 7.60 %) | cpu 194027631 / 244160499 nodes ( 79.47 %) | 45.75 GB | 4.43498 secs 
+
+[2023-08-06 09:46:46.720827: W /ugache/coll_cache_lib/cache_context.cu:4105] before create stream, mem is 53.40 GB
+[2023-08-06 09:46:46.720875: W /ugache/coll_cache_lib/cache_context.cu:4105] after create stream, mem is 53.40 GB
+716657: W /ugache/coll_cache_lib/cache_context.cu:4105] before create stream, mem is 53.40 GB
+[2023-08-06 09:46:46.723020: W /ugache/coll_cache_lib/cache_context.cu:4105] after create stream, mem is 53.40 GB
+[2023-08-06 09:46:46.725644: E /ugache/coll_cache_lib/cache_context.cu:2554] Asymm Coll cache (policy: coll_cache_asymm_link) | local 31626701 / 244160499 nodes ( 12.95 %~13.00 %) | remote 18506167 / 244160499 nodes ( 7.58 %) | cpu 194027631 / 244160499 nodes ( 79.47 %) | 45.75 GB | 4.48232 secs 
+Warning, found a larger batch, re allocating emb output now24803922478568
+Warning, found a larger batch, re allocating emb output now24578962455683Warning, found a larger batch, re allocating emb output now
+24682562466868
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
+/usr/local/lib/python3.8/dist-packages/torch/nn/parallel/scatter_gather.py:9: UserWarning: is_namedtuple is deprecated, please use the python checks instead
+  warnings.warn("is_namedtuple is deprecated, please use the python checks instead")
