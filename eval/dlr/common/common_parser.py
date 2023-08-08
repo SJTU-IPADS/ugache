@@ -194,7 +194,7 @@ class BenchInstance:
     # self.vals['mock_embedding'] = cfg.mock_embedding
     # self.vals['max_vocabulary_size'] = cfg.max_vocabulary_size
     self.vals['dataset'] = str(cfg.dataset)
-    self.vals['dataset_short'] = cfg.dataset.short()
+    self.vals['dataset_short'] = cfg.dataset.datfile_name
     self.vals['cache_policy'] = str(cfg.coll_cache_policy)
     self.vals['cache_policy_short'] = cfg.coll_cache_policy.short()
     self.vals['cache_percentage'] = 100 * cfg.cache_percent
@@ -442,7 +442,6 @@ class BenchInstance:
 
   def to_formated_str(self):
     pass
-    # self.vals['dataset_short'] = self.cfg.dataset.short()
   def get_val(self, key):
     if key in self.vals:
       return self.vals[key]

@@ -56,26 +56,25 @@ class Dataset(Enum):
     obj = object.__new__(cls)
     obj._value_ = value
     return obj
-  def __init__(self, path, short_name, vocabulary, slot_num):
+  def __init__(self, path, log_name, datfile_name, vocabulary, slot_num):
     self.path = path if path else self.name
-    self.short_name = short_name if short_name else self.name
+    self.log_name = log_name if log_name else self.name
+    self.datfile_name = datfile_name if datfile_name else self.log_name
     self.vocabulary = vocabulary
     self.slot_num = slot_num
   def __str__(self):
     return self.path
-  def short(self):
-    return self.short_name
-  criteo_like_uniform       = None,                      "CRU",        187767399, 26
-  criteo_like_uniform_small = None,                      "CRU_S",      187767399, 26
-  dlrm_datasets             = None,                      "DLRM",       None,      None
-  simple_power02            = "simple_power0.2",         "SP_02",      100000000, 25
-  simple_power02_slot100    = "simple_power0.2_slot100", "SP_02_S100", 100000000, 100
-  simple_power1             = None,                      "SP_1",       100000000, 25
-  simple_power1_slot100     = None,                      "SP_1_S100",  100000000, 100
-  simple_uniform            = None,                      None,         100000000, 25
-  criteo_tb                 = "criteo_tb",               "CR",         882774592, 26
-  syn                       = "syn_a12_s100_c800m",      "SYN",        800000000, 100
-  criteo_kaggle             = "criteo_kaggle",           "CK",         33762604, 26
+  criteo_like_uniform       = None,                      "CRU",         "CRU",        187767399, 26
+  criteo_like_uniform_small = None,                      "CRU_S",       "CRU_S",      187767399, 26
+  dlrm_datasets             = None,                      "DLRM",        "DLRM",       None,      None
+  simple_power02            = "simple_power0.2",         "SP_02",       "SP_02",      100000000, 25
+  simple_power02_slot100    = "simple_power0.2_slot100", "SP_02_S100",  "SP_02_S100", 100000000, 100
+  simple_power1             = None,                      "SP_1",        "SP_1",       100000000, 25
+  simple_power1_slot100     = None,                      "SP_1_S100",   "SP_1_S100",  100000000, 100
+  simple_uniform            = None,                      None,          None,         100000000, 25
+  criteo_tb                 = "criteo_tb",               "CR",          "CR",         882774592, 26
+  syn                       = "syn_a12_s100_c800m",      "SYN",         "SYN-A",      800000000, 100
+  criteo_kaggle             = "criteo_kaggle",           "CK",          "CK",         33762604, 26
 
 class RandomDataset:
   def __init__(self, path, short_name, vocabulary, slot_num):
@@ -217,7 +216,7 @@ class RunConfig:
 
   def get_output_fname_base(self):
     std_out_fname = '_'.join(
-      [str(self.system), self.model.name, self.dataset.short()] + 
+      [str(self.system), self.model.name, self.dataset.log_name] + 
       [f'policy_{self.coll_cache_policy.short()}', f'cache_rate_{self.cache_percent}'] +
       [f'batch_size_{self.global_batch_size}'])
     if self.mock_embedding:
