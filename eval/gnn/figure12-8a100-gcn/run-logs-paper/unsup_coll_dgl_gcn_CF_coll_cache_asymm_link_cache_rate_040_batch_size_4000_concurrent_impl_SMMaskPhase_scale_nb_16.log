@@ -1,0 +1,1006 @@
+succeed=True
+[CUDA] cuda: usage: 7.29 GB
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID
+Set parameter TimeLimit to value 200
+Set parameter MIPGap to value 0.05
+Set parameter LogFile to value "cppsolver.log"
+Set parameter Threads to value 56
+Academic license - for non-commercial use only - registered to xiaoniu.sxn@sjtu.edu.cn
+Gurobi Optimizer version 9.5.1 build v9.5.1rc2 (linux64)
+Thread count: 56 physical cores, 112 logical processors, using up to 56 threads
+Academic license - for non-commercial use only - registered to xiaoniu.sxn@sjtu.edu.cn
+Optimize a model with 602008 rows, 85809 columns and 1478480 nonzeros
+Model fingerprint: 0x59c3e11e
+Variable types: 9 continuous, 85800 integer (85800 binary)
+Coefficient statistics:
+  Matrix range     [2e-09, 1e+05]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 4e+05]
+Warning: Model contains large matrix coefficient range
+         Consider reformulating model or setting NumericFocus parameter
+         to avoid numerical issues.
+Found heuristic solution: objective 1542541.1278
+Presolve removed 517454 rows and 7 columns
+Presolve time: 1.21s
+Presolved: 84554 rows, 85802 columns, 416323 nonzeros
+Variable types: 1 continuous, 85801 integer (85800 binary)
+
+Deterministic concurrent LP optimizer: primal and dual simplex
+Showing first log only...
+
+
+Use crossover to convert LP symmetric solution to basic solution...
+Concurrent spin time: 0.00s
+
+Solved with dual simplex
+
+Root relaxation: objective 3.574104e+04, 52963 iterations, 1.08 seconds (2.28 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+H    0     0                    35741.044251 35741.0443  0.00%     -    2s
+     0     0 35741.0443    0 3019 35741.0443 35741.0443  0.00%     -    2s
+
+Explored 1 nodes (52963 simplex iterations) in 2.46 seconds (4.77 work units)
+Thread count was 56 (of 112 available processors)
+
+Solution count 2: 35741 1.54254e+06 
+
+Optimal solution found (tolerance 5.00e-02)
+Best objective 3.574104425139e+04, best bound 3.574104425139e+04, gap 0.0000%
+coll_cache:optimal_local_rate=0.735627,0.740827,0.733078,0.744724,0.734604,0.738751,0.737429,0.727175,
+coll_cache:optimal_remote_rate=0.264373,0.259173,0.266922,0.255276,0.265396,0.261249,0.262571,0.272825,
+coll_cache:optimal_cpu_rate=2.33484e-13,2.33484e-13,2.33484e-13,2.33484e-13,2.33484e-13,2.33484e-13,2.33484e-13,2.33484e-13,
+z=35741
+test_result:init:feat_nbytes=67182966784
+test_result:init:cache_nbytes=26940368896
+test_result:init:feat_nbytes=67182966784
+test_result:init:cache_nbytes=26940368896
+test_result:init:feat_nbytes=67182966784
+test_result:init:cache_nbytes=26940368896
+test_result:init:feat_nbytes=67182966784
+test_result:init:cache_nbytes=26940368896
+test_result:init:feat_nbytes=67182966784
+test_result:init:cache_nbytes=26940368896
+test_result:init:feat_nbytes=67182966784
+test_result:init:cache_nbytes=26940368896
+test_result:init:feat_nbytes=67182966784
+test_result:init:cache_nbytes=26940368896
+test_result:init:feat_nbytes=67182966784
+test_result:init:cache_nbytes=26940368896
+worker 0 running with pid=19155
+config:eval_tsp="2023-08-06 09:32:54"
+config:num_worker=8
+config:num_intra_size=8
+config:root_dir=/datasets_gnn/wholegraph
+config:graph_name=com-friendster
+config:epochs=4
+config:batchsize=4000
+config:skip_epoch=2
+config:local_step=125
+config:presc_epoch=2
+config:neighbors=15,10,5
+config:hiddensize=256
+config:num_layer=3
+config:model=gcn
+config:framework=dgl
+config:dataloaderworkers=0
+config:dropout=0.5
+config:weight_decay=0.0005
+config:lr=0.003
+config:use_nccl=False
+config:use_amp=False
+config:use_collcache=True
+config:cache_percentage=0.4
+config:cache_policy=coll_cache_asymm_link
+config:omp_thread_num=56
+config:unsupervised=True
+config:classnum=100
+config:global_barrier=<multiprocessing.synchronize.Barrier object at 0x7f89ca9f88b0>
+config:worker_id=0
+creating_intra_node_communicator root=0, local_size=8, world_size=8
+loading train edge idx from disk
+loading train edge idx from disk done
+tensor([ 367470406, 3158702471, 3196913887,  153606500, 2622541626, 2707306334,
+        2288750783,  341639546, 2394912536, 3266219078,  317074742, 1665128055,
+        3225579545,  427334013,  150148188,  726851972, 1000854521, 1061370191,
+         213395108,  526478766,  115662647, 1382980281, 1363464091,  971316959,
+        1643305663, 1559556869,  792051811, 2593715952, 2627476216,  485049346,
+        1279512108,  281028249, 2848334841, 1142277951, 1624797255, 1682408139,
+         130713544,  372892975, 1190696744, 1515340461,  396873136, 3079813016,
+         574876927,   31156367,  449947793, 1664434120,  774080817, 2850247945,
+         655998496,  888602410,  350570870,  466346177,   69778231,  638128676,
+        1443388341, 1479712286, 2858804367,  550628163,  198023098, 2583590303,
+        2518492873,    2593795, 2722269746,  659106604, 1369497066,   77640938,
+         645516367, 3053389785, 3376243999,  792250187, 1401047469, 1545651011,
+        1827797263, 1275030316, 2075895474, 2919804301, 2493902937,  112768749,
+          11701078,  342702905,  404737965,  786261376,  934911988,  757583227,
+        1135493038, 3162165660, 1144120843, 2861906075, 3454564992, 1866677628,
+        3557612909, 3295574170, 1840253021,  589845084,   38434987, 3025516425,
+         133597469,  597513635, 2348166713, 3535021406])
+Rank=0, Graph loaded.
+!!!!dist_homo_graph enumerate latency per epoch: 0.005443, per step: 0.000044
+epoch=4 total_steps=500
+presamping
+presamping takes 31.7714741230011
+start training...
+[Epoch 0][Step 0], time=1.753650426864624, ext_time=0.05958819389343262, train_time=1.6698007583618164
+[Epoch 0][Step 1], time=0.11463260650634766, ext_time=0.009573698043823242, train_time=0.07539582252502441
+[Epoch 0][Step 2], time=0.1033477783203125, ext_time=0.009652376174926758, train_time=0.07148623466491699
+[Epoch 0][Step 3], time=0.09738349914550781, ext_time=0.00983572006225586, train_time=0.06526565551757812
+[Epoch 0][Step 4], time=0.08672547340393066, ext_time=0.00988149642944336, train_time=0.05468487739562988
+[Epoch 0][Step 5], time=0.08626413345336914, ext_time=0.009819984436035156, train_time=0.05429363250732422
+[Epoch 0][Step 6], time=0.08641719818115234, ext_time=0.010085105895996094, train_time=0.05427193641662598
+[Epoch 0][Step 7], time=0.10233616828918457, ext_time=0.009745121002197266, train_time=0.06932854652404785
+[Epoch 0][Step 8], time=0.0871422290802002, ext_time=0.009855508804321289, train_time=0.05506324768066406
+[Epoch 0][Step 9], time=0.09004783630371094, ext_time=0.009881734848022461, train_time=0.0579991340637207
+[Epoch 0][Step 10], time=0.09064507484436035, ext_time=0.010002851486206055, train_time=0.05846285820007324
+[Epoch 0][Step 11], time=0.08615231513977051, ext_time=0.009900808334350586, train_time=0.05413556098937988
+[Epoch 0][Step 12], time=0.08651375770568848, ext_time=0.009888172149658203, train_time=0.05439448356628418
+[Epoch 0][Step 13], time=0.08663511276245117, ext_time=0.009931087493896484, train_time=0.05443882942199707
+[Epoch 0][Step 14], time=0.0859684944152832, ext_time=0.009885787963867188, train_time=0.05396389961242676
+[Epoch 0][Step 15], time=0.08615946769714355, ext_time=0.00978541374206543, train_time=0.05426025390625
+[Epoch 0][Step 16], time=0.08620071411132812, ext_time=0.009877204895019531, train_time=0.05422234535217285
+[Epoch 0][Step 17], time=0.09694075584411621, ext_time=0.00994420051574707, train_time=0.06486129760742188
+[Epoch 0][Step 18], time=0.08629751205444336, ext_time=0.010034322738647461, train_time=0.054137229919433594
+[Epoch 0][Step 19], time=0.08642172813415527, ext_time=0.009875297546386719, train_time=0.05431103706359863
+[Epoch 0][Step 20], time=0.08701801300048828, ext_time=0.009803295135498047, train_time=0.05509519577026367
+[Epoch 0][Step 21], time=0.09031844139099121, ext_time=0.009963512420654297, train_time=0.05825948715209961
+[Epoch 0][Step 22], time=0.08649444580078125, ext_time=0.00987386703491211, train_time=0.05434751510620117
+[Epoch 0][Step 23], time=0.09014701843261719, ext_time=0.009910821914672852, train_time=0.058026790618896484
+[Epoch 0][Step 24], time=0.08629584312438965, ext_time=0.009830713272094727, train_time=0.054227590560913086
+[Epoch 0][Step 25], time=0.08624720573425293, ext_time=0.00978708267211914, train_time=0.05426359176635742
+[Epoch 0][Step 26], time=0.08659529685974121, ext_time=0.009799480438232422, train_time=0.05452871322631836
+[Epoch 0][Step 27], time=0.08627104759216309, ext_time=0.009884357452392578, train_time=0.05419111251831055
+[Epoch 0][Step 28], time=0.08610033988952637, ext_time=0.009939432144165039, train_time=0.05404329299926758
+[Epoch 0][Step 29], time=0.08642220497131348, ext_time=0.00984954833984375, train_time=0.054338693618774414
+[Epoch 0][Step 30], time=0.10123062133789062, ext_time=0.009805440902709961, train_time=0.06340694427490234
+[Epoch 0][Step 31], time=0.08623027801513672, ext_time=0.009800195693969727, train_time=0.054230690002441406
+[Epoch 0][Step 32], time=0.08634233474731445, ext_time=0.010033607482910156, train_time=0.054155588150024414
+[Epoch 0][Step 33], time=0.5229434967041016, ext_time=0.009870767593383789, train_time=0.4908275604248047
+[Epoch 0][Step 34], time=0.0879673957824707, ext_time=0.009927034378051758, train_time=0.05588412284851074
+[Epoch 0][Step 35], time=0.0912027359008789, ext_time=0.009879827499389648, train_time=0.059120893478393555
+[Epoch 0][Step 36], time=0.08814668655395508, ext_time=0.009762763977050781, train_time=0.056282997131347656
+[Epoch 0][Step 37], time=0.08768033981323242, ext_time=0.00989985466003418, train_time=0.05562257766723633
+[Epoch 0][Step 38], time=0.0876150131225586, ext_time=0.009871244430541992, train_time=0.055600643157958984
+[Epoch 0][Step 39], time=0.08623385429382324, ext_time=0.009784936904907227, train_time=0.05422544479370117
+[Epoch 0][Step 40], time=0.08623003959655762, ext_time=0.009926319122314453, train_time=0.054154157638549805
+[Epoch 0][Step 41], time=0.08987569808959961, ext_time=0.009882688522338867, train_time=0.057860374450683594
+[Epoch 0][Step 42], time=0.08616352081298828, ext_time=0.009975194931030273, train_time=0.05403900146484375
+[Epoch 0][Step 43], time=0.08699607849121094, ext_time=0.009805679321289062, train_time=0.054976463317871094
+[Epoch 0][Step 44], time=0.08633756637573242, ext_time=0.009818553924560547, train_time=0.05433821678161621
+[Epoch 0][Step 45], time=0.08629536628723145, ext_time=0.009869575500488281, train_time=0.05420398712158203
+[Epoch 0][Step 46], time=0.08629751205444336, ext_time=0.009906530380249023, train_time=0.05418825149536133
+[Epoch 0][Step 47], time=0.08932900428771973, ext_time=0.009871244430541992, train_time=0.05721926689147949
+[Epoch 0][Step 48], time=0.08611941337585449, ext_time=0.009844064712524414, train_time=0.05410599708557129
+[Epoch 0][Step 49], time=0.09063720703125, ext_time=0.009919166564941406, train_time=0.05850934982299805
+[Epoch 0][Step 50], time=0.08638858795166016, ext_time=0.009977579116821289, train_time=0.05422377586364746
+[Epoch 0][Step 51], time=0.08984923362731934, ext_time=0.009856700897216797, train_time=0.057817935943603516
+[Epoch 0][Step 52], time=0.08620595932006836, ext_time=0.009866952896118164, train_time=0.054139137268066406
+[Epoch 0][Step 53], time=0.08597850799560547, ext_time=0.009871482849121094, train_time=0.053997039794921875
+[Epoch 0][Step 54], time=0.08648872375488281, ext_time=0.009798288345336914, train_time=0.054424285888671875
+[Epoch 0][Step 55], time=0.0864255428314209, ext_time=0.009833812713623047, train_time=0.05441403388977051
+[Epoch 0][Step 56], time=0.0859842300415039, ext_time=0.009799003601074219, train_time=0.05400872230529785
+[Epoch 0][Step 57], time=0.08622908592224121, ext_time=0.009829282760620117, train_time=0.0541996955871582
+[Epoch 0][Step 58], time=0.08612585067749023, ext_time=0.009922266006469727, train_time=0.05405902862548828
+[Epoch 0][Step 59], time=0.08632493019104004, ext_time=0.009845733642578125, train_time=0.054293155670166016
+[Epoch 0][Step 60], time=0.10169029235839844, ext_time=0.00993967056274414, train_time=0.06939339637756348
+[Epoch 0][Step 61], time=0.08636116981506348, ext_time=0.00993037223815918, train_time=0.0542302131652832
+[Epoch 0][Step 62], time=0.0862579345703125, ext_time=0.00988149642944336, train_time=0.05417943000793457
+[Epoch 0][Step 63], time=0.08647799491882324, ext_time=0.009830474853515625, train_time=0.05438709259033203
+[Epoch 0][Step 64], time=0.08620357513427734, ext_time=0.009869575500488281, train_time=0.05414772033691406
+[Epoch 0][Step 65], time=0.08620262145996094, ext_time=0.009890556335449219, train_time=0.05415940284729004
+[Epoch 0][Step 66], time=0.0866403579711914, ext_time=0.009779214859008789, train_time=0.054407596588134766
+[Epoch 0][Step 67], time=0.0864109992980957, ext_time=0.009848356246948242, train_time=0.054483890533447266
+[Epoch 0][Step 68], time=0.08649778366088867, ext_time=0.009905099868774414, train_time=0.05439305305480957
+[Epoch 0][Step 69], time=0.0862116813659668, ext_time=0.009929180145263672, train_time=0.05423307418823242
+[Epoch 0][Step 70], time=0.08619165420532227, ext_time=0.009882211685180664, train_time=0.05410170555114746
+[Epoch 0][Step 71], time=0.08646488189697266, ext_time=0.00984954833984375, train_time=0.05437016487121582
+[Epoch 0][Step 72], time=0.09204292297363281, ext_time=0.009783267974853516, train_time=0.05407071113586426
+[Epoch 0][Step 73], time=0.08706808090209961, ext_time=0.00984811782836914, train_time=0.05508732795715332
+[Epoch 0][Step 74], time=0.0861506462097168, ext_time=0.00978398323059082, train_time=0.05419182777404785
+[Epoch 0][Step 75], time=0.09047865867614746, ext_time=0.009907960891723633, train_time=0.058229684829711914
+[Epoch 0][Step 76], time=0.08630776405334473, ext_time=0.009870767593383789, train_time=0.0542454719543457
+[Epoch 0][Step 77], time=0.08629202842712402, ext_time=0.009954690933227539, train_time=0.054178714752197266
+[Epoch 0][Step 78], time=0.0871577262878418, ext_time=0.009999990463256836, train_time=0.0550227165222168
+[Epoch 0][Step 79], time=0.08601236343383789, ext_time=0.009840250015258789, train_time=0.054029226303100586
+[Epoch 0][Step 80], time=0.08619952201843262, ext_time=0.009781122207641602, train_time=0.05418896675109863
+[Epoch 0][Step 81], time=0.08600187301635742, ext_time=0.009899139404296875, train_time=0.0539853572845459
+[Epoch 0][Step 82], time=0.08615756034851074, ext_time=0.009902000427246094, train_time=0.0541081428527832
+[Epoch 0][Step 83], time=0.08607077598571777, ext_time=0.009865760803222656, train_time=0.05406951904296875
+[Epoch 0][Step 84], time=0.08644366264343262, ext_time=0.009793996810913086, train_time=0.054370880126953125
+[Epoch 0][Step 85], time=0.08608078956604004, ext_time=0.009900808334350586, train_time=0.05406045913696289
+[Epoch 0][Step 86], time=0.08611273765563965, ext_time=0.009827852249145508, train_time=0.054137229919433594
+[Epoch 0][Step 87], time=0.08640003204345703, ext_time=0.009960412979125977, train_time=0.054208993911743164
+[Epoch 0][Step 88], time=0.08619952201843262, ext_time=0.00982213020324707, train_time=0.05409526824951172
+[Epoch 0][Step 89], time=0.08588290214538574, ext_time=0.009851217269897461, train_time=0.053945302963256836
+[Epoch 0][Step 90], time=0.08619379997253418, ext_time=0.00990438461303711, train_time=0.05404353141784668
+[Epoch 0][Step 91], time=0.0862119197845459, ext_time=0.009848356246948242, train_time=0.05419421195983887
+[Epoch 0][Step 92], time=0.08604240417480469, ext_time=0.009864091873168945, train_time=0.05392050743103027
+[Epoch 0][Step 93], time=0.08598804473876953, ext_time=0.009778499603271484, train_time=0.05404162406921387
+[Epoch 0][Step 94], time=0.0859518051147461, ext_time=0.009811878204345703, train_time=0.053924560546875
+[Epoch 0][Step 95], time=0.6555979251861572, ext_time=0.009784698486328125, train_time=0.6235809326171875
+[Epoch 0][Step 96], time=0.08709025382995605, ext_time=0.009889841079711914, train_time=0.05500650405883789
+[Epoch 0][Step 97], time=0.08704662322998047, ext_time=0.009943485260009766, train_time=0.05491828918457031
+[Epoch 0][Step 98], time=0.08703851699829102, ext_time=0.009972810745239258, train_time=0.05495166778564453
+[Epoch 0][Step 99], time=0.08737397193908691, ext_time=0.009872913360595703, train_time=0.05525660514831543
+[Epoch 0][Step 100], time=0.09255552291870117, ext_time=0.009807109832763672, train_time=0.06056356430053711
+[Epoch 0][Step 101], time=0.08647704124450684, ext_time=0.009918928146362305, train_time=0.0543370246887207
+[Epoch 0][Step 102], time=0.08623123168945312, ext_time=0.009857177734375, train_time=0.05422019958496094
+[Epoch 0][Step 103], time=0.0862131118774414, ext_time=0.00983572006225586, train_time=0.054155826568603516
+[Epoch 0][Step 104], time=0.08584165573120117, ext_time=0.009904146194458008, train_time=0.0537872314453125
+[Epoch 0][Step 105], time=0.08587956428527832, ext_time=0.009816408157348633, train_time=0.05389285087585449
+[Epoch 0][Step 106], time=0.08619260787963867, ext_time=0.009775638580322266, train_time=0.0541684627532959
+[Epoch 0][Step 107], time=0.08612203598022461, ext_time=0.009824275970458984, train_time=0.05410647392272949
+[Epoch 0][Step 108], time=0.08595705032348633, ext_time=0.00986027717590332, train_time=0.05391860008239746
+[Epoch 0][Step 109], time=0.08610749244689941, ext_time=0.009883642196655273, train_time=0.05401158332824707
+[Epoch 0][Step 110], time=0.08602166175842285, ext_time=0.009840011596679688, train_time=0.05405449867248535
+[Epoch 0][Step 111], time=0.08622431755065918, ext_time=0.009920597076416016, train_time=0.05406785011291504
+[Epoch 0][Step 112], time=0.08585119247436523, ext_time=0.009961605072021484, train_time=0.05378389358520508
+[Epoch 0][Step 113], time=0.0861666202545166, ext_time=0.010014057159423828, train_time=0.0540008544921875
+[Epoch 0][Step 114], time=0.0945892333984375, ext_time=0.00977778434753418, train_time=0.05395007133483887
+[Epoch 0][Step 115], time=0.08609819412231445, ext_time=0.009889364242553711, train_time=0.05398726463317871
+[Epoch 0][Step 116], time=0.09070467948913574, ext_time=0.010651350021362305, train_time=0.057744741439819336
+[Epoch 0][Step 117], time=0.08597779273986816, ext_time=0.009920835494995117, train_time=0.05395007133483887
+[Epoch 0][Step 118], time=0.08698391914367676, ext_time=0.009793281555175781, train_time=0.05493950843811035
+[Epoch 0][Step 119], time=0.08598566055297852, ext_time=0.00980234146118164, train_time=0.053949832916259766
+[Epoch 0][Step 120], time=0.08663821220397949, ext_time=0.009969234466552734, train_time=0.05450034141540527
+[Epoch 0][Step 121], time=0.08609127998352051, ext_time=0.00987100601196289, train_time=0.053990840911865234
+[Epoch 0][Step 122], time=0.08621597290039062, ext_time=0.00988149642944336, train_time=0.0541071891784668
+[Epoch 0][Step 123], time=0.08589410781860352, ext_time=0.00981903076171875, train_time=0.05387592315673828
+[Epoch 0][Step 124], time=0.08687067031860352, ext_time=0.009953975677490234, train_time=0.05460023880004883
+[Epoch 0], time=13.653714179992676, loss=0.6674479246139526
+[Epoch 1][Step 0], time=0.08599734306335449, ext_time=0.009920120239257812, train_time=0.0538935661315918
+[Epoch 1][Step 1], time=0.08613109588623047, ext_time=0.009840250015258789, train_time=0.05405020713806152
+[Epoch 1][Step 2], time=0.08631348609924316, ext_time=0.009831666946411133, train_time=0.0543210506439209
+[Epoch 1][Step 3], time=0.08602023124694824, ext_time=0.009914875030517578, train_time=0.053904056549072266
+[Epoch 1][Step 4], time=0.0884089469909668, ext_time=0.009783029556274414, train_time=0.05639386177062988
+[Epoch 1][Step 5], time=0.0861358642578125, ext_time=0.00984644889831543, train_time=0.05411648750305176
+[Epoch 1][Step 6], time=0.08620381355285645, ext_time=0.009864091873168945, train_time=0.05412459373474121
+[Epoch 1][Step 7], time=0.08573794364929199, ext_time=0.009848594665527344, train_time=0.05374932289123535
+[Epoch 1][Step 8], time=0.08727908134460449, ext_time=0.009923219680786133, train_time=0.05518960952758789
+[Epoch 1][Step 9], time=0.08603167533874512, ext_time=0.00989842414855957, train_time=0.053916215896606445
+[Epoch 1][Step 10], time=0.08590149879455566, ext_time=0.00997614860534668, train_time=0.05380892753601074
+[Epoch 1][Step 11], time=0.08600115776062012, ext_time=0.009737014770507812, train_time=0.054033756256103516
+[Epoch 1][Step 12], time=0.0859670639038086, ext_time=0.009785652160644531, train_time=0.05395817756652832
+[Epoch 1][Step 13], time=0.08587837219238281, ext_time=0.009911060333251953, train_time=0.05382895469665527
+[Epoch 1][Step 14], time=0.08624076843261719, ext_time=0.009822607040405273, train_time=0.05417013168334961
+[Epoch 1][Step 15], time=0.08599543571472168, ext_time=0.009882211685180664, train_time=0.0539250373840332
+[Epoch 1][Step 16], time=0.08629894256591797, ext_time=0.009782075881958008, train_time=0.054197072982788086
+[Epoch 1][Step 17], time=0.08683538436889648, ext_time=0.009748697280883789, train_time=0.05465817451477051
+[Epoch 1][Step 18], time=0.08621454238891602, ext_time=0.009920120239257812, train_time=0.05412435531616211
+[Epoch 1][Step 19], time=0.08609223365783691, ext_time=0.009891986846923828, train_time=0.0539703369140625
+[Epoch 1][Step 20], time=0.08590388298034668, ext_time=0.009869813919067383, train_time=0.053913116455078125
+[Epoch 1][Step 21], time=0.0858314037322998, ext_time=0.009830236434936523, train_time=0.05380439758300781
+[Epoch 1][Step 22], time=0.0859987735748291, ext_time=0.00980830192565918, train_time=0.053978681564331055
+[Epoch 1][Step 23], time=0.08649778366088867, ext_time=0.009854793548583984, train_time=0.05431199073791504
+[Epoch 1][Step 24], time=0.08623409271240234, ext_time=0.009935379028320312, train_time=0.05405116081237793
+[Epoch 1][Step 25], time=0.08592343330383301, ext_time=0.009838104248046875, train_time=0.05394554138183594
+[Epoch 1][Step 26], time=0.08589673042297363, ext_time=0.009897947311401367, train_time=0.05382084846496582
+[Epoch 1][Step 27], time=0.08591270446777344, ext_time=0.009765625, train_time=0.05398917198181152
+[Epoch 1][Step 28], time=0.08615374565124512, ext_time=0.009863615036010742, train_time=0.05412864685058594
+[Epoch 1][Step 29], time=0.08599233627319336, ext_time=0.009850263595581055, train_time=0.05393648147583008
+[Epoch 1][Step 30], time=0.0860908031463623, ext_time=0.009919881820678711, train_time=0.05404973030090332
+[Epoch 1][Step 31], time=0.09224295616149902, ext_time=0.009778261184692383, train_time=0.0540919303894043
+[Epoch 1][Step 32], time=0.08584165573120117, ext_time=0.009794235229492188, train_time=0.05388998985290527
+[Epoch 1][Step 33], time=0.08579373359680176, ext_time=0.009830951690673828, train_time=0.05381321907043457
+[Epoch 1][Step 34], time=0.08598923683166504, ext_time=0.009960174560546875, train_time=0.05387115478515625
+[Epoch 1][Step 35], time=0.08583784103393555, ext_time=0.009817838668823242, train_time=0.053836822509765625
+[Epoch 1][Step 36], time=0.08590054512023926, ext_time=0.01000070571899414, train_time=0.053774356842041016
+[Epoch 1][Step 37], time=0.0860598087310791, ext_time=0.009961605072021484, train_time=0.053887367248535156
+[Epoch 1][Step 38], time=0.08607888221740723, ext_time=0.009835004806518555, train_time=0.05397820472717285
+[Epoch 1][Step 39], time=0.08569622039794922, ext_time=0.009788990020751953, train_time=0.053774356842041016
+[Epoch 1][Step 40], time=0.08601760864257812, ext_time=0.009883880615234375, train_time=0.053946495056152344
+[Epoch 1][Step 41], time=0.08597993850708008, ext_time=0.010008573532104492, train_time=0.05385851860046387
+[Epoch 1][Step 42], time=0.08614921569824219, ext_time=0.009905576705932617, train_time=0.05404043197631836
+[Epoch 1][Step 43], time=0.08611035346984863, ext_time=0.009832620620727539, train_time=0.054056644439697266
+[Epoch 1][Step 44], time=0.08582401275634766, ext_time=0.00982522964477539, train_time=0.053884267807006836
+[Epoch 1][Step 45], time=0.08573722839355469, ext_time=0.009876728057861328, train_time=0.05373072624206543
+[Epoch 1][Step 46], time=0.08611726760864258, ext_time=0.009901762008666992, train_time=0.05407428741455078
+[Epoch 1][Step 47], time=0.0861063003540039, ext_time=0.009818792343139648, train_time=0.05402970314025879
+[Epoch 1][Step 48], time=0.08588624000549316, ext_time=0.009786367416381836, train_time=0.05394101142883301
+[Epoch 1][Step 49], time=0.08666038513183594, ext_time=0.009876728057861328, train_time=0.05468916893005371
+[Epoch 1][Step 50], time=0.08605670928955078, ext_time=0.009945869445800781, train_time=0.05392932891845703
+[Epoch 1][Step 51], time=0.08592724800109863, ext_time=0.009820938110351562, train_time=0.05393052101135254
+[Epoch 1][Step 52], time=0.08621454238891602, ext_time=0.009842872619628906, train_time=0.05413365364074707
+[Epoch 1][Step 53], time=0.08587050437927246, ext_time=0.009937286376953125, train_time=0.05382800102233887
+[Epoch 1][Step 54], time=0.08609366416931152, ext_time=0.009800910949707031, train_time=0.05406522750854492
+[Epoch 1][Step 55], time=0.08596014976501465, ext_time=0.009818553924560547, train_time=0.05393195152282715
+[Epoch 1][Step 56], time=0.08582663536071777, ext_time=0.009899377822875977, train_time=0.053853750228881836
+[Epoch 1][Step 57], time=0.08604836463928223, ext_time=0.009837150573730469, train_time=0.05399656295776367
+[Epoch 1][Step 58], time=0.0856938362121582, ext_time=0.009835243225097656, train_time=0.05375409126281738
+[Epoch 1][Step 59], time=0.08611297607421875, ext_time=0.009893655776977539, train_time=0.05398297309875488
+[Epoch 1][Step 60], time=0.08592724800109863, ext_time=0.009876012802124023, train_time=0.053917646408081055
+[Epoch 1][Step 61], time=0.08587336540222168, ext_time=0.009879112243652344, train_time=0.053845882415771484
+[Epoch 1][Step 62], time=0.0859842300415039, ext_time=0.009797096252441406, train_time=0.05399751663208008
+[Epoch 1][Step 63], time=0.08603262901306152, ext_time=0.00984334945678711, train_time=0.05401611328125
+[Epoch 1][Step 64], time=0.08629274368286133, ext_time=0.009961128234863281, train_time=0.054219722747802734
+[Epoch 1][Step 65], time=0.0860283374786377, ext_time=0.009829044342041016, train_time=0.0540158748626709
+[Epoch 1][Step 66], time=0.09130477905273438, ext_time=0.009791374206542969, train_time=0.05919027328491211
+[Epoch 1][Step 67], time=0.08585762977600098, ext_time=0.009859323501586914, train_time=0.05383586883544922
+[Epoch 1][Step 68], time=0.08604669570922852, ext_time=0.009901762008666992, train_time=0.053968191146850586
+[Epoch 1][Step 69], time=0.08595085144042969, ext_time=0.009789466857910156, train_time=0.053960323333740234
+[Epoch 1][Step 70], time=0.08610343933105469, ext_time=0.009819746017456055, train_time=0.05400371551513672
+[Epoch 1][Step 71], time=0.08610916137695312, ext_time=0.009877443313598633, train_time=0.05398440361022949
+[Epoch 1][Step 72], time=0.08666372299194336, ext_time=0.009881019592285156, train_time=0.054613590240478516
+[Epoch 1][Step 73], time=0.09214091300964355, ext_time=0.009856224060058594, train_time=0.05400371551513672
+[Epoch 1][Step 74], time=0.08846378326416016, ext_time=0.009819269180297852, train_time=0.0563662052154541
+[Epoch 1][Step 75], time=0.08606553077697754, ext_time=0.009905576705932617, train_time=0.05396127700805664
+[Epoch 1][Step 76], time=0.08594369888305664, ext_time=0.009777069091796875, train_time=0.05395197868347168
+[Epoch 1][Step 77], time=0.08578896522521973, ext_time=0.00989532470703125, train_time=0.0537567138671875
+[Epoch 1][Step 78], time=0.08600974082946777, ext_time=0.009840965270996094, train_time=0.05405569076538086
+[Epoch 1][Step 79], time=0.08630204200744629, ext_time=0.009751558303833008, train_time=0.05419778823852539
+[Epoch 1][Step 80], time=0.08591294288635254, ext_time=0.009835004806518555, train_time=0.053916215896606445
+[Epoch 1][Step 81], time=0.08599686622619629, ext_time=0.009935379028320312, train_time=0.05390191078186035
+[Epoch 1][Step 82], time=0.08600354194641113, ext_time=0.009885549545288086, train_time=0.05390334129333496
+[Epoch 1][Step 83], time=0.08582782745361328, ext_time=0.00991511344909668, train_time=0.053802490234375
+[Epoch 1][Step 84], time=0.0860898494720459, ext_time=0.009827613830566406, train_time=0.05415177345275879
+[Epoch 1][Step 85], time=0.08594322204589844, ext_time=0.009825944900512695, train_time=0.05401277542114258
+[Epoch 1][Step 86], time=0.08608794212341309, ext_time=0.009831428527832031, train_time=0.05402064323425293
+[Epoch 1][Step 87], time=0.08619403839111328, ext_time=0.009870529174804688, train_time=0.05407571792602539
+[Epoch 1][Step 88], time=0.08603596687316895, ext_time=0.009784698486328125, train_time=0.05403280258178711
+[Epoch 1][Step 89], time=0.08604001998901367, ext_time=0.00989985466003418, train_time=0.05396270751953125
+[Epoch 1][Step 90], time=0.08599686622619629, ext_time=0.009893655776977539, train_time=0.05394434928894043
+[Epoch 1][Step 91], time=0.08574056625366211, ext_time=0.009924173355102539, train_time=0.05372881889343262
+[Epoch 1][Step 92], time=0.08610177040100098, ext_time=0.009673595428466797, train_time=0.05365920066833496
+[Epoch 1][Step 93], time=0.08624625205993652, ext_time=0.009852409362792969, train_time=0.054192543029785156
+[Epoch 1][Step 94], time=0.08600449562072754, ext_time=0.009922981262207031, train_time=0.053905487060546875
+[Epoch 1][Step 95], time=0.08578777313232422, ext_time=0.009856462478637695, train_time=0.053811073303222656
+[Epoch 1][Step 96], time=0.08580708503723145, ext_time=0.009884834289550781, train_time=0.05376935005187988
+[Epoch 1][Step 97], time=0.08622980117797852, ext_time=0.009999513626098633, train_time=0.054033517837524414
+[Epoch 1][Step 98], time=0.08604121208190918, ext_time=0.009823322296142578, train_time=0.05404829978942871
+[Epoch 1][Step 99], time=0.08583521842956543, ext_time=0.00986337661743164, train_time=0.053812503814697266
+[Epoch 1][Step 100], time=0.08603644371032715, ext_time=0.009812116622924805, train_time=0.054094791412353516
+[Epoch 1][Step 101], time=0.08618855476379395, ext_time=0.010027647018432617, train_time=0.054019927978515625
+[Epoch 1][Step 102], time=0.08646011352539062, ext_time=0.009876251220703125, train_time=0.0543065071105957
+[Epoch 1][Step 103], time=0.08591127395629883, ext_time=0.009983301162719727, train_time=0.05377960205078125
+[Epoch 1][Step 104], time=0.0857248306274414, ext_time=0.009920120239257812, train_time=0.053708791732788086
+[Epoch 1][Step 105], time=0.08621430397033691, ext_time=0.009804010391235352, train_time=0.05410575866699219
+[Epoch 1][Step 106], time=0.08609271049499512, ext_time=0.009866714477539062, train_time=0.05400824546813965
+[Epoch 1][Step 107], time=0.08610677719116211, ext_time=0.009865045547485352, train_time=0.054082632064819336
+[Epoch 1][Step 108], time=0.08601641654968262, ext_time=0.009835004806518555, train_time=0.05402565002441406
+[Epoch 1][Step 109], time=0.08610343933105469, ext_time=0.009808540344238281, train_time=0.05412769317626953
+[Epoch 1][Step 110], time=0.08591747283935547, ext_time=0.009788751602172852, train_time=0.053924560546875
+[Epoch 1][Step 111], time=0.08608889579772949, ext_time=0.00984811782836914, train_time=0.05399036407470703
+[Epoch 1][Step 112], time=0.08594083786010742, ext_time=0.009876489639282227, train_time=0.05388379096984863
+[Epoch 1][Step 113], time=0.09142136573791504, ext_time=0.009905576705932617, train_time=0.05932426452636719
+[Epoch 1][Step 114], time=0.0863349437713623, ext_time=0.009887218475341797, train_time=0.0543370246887207
+[Epoch 1][Step 115], time=0.09185004234313965, ext_time=0.009884119033813477, train_time=0.053904056549072266
+[Epoch 1][Step 116], time=0.08586883544921875, ext_time=0.00980377197265625, train_time=0.053919076919555664
+[Epoch 1][Step 117], time=0.08660054206848145, ext_time=0.009861946105957031, train_time=0.05450272560119629
+[Epoch 1][Step 118], time=0.08616113662719727, ext_time=0.009894609451293945, train_time=0.05402874946594238
+[Epoch 1][Step 119], time=0.0859079360961914, ext_time=0.009797096252441406, train_time=0.05391287803649902
+[Epoch 1][Step 120], time=0.08601880073547363, ext_time=0.009846687316894531, train_time=0.053969383239746094
+[Epoch 1][Step 121], time=0.08599042892456055, ext_time=0.009895563125610352, train_time=0.05392098426818848
+[Epoch 1][Step 122], time=0.08604073524475098, ext_time=0.009814023971557617, train_time=0.054000139236450195
+[Epoch 1][Step 123], time=0.08598542213439941, ext_time=0.009775638580322266, train_time=0.0539243221282959
+[Epoch 1][Step 124], time=0.08620238304138184, ext_time=0.009780406951904297, train_time=0.05427670478820801
+[Epoch 1], time=10.796498537063599, loss=0.6568512320518494
+[Epoch 2][Step 0], time=0.0866246223449707, ext_time=0.009929418563842773, train_time=0.05449056625366211
+[Epoch 2][Step 1], time=0.08610200881958008, ext_time=0.009969234466552734, train_time=0.05394864082336426
+[Epoch 2][Step 2], time=0.08627080917358398, ext_time=0.009907007217407227, train_time=0.054094552993774414
+[Epoch 2][Step 3], time=0.08600735664367676, ext_time=0.00991201400756836, train_time=0.05395197868347168
+[Epoch 2][Step 4], time=0.08648848533630371, ext_time=0.00997614860534668, train_time=0.054314613342285156
+[Epoch 2][Step 5], time=0.08616805076599121, ext_time=0.009848594665527344, train_time=0.054136037826538086
+[Epoch 2][Step 6], time=0.08614897727966309, ext_time=0.009896993637084961, train_time=0.05402970314025879
+[Epoch 2][Step 7], time=0.08632898330688477, ext_time=0.009998798370361328, train_time=0.054216861724853516
+[Epoch 2][Step 8], time=0.0860137939453125, ext_time=0.009757280349731445, train_time=0.05402779579162598
+[Epoch 2][Step 9], time=0.08575987815856934, ext_time=0.009788751602172852, train_time=0.053881168365478516
+[Epoch 2][Step 10], time=0.08604955673217773, ext_time=0.009882450103759766, train_time=0.05402684211730957
+[Epoch 2][Step 11], time=0.08606100082397461, ext_time=0.009926795959472656, train_time=0.0540461540222168
+[Epoch 2][Step 12], time=0.08629870414733887, ext_time=0.009817361831665039, train_time=0.05422806739807129
+[Epoch 2][Step 13], time=0.08611679077148438, ext_time=0.009821653366088867, train_time=0.05407595634460449
+[Epoch 2][Step 14], time=0.0860755443572998, ext_time=0.009821414947509766, train_time=0.05402541160583496
+[Epoch 2][Step 15], time=0.08598208427429199, ext_time=0.009791135787963867, train_time=0.054007530212402344
+[Epoch 2][Step 16], time=0.08600854873657227, ext_time=0.009854316711425781, train_time=0.0539553165435791
+[Epoch 2][Step 17], time=0.0874929428100586, ext_time=0.00986933708190918, train_time=0.05549740791320801
+[Epoch 2][Step 18], time=0.08558011054992676, ext_time=0.009760618209838867, train_time=0.05375027656555176
+[Epoch 2][Step 19], time=0.08606815338134766, ext_time=0.009782075881958008, train_time=0.05403256416320801
+[Epoch 2][Step 20], time=0.08635282516479492, ext_time=0.009971857070922852, train_time=0.05418825149536133
+[Epoch 2][Step 21], time=0.08634424209594727, ext_time=0.009808540344238281, train_time=0.05419468879699707
+[Epoch 2][Step 22], time=0.0861349105834961, ext_time=0.009890079498291016, train_time=0.05413532257080078
+[Epoch 2][Step 23], time=0.08600640296936035, ext_time=0.00997471809387207, train_time=0.05396318435668945
+[Epoch 2][Step 24], time=0.08631515502929688, ext_time=0.009975194931030273, train_time=0.054082393646240234
+[Epoch 2][Step 25], time=0.08601903915405273, ext_time=0.00999903678894043, train_time=0.053868770599365234
+[Epoch 2][Step 26], time=0.08611536026000977, ext_time=0.009781360626220703, train_time=0.054062843322753906
+[Epoch 2][Step 27], time=0.08622002601623535, ext_time=0.009896039962768555, train_time=0.054093360900878906
+[Epoch 2][Step 28], time=0.08588600158691406, ext_time=0.009877920150756836, train_time=0.053882598876953125
+[Epoch 2][Step 29], time=0.08593606948852539, ext_time=0.009822607040405273, train_time=0.05391883850097656
+[Epoch 2][Step 30], time=0.0858469009399414, ext_time=0.009801149368286133, train_time=0.0538938045501709
+[Epoch 2][Step 31], time=0.08590888977050781, ext_time=0.009879350662231445, train_time=0.05388140678405762
+[Epoch 2][Step 32], time=0.0922849178314209, ext_time=0.00983428955078125, train_time=0.05405426025390625
+[Epoch 2][Step 33], time=0.08633828163146973, ext_time=0.009873390197753906, train_time=0.05428600311279297
+[Epoch 2][Step 34], time=0.0857241153717041, ext_time=0.009880542755126953, train_time=0.053734540939331055
+[Epoch 2][Step 35], time=0.08611822128295898, ext_time=0.00981450080871582, train_time=0.05408167839050293
+[Epoch 2][Step 36], time=0.08653974533081055, ext_time=0.009811639785766602, train_time=0.05453300476074219
+[Epoch 2][Step 37], time=0.08652496337890625, ext_time=0.009872198104858398, train_time=0.05430197715759277
+[Epoch 2][Step 38], time=0.08600974082946777, ext_time=0.009825944900512695, train_time=0.05401444435119629
+[Epoch 2][Step 39], time=0.08591222763061523, ext_time=0.009777069091796875, train_time=0.05395197868347168
+[Epoch 2][Step 40], time=0.0860435962677002, ext_time=0.009961128234863281, train_time=0.053908348083496094
+[Epoch 2][Step 41], time=0.08611607551574707, ext_time=0.009785652160644531, train_time=0.05417633056640625
+[Epoch 2][Step 42], time=0.08707690238952637, ext_time=0.009890556335449219, train_time=0.05493783950805664
+[Epoch 2][Step 43], time=0.08619165420532227, ext_time=0.00988459587097168, train_time=0.05404543876647949
+[Epoch 2][Step 44], time=0.08597755432128906, ext_time=0.009839534759521484, train_time=0.05392289161682129
+[Epoch 2][Step 45], time=0.08602118492126465, ext_time=0.009836673736572266, train_time=0.05402708053588867
+[Epoch 2][Step 46], time=0.08595824241638184, ext_time=0.009864568710327148, train_time=0.053941965103149414
+[Epoch 2][Step 47], time=0.08593320846557617, ext_time=0.009906530380249023, train_time=0.053864240646362305
+[Epoch 2][Step 48], time=0.08611512184143066, ext_time=0.009930133819580078, train_time=0.05399584770202637
+[Epoch 2][Step 49], time=0.0858614444732666, ext_time=0.009823083877563477, train_time=0.053871870040893555
+[Epoch 2][Step 50], time=0.0861203670501709, ext_time=0.009919881820678711, train_time=0.054047346115112305
+[Epoch 2][Step 51], time=0.08574390411376953, ext_time=0.009785890579223633, train_time=0.05379652976989746
+[Epoch 2][Step 52], time=0.08624935150146484, ext_time=0.009934663772583008, train_time=0.05407905578613281
+[Epoch 2][Step 53], time=0.08580803871154785, ext_time=0.009821653366088867, train_time=0.05392956733703613
+[Epoch 2][Step 54], time=0.08613777160644531, ext_time=0.009883880615234375, train_time=0.0540013313293457
+[Epoch 2][Step 55], time=0.0860145092010498, ext_time=0.009812593460083008, train_time=0.054033517837524414
+[Epoch 2][Step 56], time=0.08609509468078613, ext_time=0.00980830192565918, train_time=0.05401468276977539
+[Epoch 2][Step 57], time=0.08594346046447754, ext_time=0.00977778434753418, train_time=0.05394148826599121
+[Epoch 2][Step 58], time=0.08596563339233398, ext_time=0.009951353073120117, train_time=0.053870439529418945
+[Epoch 2][Step 59], time=0.08590865135192871, ext_time=0.009915828704833984, train_time=0.05393052101135254
+[Epoch 2][Step 60], time=0.08620023727416992, ext_time=0.009896993637084961, train_time=0.0540156364440918
+[Epoch 2][Step 61], time=0.08605051040649414, ext_time=0.009757280349731445, train_time=0.054238319396972656
+[Epoch 2][Step 62], time=0.08658599853515625, ext_time=0.009753227233886719, train_time=0.054285526275634766
+[Epoch 2][Step 63], time=0.08610677719116211, ext_time=0.009854555130004883, train_time=0.05411958694458008
+[Epoch 2][Step 64], time=0.08629941940307617, ext_time=0.009857654571533203, train_time=0.0542905330657959
+[Epoch 2][Step 65], time=0.08635282516479492, ext_time=0.010009527206420898, train_time=0.05411958694458008
+[Epoch 2][Step 66], time=0.0861368179321289, ext_time=0.009796380996704102, train_time=0.05411791801452637
+[Epoch 2][Step 67], time=0.08601045608520508, ext_time=0.009949445724487305, train_time=0.053876399993896484
+[Epoch 2][Step 68], time=0.08614516258239746, ext_time=0.009856224060058594, train_time=0.0541071891784668
+[Epoch 2][Step 69], time=0.08626604080200195, ext_time=0.00983285903930664, train_time=0.05423283576965332
+[Epoch 2][Step 70], time=0.08618426322937012, ext_time=0.009876012802124023, train_time=0.054201364517211914
+[Epoch 2][Step 71], time=0.08620500564575195, ext_time=0.009816646575927734, train_time=0.05414128303527832
+[Epoch 2][Step 72], time=0.08604955673217773, ext_time=0.009936809539794922, train_time=0.054018259048461914
+[Epoch 2][Step 73], time=0.08616852760314941, ext_time=0.01000070571899414, train_time=0.05400991439819336
+[Epoch 2][Step 74], time=0.0929417610168457, ext_time=0.009871721267700195, train_time=0.05471372604370117
+[Epoch 2][Step 75], time=0.08600497245788574, ext_time=0.009874582290649414, train_time=0.053963422775268555
+[Epoch 2][Step 76], time=0.08633661270141602, ext_time=0.009974002838134766, train_time=0.05426335334777832
+[Epoch 2][Step 77], time=0.08593058586120605, ext_time=0.0098114013671875, train_time=0.05393242835998535
+[Epoch 2][Step 78], time=0.08610391616821289, ext_time=0.00988149642944336, train_time=0.054096221923828125
+[Epoch 2][Step 79], time=0.08617353439331055, ext_time=0.009876251220703125, train_time=0.0541231632232666
+[Epoch 2][Step 80], time=0.08625483512878418, ext_time=0.0098876953125, train_time=0.05411529541015625
+[Epoch 2][Step 81], time=0.08625912666320801, ext_time=0.009803533554077148, train_time=0.05428767204284668
+[Epoch 2][Step 82], time=0.08632063865661621, ext_time=0.009817838668823242, train_time=0.05437302589416504
+[Epoch 2][Step 83], time=0.09077143669128418, ext_time=0.009868860244750977, train_time=0.05874133110046387
+[Epoch 2][Step 84], time=0.08597874641418457, ext_time=0.009794235229492188, train_time=0.05399012565612793
+[Epoch 2][Step 85], time=0.08593130111694336, ext_time=0.00989532470703125, train_time=0.053862571716308594
+[Epoch 2][Step 86], time=0.08612680435180664, ext_time=0.009865283966064453, train_time=0.05404782295227051
+[Epoch 2][Step 87], time=0.08608651161193848, ext_time=0.009784936904907227, train_time=0.05407142639160156
+[Epoch 2][Step 88], time=0.08599233627319336, ext_time=0.00992584228515625, train_time=0.0538938045501709
+[Epoch 2][Step 89], time=0.08600640296936035, ext_time=0.009908914566040039, train_time=0.05392646789550781
+[Epoch 2][Step 90], time=0.08617377281188965, ext_time=0.009918212890625, train_time=0.05404520034790039
+[Epoch 2][Step 91], time=0.08635950088500977, ext_time=0.009907960891723633, train_time=0.054184913635253906
+[Epoch 2][Step 92], time=0.08632230758666992, ext_time=0.010024785995483398, train_time=0.054163217544555664
+[Epoch 2][Step 93], time=0.08618450164794922, ext_time=0.009824514389038086, train_time=0.05417203903198242
+[Epoch 2][Step 94], time=0.08618879318237305, ext_time=0.009867191314697266, train_time=0.05423331260681152
+[Epoch 2][Step 95], time=0.08609604835510254, ext_time=0.009933948516845703, train_time=0.053980350494384766
+[Epoch 2][Step 96], time=0.08659625053405762, ext_time=0.009746313095092773, train_time=0.05465984344482422
+[Epoch 2][Step 97], time=0.08625078201293945, ext_time=0.00987696647644043, train_time=0.05410957336425781
+[Epoch 2][Step 98], time=0.08610010147094727, ext_time=0.009910821914672852, train_time=0.05410599708557129
+[Epoch 2][Step 99], time=0.09375739097595215, ext_time=0.00991511344909668, train_time=0.06164240837097168
+[Epoch 2][Step 100], time=0.08614158630371094, ext_time=0.009839534759521484, train_time=0.05414748191833496
+[Epoch 2][Step 101], time=0.0859074592590332, ext_time=0.009891748428344727, train_time=0.05395698547363281
+[Epoch 2][Step 102], time=0.08606147766113281, ext_time=0.009796380996704102, train_time=0.054015159606933594
+[Epoch 2][Step 103], time=0.08622932434082031, ext_time=0.009923934936523438, train_time=0.05411195755004883
+[Epoch 2][Step 104], time=0.08612775802612305, ext_time=0.009874820709228516, train_time=0.05399274826049805
+[Epoch 2][Step 105], time=0.0858297348022461, ext_time=0.009766578674316406, train_time=0.053931474685668945
+[Epoch 2][Step 106], time=0.0858769416809082, ext_time=0.009876012802124023, train_time=0.05385255813598633
+[Epoch 2][Step 107], time=0.08620429039001465, ext_time=0.009899616241455078, train_time=0.0541539192199707
+[Epoch 2][Step 108], time=0.0860438346862793, ext_time=0.009902238845825195, train_time=0.05393266677856445
+[Epoch 2][Step 109], time=0.08597564697265625, ext_time=0.009952783584594727, train_time=0.053896427154541016
+[Epoch 2][Step 110], time=0.08575105667114258, ext_time=0.009846210479736328, train_time=0.05377340316772461
+[Epoch 2][Step 111], time=0.0859217643737793, ext_time=0.009876728057861328, train_time=0.05389595031738281
+[Epoch 2][Step 112], time=0.08613228797912598, ext_time=0.009918689727783203, train_time=0.05401039123535156
+[Epoch 2][Step 113], time=0.0858771800994873, ext_time=0.009896039962768555, train_time=0.053855180740356445
+[Epoch 2][Step 114], time=0.0860593318939209, ext_time=0.009887933731079102, train_time=0.05400419235229492
+[Epoch 2][Step 115], time=0.08614182472229004, ext_time=0.009967327117919922, train_time=0.0540318489074707
+[Epoch 2][Step 116], time=0.09257197380065918, ext_time=0.009821891784667969, train_time=0.05400204658508301
+[Epoch 2][Step 117], time=0.08600616455078125, ext_time=0.009932279586791992, train_time=0.05391120910644531
+[Epoch 2][Step 118], time=0.08599710464477539, ext_time=0.009860038757324219, train_time=0.05393528938293457
+[Epoch 2][Step 119], time=0.08616757392883301, ext_time=0.00970315933227539, train_time=0.05397629737854004
+[Epoch 2][Step 120], time=0.08625483512878418, ext_time=0.009848594665527344, train_time=0.054102420806884766
+[Epoch 2][Step 121], time=0.08616495132446289, ext_time=0.009809017181396484, train_time=0.05408811569213867
+[Epoch 2][Step 122], time=0.0859375, ext_time=0.009850263595581055, train_time=0.05391073226928711
+[Epoch 2][Step 123], time=0.08600211143493652, ext_time=0.009755611419677734, train_time=0.05408883094787598
+[Epoch 2][Step 124], time=0.0858469009399414, ext_time=0.009856224060058594, train_time=0.05385756492614746
+[Epoch 2], time=10.803498268127441, loss=0.6301194429397583
+[Epoch 3][Step 0], time=0.08662629127502441, ext_time=0.009760379791259766, train_time=0.05467844009399414
+[Epoch 3][Step 1], time=0.08607220649719238, ext_time=0.009846925735473633, train_time=0.054137229919433594
+[Epoch 3][Step 2], time=0.08599019050598145, ext_time=0.00986170768737793, train_time=0.05397510528564453
+[Epoch 3][Step 3], time=0.08631372451782227, ext_time=0.009755849838256836, train_time=0.05409359931945801
+[Epoch 3][Step 4], time=0.0907282829284668, ext_time=0.009903907775878906, train_time=0.058669328689575195
+[Epoch 3][Step 5], time=0.08619070053100586, ext_time=0.009808778762817383, train_time=0.05425834655761719
+[Epoch 3][Step 6], time=0.08594179153442383, ext_time=0.009867668151855469, train_time=0.05400395393371582
+[Epoch 3][Step 7], time=0.08613204956054688, ext_time=0.009869575500488281, train_time=0.0540316104888916
+[Epoch 3][Step 8], time=0.08615994453430176, ext_time=0.00986790657043457, train_time=0.05414843559265137
+[Epoch 3][Step 9], time=0.08632779121398926, ext_time=0.010032415390014648, train_time=0.05429840087890625
+[Epoch 3][Step 10], time=0.08618426322937012, ext_time=0.009927511215209961, train_time=0.054039955139160156
+[Epoch 3][Step 11], time=0.08573579788208008, ext_time=0.009860038757324219, train_time=0.05380606651306152
+[Epoch 3][Step 12], time=0.08785295486450195, ext_time=0.009782791137695312, train_time=0.05586576461791992
+[Epoch 3][Step 13], time=0.08626031875610352, ext_time=0.009805917739868164, train_time=0.05421614646911621
+[Epoch 3][Step 14], time=0.08614659309387207, ext_time=0.009822368621826172, train_time=0.05419492721557617
+[Epoch 3][Step 15], time=0.08592629432678223, ext_time=0.009873628616333008, train_time=0.05390453338623047
+[Epoch 3][Step 16], time=0.08810806274414062, ext_time=0.009766340255737305, train_time=0.05613088607788086
+[Epoch 3][Step 17], time=0.08615422248840332, ext_time=0.009845495223999023, train_time=0.05405402183532715
+[Epoch 3][Step 18], time=0.08653831481933594, ext_time=0.00996088981628418, train_time=0.054410457611083984
+[Epoch 3][Step 19], time=0.08603215217590332, ext_time=0.00994420051574707, train_time=0.05391287803649902
+[Epoch 3][Step 20], time=0.08588123321533203, ext_time=0.009822607040405273, train_time=0.05389761924743652
+[Epoch 3][Step 21], time=0.08610653877258301, ext_time=0.009841442108154297, train_time=0.05401921272277832
+[Epoch 3][Step 22], time=0.08622217178344727, ext_time=0.00986933708190918, train_time=0.054093122482299805
+[Epoch 3][Step 23], time=0.08641719818115234, ext_time=0.009840011596679688, train_time=0.05442667007446289
+[Epoch 3][Step 24], time=0.0861670970916748, ext_time=0.009865760803222656, train_time=0.05408763885498047
+[Epoch 3][Step 25], time=0.08607983589172363, ext_time=0.009846925735473633, train_time=0.054099082946777344
+[Epoch 3][Step 26], time=0.08601927757263184, ext_time=0.009846925735473633, train_time=0.053969383239746094
+[Epoch 3][Step 27], time=0.08594536781311035, ext_time=0.009882926940917969, train_time=0.05391430854797363
+[Epoch 3][Step 28], time=0.08644461631774902, ext_time=0.009975194931030273, train_time=0.054270267486572266
+[Epoch 3][Step 29], time=0.08597898483276367, ext_time=0.009760379791259766, train_time=0.05402040481567383
+[Epoch 3][Step 30], time=0.08601689338684082, ext_time=0.009767770767211914, train_time=0.054056406021118164
+[Epoch 3][Step 31], time=0.08616495132446289, ext_time=0.00984501838684082, train_time=0.05408120155334473
+[Epoch 3][Step 32], time=0.08600687980651855, ext_time=0.009855508804321289, train_time=0.05394148826599121
+[Epoch 3][Step 33], time=0.09238123893737793, ext_time=0.009902715682983398, train_time=0.05372285842895508
+[Epoch 3][Step 34], time=0.08631134033203125, ext_time=0.009967565536499023, train_time=0.05419349670410156
+[Epoch 3][Step 35], time=0.08609819412231445, ext_time=0.009867429733276367, train_time=0.05399608612060547
+[Epoch 3][Step 36], time=0.08639693260192871, ext_time=0.0098419189453125, train_time=0.05432558059692383
+[Epoch 3][Step 37], time=0.08617639541625977, ext_time=0.009795904159545898, train_time=0.05422163009643555
+[Epoch 3][Step 38], time=0.08602428436279297, ext_time=0.009882688522338867, train_time=0.05395817756652832
+[Epoch 3][Step 39], time=0.08593440055847168, ext_time=0.009850502014160156, train_time=0.05391526222229004
+[Epoch 3][Step 40], time=0.08601999282836914, ext_time=0.009785175323486328, train_time=0.0540623664855957
+[Epoch 3][Step 41], time=0.08602213859558105, ext_time=0.00985097885131836, train_time=0.053980112075805664
+[Epoch 3][Step 42], time=0.08635640144348145, ext_time=0.009784936904907227, train_time=0.05439043045043945
+[Epoch 3][Step 43], time=0.08641695976257324, ext_time=0.009927034378051758, train_time=0.054216861724853516
+[Epoch 3][Step 44], time=0.08605766296386719, ext_time=0.009855508804321289, train_time=0.05397939682006836
+[Epoch 3][Step 45], time=0.08605837821960449, ext_time=0.009865999221801758, train_time=0.05402541160583496
+[Epoch 3][Step 46], time=0.08612275123596191, ext_time=0.009923696517944336, train_time=0.05400419235229492
+[Epoch 3][Step 47], time=0.08600783348083496, ext_time=0.009873628616333008, train_time=0.053941965103149414
+[Epoch 3][Step 48], time=0.08596634864807129, ext_time=0.009903192520141602, train_time=0.053906917572021484
+[Epoch 3][Step 49], time=0.08604001998901367, ext_time=0.009830236434936523, train_time=0.05396080017089844
+[Epoch 3][Step 50], time=0.0862891674041748, ext_time=0.0099334716796875, train_time=0.05417060852050781
+[Epoch 3][Step 51], time=0.08595514297485352, ext_time=0.009804725646972656, train_time=0.05390310287475586
+[Epoch 3][Step 52], time=0.08630990982055664, ext_time=0.009831905364990234, train_time=0.05432462692260742
+[Epoch 3][Step 53], time=0.08600568771362305, ext_time=0.00993967056274414, train_time=0.053914785385131836
+[Epoch 3][Step 54], time=0.08584117889404297, ext_time=0.00983572006225586, train_time=0.05388641357421875
+[Epoch 3][Step 55], time=0.08611583709716797, ext_time=0.009823083877563477, train_time=0.05413556098937988
+[Epoch 3][Step 56], time=0.08606791496276855, ext_time=0.009929656982421875, train_time=0.054033517837524414
+[Epoch 3][Step 57], time=0.08646416664123535, ext_time=0.009764671325683594, train_time=0.054198503494262695
+[Epoch 3][Step 58], time=0.08626317977905273, ext_time=0.009871721267700195, train_time=0.05424618721008301
+[Epoch 3][Step 59], time=0.08600163459777832, ext_time=0.009864568710327148, train_time=0.05398821830749512
+[Epoch 3][Step 60], time=0.08614945411682129, ext_time=0.00991058349609375, train_time=0.05408287048339844
+[Epoch 3][Step 61], time=0.08590197563171387, ext_time=0.009873151779174805, train_time=0.05386233329772949
+[Epoch 3][Step 62], time=0.08636260032653809, ext_time=0.009834051132202148, train_time=0.054233551025390625
+[Epoch 3][Step 63], time=0.08626723289489746, ext_time=0.009820699691772461, train_time=0.054166555404663086
+[Epoch 3][Step 64], time=0.0862264633178711, ext_time=0.009840726852416992, train_time=0.0541989803314209
+[Epoch 3][Step 65], time=0.08650708198547363, ext_time=0.010047674179077148, train_time=0.054203033447265625
+[Epoch 3][Step 66], time=0.0861208438873291, ext_time=0.009827136993408203, train_time=0.0540618896484375
+[Epoch 3][Step 67], time=0.08594918251037598, ext_time=0.009861946105957031, train_time=0.05391860008239746
+[Epoch 3][Step 68], time=0.08616423606872559, ext_time=0.009858369827270508, train_time=0.05406928062438965
+[Epoch 3][Step 69], time=0.0861060619354248, ext_time=0.00982046127319336, train_time=0.054062843322753906
+[Epoch 3][Step 70], time=0.08578324317932129, ext_time=0.009784460067749023, train_time=0.05387759208679199
+[Epoch 3][Step 71], time=0.08609938621520996, ext_time=0.00998377799987793, train_time=0.05401420593261719
+[Epoch 3][Step 72], time=0.08601927757263184, ext_time=0.009854555130004883, train_time=0.05401325225830078
+[Epoch 3][Step 73], time=0.08599853515625, ext_time=0.009855508804321289, train_time=0.05399775505065918
+[Epoch 3][Step 74], time=0.08585476875305176, ext_time=0.00996255874633789, train_time=0.05374598503112793
+[Epoch 3][Step 75], time=0.09245920181274414, ext_time=0.009795188903808594, train_time=0.05399179458618164
+[Epoch 3][Step 76], time=0.08593010902404785, ext_time=0.009819984436035156, train_time=0.053936004638671875
+[Epoch 3][Step 77], time=0.08593010902404785, ext_time=0.009898185729980469, train_time=0.05389285087585449
+[Epoch 3][Step 78], time=0.08595490455627441, ext_time=0.009882211685180664, train_time=0.0539555549621582
+[Epoch 3][Step 79], time=0.08608531951904297, ext_time=0.010030746459960938, train_time=0.05389714241027832
+[Epoch 3][Step 80], time=0.0861361026763916, ext_time=0.009897470474243164, train_time=0.05405592918395996
+[Epoch 3][Step 81], time=0.08582353591918945, ext_time=0.009899377822875977, train_time=0.053856611251831055
+[Epoch 3][Step 82], time=0.08621096611022949, ext_time=0.00985264778137207, train_time=0.05427074432373047
+[Epoch 3][Step 83], time=0.08604574203491211, ext_time=0.00987386703491211, train_time=0.05399346351623535
+[Epoch 3][Step 84], time=0.08607840538024902, ext_time=0.009955406188964844, train_time=0.05406546592712402
+[Epoch 3][Step 85], time=0.0860743522644043, ext_time=0.009958744049072266, train_time=0.05393266677856445
+[Epoch 3][Step 86], time=0.08605265617370605, ext_time=0.009895563125610352, train_time=0.05393195152282715
+[Epoch 3][Step 87], time=0.08617758750915527, ext_time=0.009923458099365234, train_time=0.054064035415649414
+[Epoch 3][Step 88], time=0.08624029159545898, ext_time=0.009930133819580078, train_time=0.05406332015991211
+[Epoch 3][Step 89], time=0.08611607551574707, ext_time=0.00986623764038086, train_time=0.05412411689758301
+[Epoch 3][Step 90], time=0.08616828918457031, ext_time=0.009818553924560547, train_time=0.0540771484375
+[Epoch 3][Step 91], time=0.08601737022399902, ext_time=0.01000833511352539, train_time=0.053878068923950195
+[Epoch 3][Step 92], time=0.08605122566223145, ext_time=0.009854316711425781, train_time=0.05414748191833496
+[Epoch 3][Step 93], time=0.08585095405578613, ext_time=0.009831905364990234, train_time=0.053963422775268555
+[Epoch 3][Step 94], time=0.08601951599121094, ext_time=0.009781599044799805, train_time=0.054076433181762695
+[Epoch 3][Step 95], time=0.0862126350402832, ext_time=0.009798765182495117, train_time=0.054155588150024414
+[Epoch 3][Step 96], time=0.08623099327087402, ext_time=0.009951114654541016, train_time=0.05406522750854492
+[Epoch 3][Step 97], time=0.08602190017700195, ext_time=0.009937047958374023, train_time=0.05395364761352539
+[Epoch 3][Step 98], time=0.08604240417480469, ext_time=0.009778976440429688, train_time=0.054094552993774414
+[Epoch 3][Step 99], time=0.08648204803466797, ext_time=0.009807825088500977, train_time=0.0545501708984375
+[Epoch 3][Step 100], time=0.08596110343933105, ext_time=0.00975942611694336, train_time=0.05413699150085449
+[Epoch 3][Step 101], time=0.0858316421508789, ext_time=0.009793281555175781, train_time=0.053865909576416016
+[Epoch 3][Step 102], time=0.0863339900970459, ext_time=0.009821414947509766, train_time=0.05419111251831055
+[Epoch 3][Step 103], time=0.08592438697814941, ext_time=0.009859085083007812, train_time=0.053992509841918945
+[Epoch 3][Step 104], time=0.08628153800964355, ext_time=0.009981632232666016, train_time=0.054208993911743164
+[Epoch 3][Step 105], time=0.0867156982421875, ext_time=0.009873390197753906, train_time=0.05475258827209473
+[Epoch 3][Step 106], time=0.0862727165222168, ext_time=0.009804487228393555, train_time=0.05418586730957031
+[Epoch 3][Step 107], time=0.0860285758972168, ext_time=0.009837627410888672, train_time=0.054047584533691406
+[Epoch 3][Step 108], time=0.08611059188842773, ext_time=0.009921550750732422, train_time=0.053967952728271484
+[Epoch 3][Step 109], time=0.08582615852355957, ext_time=0.009763479232788086, train_time=0.053908586502075195
+[Epoch 3][Step 110], time=0.08599615097045898, ext_time=0.009866714477539062, train_time=0.053941965103149414
+[Epoch 3][Step 111], time=0.08657383918762207, ext_time=0.009796619415283203, train_time=0.05451178550720215
+[Epoch 3][Step 112], time=0.08621478080749512, ext_time=0.009927749633789062, train_time=0.054111480712890625
+[Epoch 3][Step 113], time=0.08598136901855469, ext_time=0.009831666946411133, train_time=0.05398249626159668
+[Epoch 3][Step 114], time=0.08745265007019043, ext_time=0.009951353073120117, train_time=0.05526304244995117
+[Epoch 3][Step 115], time=0.08618760108947754, ext_time=0.010006427764892578, train_time=0.05398988723754883
+[Epoch 3][Step 116], time=0.08593440055847168, ext_time=0.009803533554077148, train_time=0.053981781005859375
+[Epoch 3][Step 117], time=0.09221911430358887, ext_time=0.009923458099365234, train_time=0.053758859634399414
+[Epoch 3][Step 118], time=0.0861048698425293, ext_time=0.009855508804321289, train_time=0.05403470993041992
+[Epoch 3][Step 119], time=0.08638858795166016, ext_time=0.009788751602172852, train_time=0.054459333419799805
+[Epoch 3][Step 120], time=0.08620572090148926, ext_time=0.009763717651367188, train_time=0.05413341522216797
+[Epoch 3][Step 121], time=0.08612561225891113, ext_time=0.009829044342041016, train_time=0.05408048629760742
+[Epoch 3][Step 122], time=0.08603978157043457, ext_time=0.009797096252441406, train_time=0.05404806137084961
+[Epoch 3][Step 123], time=0.08611679077148438, ext_time=0.009859323501586914, train_time=0.054000139236450195
+[Epoch 3][Step 124], time=0.0862722396850586, ext_time=0.009914159774780273, train_time=0.05419564247131348
+[Epoch 3], time=10.800520658493042, loss=0.6174837350845337
+    [Step(average) Profiler Level 1 E3 S999]
+        L1  sample           0.022349 | send           0.000000
+        L1  recv             0.000000 | copy           0.009747 | convert time 0.000000 | train  0.054263
+        L1  feature nbytes    6.13 GB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes      13.51 KB | remote nbytes    1.62 GB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     0.000000 | refresh duration   0.000000
+    [Step(average) Profiler Level 2 E3 S999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.009747
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(average) Profiler Level 3 E3 S999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.001212 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000020 | cache combine cache 0.000906 | cache combine remote 0.007594
+        L3  label extract  0.000000
+    [Profiler Level Percentiles E3 S999]
+        p50.00_tail_logl2featcopy=0.009738
+        p90.00_tail_logl2featcopy=0.009919
+        p95.00_tail_logl2featcopy=0.009970
+        p99.00_tail_logl2featcopy=0.010073
+        p99.90_tail_logl2featcopy=0.059808
+[CUDA] cuda: usage: 76.69 GB
+worker 5 running with pid=19164
+loading train edge idx from disk
+loading train edge idx from disk done
+tensor([ 367470406, 3158702471, 3196913887,  153606500, 2622541626, 2707306334,
+        2288750783,  341639546, 2394912536, 3266219078,  317074742, 1665128055,
+        3225579545,  427334013,  150148188,  726851972, 1000854521, 1061370191,
+         213395108,  526478766,  115662647, 1382980281, 1363464091,  971316959,
+        1643305663, 1559556869,  792051811, 2593715952, 2627476216,  485049346,
+        1279512108,  281028249, 2848334841, 1142277951, 1624797255, 1682408139,
+         130713544,  372892975, 1190696744, 1515340461,  396873136, 3079813016,
+         574876927,   31156367,  449947793, 1664434120,  774080817, 2850247945,
+         655998496,  888602410,  350570870,  466346177,   69778231,  638128676,
+        1443388341, 1479712286, 2858804367,  550628163,  198023098, 2583590303,
+        2518492873,    2593795, 2722269746,  659106604, 1369497066,   77640938,
+         645516367, 3053389785, 3376243999,  792250187, 1401047469, 1545651011,
+        1827797263, 1275030316, 2075895474, 2919804301, 2493902937,  112768749,
+          11701078,  342702905,  404737965,  786261376,  934911988,  757583227,
+        1135493038, 3162165660, 1144120843, 2861906075, 3454564992, 1866677628,
+        3557612909, 3295574170, 1840253021,  589845084,   38434987, 3025516425,
+         133597469,  597513635, 2348166713, 3535021406])
+Rank=5, Graph loaded.
+!!!!dist_homo_graph enumerate latency per epoch: 0.005625, per step: 0.000045
+presamping
+presamping takes 31.46961522102356
+|===========================================================================|
+|                  PyTorch CUDA memory summary, device ID 0                 |
+|---------------------------------------------------------------------------|
+|            CUDA OOMs: 0            |        cudaMalloc retries: 0         |
+|===========================================================================|
+|        Metric         | Cur Usage  | Peak Usage | Tot Alloc  | Tot Freed  |
+|---------------------------------------------------------------------------|
+| Allocated memory      |  485721 KB |   11405 MB |   14271 GB |   14271 GB |
+|       from large pool |  474960 KB |   11395 MB |   14256 GB |   14256 GB |
+|       from small pool |   10761 KB |      16 MB |      14 GB |      14 GB |
+|---------------------------------------------------------------------------|
+| Active memory         |  485721 KB |   11405 MB |   14271 GB |   14271 GB |
+|       from large pool |  474960 KB |   11395 MB |   14256 GB |   14256 GB |
+|       from small pool |   10761 KB |      16 MB |      14 GB |      14 GB |
+|---------------------------------------------------------------------------|
+| GPU reserved memory   |   38882 MB |   38882 MB |   38882 MB |       0 B  |
+|       from large pool |   38860 MB |   38860 MB |   38860 MB |       0 B  |
+|       from small pool |      22 MB |      22 MB |      22 MB |       0 B  |
+|---------------------------------------------------------------------------|
+| Non-releasable memory |    1753 MB |   16019 MB |   10639 GB |   10637 GB |
+|       from large pool |    1748 MB |   16010 MB |   10623 GB |   10622 GB |
+|       from small pool |       5 MB |      10 MB |      15 GB |      15 GB |
+|---------------------------------------------------------------------------|
+| Allocations           |      73    |     100    |  158672    |  158599    |
+|       from large pool |      24    |      45    |   73510    |   73486    |
+|       from small pool |      49    |      60    |   85162    |   85113    |
+|---------------------------------------------------------------------------|
+| Active allocs         |      73    |     100    |  158672    |  158599    |
+|       from large pool |      24    |      45    |   73510    |   73486    |
+|       from small pool |      49    |      60    |   85162    |   85113    |
+|---------------------------------------------------------------------------|
+| GPU reserved segments |      43    |      43    |      43    |       0    |
+|       from large pool |      32    |      32    |      32    |       0    |
+|       from small pool |      11    |      11    |      11    |       0    |
+|---------------------------------------------------------------------------|
+| Non-releasable allocs |      40    |      58    |   63604    |   63564    |
+|       from large pool |      20    |      32    |   43403    |   43383    |
+|       from small pool |      20    |      31    |   20201    |   20181    |
+|---------------------------------------------------------------------------|
+| Oversize allocations  |       0    |       0    |       0    |       0    |
+|---------------------------------------------------------------------------|
+| Oversize GPU segments |       0    |       0    |       0    |       0    |
+|===========================================================================|
+
+[TRAIN_TIME] train time is 46.055759 seconds
+[EPOCH_TIME] 11.513940 seconds, maybe large due to not enough epoch skipped.
+[EPOCH_TIME] 10.802210 seconds
+worker 4 running with pid=19162
+loading train edge idx from disk
+loading train edge idx from disk done
+tensor([ 367470406, 3158702471, 3196913887,  153606500, 2622541626, 2707306334,
+        2288750783,  341639546, 2394912536, 3266219078,  317074742, 1665128055,
+        3225579545,  427334013,  150148188,  726851972, 1000854521, 1061370191,
+         213395108,  526478766,  115662647, 1382980281, 1363464091,  971316959,
+        1643305663, 1559556869,  792051811, 2593715952, 2627476216,  485049346,
+        1279512108,  281028249, 2848334841, 1142277951, 1624797255, 1682408139,
+         130713544,  372892975, 1190696744, 1515340461,  396873136, 3079813016,
+         574876927,   31156367,  449947793, 1664434120,  774080817, 2850247945,
+         655998496,  888602410,  350570870,  466346177,   69778231,  638128676,
+        1443388341, 1479712286, 2858804367,  550628163,  198023098, 2583590303,
+        2518492873,    2593795, 2722269746,  659106604, 1369497066,   77640938,
+         645516367, 3053389785, 3376243999,  792250187, 1401047469, 1545651011,
+        1827797263, 1275030316, 2075895474, 2919804301, 2493902937,  112768749,
+          11701078,  342702905,  404737965,  786261376,  934911988,  757583227,
+        1135493038, 3162165660, 1144120843, 2861906075, 3454564992, 1866677628,
+        3557612909, 3295574170, 1840253021,  589845084,   38434987, 3025516425,
+         133597469,  597513635, 2348166713, 3535021406])
+Rank=4, Graph loaded.
+!!!!dist_homo_graph enumerate latency per epoch: 0.005860, per step: 0.000047
+presamping
+presamping takes 31.607468605041504
+worker 3 running with pid=19160
+loading train edge idx from disk
+loading train edge idx from disk done
+tensor([ 367470406, 3158702471, 3196913887,  153606500, 2622541626, 2707306334,
+        2288750783,  341639546, 2394912536, 3266219078,  317074742, 1665128055,
+        3225579545,  427334013,  150148188,  726851972, 1000854521, 1061370191,
+         213395108,  526478766,  115662647, 1382980281, 1363464091,  971316959,
+        1643305663, 1559556869,  792051811, 2593715952, 2627476216,  485049346,
+        1279512108,  281028249, 2848334841, 1142277951, 1624797255, 1682408139,
+         130713544,  372892975, 1190696744, 1515340461,  396873136, 3079813016,
+         574876927,   31156367,  449947793, 1664434120,  774080817, 2850247945,
+         655998496,  888602410,  350570870,  466346177,   69778231,  638128676,
+        1443388341, 1479712286, 2858804367,  550628163,  198023098, 2583590303,
+        2518492873,    2593795, 2722269746,  659106604, 1369497066,   77640938,
+         645516367, 3053389785, 3376243999,  792250187, 1401047469, 1545651011,
+        1827797263, 1275030316, 2075895474, 2919804301, 2493902937,  112768749,
+          11701078,  342702905,  404737965,  786261376,  934911988,  757583227,
+        1135493038, 3162165660, 1144120843, 2861906075, 3454564992, 1866677628,
+        3557612909, 3295574170, 1840253021,  589845084,   38434987, 3025516425,
+         133597469,  597513635, 2348166713, 3535021406])
+Rank=3, Graph loaded.
+!!!!dist_homo_graph enumerate latency per epoch: 0.005776, per step: 0.000046
+presamping
+presamping takes 30.908825397491455
+worker 2 running with pid=19158
+loading train edge idx from disk
+loading train edge idx from disk done
+tensor([ 367470406, 3158702471, 3196913887,  153606500, 2622541626, 2707306334,
+        2288750783,  341639546, 2394912536, 3266219078,  317074742, 1665128055,
+        3225579545,  427334013,  150148188,  726851972, 1000854521, 1061370191,
+         213395108,  526478766,  115662647, 1382980281, 1363464091,  971316959,
+        1643305663, 1559556869,  792051811, 2593715952, 2627476216,  485049346,
+        1279512108,  281028249, 2848334841, 1142277951, 1624797255, 1682408139,
+         130713544,  372892975, 1190696744, 1515340461,  396873136, 3079813016,
+         574876927,   31156367,  449947793, 1664434120,  774080817, 2850247945,
+         655998496,  888602410,  350570870,  466346177,   69778231,  638128676,
+        1443388341, 1479712286, 2858804367,  550628163,  198023098, 2583590303,
+        2518492873,    2593795, 2722269746,  659106604, 1369497066,   77640938,
+         645516367, 3053389785, 3376243999,  792250187, 1401047469, 1545651011,
+        1827797263, 1275030316, 2075895474, 2919804301, 2493902937,  112768749,
+          11701078,  342702905,  404737965,  786261376,  934911988,  757583227,
+        1135493038, 3162165660, 1144120843, 2861906075, 3454564992, 1866677628,
+        3557612909, 3295574170, 1840253021,  589845084,   38434987, 3025516425,
+         133597469,  597513635, 2348166713, 3535021406])
+Rank=2, Graph loaded.
+!!!!dist_homo_graph enumerate latency per epoch: 0.005659, per step: 0.000045
+presamping
+presamping takes 30.032255172729492
+worker 7 running with pid=19168
+loading train edge idx from disk
+loading train edge idx from disk done
+tensor([ 367470406, 3158702471, 3196913887,  153606500, 2622541626, 2707306334,
+        2288750783,  341639546, 2394912536, 3266219078,  317074742, 1665128055,
+        3225579545,  427334013,  150148188,  726851972, 1000854521, 1061370191,
+         213395108,  526478766,  115662647, 1382980281, 1363464091,  971316959,
+        1643305663, 1559556869,  792051811, 2593715952, 2627476216,  485049346,
+        1279512108,  281028249, 2848334841, 1142277951, 1624797255, 1682408139,
+         130713544,  372892975, 1190696744, 1515340461,  396873136, 3079813016,
+         574876927,   31156367,  449947793, 1664434120,  774080817, 2850247945,
+         655998496,  888602410,  350570870,  466346177,   69778231,  638128676,
+        1443388341, 1479712286, 2858804367,  550628163,  198023098, 2583590303,
+        2518492873,    2593795, 2722269746,  659106604, 1369497066,   77640938,
+         645516367, 3053389785, 3376243999,  792250187, 1401047469, 1545651011,
+        1827797263, 1275030316, 2075895474, 2919804301, 2493902937,  112768749,
+          11701078,  342702905,  404737965,  786261376,  934911988,  757583227,
+        1135493038, 3162165660, 1144120843, 2861906075, 3454564992, 1866677628,
+        3557612909, 3295574170, 1840253021,  589845084,   38434987, 3025516425,
+         133597469,  597513635, 2348166713, 3535021406])
+Rank=7, Graph loaded.
+!!!!dist_homo_graph enumerate latency per epoch: 0.005566, per step: 0.000045
+presamping
+presamping takes 30.159322023391724
+worker 6 running with pid=19166
+loading train edge idx from disk
+loading train edge idx from disk done
+tensor([ 367470406, 3158702471, 3196913887,  153606500, 2622541626, 2707306334,
+        2288750783,  341639546, 2394912536, 3266219078,  317074742, 1665128055,
+        3225579545,  427334013,  150148188,  726851972, 1000854521, 1061370191,
+         213395108,  526478766,  115662647, 1382980281, 1363464091,  971316959,
+        1643305663, 1559556869,  792051811, 2593715952, 2627476216,  485049346,
+        1279512108,  281028249, 2848334841, 1142277951, 1624797255, 1682408139,
+         130713544,  372892975, 1190696744, 1515340461,  396873136, 3079813016,
+         574876927,   31156367,  449947793, 1664434120,  774080817, 2850247945,
+         655998496,  888602410,  350570870,  466346177,   69778231,  638128676,
+        1443388341, 1479712286, 2858804367,  550628163,  198023098, 2583590303,
+        2518492873,    2593795, 2722269746,  659106604, 1369497066,   77640938,
+         645516367, 3053389785, 3376243999,  792250187, 1401047469, 1545651011,
+        1827797263, 1275030316, 2075895474, 2919804301, 2493902937,  112768749,
+          11701078,  342702905,  404737965,  786261376,  934911988,  757583227,
+        1135493038, 3162165660, 1144120843, 2861906075, 3454564992, 1866677628,
+        3557612909, 3295574170, 1840253021,  589845084,   38434987, 3025516425,
+         133597469,  597513635, 2348166713, 3535021406])
+Rank=6, Graph loaded.
+!!!!dist_homo_graph enumerate latency per epoch: 0.005852, per step: 0.000047
+presamping
+presamping takes 32.42425560951233
+worker 1 running with pid=19157
+loading train edge idx from disk
+loading train edge idx from disk done
+tensor([ 367470406, 3158702471, 3196913887,  153606500, 2622541626, 2707306334,
+        2288750783,  341639546, 2394912536, 3266219078,  317074742, 1665128055,
+        3225579545,  427334013,  150148188,  726851972, 1000854521, 1061370191,
+         213395108,  526478766,  115662647, 1382980281, 1363464091,  971316959,
+        1643305663, 1559556869,  792051811, 2593715952, 2627476216,  485049346,
+        1279512108,  281028249, 2848334841, 1142277951, 1624797255, 1682408139,
+         130713544,  372892975, 1190696744, 1515340461,  396873136, 3079813016,
+         574876927,   31156367,  449947793, 1664434120,  774080817, 2850247945,
+         655998496,  888602410,  350570870,  466346177,   69778231,  638128676,
+        1443388341, 1479712286, 2858804367,  550628163,  198023098, 2583590303,
+        2518492873,    2593795, 2722269746,  659106604, 1369497066,   77640938,
+         645516367, 3053389785, 3376243999,  792250187, 1401047469, 1545651011,
+        1827797263, 1275030316, 2075895474, 2919804301, 2493902937,  112768749,
+          11701078,  342702905,  404737965,  786261376,  934911988,  757583227,
+        1135493038, 3162165660, 1144120843, 2861906075, 3454564992, 1866677628,
+        3557612909, 3295574170, 1840253021,  589845084,   38434987, 3025516425,
+         133597469,  597513635, 2348166713, 3535021406])
+Rank=1, Graph loaded.
+!!!!dist_homo_graph enumerate latency per epoch: 0.005643, per step: 0.000045
+presamping
+presamping takes 32.161051750183105
+

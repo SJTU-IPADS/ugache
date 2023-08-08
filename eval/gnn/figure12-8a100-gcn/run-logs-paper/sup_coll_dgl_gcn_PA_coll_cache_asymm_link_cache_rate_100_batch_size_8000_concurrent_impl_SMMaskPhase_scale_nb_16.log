@@ -1,0 +1,378 @@
+succeed=True
+[CUDA] cuda: usage: 6.38 GB
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+test_result:init:cache_nbytes=56862697472
+test_result:init:cache_nbytes=56862697472
+test_result:init:cache_nbytes=56862697472
+test_result:init:cache_nbytes=56862697472
+test_result:init:cache_nbytes=56862697472
+test_result:init:cache_nbytes=56862697472
+test_result:init:cache_nbytes=56862697472
+test_result:init:cache_nbytes=56862697472
+config:eval_tsp="2023-08-06 09:42:15"
+config:num_worker=8
+config:num_intra_size=8
+config:root_dir=/datasets_gnn/wholegraph
+config:graph_name=ogbn-papers100M
+config:epochs=4
+config:batchsize=8000
+config:skip_epoch=2
+config:local_step=125
+config:presc_epoch=2
+config:neighbors=15,10,5
+config:hiddensize=256
+config:num_layer=3
+config:model=gcn
+config:framework=dgl
+config:dataloaderworkers=0
+config:dropout=0.5
+config:weight_decay=0.0005
+config:lr=0.003
+config:use_nccl=False
+config:use_amp=False
+config:use_collcache=True
+config:cache_percentage=1.0
+config:cache_policy=coll_cache_asymm_link
+config:omp_thread_num=56
+config:unsupervised=False
+config:classnum=172
+config:global_barrier=<multiprocessing.synchronize.Barrier object at 0x7f485e6eb850>
+config:worker_id=0
+creating_intra_node_communicator root=0, local_size=8, world_size=8
+Rank=0, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.48293375968933105
+torch.Size([8000]) torch.Size([8000, 1])
+torch.Size([8400]) torch.Size([8400, 1])
+!!!!Train_data_list(with 18 items) enumerate latency: 2.86102294921875e-06, transfer latency: 0.4582235813140869
+epoch=4 total_steps=72
+presamping
+presamping takes 1.9207284450531006
+start training...
+[Epoch 0][Step 0], time=1.8495903015136719, ext_time=0.010109663009643555, train_time=1.8293886184692383
+[Epoch 0][Step 1], time=0.047087669372558594, ext_time=0.0013818740844726562, train_time=0.03244495391845703
+[Epoch 0][Step 2], time=0.03905916213989258, ext_time=0.0013339519500732422, train_time=0.028858184814453125
+[Epoch 0][Step 3], time=0.03909587860107422, ext_time=0.001331329345703125, train_time=0.02894425392150879
+[Epoch 0][Step 4], time=0.038778066635131836, ext_time=0.0013146400451660156, train_time=0.028722763061523438
+[Epoch 0][Step 5], time=0.03696894645690918, ext_time=0.0013256072998046875, train_time=0.026842594146728516
+[Epoch 0][Step 6], time=0.035843849182128906, ext_time=0.0013289451599121094, train_time=0.025684833526611328
+[Epoch 0][Step 7], time=0.03696012496948242, ext_time=0.0013136863708496094, train_time=0.026880741119384766
+[Epoch 0][Step 8], time=0.03633689880371094, ext_time=0.0013239383697509766, train_time=0.026245594024658203
+[Epoch 0][Step 9], time=0.03618884086608887, ext_time=0.0013175010681152344, train_time=0.026120662689208984
+[Epoch 0][Step 10], time=0.03619122505187988, ext_time=0.0013117790222167969, train_time=0.026096105575561523
+[Epoch 0][Step 11], time=0.036066532135009766, ext_time=0.0013170242309570312, train_time=0.02594757080078125
+[Epoch 0][Step 12], time=0.035832881927490234, ext_time=0.001308441162109375, train_time=0.02573871612548828
+[Epoch 0][Step 13], time=0.036161184310913086, ext_time=0.0013387203216552734, train_time=0.02589893341064453
+[Epoch 0][Step 14], time=0.03593254089355469, ext_time=0.0013248920440673828, train_time=0.025779247283935547
+[Epoch 0][Step 15], time=0.03583979606628418, ext_time=0.0013248920440673828, train_time=0.02565789222717285
+[Epoch 0][Step 16], time=0.035944461822509766, ext_time=0.0013337135314941406, train_time=0.025735855102539062
+[Epoch 0][Step 17], time=0.036138057708740234, ext_time=0.0013275146484375, train_time=0.026032447814941406
+[Epoch 0], time=2.4854211807250977, loss=3.3347017765045166
+[Epoch 1][Step 0], time=0.03884172439575195, ext_time=0.0013828277587890625, train_time=0.02827286720275879
+[Epoch 1][Step 1], time=0.03601837158203125, ext_time=0.0013287067413330078, train_time=0.02590155601501465
+[Epoch 1][Step 2], time=0.035979270935058594, ext_time=0.0013225078582763672, train_time=0.025856494903564453
+[Epoch 1][Step 3], time=0.03591012954711914, ext_time=0.0013270378112792969, train_time=0.025806665420532227
+[Epoch 1][Step 4], time=0.036093950271606445, ext_time=0.0013141632080078125, train_time=0.026038646697998047
+[Epoch 1][Step 5], time=0.03598356246948242, ext_time=0.001331329345703125, train_time=0.025852203369140625
+[Epoch 1][Step 6], time=0.03588366508483887, ext_time=0.001329183578491211, train_time=0.025737285614013672
+[Epoch 1][Step 7], time=0.03612041473388672, ext_time=0.001318216323852539, train_time=0.02604055404663086
+[Epoch 1][Step 8], time=0.03764605522155762, ext_time=0.0013265609741210938, train_time=0.027544498443603516
+[Epoch 1][Step 9], time=0.03613877296447754, ext_time=0.0013201236724853516, train_time=0.02604532241821289
+[Epoch 1][Step 10], time=0.03604459762573242, ext_time=0.0013127326965332031, train_time=0.025966644287109375
+[Epoch 1][Step 11], time=0.035989999771118164, ext_time=0.0013203620910644531, train_time=0.025868892669677734
+[Epoch 1][Step 12], time=0.03589200973510742, ext_time=0.0013151168823242188, train_time=0.025775909423828125
+[Epoch 1][Step 13], time=0.03622031211853027, ext_time=0.0013425350189208984, train_time=0.02594900131225586
+[Epoch 1][Step 14], time=0.03591012954711914, ext_time=0.0013229846954345703, train_time=0.02577519416809082
+[Epoch 1][Step 15], time=0.035811424255371094, ext_time=0.0013325214385986328, train_time=0.025639772415161133
+[Epoch 1][Step 16], time=0.03594684600830078, ext_time=0.0013337135314941406, train_time=0.025770187377929688
+[Epoch 1][Step 17], time=0.03601503372192383, ext_time=0.0013279914855957031, train_time=0.02591419219970703
+[Epoch 1], time=0.6535766124725342, loss=2.534722089767456
+[Epoch 2][Step 0], time=0.03729963302612305, ext_time=0.0013861656188964844, train_time=0.026737689971923828
+[Epoch 2][Step 1], time=0.03610515594482422, ext_time=0.0013663768768310547, train_time=0.02594470977783203
+[Epoch 2][Step 2], time=0.03594708442687988, ext_time=0.0013260841369628906, train_time=0.025805950164794922
+[Epoch 2][Step 3], time=0.03602766990661621, ext_time=0.0013251304626464844, train_time=0.025904417037963867
+[Epoch 2][Step 4], time=0.036002397537231445, ext_time=0.0013113021850585938, train_time=0.02597212791442871
+[Epoch 2][Step 5], time=0.036017656326293945, ext_time=0.0013208389282226562, train_time=0.025897979736328125
+[Epoch 2][Step 6], time=0.03575944900512695, ext_time=0.0013303756713867188, train_time=0.025592327117919922
+[Epoch 2][Step 7], time=0.03615427017211914, ext_time=0.0013115406036376953, train_time=0.026077747344970703
+[Epoch 2][Step 8], time=0.03629612922668457, ext_time=0.0013232231140136719, train_time=0.02619624137878418
+[Epoch 2][Step 9], time=0.03612565994262695, ext_time=0.0013120174407958984, train_time=0.026068925857543945
+[Epoch 2][Step 10], time=0.03613114356994629, ext_time=0.0013153553009033203, train_time=0.026035308837890625
+[Epoch 2][Step 11], time=0.03605055809020996, ext_time=0.0013248920440673828, train_time=0.02593827247619629
+[Epoch 2][Step 12], time=0.03589582443237305, ext_time=0.001313924789428711, train_time=0.025773048400878906
+[Epoch 2][Step 13], time=0.03682422637939453, ext_time=0.0013418197631835938, train_time=0.026556730270385742
+[Epoch 2][Step 14], time=0.036055803298950195, ext_time=0.0013256072998046875, train_time=0.02594923973083496
+[Epoch 2][Step 15], time=0.03572821617126465, ext_time=0.001325368881225586, train_time=0.02557539939880371
+[Epoch 2][Step 16], time=0.03592038154602051, ext_time=0.001333475112915039, train_time=0.02574610710144043
+[Epoch 2][Step 17], time=0.03603053092956543, ext_time=0.0013275146484375, train_time=0.02593064308166504
+[Epoch 2], time=0.6514723300933838, loss=2.1805694103240967
+[Epoch 3][Step 0], time=0.039031028747558594, ext_time=0.0013840198516845703, train_time=0.02847123146057129
+[Epoch 3][Step 1], time=0.03603506088256836, ext_time=0.0013320446014404297, train_time=0.025884389877319336
+[Epoch 3][Step 2], time=0.03625059127807617, ext_time=0.0013196468353271484, train_time=0.0261075496673584
+[Epoch 3][Step 3], time=0.0359494686126709, ext_time=0.0013289451599121094, train_time=0.025847196578979492
+[Epoch 3][Step 4], time=0.036036014556884766, ext_time=0.0013124942779541016, train_time=0.02599334716796875
+[Epoch 3][Step 5], time=0.036005258560180664, ext_time=0.0013267993927001953, train_time=0.025859832763671875
+[Epoch 3][Step 6], time=0.03586316108703613, ext_time=0.0013265609741210938, train_time=0.025733470916748047
+[Epoch 3][Step 7], time=0.03611111640930176, ext_time=0.0013151168823242188, train_time=0.02604389190673828
+    [Step(average) Profiler Level 1 E3 S143]
+        L1  sample           0.010258 | send           0.000000
+        L1  recv             0.000000 | copy           0.001432 | convert time 0.000000 | train  0.024521
+        L1  feature nbytes    1.10 GB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes    0.00 Bytes | remote nbytes 0.00 Bytes
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     0.000000 | refresh duration   0.000000
+    [Step(average) Profiler Level 2 E3 S143]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.001432
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(average) Profiler Level 3 E3 S143]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000000 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000000 | cache combine cache 0.001407 | cache combine remote 0.000000
+        L3  label extract  0.000000
+    [Profiler Level Percentiles E3 S143]
+        p50.00_tail_logl2featcopy=0.001430
+        p90.00_tail_logl2featcopy=0.001566
+        p95.00_tail_logl2featcopy=0.001585
+        p99.00_tail_logl2featcopy=0.010110
+        p99.90_tail_logl2featcopy=0.011399
+[CUDA] cuda: usage: 65.24 GB
+[Epoch 3][Step 8], time=0.03638648986816406, ext_time=0.0013170242309570312, train_time=0.0263063907623291
+[Epoch 3][Step 9], time=0.036075592041015625, ext_time=0.001313924789428711, train_time=0.026010513305664062
+[Epoch 3][Step 10], time=0.0361325740814209, ext_time=0.0013396739959716797, train_time=0.025920867919921875
+[Epoch 3][Step 11], time=0.03607606887817383, ext_time=0.001322031021118164, train_time=0.025943994522094727
+[Epoch 3][Step 12], time=0.035985708236694336, ext_time=0.0013124942779541016, train_time=0.025896549224853516
+[Epoch 3][Step 13], time=0.03616046905517578, ext_time=0.0013387203216552734, train_time=0.02590203285217285
+[Epoch 3][Step 14], time=0.03594088554382324, ext_time=0.001325845718383789, train_time=0.025745868682861328
+[Epoch 3][Step 15], time=0.035909175872802734, ext_time=0.0013229846954345703, train_time=0.025761127471923828
+[Epoch 3][Step 16], time=0.03590679168701172, ext_time=0.0013320446014404297, train_time=0.02571582794189453
+[Epoch 3][Step 17], time=0.036121368408203125, ext_time=0.0013263225555419922, train_time=0.02601337432861328
+[Epoch 3], time=0.6530957221984863, loss=1.99983549118042
+|===========================================================================|
+|                  PyTorch CUDA memory summary, device ID 0                 |
+|---------------------------------------------------------------------------|
+|            CUDA OOMs: 0            |        cudaMalloc retries: 0         |
+|===========================================================================|
+|        Metric         | Cur Usage  | Peak Usage | Tot Alloc  | Tot Freed  |
+|---------------------------------------------------------------------------|
+| Allocated memory      |  153408 KB |    2802 MB |  735310 MB |  735160 MB |
+|       from large pool |  146781 KB |    2795 MB |  733332 MB |  733189 MB |
+|       from small pool |    6626 KB |      11 MB |    1977 MB |    1970 MB |
+|---------------------------------------------------------------------------|
+| Active memory         |  153408 KB |    2802 MB |  735310 MB |  735160 MB |
+|       from large pool |  146781 KB |    2795 MB |  733332 MB |  733189 MB |
+|       from small pool |    6626 KB |      11 MB |    1977 MB |    1970 MB |
+|---------------------------------------------------------------------------|
+| GPU reserved memory   |    4672 MB |    4672 MB |    4672 MB |       0 B  |
+|       from large pool |    4656 MB |    4656 MB |    4656 MB |       0 B  |
+|       from small pool |      16 MB |      16 MB |      16 MB |       0 B  |
+|---------------------------------------------------------------------------|
+| Non-releasable memory |  348352 KB |    1811 MB |  334447 MB |  334107 MB |
+|       from large pool |  342690 KB |    1806 MB |  332300 MB |  331965 MB |
+|       from small pool |    5661 KB |       8 MB |    2146 MB |    2141 MB |
+|---------------------------------------------------------------------------|
+| Allocations           |      62    |      88    |   18756    |   18694    |
+|       from large pool |      21    |      41    |    9216    |    9195    |
+|       from small pool |      41    |      49    |    9540    |    9499    |
+|---------------------------------------------------------------------------|
+| Active allocs         |      62    |      88    |   18756    |   18694    |
+|       from large pool |      21    |      41    |    9216    |    9195    |
+|       from small pool |      41    |      49    |    9540    |    9499    |
+|---------------------------------------------------------------------------|
+| GPU reserved segments |      27    |      27    |      27    |       0    |
+|       from large pool |      19    |      19    |      19    |       0    |
+|       from small pool |       8    |       8    |       8    |       0    |
+|---------------------------------------------------------------------------|
+| Non-releasable allocs |      31    |      43    |    7754    |    7723    |
+|       from large pool |      12    |      23    |    5237    |    5225    |
+|       from small pool |      19    |      25    |    2517    |    2498    |
+|---------------------------------------------------------------------------|
+| Oversize allocations  |       0    |       0    |       0    |       0    |
+|---------------------------------------------------------------------------|
+| Oversize GPU segments |       0    |       0    |       0    |       0    |
+|===========================================================================|
+
+[TRAIN_TIME] train time is 4.444591 seconds
+[EPOCH_TIME] 1.111148 seconds, maybe large due to not enough epoch skipped.
+[EPOCH_TIME] 0.652433 seconds
+Rank=2, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.49538612365722656
+torch.Size([8000]) torch.Size([8000, 1])
+torch.Size([8400]) torch.Size([8400, 1])
+!!!!Train_data_list(with 18 items) enumerate latency: 3.337860107421875e-06, transfer latency: 0.4695703983306885
+presamping
+presamping takes 1.880059003829956
+Rank=1, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.4857902526855469
+torch.Size([8000]) torch.Size([8000, 1])
+torch.Size([8400]) torch.Size([8400, 1])
+!!!!Train_data_list(with 18 items) enumerate latency: 2.86102294921875e-06, transfer latency: 0.4590599536895752
+presamping
+presamping takes 2.0744919776916504
+Rank=3, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.49378490447998047
+torch.Size([8000]) torch.Size([8000, 1])
+torch.Size([8400]) torch.Size([8400, 1])
+!!!!Train_data_list(with 18 items) enumerate latency: 3.814697265625e-06, transfer latency: 0.46942567825317383
+presamping
+presamping takes 1.9082608222961426
+Rank=6, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.4970235824584961
+torch.Size([8000]) torch.Size([8000, 1])
+torch.Size([8400]) torch.Size([8400, 1])
+!!!!Train_data_list(with 18 items) enumerate latency: 4.0531158447265625e-06, transfer latency: 0.4723689556121826
+presamping
+presamping takes 2.1283042430877686
+Rank=7, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.49939942359924316
+torch.Size([8000]) torch.Size([8000, 1])
+torch.Size([8400]) torch.Size([8400, 1])
+!!!!Train_data_list(with 18 items) enumerate latency: 3.5762786865234375e-06, transfer latency: 0.47421979904174805
+presamping
+presamping takes 1.8826625347137451
+Rank=5, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.49843287467956543
+torch.Size([8000]) torch.Size([8000, 1])
+torch.Size([8400]) torch.Size([8400, 1])
+!!!!Train_data_list(with 18 items) enumerate latency: 3.337860107421875e-06, transfer latency: 0.4772837162017822
+presamping
+presamping takes 2.217134714126587
+Rank=4, Graph loaded.
+!!!!Train_dataloader(with 18 items) enumerate latency: 0.48856377601623535
+torch.Size([8000]) torch.Size([8000, 1])
+torch.Size([8400]) torch.Size([8400, 1])
+!!!!Train_data_list(with 18 items) enumerate latency: 3.814697265625e-06, transfer latency: 0.4687538146972656
+presamping
+presamping takes 2.4502978324890137
+
