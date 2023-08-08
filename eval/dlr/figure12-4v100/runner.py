@@ -33,15 +33,16 @@ DLRM && DCN
 '''
 cfg_list_collector.concat(cur_common_base.copy().override('dataset', [Dataset.criteo_tb]))
 cfg_list_collector.concat(cur_common_base.copy().override('dataset', [Dataset.syn]))
+cfg_list_collector.concat(cur_common_base.copy().override('dataset', [Dataset.syn_14]))
 
 cfg_list_collector.hyper_override(
   ['coll_cache_policy', 'coll_cache_no_group', 'coll_cache_concurrent_link', 'sok_use_hashtable'], 
   [
-    [CachePolicy.clique_part, "DIRECT", "", None],
-    [CachePolicy.rep_cache, "DIRECT", "", None],
+    [CachePolicy.clique_part, "", "", None],
+    [CachePolicy.rep_cache, "", "", None],
     [CachePolicy.sok, '', '', True],
     [CachePolicy.hps, '', '', None],
-    [CachePolicy.coll_cache_asymm_link, '', 'MPSPhase', None],
+    [CachePolicy.coll_cache_asymm_link, '', 'SMMaskPhase', None],
   ]
 )
 

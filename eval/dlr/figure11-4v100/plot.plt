@@ -63,7 +63,7 @@ set yrange [0:20]
 set xlabel "DLRM" offset 0,0.3
 plot cmd_filter_dat_by_policy(dat_file, "dlrm", ".*", "^HPS*",         ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_A lc rgb "#af2318" t "HPS", \
      cmd_filter_dat_by_policy(dat_file, "dlrm", ".*", "^SOK*",         ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_A lc rgb "#f19e38" t "SOK", \
-     cmd_filter_dat_by_policy(dat_file, "dlrm", ".*", "UGache*", ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_A lc rgb "#0080ff" t "UGache"
+     cmd_filter_dat_by_policy(dat_file, "dlrm", ".*", "Coll", ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_A lc rgb "#0080ff" t "UGache"
 
 unset key
 unset label
@@ -74,4 +74,4 @@ unset yrange; set yrange [0:]
 set xlabel "DCN" offset 0,0.3
 plot cmd_filter_dat_by_policy(dat_file, "dcn", ".*", "^HPS*",          ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_A lc rgb "#af2318" t "HPS", \
      cmd_filter_dat_by_policy(dat_file, "dcn", ".*", "^SOK*",          ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_A lc rgb "#f19e38" t "SOK", \
-     cmd_filter_dat_by_policy(dat_file, "dcn", ".*", "UGache*",  ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_A lc rgb "#0080ff" t "UGache"
+     cmd_filter_dat_by_policy(dat_file, "dcn", ".*", "Coll",  ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_A lc rgb "#0080ff" t "UGache"
