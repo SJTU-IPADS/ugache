@@ -1,0 +1,437 @@
+environ({'EPOCH': '3', 'ITERATION_PER_EPOCH': '1000', 'TF_CPP_MIN_LOG_LEVEL': '2', 'COLL_LOG_BASE': 'run-logs/COLL_dcn_SYN_14_policy_SOK_cache_rate_0.14_batch_size_65536_mock_800000000_128_scale_nb_16', 'HUGECTR_LOG_LEVEL': '0', 'SAMGRAPH_LOG_LEVEL': 'warn', 'SAMGRAPH_PROFILE_LEVEL': '3', 'COLL_CACHE_SCALE': '16', 'COLL_NUM_REPLICA': '8', 'COLL_MIN_FREQ': '0.1', 'SAMGRAPH_EMPTY_FEAT': '24', 'NPP_VERSION': '11.7.4.75', 'SHELL': '/bin/bash', 'NVIDIA_VISIBLE_DEVICES': 'all', 'JUPYTER_CONFIG_DIR': '/tmp/.jupyter', 'DALI_BUILD': '4921308', 'CUSOLVER_VERSION': '11.4.0.1', 'CUBLAS_VERSION': '11.10.3.66', 'HOSTNAME': 'c87c4667a624', 'SOK_COMPILE_UNIT_TEST': 'ON', 'NVIDIA_REQUIRE_CUDA': 'cuda>=9.0', 'CUFFT_VERSION': '10.7.2.91', 'CUDA_CACHE_DISABLE': '1', 'NCCL_VERSION': '2.12.12', 'CUSPARSE_VERSION': '11.7.4.91', 'ENV': '/etc/shinit_v2', 'PWD': '/ugache/eval/dlr/figure11-8a100', 'OPENUCX_VERSION': '1.12.0', 'NSIGHT_SYSTEMS_VERSION': '2022.1.3.3', 'NVIDIA_DRIVER_CAPABILITIES': 'compute,utility,video', 'TRT_VERSION': '8.2.5.1+cuda11.4.2.006', 'NVIDIA_PRODUCT_NAME': 'Triton Server Base', 'RDMACORE_VERSION': '36.0', 'CUDA_CUDA_LIBRARY': '/usr/local/cuda/lib64/stubs', 'HOME': '/root', 'LANG': 'en_US.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'CUDA_VERSION': '11.7.1.014', 'CURAND_VERSION': '10.2.10.91', 'PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION': 'python', 'JUPYTER_DATA_DIR': '/tmp/.jupyter', 'CUTENSOR_VERSION': '1.5.0.3', 'HPCX_VERSION': '2.10', 'DLPROF_VERSION': '', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'JUPYTER_RUNTIME_DIR': '/tmp/.jupyter', 'PYTHONPATH': ':/usr/local/lib/python3.8/dist-packages/', 'TERM': 'xterm', 'CPLUS_INCLUDE_PATH': '/ugache:/opt/gurobi-install/linux64/include', 'GUROBI_HOME': '/opt/gurobi-install/linux64', 'GDRCOPY_VERSION': '2.3', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'root', 'OPENMPI_VERSION': '4.1.2rc4', 'NVJPEG_VERSION': '11.8.0.2', 'LIBRARY_PATH': '/usr/local/hugectr/lib:/usr/local/hugectr/lib:/usr/local/cuda/lib64/stubs::/ugache/build:/opt/gurobi-install/linux64/lib', 'CUDA_PATH': '/usr/local/cuda', 'SHLVL': '2', 'BASH_ENV': '/etc/bash.bashrc', 'CUDNN_VERSION': '8.4.1.50+cuda11.6', 'NVIDIA_TRITON_SERVER_BASE_VERSION': '22.06', 'NSIGHT_COMPUTE_VERSION': '2022.2.1.3', 'DALI_VERSION': '1.14.0', 'LD_LIBRARY_PATH': '/usr/local/hugectr/lib:/usr/local/hugectr/lib:/usr/local/cuda/compat/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:/usr/local/lib:/repos/dist/lib:/opt/tritonserver/lib:/ugache/build:/opt/gurobi-install/linux64/lib', 'NVIDIA_BUILD_ID': '39726160', 'OMPI_MCA_coll_hcoll_enable': '0', 'OPAL_PREFIX': '/opt/hpcx/ompi', 'CUDA_DRIVER_VERSION': '515.48.08', 'LC_ALL': 'C.UTF-8', '_CUDA_COMPAT_PATH': '/usr/local/cuda/compat', 'CUDA_HOME': '/usr/local/cuda', 'PATH': '/opt/tritonserver/bin:/usr/local/cuda/lib64/:/usr/local/mpi/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/ucx/bin:/usr/local/cuda/bin:', 'C_INCLUDE_PATH': '/ugache:/opt/gurobi-install/linux64/include', 'MOFED_VERSION': '5.4-rdmacore36.0', 'TRTOSS_VERSION': '22.05', 'DEBIAN_FRONTEND': 'noninteractive', 'OLDPWD': '/ugache/eval/dlr/figure12-8a100', '_': '/usr/bin/python', 'TF2_BEHAVIOR': '1'})
+config:eval_tsp="2023-08-08 17:11:57"
+config:gpu_num=8
+config:iter_num=3000
+config:slot_num=100
+config:embed_vec_size=128
+config:dense_dim=13
+config:global_batch_size=65536
+config:iteration_per_epoch=1000
+config:coll_cache_enable_iter=0
+config:coll_cache_refresh_iter=1000
+config:coll_cache_enable_refresh=False
+config:coll_cache_policy=sok
+config:model=dcn
+config:combiner=mean
+config:optimizer=plugin_adam
+config:np_key_type=<class 'numpy.int32'>
+config:np_vector_type=<class 'numpy.float32'>
+config:tf_key_type=<dtype: 'uint32'>
+config:tf_vector_type=<dtype: 'float32'>
+config:ps_config_file=
+config:cache_percent=0.14
+config:dense_model_path=plain
+config:dataset_path=/datasets_dlr/processed/syn_a14_s100_c800m
+config:sok_use_hashtable=False
+config:random_request=False
+config:alpha=None
+config:max_vocabulary_size=800000000
+config:_empty_feat=25
+[INFO]: sparse_operation_kit is imported
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:107] Mapping from local_replica_id to device_id:
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:109] 0 -> 0
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:84] Global seed is 3866649049
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:85] Local GPU Count: 1
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:86] Global GPU Count: 8
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:127] Global Replica Id: 0; Local Replica Id: 0
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:107] Mapping from local_replica_id to device_id:
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:107] Mapping from local_replica_id to device_id:
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:109] 0 -> 2
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:109] 0 -> 1
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:84] Global seed is 3866649049
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:84] Global seed is 3866649049
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:85] Local GPU Count: 1
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:85] Local GPU Count: 1
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:86] Global GPU Count: 8
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:86] Global GPU Count: 8
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:107] Mapping from local_replica_id to device_id:
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:109] 0 -> 4
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:84] Global seed is 3866649049
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:85] Local GPU Count: 1
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:86] Global GPU Count: 8
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:107] Mapping from local_replica_id to device_id:
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:109] 0 -> 5
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:84] Global seed is 3866649049
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:85] Local GPU Count: 1
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:86] Global GPU Count: 8
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:107] Mapping from local_replica_id to device_id:
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:109] 0 -> 6
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:84] Global seed is 3866649049
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:85] Local GPU Count: 1
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:127] Global Replica Id: 1; Local Replica Id: 0
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:86] Global GPU Count: 8
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:127] Global Replica Id: 2; Local Replica Id: 0
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:127] Global Replica Id: 4; Local Replica Id: 0
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:107] Mapping from local_replica_id to device_id:
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:109] 0 -> 3
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:84] Global seed is 3866649049
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:85] Local GPU Count: 1
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:86] Global GPU Count: 8
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:127] Global Replica Id: 5; Local Replica Id: 0
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:127] Global Replica Id: 3; Local Replica Id: 0
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:127] Global Replica Id: 6; Local Replica Id: 0
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:107] Mapping from local_replica_id to device_id:
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:109] 0 -> 7
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:84] Global seed is 3866649049
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:85] Local GPU Count: 1
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:86] Global GPU Count: 8
+2023-08-08 17:12:10.514730: I sparse_operation_kit/kit_cc/kit_cc_infra/src/resources/manager.cc:127] Global Replica Id: 7; Local Replica Id: 0
+ITERATION_PER_EPOCH = 1000
+EPOCH = 3
+2023-08-08 17:12:13.514733: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_manager.cc:132] Created embedding variable whose name is EmbeddingVariable
+ITERATION_PER_EPOCH = 1000
+EPOCH = 3
+2023-08-08 17:12:13.514733: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_manager.cc:132] Created embedding variable whose name is EmbeddingVariable
+ITERATION_PER_EPOCH = 1000
+EPOCH = 3
+2023-08-08 17:12:13.514733: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_manager.cc:132] Created embedding variable whose name is EmbeddingVariable
+ITERATION_PER_EPOCH = 1000
+EPOCH = 3
+2023-08-08 17:12:13.514733: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_manager.cc:132] Created embedding variable whose name is EmbeddingVariable
+ITERATION_PER_EPOCH = 1000
+EPOCH = 3
+2023-08-08 17:12:13.514733: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_manager.cc:132] Created embedding variable whose name is EmbeddingVariable
+ITERATION_PER_EPOCH = 1000
+EPOCH = 3
+2023-08-08 17:12:13.514733: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_manager.cc:132] Created embedding variable whose name is EmbeddingVariable
+ITERATION_PER_EPOCH = 1000
+EPOCH = 3
+2023-08-08 17:12:13.514733: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_manager.cc:132] Created embedding variable whose name is EmbeddingVariable
+ITERATION_PER_EPOCH = 1000
+EPOCH = 3
+2023-08-08 17:12:13.514733: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_manager.cc:132] Created embedding variable whose name is EmbeddingVariable
+worker 7 at process 71846
+[INFO] hierarchical_parameter_server is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a14_s100_c800m/syn.sparse/dense/label
+294912000
+worker 0 at process 71839
+[INFO] hierarchical_parameter_server is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a14_s100_c800m/syn.sparse/dense/label
+294912000
+worker 2 at process 71841
+[INFO] hierarchical_parameter_server is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a14_s100_c800m/syn.sparse/dense/label
+294912000
+worker 4 at process 71843
+[INFO] hierarchical_parameter_server is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a14_s100_c800m/syn.sparse/dense/label
+294912000
+worker 1 at process 71840
+[INFO] hierarchical_parameter_server is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a14_s100_c800m/syn.sparse/dense/label
+294912000
+worker 3 at process 71842
+[INFO] hierarchical_parameter_server is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a14_s100_c800m/syn.sparse/dense/label
+294912000
+worker 6 at process 71845
+[INFO] hierarchical_parameter_server is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a14_s100_c800m/syn.sparse/dense/label
+294912000
+worker 5 at process 71844
+[INFO] hierarchical_parameter_server is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a14_s100_c800m/syn.sparse/dense/label
+294912000
+restoring proxy
+restoring proxy
+restoring proxy
+restoring proxy
+restoring proxy
+restoring proxy
+restoring proxy
+restoring proxy
+2023-08-08 17:12:55.514775: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_param.cc:121] Variable: EmbeddingVariable on global_replica_id: 4 start initialization
+2023-08-08 17:12:55.514775: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_param.cc:121] Variable: EmbeddingVariable on global_replica_id: 2 start initialization
+2023-08-08 17:12:55.514775: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_param.cc:121] Variable: EmbeddingVariable on global_replica_id: 7 start initialization
+2023-08-08 17:12:55.514775: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_param.cc:121] Variable: EmbeddingVariable on global_replica_id: 6 start initialization
+2023-08-08 17:12:55.514775: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_param.cc:121] Variable: EmbeddingVariable on global_replica_id: 5 start initialization
+2023-08-08 17:12:55.514775: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_param.cc:121] Variable: EmbeddingVariable on global_replica_id: 3 start initialization
+2023-08-08 17:12:55.514775: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_param.cc:121] Variable: EmbeddingVariable on global_replica_id: 1 start initialization
+2023-08-08 17:12:55.514775: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_param.cc:121] Variable: EmbeddingVariable on global_replica_id: 0 start initialization
+2023-08-08 17:12:55.514775: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_param.cc:138] Variable: EmbeddingVariable on global_replica_id: 2 initialization done.
+2023-08-08 17:12:55.514775: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_param.cc:138] Variable: EmbeddingVariable on global_replica_id: 4 initialization done.
+2023-08-08 17:12:55.514775: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_param.cc:138] Variable: EmbeddingVariable on global_replica_id: 7 initialization done.
+2023-08-08 17:12:55.514775: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_param.cc:138] Variable: EmbeddingVariable on global_replica_id: 6 initialization done.
+2023-08-08 17:12:55.514775: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_param.cc:138] Variable: EmbeddingVariable on global_replica_id: 0 initialization done.
+2023-08-08 17:12:55.514775: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_param.cc:138] Variable: EmbeddingVariable on global_replica_id: 3 initialization done.
+2023-08-08 17:12:55.514775: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_param.cc:138] Variable: EmbeddingVariable on global_replica_id: 5 initialization done.
+2023-08-08 17:12:55.514775: I sparse_operation_kit/kit_cc/kit_cc_infra/src/parameters/raw_param.cc:138] Variable: EmbeddingVariable on global_replica_id: 1 initialization done.
+2023-08-08 17:12:56.514776: I sparse_operation_kit/kit_cc/kit_cc_infra/src/facade.cc:272] SparseOperationKit allocated internal memory.
+2023-08-08 17:12:56.514776: I sparse_operation_kit/kit_cc/kit_cc_infra/src/facade.cc:272] SparseOperationKit allocated internal memory.
+2023-08-08 17:12:56.514776: I sparse_operation_kit/kit_cc/kit_cc_infra/src/facade.cc:272] SparseOperationKit allocated internal memory.
+2023-08-08 17:12:56.514776: I sparse_operation_kit/kit_cc/kit_cc_infra/src/facade.cc:272] SparseOperationKit allocated internal memory.
+2023-08-08 17:12:56.514776: I sparse_operation_kit/kit_cc/kit_cc_infra/src/facade.cc:272] SparseOperationKit allocated internal memory.
+2023-08-08 17:12:56.514776: I sparse_operation_kit/kit_cc/kit_cc_infra/src/facade.cc:272] SparseOperationKit allocated internal memory.
+2023-08-08 17:12:56.514776: I sparse_operation_kit/kit_cc/kit_cc_infra/src/facade.cc:272] SparseOperationKit allocated internal memory.
+2023-08-08 17:12:56.514776: I sparse_operation_kit/kit_cc/kit_cc_infra/src/facade.cc:272] SparseOperationKit allocated internal memory.
+[GPU2] 100 time 1.10507e-05 0.275264
+[GPU0] 100 time 1.12724e-05 0.275259
+[GPU4] 100 time 1.16324e-05 0.275267
+[GPU6] 100 time 1.09935e-05 0.275239
+[GPU5] 100 time 1.14441e-05 0.275248
+[GPU1] 100 time 1.09887e-05 0.275251
+[GPU7] 100 time 1.05858e-05 0.275264
+[GPU3] 100 time 1.09696e-05 0.275231
+[GPU2] 200 time 1.15871e-05 0.0192264
+[GPU0] 200 time 1.09601e-05 0.0192027
+[GPU6] 200 time 1.0798e-05 0.0192307
+[GPU4] 200 time 1.06645e-05 0.019247
+[GPU7] 200 time 1.00183e-05 0.0192475
+[GPU3] 200 time 1.16825e-05 0.0192356
+[GPU1] 200 time 1.00875e-05 0.01924
+[GPU5] 200 time 1.06525e-05 0.0192411
+[GPU2] 300 time 1.01972e-05 0.0195401
+[GPU0] 300 time 1.03831e-05 0.0195123
+[GPU4] 300 time 1.16277e-05 0.019541
+[GPU6] 300 time 1.02353e-05 0.0195183
+[GPU3] 300 time 1.00279e-05 0.0195277
+[GPU5] 300 time 1.05596e-05 0.019536
+[GPU7] 300 time 1.09267e-05 0.0195361
+[GPU1] 300 time 1.10602e-05 0.0195295
+[GPU6] 400 time 1.11008e-05 0.019294
+[GPU2] 400 time 1.10793e-05 0.0192941
+[GPU4] 400 time 1.11246e-05 0.0193137
+[GPU3] 400 time 1.01972e-05 0.0192847
+[GPU0] 400 time 1.09625e-05 0.0193054
+[GPU7] 400 time 1.00684e-05 0.0193115
+[GPU5] 400 time 1.03331e-05 0.019312
+[GPU1] 400 time 1.03259e-05 0.0193079
+[GPU0] 500 time 1.0879e-05 0.0194502
+[GPU2] 500 time 9.85622e-06 0.0194624
+[GPU6] 500 time 1.0767e-05 0.0194461
+[GPU4] 500 time 1.0941e-05 0.0194505
+[GPU5] 500 time 1.12057e-05 0.0194543
+[GPU3] 500 time 1.00088e-05 0.0194605
+[GPU7] 500 time 1.02043e-05 0.0194542
+[GPU1] 500 time 1.06573e-05 0.0194396
+[GPU0] 600 time 1.18518e-05 0.0195437
+[GPU6] 600 time 1.122e-05 0.0195449
+[GPU2] 600 time 1.12724e-05 0.0195443
+[GPU4] 600 time 1.19185e-05 0.019543
+[GPU3] 600 time 1.02973e-05 0.0195627
+[GPU1] 600 time 1.02067e-05 0.0195625
+[GPU7] 600 time 9.93729e-06 0.0195686
+[GPU5] 600 time 1.03688e-05 0.0195401
+[GPU6] 700 time 1.03664e-05 0.0192123
+[GPU2] 700 time 9.8753e-06 0.0192513
+[GPU4] 700 time 1.03211e-05 0.0192403
+[GPU0] 700 time 1.15728e-05 0.0192558
+[GPU5] 700 time 9.92775e-06 0.0192289
+[GPU3] 700 time 1.02425e-05 0.0191977
+[GPU7] 700 time 1.01113e-05 0.0192392
+[GPU1] 700 time 1.00255e-05 0.0192245
+[GPU6] 800 time 1.13249e-05 0.0193266
+[GPU2] 800 time 1.12414e-05 0.0193389
+[GPU4] 800 time 1.00207e-05 0.0193554
+[GPU0] 800 time 1.03402e-05 0.0193318
+[GPU3] 800 time 1.08671e-05 0.0193186
+[GPU7] 800 time 9.88483e-06 0.0193459
+[GPU1] 800 time 1.08695e-05 0.0193351
+[GPU5] 800 time 9.85622e-06 0.0193463
+[GPU2] 900 time 1.0922e-05 0.0194569
+[GPU0] 900 time 1.03664e-05 0.0194619
+[GPU6] 900 time 1.2033e-05 0.0194426
+[GPU4] 900 time 1.01948e-05 0.0194853
+[GPU5] 900 time 1.08027e-05 0.0194576
+[GPU3] 900 time 1.28436e-05 0.0194683
+[GPU7] 900 time 1.02162e-05 0.0194618
+[GPU1] 900 time 1.03831e-05 0.0194706
+[GPU0] 1000 time 1.08337e-05 0.0193623
+[GPU2] 1000 time 1.08624e-05 0.0193724
+[GPU4] 1000 time 1.02687e-05 0.0193789
+[GPU6] 1000 time 1.01089e-05 0.0193892
+[GPU3] 1000 time 1.00493e-05 0.0193578
+[GPU7] 1000 time 9.90152e-06 0.0193795
+[GPU5] 1000 time 1.05977e-05 0.019378
+[GPU1] 1000 time 9.89437e-06 0.0193742
+[GPU2] 1100 time 1.03498e-05 0.0192283
+[GPU0] 1100 time 1.09291e-05 0.0192187
+[GPU6] 1100 time 1.03307e-05 0.0192028
+[GPU4] 1100 time 1.02806e-05 0.0192142
+[GPU5] 1100 time 1.04499e-05 0.01921
+[GPU7] 1100 time 1.03307e-05 0.019227
+[GPU3] 1100 time 1.03378e-05 0.0191985
+[GPU1] 1100 time 1.0438e-05 0.019208
+[GPU2] 1200 time 1.05882e-05 0.0191332
+[GPU0] 1200 time 1.05882e-05 0.0191349
+[GPU6] 1200 time 1.10936e-05 0.019139
+[GPU4] 1200 time 1.02901e-05 0.01913
+[GPU7] 1200 time 1.12009e-05 0.0191424
+[GPU1] 1200 time 9.77993e-06 0.0191539
+[GPU3] 1200 time 1.02878e-05 0.0191293
+[GPU5] 1200 time 1.10078e-05 0.0191216
+[GPU0] 1300 time 1.14846e-05 0.0192943
+[GPU6] 1300 time 1.07336e-05 0.0192583
+[GPU4] 1300 time 1.01042e-05 0.0192973
+[GPU2] 1300 time 1.01328e-05 0.0192972
+[GPU3] 1300 time 1.03021e-05 0.0192724
+[GPU7] 1300 time 1.17278e-05 0.0192657
+[GPU5] 1300 time 9.91821e-06 0.019265
+[GPU1] 1300 time 1.01209e-05 0.0193053
+[GPU0] 1400 time 9.85861e-06 0.0191365
+[GPU6] 1400 time 1.06883e-05 0.0191119
+[GPU3] 1400 time 9.89437e-06 0.0191287
+[GPU4] 1400 time 9.90629e-06 0.0191506
+[GPU7] 1400 time 1.00207e-05 0.0191459
+[GPU1] 1400 time 1.05834e-05 0.0191343
+[GPU2] 1400 time 1.0047e-05 0.0191448
+[GPU5] 1400 time 1.06525e-05 0.0191258
+[GPU0] 1500 time 1.00827e-05 0.0192141
+[GPU2] 1500 time 1.01662e-05 0.0192209
+[GPU6] 1500 time 1.06478e-05 0.0191895
+[GPU4] 1500 time 1.03116e-05 0.0192095
+[GPU7] 1500 time 1.06239e-05 0.0192024
+[GPU3] 1500 time 1.01566e-05 0.0192207
+[GPU1] 1500 time 9.89199e-06 0.0191881
+[GPU5] 1500 time 1.16563e-05 0.0191827
+[GPU0] 1600 time 1.04856e-05 0.0191299
+[GPU6] 1600 time 1.01662e-05 0.0191545
+[GPU2] 1600 time 1.00756e-05 0.0191496
+[GPU4] 1600 time 1.04761e-05 0.0191574
+[GPU3] 1600 time 1.00327e-05 0.0191661
+[GPU1] 1600 time 9.91344e-06 0.0191527
+[GPU7] 1600 time 9.97305e-06 0.0191441
+[GPU5] 1600 time 1.02854e-05 0.0191381
+[GPU6] 1700 time 1.00875e-05 0.0191724
+[GPU2] 1700 time 1.1909e-05 0.0191997
+[GPU3] 1700 time 1.02854e-05 0.0191918
+[GPU7] 1700 time 1.01042e-05 0.0191862
+[GPU5] 1700 time 1.08433e-05 0.0191365
+[GPU1] 1700 time 9.94444e-06 0.0191994
+[GPU0] 1700 time 1.06716e-05 0.0191918
+[GPU4] 1700 time 1.09792e-05 0.0191941
+[GPU0] 1800 time 1.13344e-05 0.0192909
+[GPU4] 1800 time 1.03664e-05 0.0193194
+[GPU6] 1800 time 1.20664e-05 0.0192684
+[GPU2] 1800 time 1.18661e-05 0.0193206
+[GPU3] 1800 time 1.0035e-05 0.0193125
+[GPU5] 1800 time 1.10316e-05 0.0192942
+[GPU1] 1800 time 1.0159e-05 0.0193319
+[GPU7] 1800 time 9.85384e-06 0.0193185
+[GPU0] 1900 time 1.02901e-05 0.0191825
+[GPU6] 1900 time 1.18113e-05 0.0191814
+[GPU4] 1900 time 1.05596e-05 0.0192024
+[GPU3] 1900 time 1.019e-05 0.0191936
+[GPU7] 1900 time 1.00422e-05 0.0191975
+[GPU2] 1900 time 1.18637e-05 0.0191724
+[GPU5] 1900 time 1.04642e-05 0.0191844
+[GPU1] 1900 time 1.06168e-05 0.0191897
+[GPU0] 2000 time 1.01662e-05 0.0192048
+[GPU6] 2000 time 1.03188e-05 0.019176
+[GPU4] 2000 time 1.10507e-05 0.0191759
+[GPU3] 2000 time 1.02043e-05 0.0191962
+[GPU5] 2000 time 1.02186e-05 0.0191945
+[GPU7] 2000 time 1.00899e-05 0.0192179
+[GPU2] 2000 time 1.00803e-05 0.0191955
+[GPU1] 2000 time 9.99689e-06 0.019203
+[GPU6] 2100 time 1.20664e-05 0.019225
+[GPU2] 2100 time 1.04427e-05 0.0192179
+[GPU0] 2100 time 9.92298e-06 0.0192382
+[GPU4] 2100 time 1.10221e-05 0.0192076
+[GPU7] 2100 time 1.00255e-05 0.0192429
+[GPU5] 2100 time 1.1127e-05 0.0192182
+[GPU3] 2100 time 1.0283e-05 0.0191775
+[GPU1] 2100 time 1.04308e-05 0.0192197
+[GPU6] 2200 time 1.03807e-05 0.0194083
+[GPU0] 2200 time 1.09482e-05 0.0194023
+[GPU4] 2200 time 1.04427e-05 0.019397
+[GPU2] 2200 time 1.00994e-05 0.0194142
+[GPU3] 2200 time 9.95159e-06 0.0194015
+[GPU7] 2200 time 9.98735e-06 0.0194082
+[GPU1] 2200 time 9.89914e-06 0.0191777
+[GPU5] 2200 time 1.06311e-05 0.0193934
+[GPU4] 2300 time 1.01423e-05 0.0192128
+[GPU6] 2300 time 9.99689e-06 0.0191805
+[GPU0] 2300 time 1.12939e-05 0.0191803
+[GPU2] 2300 time 1.03688e-05 0.0192099
+[GPU3] 2300 time 1.03998e-05 0.0192027
+[GPU7] 2300 time 1.01948e-05 0.0192313
+[GPU5] 2300 time 1.04499e-05 0.0191831
+[GPU1] 2300 time 9.77993e-06 0.0192266
+[GPU6] 2400 time 1.01709e-05 0.0191649
+[GPU0] 2400 time 1.05834e-05 0.0191653
+[GPU3] 2400 time 1.00803e-05 0.0191766
+[GPU4] 2400 time 1.03521e-05 0.0191644
+[GPU2] 2400 time 1.00732e-05 0.0191829
+[GPU1] 2400 time 1.0488e-05 0.0191669
+[GPU7] 2400 time 1.05762e-05 0.0191687
+[GPU5] 2400 time 1.03068e-05 0.0191542
+[GPU6] 2500 time 1.03831e-05 0.0194153
+[GPU0] 2500 time 1.28961e-05 0.0194165
+[GPU2] 2500 time 1.07002e-05 0.0194399
+[GPU4] 2500 time 1.00684e-05 0.0194276
+[GPU5] 2500 time 1.01876e-05 0.0194256
+[GPU7] 2500 time 9.83477e-06 0.0194398
+[GPU1] 2500 time 1.0221e-05 0.0194289
+[GPU3] 2500 time 1.02544e-05 0.0194122
+[GPU6] 2600 time 1.02377e-05 0.0191752
+[GPU2] 2600 time 1.02258e-05 0.019182
+[GPU0] 2600 time 1.36662e-05 0.0191759
+[GPU4] 2600 time 1.05667e-05 0.019168
+[GPU5] 2600 time 1.03521e-05 0.0191676
+[GPU3] 2600 time 9.90868e-06 0.0191713
+[GPU7] 2600 time 1.03068e-05 0.0191782
+[GPU1] 2600 time 1.02139e-05 0.0191774
+[GPU0] 2700 time 1.24645e-05 0.01922
+[GPU2] 2700 time 1.08695e-05 0.0192384
+[GPU6] 2700 time 1.13678e-05 0.0191968
+[GPU4] 2700 time 1.02973e-05 0.0192508
+[GPU7] 2700 time 1.12557e-05 0.0192696
+[GPU3] 2700 time 1.02472e-05 0.0192217
+[GPU1] 2700 time 1.01686e-05 0.0192463
+[GPU5] 2700 time 1.05643e-05 0.0192601
+[GPU2] 2800 time 1.15371e-05 0.0194882
+[GPU0] 2800 time 1.1735e-05 0.0195252
+[GPU6] 2800 time 1.01995e-05 0.0195376
+[GPU3] 2800 time 1.01519e-05 0.0195492
+[GPU4] 2800 time 1.02687e-05 0.0195445
+[GPU7] 2800 time 1.38855e-05 0.0195597
+[GPU1] 2800 time 1.0035e-05 0.0195671
+[GPU5] 2800 time 1.05762e-05 0.0195238
+[GPU0] 2900 time 1.09553e-05 0.0192349
+[GPU6] 2900 time 1.01328e-05 0.0192481
+[GPU4] 2900 time 1.00327e-05 0.0192794
+[GPU3] 2900 time 1.02901e-05 0.0192543
+[GPU2] 2900 time 1.14965e-05 0.0192559
+[GPU7] 2900 time 1.06621e-05 0.0192678
+[GPU5] 2900 time 1.00398e-05 0.0192416
+[GPU1] 2900 time 1.03617e-05 0.019256
+[GPU2] 3000 time 1.12367e-05 0.0192778
+[GPU6] 3000 time 1.11651e-05 0.0192751
+[GPU0] 3000 time 1.0972e-05 0.0192737
+[GPU4] 3000 time 1.04809e-05 0.0192905
+[GPU7] 3000 time 9.95159e-06 0.0192949
+[GPU1] 3000 time 1.08385e-05 0.0192955
+[GPU5] 3000 time 1.0879e-05 0.0192568
+[GPU3] 3000 time 9.97305e-06 0.0192737
+[CUDA] worker0 cuda mem usage: 68.20 GB
+    [Step(average) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.019304
+        L1  feature nbytes 0.00 Bytes | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes    0.00 Bytes | remote nbytes 0.00 Bytes
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     0.000000 | refresh duration   0.000000
+    [Step(average) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.006589
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(average) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000000 | cache copy_index   0.000551 | cache extract_miss  0.001367
+        L3  cache copy_miss  0.003613 | cache combine_miss 0.001054 | cache combine cache 0.000000 | cache combine remote 0.000000
+        L3  label extract  0.000000
+[INFO] hierarchical_parameter_server is imported

@@ -22,7 +22,6 @@ cur_common_base = (ConfigList()
   .override('plain_dense_model', [True])
   .override('mock_embedding', [True])
   .override('random_request', [False])
-  .override('cache_percent', [0.12])
   .override('custom_env', ['SAMGRAPH_EMPTY_FEAT=24 COLL_MIN_FREQ=0.1 '])
 )
 
@@ -31,15 +30,17 @@ cfg_list_collector = ConfigList.Empty()
 '''
 DLRM && DCN
 '''
-cfg_list_collector.concat(cur_common_base.copy().override('dataset', [Dataset.criteo_tb]))
-cfg_list_collector.concat(cur_common_base.copy().override('dataset', [Dataset.syn]))
+cfg_list_collector.concat(cur_common_base.copy().override('dataset', [Dataset.criteo_tb]).override('cache_percent', [0.12]))
+cfg_list_collector.concat(cur_common_base.copy().override('dataset', [Dataset.syn]).override('cache_percent', [0.12]))
+cfg_list_collector.concat(cur_common_base.copy().override('dataset', [Dataset.syn_14]).override('cache_percent', [0.14]))
 
 cfg_list_collector.hyper_override(
   ['coll_cache_policy', 'coll_cache_no_group', 'coll_cache_concurrent_link', 'sok_use_hashtable'], 
   [
     [CachePolicy.sok, '', '', None],
     [CachePolicy.hps, '', '', None],
-    [CachePolicy.coll_cache_asymm_link, '', 'MPSPhase', None],
+    # [CachePolicy.coll_cache_asymm_link, '', '', None],
+    [CachePolicy.coll_cache_asymm_link, '', 'SMMaskPhase', None],
   ]
 )
 

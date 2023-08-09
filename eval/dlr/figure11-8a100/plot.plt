@@ -48,7 +48,7 @@ fs_pattern_C = 3
 
 handle_multiplot_location(row, col) = sprintf("set size 0.35, 0.33; set origin %d*0.35, 0.3-(%d+1)*0.3;", col,row)
 
-set xrange[-0.75:1.75]
+set xrange[-0.75:2.75]
 
 set label "{/Helvetica-Italic Server C}" at graph 0.05, graph 0.9 textcolor rgb "#000000"
 set border lc rgb "#000000" lw 2
@@ -59,19 +59,19 @@ set key samplen 4 spacing 0 height 3 width 4 font ',16' maxrows 1 center at grap
 set arrow from  graph 0.2, graph -0.2 to graph 0.8, graph -0.2 nohead lt 1 lw 2 lc "#000000" front
 set xtics nomirror offset 0,0.3
 set ylabel "E2E Time(ms)" offset 2.,0
-set yrange [0:11]
+unset yrange; set yrange [0:]
 set xlabel "DLRM" offset 0,0.3
 plot cmd_filter_dat_by_policy(dat_file, "dlrm", ".*", "^HPS*",         ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_C lc rgb "#af2318" t "HPS", \
      cmd_filter_dat_by_policy(dat_file, "dlrm", ".*", "^SOK*",         ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_C lc rgb "#f19e38" t "SOK", \
-     cmd_filter_dat_by_policy(dat_file, "dlrm", ".*", "UGache*", "(12|4)") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_C lc rgb "#0080ff" t "UGache"
+     cmd_filter_dat_by_policy(dat_file, "dlrm", ".*", "Coll", ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_C lc rgb "#0080ff" t "UGache"
 
 unset key
 unset label
 unset ylabel
 
 eval(handle_multiplot_location(0,1))
-set yrange [0:21]
+unset yrange; set yrange [0:]
 set xlabel "DCN" offset 0,0.3
 plot cmd_filter_dat_by_policy(dat_file, "dcn", ".*", "^HPS*",          ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_C lc rgb "#af2318" t "HPS", \
      cmd_filter_dat_by_policy(dat_file, "dcn", ".*", "^SOK*",          ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_C lc rgb "#f19e38" t "SOK", \
-     cmd_filter_dat_by_policy(dat_file, "dcn", ".*", "UGache*",  ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_C lc rgb "#0080ff" t "UGache"
+     cmd_filter_dat_by_policy(dat_file, "dcn", ".*", "Coll",  ".*") using (1000*column(col_step_time_train_total)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_C lc rgb "#0080ff" t "UGache"

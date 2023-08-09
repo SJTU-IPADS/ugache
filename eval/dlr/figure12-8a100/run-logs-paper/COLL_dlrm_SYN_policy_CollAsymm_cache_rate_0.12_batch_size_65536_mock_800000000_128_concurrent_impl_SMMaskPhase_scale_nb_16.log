@@ -1,0 +1,619 @@
+environ({'SAMGRAPH_COLL_CACHE_CONCURRENT_LINK_IMPL': 'SMMaskPhase', 'TF_CPP_MIN_LOG_LEVEL': '2', 'COLL_LOG_BASE': 'run-logs/COLL_dlrm_SYN_policy_CollAsymm_cache_rate_0.12_batch_size_65536_mock_800000000_128_concurrent_impl_SMMaskPhase_scale_nb_16', 'HUGECTR_LOG_LEVEL': '0', 'SAMGRAPH_LOG_LEVEL': 'warn', 'SAMGRAPH_PROFILE_LEVEL': '3', 'COLL_CACHE_SCALE': '16', 'COLL_NUM_REPLICA': '8', 'COLL_MIN_FREQ': '0.1', 'SAMGRAPH_EMPTY_FEAT': '24', 'NPP_VERSION': '11.7.4.75', 'SHELL': '/bin/bash', 'NVIDIA_VISIBLE_DEVICES': 'all', 'JUPYTER_CONFIG_DIR': '/tmp/.jupyter', 'DALI_BUILD': '4921308', 'CUSOLVER_VERSION': '11.4.0.1', 'CUBLAS_VERSION': '11.10.3.66', 'HOSTNAME': 'c87c4667a624', 'SOK_COMPILE_UNIT_TEST': 'ON', 'NVIDIA_REQUIRE_CUDA': 'cuda>=9.0', 'CUFFT_VERSION': '10.7.2.91', 'CUDA_CACHE_DISABLE': '1', 'NCCL_VERSION': '2.12.12', 'CUSPARSE_VERSION': '11.7.4.91', 'ENV': '/etc/shinit_v2', 'PWD': '/ugache/eval/dlr/figure11-8a100', 'OPENUCX_VERSION': '1.12.0', 'NSIGHT_SYSTEMS_VERSION': '2022.1.3.3', 'NVIDIA_DRIVER_CAPABILITIES': 'compute,utility,video', 'TRT_VERSION': '8.2.5.1+cuda11.4.2.006', 'NVIDIA_PRODUCT_NAME': 'Triton Server Base', 'RDMACORE_VERSION': '36.0', 'CUDA_CUDA_LIBRARY': '/usr/local/cuda/lib64/stubs', 'HOME': '/root', 'LANG': 'en_US.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'CUDA_VERSION': '11.7.1.014', 'CURAND_VERSION': '10.2.10.91', 'PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION': 'python', 'JUPYTER_DATA_DIR': '/tmp/.jupyter', 'CUTENSOR_VERSION': '1.5.0.3', 'HPCX_VERSION': '2.10', 'DLPROF_VERSION': '', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'JUPYTER_RUNTIME_DIR': '/tmp/.jupyter', 'PYTHONPATH': ':/usr/local/lib/python3.8/dist-packages/', 'TERM': 'xterm', 'CPLUS_INCLUDE_PATH': '/ugache:/opt/gurobi-install/linux64/include', 'GUROBI_HOME': '/opt/gurobi-install/linux64', 'GDRCOPY_VERSION': '2.3', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'root', 'OPENMPI_VERSION': '4.1.2rc4', 'NVJPEG_VERSION': '11.8.0.2', 'LIBRARY_PATH': '/usr/local/hugectr/lib:/usr/local/hugectr/lib:/usr/local/cuda/lib64/stubs::/ugache/build:/opt/gurobi-install/linux64/lib', 'CUDA_PATH': '/usr/local/cuda', 'SHLVL': '2', 'BASH_ENV': '/etc/bash.bashrc', 'CUDNN_VERSION': '8.4.1.50+cuda11.6', 'NVIDIA_TRITON_SERVER_BASE_VERSION': '22.06', 'NSIGHT_COMPUTE_VERSION': '2022.2.1.3', 'DALI_VERSION': '1.14.0', 'LD_LIBRARY_PATH': '/usr/local/hugectr/lib:/usr/local/hugectr/lib:/usr/local/cuda/compat/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:/usr/local/lib:/repos/dist/lib:/opt/tritonserver/lib:/ugache/build:/opt/gurobi-install/linux64/lib', 'NVIDIA_BUILD_ID': '39726160', 'OMPI_MCA_coll_hcoll_enable': '0', 'OPAL_PREFIX': '/opt/hpcx/ompi', 'CUDA_DRIVER_VERSION': '515.48.08', 'LC_ALL': 'C.UTF-8', '_CUDA_COMPAT_PATH': '/usr/local/cuda/compat', 'CUDA_HOME': '/usr/local/cuda', 'PATH': '/opt/tritonserver/bin:/usr/local/cuda/lib64/:/usr/local/mpi/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/ucx/bin:/usr/local/cuda/bin:', 'C_INCLUDE_PATH': '/ugache:/opt/gurobi-install/linux64/include', 'MOFED_VERSION': '5.4-rdmacore36.0', 'TRTOSS_VERSION': '22.05', 'DEBIAN_FRONTEND': 'noninteractive', 'OLDPWD': '/ugache/eval/dlr/figure12-8a100', '_': '/usr/bin/python', 'TF2_BEHAVIOR': '1'})
+config:eval_tsp="2023-08-08 18:55:46"
+config:gpu_num=8
+config:iter_num=4000
+config:slot_num=100
+config:embed_vec_size=128
+config:dense_dim=13
+config:global_batch_size=65536
+config:iteration_per_epoch=1000
+config:coll_cache_enable_iter=1000
+config:coll_cache_refresh_iter=1000
+config:coll_cache_enable_refresh=False
+config:coll_cache_policy=coll_asymm
+config:model=dlrm
+config:combiner=mean
+config:optimizer=plugin_adam
+config:np_key_type=<class 'numpy.int32'>
+config:np_vector_type=<class 'numpy.float32'>
+config:tf_key_type=<dtype: 'int32'>
+config:tf_vector_type=<dtype: 'float32'>
+config:ps_config_file=run-configs/COLL_dlrm_SYN_policy_CollAsymm_cache_rate_0.12_batch_size_65536_mock_800000000_128_concurrent_impl_SMMaskPhase_scale_nb_16.json
+config:cache_percent=0.12
+config:dense_model_path=plain
+config:dataset_path=/datasets_dlr/processed/syn_a12_s100_c800m
+config:sok_use_hashtable=False
+config:random_request=False
+config:alpha=None
+config:max_vocabulary_size=800000000
+config:_empty_feat=25
+[INFO] hierarchical_parameter_server is imported
+worker 4 at process 18487
+[INFO]: sparse_operation_kit is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a12_s100_c800m/syn.sparse/dense/label
+294912000
+worker 3 at process 18486
+[INFO]: sparse_operation_kit is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a12_s100_c800m/syn.sparse/dense/label
+294912000
+worker 7 at process 18490
+[INFO]: sparse_operation_kit is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a12_s100_c800m/syn.sparse/dense/label
+294912000
+worker 5 at process 18488
+[INFO]: sparse_operation_kit is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a12_s100_c800m/syn.sparse/dense/label
+294912000
+worker 6 at process 18489
+[INFO]: sparse_operation_kit is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a12_s100_c800m/syn.sparse/dense/label
+294912000
+worker 1 at process 18484
+[INFO]: sparse_operation_kit is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a12_s100_c800m/syn.sparse/dense/label
+294912000
+worker 0 at process 18483
+[INFO]: sparse_operation_kit is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a12_s100_c800m/syn.sparse/dense/label
+294912000
+worker 2 at process 18485
+[INFO]: sparse_operation_kit is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a12_s100_c800m/syn.sparse/dense/label
+294912000
+restoring proxy
+[GPU4] 100 time 1.20378e-05 0.231318
+restoring proxy
+[GPU6] 100 time 1.49107e-05 0.233151
+restoring proxy
+[GPU1] 100 time 1.23978e-05 0.247712
+restoring proxy
+[GPU2] 100 time 1.46461e-05 0.251609
+restoring proxy
+[GPU3] 100 time 1.32823e-05 0.251853
+restoring proxy
+[GPU5] 100 time 1.57022e-05 0.252328
+restoring proxy
+[GPU7] 100 time 1.49369e-05 0.253138
+restoring proxy
+[GPU0] 100 time 1.51753e-05 0.253551
+[GPU1] 200 time 1.25885e-05 0.0237664
+[GPU6] 200 time 1.4019e-05 0.0248421
+[GPU3] 200 time 1.2989e-05 0.0253553
+[GPU7] 200 time 1.43552e-05 0.0256675
+[GPU5] 200 time 1.29676e-05 0.0257412
+[GPU4] 200 time 1.45793e-05 0.0257718
+[GPU2] 200 time 1.37854e-05 0.0258552
+[GPU0] 200 time 1.29676e-05 0.0263077
+[GPU1] 300 time 1.19781e-05 0.0234268
+[GPU4] 300 time 1.38974e-05 0.0246666
+[GPU7] 300 time 1.26076e-05 0.0249069
+[GPU6] 300 time 1.98698e-05 0.0255485
+[GPU5] 300 time 1.33634e-05 0.0257399
+[GPU3] 300 time 1.28579e-05 0.025856
+[GPU2] 300 time 1.30224e-05 0.025901
+[GPU0] 300 time 1.78814e-05 0.0262961
+[GPU1] 400 time 1.46508e-05 0.0213466
+[GPU2] 400 time 1.35446e-05 0.0230293
+[GPU7] 400 time 1.26886e-05 0.0232239
+[GPU5] 400 time 1.22309e-05 0.0234066
+[GPU3] 400 time 1.28388e-05 0.023568
+[GPU0] 400 time 1.39308e-05 0.0239396
+[GPU4] 400 time 1.28841e-05 0.0240127
+[GPU6] 400 time 1.66631e-05 0.0241727
+[GPU1] 500 time 1.37615e-05 0.0216967
+[GPU4] 500 time 1.46699e-05 0.0235716
+[GPU7] 500 time 1.27029e-05 0.0235622
+[GPU3] 500 time 1.2815e-05 0.023571
+[GPU2] 500 time 1.31321e-05 0.0236784
+[GPU5] 500 time 1.40071e-05 0.0237662
+[GPU0] 500 time 1.59383e-05 0.0241232
+[GPU6] 500 time 1.74522e-05 0.024543
+[GPU1] 600 time 1.27745e-05 0.0232001
+[GPU7] 600 time 1.41335e-05 0.0251105
+[GPU5] 600 time 1.29628e-05 0.0252743
+[GPU3] 600 time 1.29271e-05 0.025492
+[GPU2] 600 time 1.22118e-05 0.0256501
+[GPU4] 600 time 1.26696e-05 0.0260033
+[GPU0] 600 time 1.74212e-05 0.0263224
+[GPU6] 600 time 1.51801e-05 0.0270774
+[GPU1] 700 time 1.27554e-05 0.0194238
+[GPU5] 700 time 1.2331e-05 0.0201373
+[GPU3] 700 time 1.29056e-05 0.0204159
+[GPU4] 700 time 1.26243e-05 0.0213992
+[GPU0] 700 time 1.30653e-05 0.0216719
+[GPU7] 700 time 1.23048e-05 0.0216841
+[GPU2] 700 time 1.33562e-05 0.0218015
+[GPU6] 700 time 1.30439e-05 0.0220367
+[GPU1] 800 time 1.19758e-05 0.0193577
+[GPU3] 800 time 1.24669e-05 0.0203248
+[GPU5] 800 time 1.25599e-05 0.0208539
+[GPU4] 800 time 1.25241e-05 0.0210877
+[GPU2] 800 time 1.24049e-05 0.0212391
+[GPU7] 800 time 1.2455e-05 0.0214654
+[GPU6] 800 time 1.66988e-05 0.0217713
+[GPU0] 800 time 1.37115e-05 0.0220439
+[GPU1] 900 time 1.26243e-05 0.0199244
+[GPU3] 900 time 1.24741e-05 0.020564
+[GPU4] 900 time 1.27387e-05 0.0206885
+[GPU2] 900 time 1.27935e-05 0.0210478
+[GPU5] 900 time 1.22786e-05 0.0212401
+[GPU7] 900 time 1.2815e-05 0.0218031
+[GPU6] 900 time 1.34993e-05 0.0219057
+[GPU0] 900 time 1.2238e-05 0.0219928
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 98, cpu 10 {link #0 : g1 8}, {link #1 : g2 8}, {link #2 : g3 8}, {link #3 : g4 8}, {link #4 : g5 8}, {link #5 : g6 8}, {link #6 : g7 8},
+1 : local 98, cpu 10 {link #0 : g2 8}, {link #1 : g3 8}, {link #2 : g4 8}, {link #3 : g5 8}, {link #4 : g6 8}, {link #5 : g7 8}, {link #6 : g0 8},
+2 : local 98, cpu 10 {link #0 : g3 8}, {link #1 : g4 8}, {link #2 : g5 8}, {link #3 : g6 8}, {link #4 : g7 8}, {link #5 : g0 8}, {link #6 : g1 8},
+3 : local 98, cpu 10 {link #0 : g4 8}, {link #1 : g5 8}, {link #2 : g6 8}, {link #3 : g7 8}, {link #4 : g0 8}, {link #5 : g1 8}, {link #6 : g2 8},
+4 : local 98, cpu 10 {link #0 : g5 8}, {link #1 : g6 8}, {link #2 : g7 8}, {link #3 : g0 8}, {link #4 : g1 8}, {link #5 : g2 8}, {link #6 : g3 8},
+5 : local 98, cpu 10 {link #0 : g6 8}, {link #1 : g7 8}, {link #2 : g0 8}, {link #3 : g1 8}, {link #4 : g2 8}, {link #5 : g3 8}, {link #6 : g4 8},
+6 : local 98, cpu 10 {link #0 : g7 8}, {link #1 : g0 8}, {link #2 : g1 8}, {link #3 : g2 8}, {link #4 : g3 8}, {link #5 : g4 8}, {link #6 : g5 8},
+7 : local 98, cpu 10 {link #0 : g0 8}, {link #1 : g1 8}, {link #2 : g2 8}, {link #3 : g3 8}, {link #4 : g4 8}, {link #5 : g5 8}, {link #6 : g6 8},
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID
+Set parameter TimeLimit to value 200
+Set parameter MIPGap to value 0.05
+Set parameter LogFile to value "cppsolver.log"
+Set parameter Threads to value 40
+Academic license - for non-commercial use only - registered to xiaoniu.sxn@sjtu.edu.cn
+Gurobi Optimizer version 9.5.1 build v9.5.1rc2 (linux64)
+Thread count: 56 physical cores, 112 logical processors, using up to 40 threads
+Academic license - for non-commercial use only - registered to xiaoniu.sxn@sjtu.edu.cn
+Optimize a model with 755224 rows, 107649 columns and 1854800 nonzeros
+Model fingerprint: 0xab3e0e6c
+Variable types: 9 continuous, 107640 integer (107640 binary)
+Coefficient statistics:
+  Matrix range     [1e-08, 2e+04]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 1e+04]
+Warning: Model contains large matrix coefficient range
+         Consider reformulating model or setting NumericFocus parameter
+         to avoid numerical issues.
+Found heuristic solution: objective 63470.735624
+Presolve removed 649166 rows and 7 columns
+Presolve time: 1.63s
+Presolved: 106058 rows, 107642 columns, 518451 nonzeros
+Variable types: 1 continuous, 107641 integer (107640 binary)
+
+Deterministic concurrent LP optimizer: primal and dual simplex
+Showing first log only...
+
+
+Use crossover to convert LP symmetric solution to basic solution...
+Warning: 3 variables dropped from basis
+
+Restart crossover...
+
+
+Root crossover log...
+
+Concurrent spin time: 0.94s
+
+Solved with dual simplex
+
+Root relaxation: objective 1.495040e+03, 70818 iterations, 4.02 seconds (7.98 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 1495.04010    0  100 63470.7356 1495.04010  97.6%     -    8s
+H    0     0                    1495.0401209 1495.04010  0.00%     -    8s
+
+Explored 1 nodes (150471 simplex iterations) in 8.72 seconds (14.40 work units)
+Thread count was 40 (of 112 available processors)
+
+Solution count 2: 1495.04 63470.7 
+
+Optimal solution found (tolerance 5.00e-02)
+Best objective 1.495040120906e+03, best bound 1.495040096684e+03, gap 0.0000%
+coll_cache:optimal_local_rate=0.916144,0.913969,0.918797,0.914134,0.898313,0.922085,0.901888,0.904979,
+coll_cache:optimal_remote_rate=0.0838559,0.0860307,0.0812034,0.0858658,0.101687,0.077915,0.0981119,0.095021,
+coll_cache:optimal_cpu_rate=1.37329e-09,1.37329e-09,1.37329e-09,1.37329e-09,1.37329e-09,1.37329e-09,1.37329e-09,1.37329e-09,
+z=1495.04
+test_result:init:feat_nbytes=409600000000
+test_result:init:cache_nbytes=49561598464
+[GPU7] 1000 time 1.24669e-05 0.644857
+[GPU4] 1000 time 1.29461e-05 0.644829
+[GPU2] 1000 time 1.23382e-05 0.644826
+[GPU5] 1000 time 1.26982e-05 0.644857
+[GPU3] 1000 time 1.24764e-05 0.644858
+[GPU6] 1000 time 1.38187e-05 0.644827
+[GPU1] 1000 time 1.21498e-05 0.644871
+[GPU0] 1000 time 1.6768e-05 0.644801
+[GPU4] 1100 time 1.13153e-05 0.00376761
+[GPU1] 1100 time 9.74894e-06 0.00377751
+[GPU0] 1100 time 1.18971e-05 0.00383844
+[GPU3] 1100 time 1.07527e-05 0.00386829
+[GPU7] 1100 time 1.01256e-05 0.00393231
+[GPU5] 1100 time 1.24073e-05 0.00394866
+[GPU6] 1100 time 1.20711e-05 0.0039756
+[GPU2] 1100 time 1.18923e-05 0.00397244
+[GPU4] 1200 time 9.86099e-06 0.00367332
+[GPU2] 1200 time 1.02115e-05 0.00375636
+[GPU6] 1200 time 9.39131e-06 0.00375204
+[GPU3] 1200 time 1.00946e-05 0.00376156
+[GPU5] 1200 time 1.01566e-05 0.00380173
+[GPU7] 1200 time 1.06454e-05 0.00378612
+[GPU1] 1200 time 9.5129e-06 0.00381544
+[GPU0] 1200 time 1.28794e-05 0.00383718
+[GPU4] 1300 time 9.73463e-06 0.00368603
+[GPU1] 1300 time 9.61304e-06 0.00373929
+[GPU3] 1300 time 9.97543e-06 0.00376317
+[GPU2] 1300 time 9.84669e-06 0.0037205
+[GPU7] 1300 time 1.20783e-05 0.00377227
+[GPU0] 1300 time 1.04237e-05 0.00379046
+[GPU5] 1300 time 1.00851e-05 0.00378772
+[GPU6] 1300 time 9.71317e-06 0.00379684
+[GPU3] 1400 time 9.48191e-06 0.00374198
+[GPU1] 1400 time 1.12176e-05 0.0037395
+[GPU5] 1400 time 1.01233e-05 0.00372535
+[GPU2] 1400 time 1.0767e-05 0.00372629
+[GPU7] 1400 time 1.23024e-05 0.00371365
+[GPU4] 1400 time 1.03402e-05 0.00374058
+[GPU0] 1400 time 1.17373e-05 0.00376142
+[GPU6] 1400 time 1.00565e-05 0.00381919
+[GPU4] 1500 time 1.02472e-05 0.00370586
+[GPU7] 1500 time 1.05953e-05 0.00370921
+[GPU5] 1500 time 9.63688e-06 0.00373564
+[GPU0] 1500 time 1.05143e-05 0.00376542
+[GPU1] 1500 time 9.75609e-06 0.00376915
+[GPU2] 1500 time 1.12987e-05 0.00375236
+[GPU3] 1500 time 1.16539e-05 0.00381652
+[GPU6] 1500 time 9.70602e-06 0.00382781
+[GPU7] 1600 time 1.1456e-05 0.00371991
+[GPU4] 1600 time 1.07169e-05 0.00374746
+[GPU1] 1600 time 1.09744e-05 0.00375011
+[GPU5] 1600 time 9.86576e-06 0.00374606
+[GPU6] 1600 time 1.03331e-05 0.00376244
+[GPU0] 1600 time 1.13392e-05 0.00376567
+[GPU2] 1600 time 1.0016e-05 0.00377433
+[GPU3] 1600 time 1.05596e-05 0.00379663
+[GPU4] 1700 time 9.50336e-06 0.00365321
+[GPU7] 1700 time 9.72986e-06 0.00370145
+[GPU2] 1700 time 1.0736e-05 0.0037124
+[GPU1] 1700 time 9.48191e-06 0.00374019
+[GPU5] 1700 time 1.05119e-05 0.00373989
+[GPU6] 1700 time 9.35555e-06 0.00376258
+[GPU3] 1700 time 1.11961e-05 0.00375553
+[GPU0] 1700 time 1.09363e-05 0.00378698
+[GPU4] 1800 time 9.61781e-06 0.0036345
+[GPU7] 1800 time 9.94444e-06 0.00373185
+[GPU0] 1800 time 1.11628e-05 0.00371423
+[GPU6] 1800 time 9.62496e-06 0.00374769
+[GPU2] 1800 time 1.07455e-05 0.00375164
+[GPU3] 1800 time 1.01352e-05 0.00378623
+[GPU5] 1800 time 1.21832e-05 0.00379429
+[GPU1] 1800 time 1.0016e-05 0.00376359
+[GPU4] 1900 time 9.64165e-06 0.0036754
+[GPU2] 1900 time 9.83e-06 0.00370902
+[GPU5] 1900 time 9.80854e-06 0.00377953
+[GPU6] 1900 time 9.74894e-06 0.00375786
+[GPU1] 1900 time 1.00875e-05 0.00376022
+[GPU0] 1900 time 1.20306e-05 0.00377033
+[GPU7] 1900 time 1.16324e-05 0.00379112
+[GPU3] 1900 time 9.54866e-06 0.00379668
+[GPU7] 2000 time 1.02782e-05 0.00368459
+[GPU4] 2000 time 1.07718e-05 0.00366452
+[GPU3] 2000 time 1.00565e-05 0.0037133
+[GPU2] 2000 time 1.00565e-05 0.00372979
+[GPU6] 2000 time 9.98974e-06 0.00373829
+[GPU5] 2000 time 1.08218e-05 0.00375721
+[GPU1] 2000 time 1.091e-05 0.00381819
+[GPU0] 2000 time 1.16563e-05 0.00384424
+[GPU4] 2100 time 1.02186e-05 0.00366908
+[GPU7] 2100 time 1.03521e-05 0.00370477
+[GPU5] 2100 time 1.00851e-05 0.00372368
+[GPU2] 2100 time 1.00303e-05 0.00372247
+[GPU0] 2100 time 1.00851e-05 0.00374004
+[GPU3] 2100 time 1.04403e-05 0.00373606
+[GPU6] 2100 time 9.59158e-06 0.00378858
+[GPU1] 2100 time 1.0612e-05 0.00381199
+[GPU0] 2200 time 1.02878e-05 0.00368421
+[GPU4] 2200 time 1.09434e-05 0.00368369
+[GPU2] 2200 time 9.68456e-06 0.00372079
+[GPU3] 2200 time 1.25623e-05 0.00375102
+[GPU1] 2200 time 1.01805e-05 0.00377106
+[GPU7] 2200 time 1.08147e-05 0.00375484
+[GPU5] 2200 time 9.94921e-06 0.00373667
+[GPU6] 2200 time 9.67264e-06 0.00377628
+[GPU4] 2300 time 9.6941e-06 0.00367206
+[GPU5] 2300 time 9.58681e-06 0.00373409
+[GPU7] 2300 time 1.06812e-05 0.00369826
+[GPU1] 2300 time 9.77278e-06 0.00378362
+[GPU2] 2300 time 1.06025e-05 0.00377646
+[GPU3] 2300 time 1.05929e-05 0.0037793
+[GPU0] 2300 time 1.03903e-05 0.00380874
+[GPU6] 2300 time 1.03521e-05 0.00386869
+[GPU4] 2400 time 9.66311e-06 0.00365934
+[GPU5] 2400 time 9.47475e-06 0.00377073
+[GPU3] 2400 time 9.69887e-06 0.00375854
+[GPU0] 2400 time 1.02043e-05 0.00375263
+[GPU6] 2400 time 9.37939e-06 0.00376458
+[GPU2] 2400 time 1.00708e-05 0.00375311
+[GPU7] 2400 time 1.02401e-05 0.00378498
+[GPU1] 2400 time 1.0035e-05 0.00380702
+[GPU7] 2500 time 9.90152e-06 0.00371736
+[GPU2] 2500 time 9.88245e-06 0.00370646
+[GPU0] 2500 time 1.05691e-05 0.00373921
+[GPU6] 2500 time 1.03021e-05 0.00376018
+[GPU1] 2500 time 9.69172e-06 0.00374763
+[GPU5] 2500 time 9.96351e-06 0.0037922
+[GPU4] 2500 time 1.1096e-05 0.0037392
+[GPU3] 2500 time 1.03569e-05 0.00381334
+[GPU4] 2600 time 1.05762e-05 0.0037104
+[GPU0] 2600 time 1.05429e-05 0.00374171
+[GPU1] 2600 time 9.68456e-06 0.00374497
+[GPU6] 2600 time 1.06645e-05 0.00374566
+[GPU3] 2600 time 1.11842e-05 0.00376536
+[GPU2] 2600 time 1.21307e-05 0.00375938
+[GPU7] 2600 time 1.17493e-05 0.00378229
+[GPU5] 2600 time 9.69648e-06 0.00382891
+[GPU7] 2700 time 1.06335e-05 0.00368714
+[GPU2] 2700 time 9.81808e-06 0.00368772
+[GPU4] 2700 time 1.00875e-05 0.00369977
+[GPU6] 2700 time 9.59873e-06 0.00376806
+[GPU1] 2700 time 9.82285e-06 0.00378059
+[GPU3] 2700 time 1.19853e-05 0.00378862
+[GPU5] 2700 time 1.07932e-05 0.00377448
+[GPU0] 2700 time 1.0736e-05 0.0038832
+[GPU4] 2800 time 9.6488e-06 0.0036632
+[GPU2] 2800 time 9.5129e-06 0.0037084
+[GPU6] 2800 time 9.59396e-06 0.00370375
+[GPU0] 2800 time 1.04284e-05 0.00375551
+[GPU1] 2800 time 1.02091e-05 0.00378154
+[GPU3] 2800 time 1.17302e-05 0.0037732
+[GPU5] 2800 time 1.05453e-05 0.00379535
+[GPU7] 2800 time 1.10888e-05 0.00380215
+[GPU7] 2900 time 1.02949e-05 0.00373451
+[GPU4] 2900 time 1.02544e-05 0.00370437
+[GPU6] 2900 time 1.02401e-05 0.00372995
+[GPU1] 2900 time 9.82761e-06 0.0037851
+[GPU5] 2900 time 1.06239e-05 0.00380203
+[GPU0] 2900 time 1.19352e-05 0.00381685
+[GPU2] 2900 time 9.86099e-06 0.00382295
+[GPU3] 2900 time 1.0128e-05 0.00390834
+[GPU4] 3000 time 1.07455e-05 0.0036823
+[GPU7] 3000 time 1.05548e-05 0.00369634
+[GPU2] 3000 time 1.01328e-05 0.00370922
+[GPU0] 3000 time 1.02925e-05 0.00372942
+[GPU6] 3000 time 1.02472e-05 0.00373951
+[GPU1] 3000 time 9.64403e-06 0.00378558
+[GPU5] 3000 time 1.0407e-05 0.00376377
+[GPU3] 3000 time 1.00732e-05 0.00379194
+[GPU4] 3100 time 1.02663e-05 0.00366609
+[GPU6] 3100 time 9.4533e-06 0.00372764
+[GPU2] 3100 time 1.07741e-05 0.00372042
+[GPU7] 3100 time 1.17636e-05 0.00372416
+[GPU1] 3100 time 1.01137e-05 0.00377333
+[GPU5] 3100 time 1.0612e-05 0.00375414
+[GPU3] 3100 time 1.12057e-05 0.00378153
+[GPU0] 3100 time 1.0643e-05 0.00378992
+[GPU7] 3200 time 9.95398e-06 0.00371798
+[GPU6] 3200 time 1.01042e-05 0.00371093
+[GPU5] 3200 time 1.09887e-05 0.00375456
+[GPU1] 3200 time 9.48906e-06 0.00374809
+[GPU2] 3200 time 1.17111e-05 0.00375786
+[GPU4] 3200 time 1.25909e-05 0.00376521
+[GPU0] 3200 time 1.21427e-05 0.0037708
+[GPU3] 3200 time 1.08409e-05 0.00378882
+[GPU4] 3300 time 1.00374e-05 0.00366986
+[GPU0] 3300 time 1.05953e-05 0.00367635
+[GPU7] 3300 time 1.08051e-05 0.00373362
+[GPU6] 3300 time 1.06168e-05 0.00372802
+[GPU2] 3300 time 1.21164e-05 0.0037546
+[GPU3] 3300 time 9.84192e-06 0.00375988
+[GPU5] 3300 time 1.07741e-05 0.00376126
+[GPU1] 3300 time 1.09959e-05 0.00379517
+[GPU4] 3400 time 9.66787e-06 0.00370605
+[GPU3] 3400 time 1.02806e-05 0.00373863
+[GPU0] 3400 time 1.0035e-05 0.00373681
+[GPU2] 3400 time 1.00255e-05 0.00374991
+[GPU7] 3400 time 1.01972e-05 0.00375377
+[GPU6] 3400 time 1.08933e-05 0.00376502
+[GPU1] 3400 time 9.52959e-06 0.00380149
+[GPU5] 3400 time 1.04475e-05 0.00381579
+[GPU7] 3500 time 1.0252e-05 0.00368975
+[GPU4] 3500 time 1.18828e-05 0.003708
+[GPU6] 3500 time 9.60827e-06 0.00372267
+[GPU5] 3500 time 1.01304e-05 0.00376087
+[GPU1] 3500 time 1.06311e-05 0.00376954
+[GPU3] 3500 time 9.82523e-06 0.00375365
+[GPU0] 3500 time 1.0078e-05 0.00373554
+[GPU2] 3500 time 1.04737e-05 0.00379652
+[GPU2] 3600 time 9.43422e-06 0.00369703
+[GPU7] 3600 time 1.03235e-05 0.00366188
+[GPU4] 3600 time 9.87291e-06 0.00368992
+[GPU5] 3600 time 9.76086e-06 0.00375593
+[GPU3] 3600 time 9.59873e-06 0.00376933
+[GPU0] 3600 time 9.9206e-06 0.00378696
+[GPU1] 3600 time 9.82285e-06 0.00379079
+[GPU6] 3600 time 1.02162e-05 0.00379682
+[GPU4] 3700 time 9.71794e-06 0.00364432
+[GPU2] 3700 time 1.14775e-05 0.00370593
+[GPU7] 3700 time 9.89437e-06 0.00373332
+[GPU3] 3700 time 9.81808e-06 0.00379911
+[GPU5] 3700 time 1.09792e-05 0.00379059
+[GPU0] 3700 time 1.02949e-05 0.00379478
+[GPU1] 3700 time 1.0407e-05 0.00379838
+[GPU6] 3700 time 1.04976e-05 0.00378914
+[GPU4] 3800 time 9.59635e-06 0.00363417
+[GPU2] 3800 time 1.13916e-05 0.00372556
+[GPU7] 3800 time 1.07384e-05 0.00373548
+[GPU3] 3800 time 1.0879e-05 0.00375567
+[GPU1] 3800 time 1.02544e-05 0.00376548
+[GPU0] 3800 time 1.02234e-05 0.00377964
+[GPU5] 3800 time 9.73463e-06 0.00374464
+[GPU6] 3800 time 1.03235e-05 0.00378901
+[GPU7] 3900 time 9.94205e-06 0.00368576
+[GPU3] 3900 time 1.01471e-05 0.00373335
+[GPU2] 3900 time 9.82046e-06 0.00374683
+[GPU4] 3900 time 1.13988e-05 0.00372972
+[GPU5] 3900 time 1.0097e-05 0.00377042
+[GPU6] 3900 time 1.07574e-05 0.00379498
+[GPU0] 3900 time 1.08361e-05 0.00376775
+[GPU1] 3900 time 1.15514e-05 0.00381318
+[GPU4] 4000 time 1.08576e-05 0.00364562
+[GPU7] 4000 time 1.04642e-05 0.0037227
+[GPU0] 4000 time 1.11842e-05 0.00372033
+[GPU5] 4000 time 9.88722e-06 0.00374896
+[GPU3] 4000 time 9.63926e-06 0.00375627
+[GPU1] 4000 time 9.97305e-06 0.00373889
+[GPU2] 4000 time 9.94205e-06 0.00376471
+[GPU6] 4000 time 9.77755e-06 0.00378283
+[CUDA] worker0 cuda mem usage: 55.50 GB
+    [Step(average) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.003750
+        L1  feature nbytes  400.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes     903.14 KB | remote nbytes   34.81 MB
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     0.000000 | refresh duration   0.000000
+    [Step(average) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.000876
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(average) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000305 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000216 | cache combine cache 0.000235 | cache combine remote 0.000328
+        L3  label extract  0.000000
+    [Profiler Level Percentiles E2 S7999]
+        p50.00_tail_logl2featcopy=0.000863
+        p90.00_tail_logl2featcopy=0.000879
+        p95.00_tail_logl2featcopy=0.000886
+        p99.00_tail_logl2featcopy=0.000992
+        p99.90_tail_logl2featcopy=0.004379

@@ -35,7 +35,7 @@ set label "{/Helvetica-Italic Server C}" at graph 0.05, graph 0.9 textcolor rgb 
 set border lc rgb "#000000" lw 2 
 set tics textcolor "black"
 set grid y
-set yrange [0:7.5]
+unset yrange; set yrange [0:]
 set xlabel "DLRM" offset 0,0.3
 set ylabel "Embedding Extraction Time(ms)" offset 2.,0 font ',13' 
 set xtics nomirror offset 0,0.3 textcolor rgb "#000000"
@@ -48,5 +48,5 @@ plot \
      cmd_filter_dat_by_policy(dat_file, "dlrm", ".*", "^SOK*",               ".*") using (1000*column(col_step_time_feat_copy)):xticlabels(col_dataset) w histogram fs pattern 2 lc rgb "#f19e38" t "SOK", \
      cmd_filter_dat_by_policy(dat_file, "dlrm", ".*", "^Rep*",               ".*") using (1000*column(col_step_time_feat_copy)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_A lc rgb "#af2318" t "Rep", \
      cmd_filter_dat_by_policy(dat_file, "dlrm", ".*", "^Cliq*",              ".*") using (1000*column(col_step_time_feat_copy)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_A lc rgb "#f19e38" t "Part", \
-     cmd_filter_dat_by_policy(dat_file, "dlrm", ".*", "UGache*",       ".*") using (1000*column(col_step_time_feat_copy)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_A lc rgb "#0080ff" t "UGache", \
+     cmd_filter_dat_by_policy(dat_file, "dlrm", ".*", "Coll",                ".*") using (1000*column(col_step_time_feat_copy)):xticlabels(col_dataset) w histogram fs pattern fs_pattern_A lc rgb "#0080ff" t "UGache", \
 

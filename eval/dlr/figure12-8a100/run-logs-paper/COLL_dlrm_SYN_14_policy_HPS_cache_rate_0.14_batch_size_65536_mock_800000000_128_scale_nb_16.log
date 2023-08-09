@@ -1,0 +1,340 @@
+environ({'TF_CPP_MIN_LOG_LEVEL': '2', 'COLL_LOG_BASE': 'run-logs/COLL_dlrm_SYN_14_policy_HPS_cache_rate_0.14_batch_size_65536_mock_800000000_128_scale_nb_16', 'HUGECTR_LOG_LEVEL': '0', 'SAMGRAPH_LOG_LEVEL': 'warn', 'SAMGRAPH_PROFILE_LEVEL': '3', 'COLL_CACHE_SCALE': '16', 'COLL_NUM_REPLICA': '8', 'COLL_MIN_FREQ': '0.1', 'SAMGRAPH_EMPTY_FEAT': '24', 'NPP_VERSION': '11.7.4.75', 'SHELL': '/bin/bash', 'NVIDIA_VISIBLE_DEVICES': 'all', 'JUPYTER_CONFIG_DIR': '/tmp/.jupyter', 'DALI_BUILD': '4921308', 'CUSOLVER_VERSION': '11.4.0.1', 'CUBLAS_VERSION': '11.10.3.66', 'HOSTNAME': 'c87c4667a624', 'SOK_COMPILE_UNIT_TEST': 'ON', 'NVIDIA_REQUIRE_CUDA': 'cuda>=9.0', 'CUFFT_VERSION': '10.7.2.91', 'CUDA_CACHE_DISABLE': '1', 'NCCL_VERSION': '2.12.12', 'CUSPARSE_VERSION': '11.7.4.91', 'ENV': '/etc/shinit_v2', 'PWD': '/ugache/eval/dlr/figure11-8a100', 'OPENUCX_VERSION': '1.12.0', 'NSIGHT_SYSTEMS_VERSION': '2022.1.3.3', 'NVIDIA_DRIVER_CAPABILITIES': 'compute,utility,video', 'TRT_VERSION': '8.2.5.1+cuda11.4.2.006', 'NVIDIA_PRODUCT_NAME': 'Triton Server Base', 'RDMACORE_VERSION': '36.0', 'CUDA_CUDA_LIBRARY': '/usr/local/cuda/lib64/stubs', 'HOME': '/root', 'LANG': 'en_US.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'CUDA_VERSION': '11.7.1.014', 'CURAND_VERSION': '10.2.10.91', 'PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION': 'python', 'JUPYTER_DATA_DIR': '/tmp/.jupyter', 'CUTENSOR_VERSION': '1.5.0.3', 'HPCX_VERSION': '2.10', 'DLPROF_VERSION': '', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'JUPYTER_RUNTIME_DIR': '/tmp/.jupyter', 'PYTHONPATH': ':/usr/local/lib/python3.8/dist-packages/', 'TERM': 'xterm', 'CPLUS_INCLUDE_PATH': '/ugache:/opt/gurobi-install/linux64/include', 'GUROBI_HOME': '/opt/gurobi-install/linux64', 'GDRCOPY_VERSION': '2.3', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'root', 'OPENMPI_VERSION': '4.1.2rc4', 'NVJPEG_VERSION': '11.8.0.2', 'LIBRARY_PATH': '/usr/local/hugectr/lib:/usr/local/hugectr/lib:/usr/local/cuda/lib64/stubs::/ugache/build:/opt/gurobi-install/linux64/lib', 'CUDA_PATH': '/usr/local/cuda', 'SHLVL': '2', 'BASH_ENV': '/etc/bash.bashrc', 'CUDNN_VERSION': '8.4.1.50+cuda11.6', 'NVIDIA_TRITON_SERVER_BASE_VERSION': '22.06', 'NSIGHT_COMPUTE_VERSION': '2022.2.1.3', 'DALI_VERSION': '1.14.0', 'LD_LIBRARY_PATH': '/usr/local/hugectr/lib:/usr/local/hugectr/lib:/usr/local/cuda/compat/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:/usr/local/lib:/repos/dist/lib:/opt/tritonserver/lib:/ugache/build:/opt/gurobi-install/linux64/lib', 'NVIDIA_BUILD_ID': '39726160', 'OMPI_MCA_coll_hcoll_enable': '0', 'OPAL_PREFIX': '/opt/hpcx/ompi', 'CUDA_DRIVER_VERSION': '515.48.08', 'LC_ALL': 'C.UTF-8', '_CUDA_COMPAT_PATH': '/usr/local/cuda/compat', 'CUDA_HOME': '/usr/local/cuda', 'PATH': '/opt/tritonserver/bin:/usr/local/cuda/lib64/:/usr/local/mpi/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/ucx/bin:/usr/local/cuda/bin:', 'C_INCLUDE_PATH': '/ugache:/opt/gurobi-install/linux64/include', 'MOFED_VERSION': '5.4-rdmacore36.0', 'TRTOSS_VERSION': '22.05', 'DEBIAN_FRONTEND': 'noninteractive', 'OLDPWD': '/ugache/eval/dlr/figure12-8a100', '_': '/usr/bin/python', 'TF2_BEHAVIOR': '1'})
+config:eval_tsp="2023-08-08 17:08:14"
+config:gpu_num=8
+config:iter_num=3000
+config:slot_num=100
+config:embed_vec_size=128
+config:dense_dim=13
+config:global_batch_size=65536
+config:iteration_per_epoch=1000
+config:coll_cache_enable_iter=0
+config:coll_cache_refresh_iter=1000
+config:coll_cache_enable_refresh=False
+config:coll_cache_policy=hps
+config:model=dlrm
+config:combiner=mean
+config:optimizer=plugin_adam
+config:np_key_type=<class 'numpy.int32'>
+config:np_vector_type=<class 'numpy.float32'>
+config:tf_key_type=<dtype: 'int32'>
+config:tf_vector_type=<dtype: 'float32'>
+config:ps_config_file=run-configs/COLL_dlrm_SYN_14_policy_HPS_cache_rate_0.14_batch_size_65536_mock_800000000_128_scale_nb_16.json
+config:cache_percent=0.14
+config:dense_model_path=plain
+config:dataset_path=/datasets_dlr/processed/syn_a14_s100_c800m
+config:sok_use_hashtable=False
+config:random_request=False
+config:alpha=None
+config:max_vocabulary_size=800000000
+config:_empty_feat=25
+[INFO] hierarchical_parameter_server is imported
+worker 4 at process 53838
+[INFO]: sparse_operation_kit is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a14_s100_c800m/syn.sparse/dense/label
+294912000
+worker 2 at process 53836
+[INFO]: sparse_operation_kit is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a14_s100_c800m/syn.sparse/dense/label
+294912000
+worker 6 at process 53840
+[INFO]: sparse_operation_kit is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a14_s100_c800m/syn.sparse/dense/label
+294912000
+worker 1 at process 53835
+[INFO]: sparse_operation_kit is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a14_s100_c800m/syn.sparse/dense/label
+294912000
+worker 5 at process 53839
+[INFO]: sparse_operation_kit is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a14_s100_c800m/syn.sparse/dense/label
+294912000
+worker 0 at process 53834
+[INFO]: sparse_operation_kit is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a14_s100_c800m/syn.sparse/dense/label
+294912000
+worker 7 at process 53841
+[INFO]: sparse_operation_kit is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a14_s100_c800m/syn.sparse/dense/label
+294912000
+worker 3 at process 53837
+[INFO]: sparse_operation_kit is imported
+Loading SYN
+load criteo from  /datasets_dlr/processed/syn_a14_s100_c800m/syn.sparse/dense/label
+294912000
+restoring proxy
+[GPU7] 100 time 1.03974e-05 0.216353
+restoring proxy
+[GPU0] 100 time 1.10626e-05 0.227234
+restoring proxy
+[GPU5] 100 time 1.36852e-05 0.229978
+restoring proxy
+[GPU2] 100 time 1.2157e-05 0.230307
+restoring proxy
+[GPU1] 100 time 1.09553e-05 0.230637
+restoring proxy
+[GPU4] 100 time 1.23167e-05 0.23081
+restoring proxy
+[GPU3] 100 time 1.24431e-05 0.231478
+restoring proxy
+[GPU6] 100 time 1.24288e-05 0.231742
+[GPU4] 200 time 1.08194e-05 0.00739915
+[GPU0] 200 time 1.07217e-05 0.00766521
+[GPU2] 200 time 1.0469e-05 0.00778689
+[GPU6] 200 time 1.07074e-05 0.00781494
+[GPU3] 200 time 1.0674e-05 0.00780608
+[GPU5] 200 time 1.09529e-05 0.00785879
+[GPU1] 200 time 1.09863e-05 0.00795193
+[GPU7] 200 time 1.13964e-05 0.00811337
+[GPU4] 300 time 1.0705e-05 0.00703383
+[GPU0] 300 time 1.04237e-05 0.00728605
+[GPU2] 300 time 1.01972e-05 0.00730798
+[GPU6] 300 time 1.04523e-05 0.00743484
+[GPU3] 300 time 1.03641e-05 0.00746115
+[GPU7] 300 time 1.02735e-05 0.00750472
+[GPU5] 300 time 1.09291e-05 0.00756716
+[GPU1] 300 time 1.15061e-05 0.0075558
+[GPU4] 400 time 9.8753e-06 0.00686597
+[GPU1] 400 time 1.0891e-05 0.00705655
+[GPU0] 400 time 1.04833e-05 0.00707896
+[GPU2] 400 time 1.05453e-05 0.00713465
+[GPU6] 400 time 1.01662e-05 0.00722219
+[GPU3] 400 time 1.14751e-05 0.00730125
+[GPU5] 400 time 1.01495e-05 0.00735053
+[GPU7] 400 time 1.04451e-05 0.00752002
+[GPU4] 500 time 1.02425e-05 0.00678667
+[GPU0] 500 time 1.01042e-05 0.00700507
+[GPU1] 500 time 1.02353e-05 0.00704867
+[GPU6] 500 time 9.86576e-06 0.00711082
+[GPU3] 500 time 1.01662e-05 0.00715076
+[GPU2] 500 time 1.05262e-05 0.00720081
+[GPU7] 500 time 1.0612e-05 0.00728344
+[GPU5] 500 time 1.04642e-05 0.00730279
+[GPU4] 600 time 1.12486e-05 0.00674747
+[GPU0] 600 time 1.05071e-05 0.00687553
+[GPU2] 600 time 1.04213e-05 0.0069665
+[GPU6] 600 time 1.05095e-05 0.00705504
+[GPU3] 600 time 9.86099e-06 0.00708415
+[GPU1] 600 time 1.08933e-05 0.00718743
+[GPU7] 600 time 1.02925e-05 0.00722914
+[GPU5] 600 time 1.09315e-05 0.00728004
+[GPU4] 700 time 1.12987e-05 0.0066565
+[GPU1] 700 time 1.01733e-05 0.00683763
+[GPU0] 700 time 1.05381e-05 0.00687082
+[GPU2] 700 time 1.06525e-05 0.00695213
+[GPU6] 700 time 1.05476e-05 0.00706014
+[GPU3] 700 time 1.06311e-05 0.00710366
+[GPU7] 700 time 1.03521e-05 0.00721944
+[GPU5] 700 time 1.04332e-05 0.00731065
+[GPU4] 800 time 1.05524e-05 0.0065885
+[GPU0] 800 time 1.05715e-05 0.00678355
+[GPU2] 800 time 1.04952e-05 0.00686414
+[GPU1] 800 time 1.12224e-05 0.00690266
+[GPU6] 800 time 1.12581e-05 0.00705584
+[GPU3] 800 time 1.07694e-05 0.00707709
+[GPU5] 800 time 9.95398e-06 0.00715446
+[GPU7] 800 time 1.03641e-05 0.0071842
+[GPU4] 900 time 1.06049e-05 0.00646621
+[GPU1] 900 time 1.18613e-05 0.00669058
+[GPU2] 900 time 1.10841e-05 0.00679175
+[GPU0] 900 time 1.02711e-05 0.00681089
+[GPU6] 900 time 1.02568e-05 0.00694986
+[GPU3] 900 time 1.04022e-05 0.00699672
+[GPU5] 900 time 1.00398e-05 0.00721006
+[GPU7] 900 time 1.03211e-05 0.00721789
+[GPU4] 1000 time 1.0283e-05 0.00653035
+[GPU2] 1000 time 1.10722e-05 0.00684588
+[GPU0] 1000 time 1.06668e-05 0.00680243
+[GPU6] 1000 time 9.98497e-06 0.00689832
+[GPU1] 1000 time 1.02878e-05 0.00693797
+[GPU3] 1000 time 1.06645e-05 0.00697997
+[GPU5] 1000 time 1.03784e-05 0.00724345
+[GPU7] 1000 time 1.08504e-05 0.00720937
+[GPU0] 1100 time 1.0519e-05 0.00659716
+[GPU4] 1100 time 1.03903e-05 0.00661149
+[GPU2] 1100 time 1.06883e-05 0.00664591
+[GPU1] 1100 time 1.0426e-05 0.00680412
+[GPU6] 1100 time 9.90868e-06 0.0068873
+[GPU3] 1100 time 1.02115e-05 0.00687734
+[GPU7] 1100 time 1.06192e-05 0.00714993
+[GPU5] 1100 time 1.0078e-05 0.00721062
+[GPU4] 1200 time 9.91821e-06 0.00646942
+[GPU0] 1200 time 1.06668e-05 0.00665771
+[GPU2] 1200 time 1.04022e-05 0.00672145
+[GPU3] 1200 time 1.14679e-05 0.00675389
+[GPU1] 1200 time 1.05882e-05 0.00691951
+[GPU6] 1200 time 1.00422e-05 0.00697448
+[GPU5] 1200 time 1.00899e-05 0.00713608
+[GPU7] 1200 time 1.05762e-05 0.0071515
+[GPU4] 1300 time 1.01733e-05 0.00638433
+[GPU2] 1300 time 1.00374e-05 0.00661894
+[GPU0] 1300 time 1.09911e-05 0.0066067
+[GPU3] 1300 time 1.01233e-05 0.00663738
+[GPU1] 1300 time 1.158e-05 0.00667997
+[GPU6] 1300 time 1.12796e-05 0.0067221
+[GPU7] 1300 time 9.9802e-06 0.00691561
+[GPU5] 1300 time 1.03092e-05 0.00696072
+[GPU4] 1400 time 1.07837e-05 0.00634665
+[GPU1] 1400 time 1.02615e-05 0.00652559
+[GPU2] 1400 time 9.7847e-06 0.00653285
+[GPU5] 1400 time 1.05095e-05 0.0065547
+[GPU0] 1400 time 1.1003e-05 0.00658357
+[GPU3] 1400 time 1.09148e-05 0.00666954
+[GPU6] 1400 time 1.03116e-05 0.00668102
+[GPU7] 1400 time 1.03807e-05 0.00704101
+[GPU4] 1500 time 1.00613e-05 0.00638988
+[GPU1] 1500 time 1.04308e-05 0.00656786
+[GPU6] 1500 time 1.03807e-05 0.00660574
+[GPU2] 1500 time 1.06239e-05 0.00662131
+[GPU3] 1500 time 1.05882e-05 0.0066588
+[GPU0] 1500 time 1.19185e-05 0.00673508
+[GPU5] 1500 time 9.98974e-06 0.0067427
+[GPU7] 1500 time 1.04976e-05 0.00698258
+[GPU4] 1600 time 1.06835e-05 0.00634559
+[GPU1] 1600 time 1.14059e-05 0.00652317
+[GPU6] 1600 time 9.8753e-06 0.0065328
+[GPU2] 1600 time 1.07002e-05 0.00654452
+[GPU3] 1600 time 1.14155e-05 0.00663013
+[GPU5] 1600 time 9.94921e-06 0.00661505
+[GPU0] 1600 time 1.07813e-05 0.00671063
+[GPU7] 1600 time 1.03378e-05 0.00698951
+[GPU4] 1700 time 1.03712e-05 0.00638397
+[GPU0] 1700 time 1.12915e-05 0.00646152
+[GPU2] 1700 time 9.76324e-06 0.00648769
+[GPU1] 1700 time 1.05214e-05 0.00653528
+[GPU5] 1700 time 1.04356e-05 0.00654258
+[GPU3] 1700 time 1.08218e-05 0.00662754
+[GPU6] 1700 time 9.91583e-06 0.0066135
+[GPU7] 1700 time 9.89199e-06 0.00696207
+[GPU4] 1800 time 1.03498e-05 0.0063501
+[GPU0] 1800 time 1.02162e-05 0.00645446
+[GPU1] 1800 time 1.06764e-05 0.00650475
+[GPU2] 1800 time 1.00756e-05 0.0065443
+[GPU5] 1800 time 9.59396e-06 0.00657989
+[GPU3] 1800 time 1.02639e-05 0.00658504
+[GPU6] 1800 time 1.03617e-05 0.00659362
+[GPU7] 1800 time 1.12295e-05 0.00691061
+[GPU4] 1900 time 9.78947e-06 0.00630776
+[GPU0] 1900 time 1.02806e-05 0.00642029
+[GPU1] 1900 time 1.0674e-05 0.0064651
+[GPU3] 1900 time 1.01614e-05 0.00652072
+[GPU2] 1900 time 1.07408e-05 0.00650563
+[GPU6] 1900 time 9.90629e-06 0.00659442
+[GPU5] 1900 time 1.11604e-05 0.00662867
+[GPU7] 1900 time 1.01542e-05 0.00676888
+[GPU4] 2000 time 1.02472e-05 0.00632119
+[GPU1] 2000 time 1.03092e-05 0.00649244
+[GPU6] 2000 time 9.88007e-06 0.00644584
+[GPU7] 2000 time 1.13416e-05 0.0064714
+[GPU0] 2000 time 1.0736e-05 0.00648576
+[GPU3] 2000 time 1.01781e-05 0.00654753
+[GPU2] 2000 time 1.09577e-05 0.00655904
+[GPU5] 2000 time 1.01209e-05 0.00662186
+[GPU4] 2100 time 1.04165e-05 0.00626793
+[GPU2] 2100 time 1.04833e-05 0.00644346
+[GPU1] 2100 time 1.04737e-05 0.00646967
+[GPU0] 2100 time 1.10698e-05 0.00646512
+[GPU6] 2100 time 9.91583e-06 0.00649309
+[GPU3] 2100 time 9.84907e-06 0.00649849
+[GPU7] 2100 time 1.01066e-05 0.00652322
+[GPU5] 2100 time 1.05786e-05 0.00668436
+[GPU4] 2200 time 1.055e-05 0.00619198
+[GPU1] 2200 time 1.03021e-05 0.00645207
+[GPU2] 2200 time 9.92775e-06 0.00647248
+[GPU3] 2200 time 9.50813e-06 0.00650115
+[GPU7] 2200 time 1.08933e-05 0.00651082
+[GPU0] 2200 time 1.21236e-05 0.00656604
+[GPU6] 2200 time 9.98497e-06 0.00657228
+[GPU5] 2200 time 1.06478e-05 0.00667857
+[GPU4] 2300 time 1.05309e-05 0.00621922
+[GPU2] 2300 time 1.02115e-05 0.00640817
+[GPU0] 2300 time 1.12748e-05 0.00640258
+[GPU1] 2300 time 1.14346e-05 0.00643866
+[GPU3] 2300 time 1.02782e-05 0.00646931
+[GPU7] 2300 time 1.02353e-05 0.00652501
+[GPU5] 2300 time 1.04117e-05 0.00654153
+[GPU6] 2300 time 1.01757e-05 0.006525
+[GPU4] 2400 time 1.09196e-05 0.00624378
+[GPU7] 2400 time 1.0097e-05 0.00646037
+[GPU2] 2400 time 1.01948e-05 0.00645394
+[GPU3] 2400 time 1.02758e-05 0.00645534
+[GPU0] 2400 time 1.14441e-05 0.00646933
+[GPU6] 2400 time 1.01399e-05 0.00649754
+[GPU1] 2400 time 1.16968e-05 0.00647711
+[GPU5] 2400 time 9.62257e-06 0.00652527
+[GPU4] 2500 time 1.09696e-05 0.00622905
+[GPU0] 2500 time 1.01829e-05 0.00646952
+[GPU1] 2500 time 1.08552e-05 0.00645949
+[GPU7] 2500 time 1.0705e-05 0.00649295
+[GPU6] 2500 time 9.88007e-06 0.00653406
+[GPU2] 2500 time 1.05047e-05 0.00654237
+[GPU3] 2500 time 1.01137e-05 0.00656636
+[GPU5] 2500 time 1.13893e-05 0.00657297
+[GPU4] 2600 time 9.88245e-06 0.00627682
+[GPU0] 2600 time 9.87768e-06 0.00642336
+[GPU6] 2600 time 1.0581e-05 0.0064355
+[GPU7] 2600 time 1.02305e-05 0.00646345
+[GPU2] 2600 time 1.05166e-05 0.00646602
+[GPU3] 2600 time 1.04308e-05 0.00649164
+[GPU5] 2600 time 1.06072e-05 0.00654952
+[GPU1] 2600 time 1.01209e-05 0.00661626
+[GPU4] 2700 time 1.12581e-05 0.00625623
+[GPU1] 2700 time 1.01137e-05 0.00632815
+[GPU0] 2700 time 9.86338e-06 0.0063498
+[GPU2] 2700 time 1.0252e-05 0.00635526
+[GPU7] 2700 time 1.03211e-05 0.00640352
+[GPU3] 2700 time 9.95398e-06 0.00645776
+[GPU5] 2700 time 1.04141e-05 0.00655925
+[GPU6] 2700 time 1.07217e-05 0.00662784
+[GPU4] 2800 time 1.00875e-05 0.00627317
+[GPU7] 2800 time 1.02711e-05 0.00637002
+[GPU0] 2800 time 1.1375e-05 0.00639444
+[GPU2] 2800 time 9.86576e-06 0.00642305
+[GPU5] 2800 time 1.0488e-05 0.0064519
+[GPU6] 2800 time 1.02377e-05 0.00643095
+[GPU3] 2800 time 1.05834e-05 0.006502
+[GPU1] 2800 time 1.08862e-05 0.00657373
+[GPU4] 2900 time 1.0016e-05 0.00619061
+[GPU2] 2900 time 9.89199e-06 0.0063659
+[GPU0] 2900 time 1.18494e-05 0.0063838
+[GPU5] 2900 time 9.63449e-06 0.00639724
+[GPU1] 2900 time 1.07861e-05 0.00639784
+[GPU6] 2900 time 9.67741e-06 0.00641053
+[GPU3] 2900 time 9.77039e-06 0.00645025
+[GPU7] 2900 time 1.04213e-05 0.00645496
+[GPU4] 3000 time 1.03092e-05 0.0062596
+[GPU1] 3000 time 1.15085e-05 0.00636385
+[GPU5] 3000 time 1.01495e-05 0.00638931
+[GPU2] 3000 time 1.02258e-05 0.00637635
+[GPU6] 3000 time 9.71794e-06 0.0064085
+[GPU0] 3000 time 1.13916e-05 0.00642108
+[GPU7] 3000 time 1.00541e-05 0.00643592
+[GPU3] 3000 time 1.04284e-05 0.00650589
+[CUDA] worker0 cuda mem usage: 61.61 GB
+    [Step(average) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.006544
+        L1  feature nbytes 0.00 Bytes | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes    0.00 Bytes | remote nbytes 0.00 Bytes
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     0.000000 | refresh duration   0.000000
+    [Step(average) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.003555
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(average) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000000 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000000 | cache combine cache 0.000000 | cache combine remote 0.000000
+        L3  label extract  0.000000

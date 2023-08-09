@@ -1,0 +1,565 @@
+environ({'TF_CPP_MIN_LOG_LEVEL': '2', 'COLL_LOG_BASE': 'run-logs/COLL_dlrm_CR_policy_CliqPart_cache_rate_0.12_batch_size_65536_mock_882774592_128_nogroup_DIRECT_scale_nb_16', 'HUGECTR_LOG_LEVEL': '0', 'SAMGRAPH_LOG_LEVEL': 'warn', 'SAMGRAPH_COLL_CACHE_NO_GROUP': 'DIRECT', 'SAMGRAPH_PROFILE_LEVEL': '3', 'COLL_CACHE_SCALE': '16', 'COLL_NUM_REPLICA': '8', 'COLL_MIN_FREQ': '0.1', 'SAMGRAPH_EMPTY_FEAT': '24', 'NPP_VERSION': '11.7.4.75', 'SHELL': '/bin/bash', 'NVIDIA_VISIBLE_DEVICES': 'all', 'JUPYTER_CONFIG_DIR': '/tmp/.jupyter', 'DALI_BUILD': '4921308', 'CUSOLVER_VERSION': '11.4.0.1', 'CUBLAS_VERSION': '11.10.3.66', 'TMUX': '/tmp/tmux-0/default,152,0', 'HOSTNAME': 'c87c4667a624', 'MAKE_TERMOUT': '/dev/pts/2', 'SOK_COMPILE_UNIT_TEST': 'ON', 'NVIDIA_REQUIRE_CUDA': 'cuda>=9.0', 'CUFFT_VERSION': '10.7.2.91', 'CUDA_CACHE_DISABLE': '1', 'NCCL_VERSION': '2.12.12', 'CUSPARSE_VERSION': '11.7.4.91', 'ENV': '/etc/shinit_v2', 'PWD': '/ugache/eval/dlr/figure12-8a100', 'OPENUCX_VERSION': '1.12.0', 'NSIGHT_SYSTEMS_VERSION': '2022.1.3.3', 'NVIDIA_DRIVER_CAPABILITIES': 'compute,utility,video', 'TRT_VERSION': '8.2.5.1+cuda11.4.2.006', 'NVIDIA_PRODUCT_NAME': 'Triton Server Base', 'RDMACORE_VERSION': '36.0', 'CUDA_CUDA_LIBRARY': '/usr/local/cuda/lib64/stubs', 'HOME': '/root', 'LANG': 'en_US.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'CUDA_VERSION': '11.7.1.014', 'CURAND_VERSION': '10.2.10.91', 'PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION': 'python', 'JUPYTER_DATA_DIR': '/tmp/.jupyter', 'CUTENSOR_VERSION': '1.5.0.3', 'HPCX_VERSION': '2.10', 'MFLAGS': '-w', 'DLPROF_VERSION': '', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'MAKEFLAGS': 'w', 'JUPYTER_RUNTIME_DIR': '/tmp/.jupyter', 'PYTHONPATH': ':/usr/local/lib/python3.8/dist-packages/', 'TERM': 'screen', 'CPLUS_INCLUDE_PATH': '/ugache:/opt/gurobi-install/linux64/include', 'GUROBI_HOME': '/opt/gurobi-install/linux64', 'GDRCOPY_VERSION': '2.3', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'root', 'OPENMPI_VERSION': '4.1.2rc4', 'TMUX_PANE': '%0', 'NVJPEG_VERSION': '11.8.0.2', 'LIBRARY_PATH': '/usr/local/hugectr/lib:/usr/local/hugectr/lib:/usr/local/cuda/lib64/stubs::/ugache/build:/opt/gurobi-install/linux64/lib', 'MAKE_TERMERR': '/dev/pts/2', 'CUDA_PATH': '/usr/local/cuda', 'SHLVL': '4', 'BASH_ENV': '/etc/bash.bashrc', 'MAKELEVEL': '1', 'CUDNN_VERSION': '8.4.1.50+cuda11.6', 'NVIDIA_TRITON_SERVER_BASE_VERSION': '22.06', 'NSIGHT_COMPUTE_VERSION': '2022.2.1.3', 'DALI_VERSION': '1.14.0', 'LD_LIBRARY_PATH': '/usr/local/hugectr/lib:/usr/local/hugectr/lib:/usr/local/cuda/compat/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:/usr/local/lib:/repos/dist/lib:/opt/tritonserver/lib:/ugache/build:/opt/gurobi-install/linux64/lib', 'NVIDIA_BUILD_ID': '39726160', 'OMPI_MCA_coll_hcoll_enable': '0', 'OPAL_PREFIX': '/opt/hpcx/ompi', 'CUDA_DRIVER_VERSION': '515.48.08', 'LC_ALL': 'C.UTF-8', '_CUDA_COMPAT_PATH': '/usr/local/cuda/compat', 'CUDA_HOME': '/usr/local/cuda', 'PATH': '/opt/tritonserver/bin:/usr/local/cuda/lib64/:/usr/local/mpi/bin:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/ucx/bin:/usr/local/cuda/bin:', 'C_INCLUDE_PATH': '/ugache:/opt/gurobi-install/linux64/include', 'MOFED_VERSION': '5.4-rdmacore36.0', 'TRTOSS_VERSION': '22.05', 'DEBIAN_FRONTEND': 'noninteractive', 'OLDPWD': '/ugache/eval/dlr/figure16', '_': '/usr/bin/python', 'TF2_BEHAVIOR': '1'})
+config:eval_tsp="2023-07-28 03:18:02"
+config:gpu_num=8
+config:iter_num=4000
+config:slot_num=26
+config:embed_vec_size=128
+config:dense_dim=13
+config:global_batch_size=65536
+config:iteration_per_epoch=1000
+config:coll_cache_enable_iter=1000
+config:coll_cache_refresh_iter=1000
+config:coll_cache_enable_refresh=False
+config:coll_cache_policy=cliq_part
+config:model=dlrm
+config:combiner=mean
+config:optimizer=plugin_adam
+config:np_key_type=<class 'numpy.int32'>
+config:np_vector_type=<class 'numpy.float32'>
+config:tf_key_type=<dtype: 'int32'>
+config:tf_vector_type=<dtype: 'float32'>
+config:ps_config_file=run-configs/COLL_dlrm_CR_policy_CliqPart_cache_rate_0.12_batch_size_65536_mock_882774592_128_nogroup_DIRECT_scale_nb_16.json
+config:cache_percent=0.12
+config:dense_model_path=plain
+config:dataset_path=/datasets_dlr/processed/criteo_tb
+config:sok_use_hashtable=False
+config:random_request=False
+config:alpha=None
+config:max_vocabulary_size=882774592
+config:_empty_feat=25
+[INFO] hierarchical_parameter_server is imported
+worker 3 at process 26832
+[INFO]: sparse_operation_kit is imported
+Loading Criteo TB
+load data from  /datasets_dlr/processed/criteo_tb/day_concat.sparse/dense/label
+3463072915
+worker 2 at process 26831
+[INFO]: sparse_operation_kit is imported
+Loading Criteo TB
+load data from  /datasets_dlr/processed/criteo_tb/day_concat.sparse/dense/label
+3463072915
+worker 4 at process 26833
+[INFO]: sparse_operation_kit is imported
+Loading Criteo TB
+load data from  /datasets_dlr/processed/criteo_tb/day_concat.sparse/dense/label
+3463072915
+worker 1 at process 26830
+[INFO]: sparse_operation_kit is imported
+Loading Criteo TB
+load data from  /datasets_dlr/processed/criteo_tb/day_concat.sparse/dense/label
+3463072915
+worker 5 at process 26834
+[INFO]: sparse_operation_kit is imported
+Loading Criteo TB
+load data from  /datasets_dlr/processed/criteo_tb/day_concat.sparse/dense/label
+3463072915
+worker 0 at process 26829
+[INFO]: sparse_operation_kit is imported
+Loading Criteo TB
+load data from  /datasets_dlr/processed/criteo_tb/day_concat.sparse/dense/label
+3463072915
+worker 6 at process 26835
+[INFO]: sparse_operation_kit is imported
+Loading Criteo TB
+load data from  /datasets_dlr/processed/criteo_tb/day_concat.sparse/dense/label
+3463072915
+worker 7 at process 26836
+[INFO]: sparse_operation_kit is imported
+Loading Criteo TB
+load data from  /datasets_dlr/processed/criteo_tb/day_concat.sparse/dense/label
+3463072915
+restoring proxy
+[GPU4] 100 time 1.83463e-05 0.12499
+restoring proxy
+[GPU3] 100 time 1.35303e-05 0.126731
+restoring proxy
+[GPU5] 100 time 1.46985e-05 0.126961
+restoring proxy
+[GPU1] 100 time 1.29771e-05 0.126962
+restoring proxy
+[GPU7] 100 time 1.58978e-05 0.127025
+restoring proxy
+[GPU6] 100 time 1.31869e-05 0.127065
+restoring proxy
+[GPU2] 100 time 1.25003e-05 0.127258
+restoring proxy
+[GPU0] 100 time 1.16777e-05 0.130239
+[GPU6] 200 time 1.21403e-05 0.00618907
+[GPU3] 200 time 1.41263e-05 0.00632668
+[GPU2] 200 time 1.33991e-05 0.00653025
+[GPU5] 200 time 1.27792e-05 0.00652757
+[GPU1] 200 time 1.34444e-05 0.00656411
+[GPU0] 200 time 1.23954e-05 0.00662605
+[GPU4] 200 time 1.31845e-05 0.00655405
+[GPU7] 200 time 1.2958e-05 0.00673195
+[GPU0] 300 time 1.21069e-05 0.00612399
+[GPU3] 300 time 1.25432e-05 0.00621064
+[GPU6] 300 time 1.43862e-05 0.00645919
+[GPU7] 300 time 1.25313e-05 0.00650338
+[GPU1] 300 time 1.24097e-05 0.00648891
+[GPU5] 300 time 1.21164e-05 0.00654503
+[GPU2] 300 time 1.22428e-05 0.00669617
+[GPU4] 300 time 1.2331e-05 0.00672077
+[GPU1] 400 time 1.2095e-05 0.00605706
+[GPU2] 400 time 1.20926e-05 0.00631447
+[GPU3] 400 time 1.20783e-05 0.00655068
+[GPU5] 400 time 1.28341e-05 0.00654944
+[GPU7] 400 time 1.18947e-05 0.00657775
+[GPU0] 400 time 1.29294e-05 0.0067666
+[GPU4] 400 time 1.24431e-05 0.00678567
+[GPU6] 400 time 1.24216e-05 0.00693771
+[GPU1] 500 time 1.22452e-05 0.00628606
+[GPU3] 500 time 1.22166e-05 0.00648365
+[GPU0] 500 time 1.34468e-05 0.00643668
+[GPU5] 500 time 1.23763e-05 0.00652087
+[GPU2] 500 time 1.24168e-05 0.00652898
+[GPU7] 500 time 1.23096e-05 0.00661418
+[GPU4] 500 time 1.27959e-05 0.00662264
+[GPU6] 500 time 1.23525e-05 0.00670133
+[GPU0] 600 time 1.23096e-05 0.00634347
+[GPU2] 600 time 1.22142e-05 0.00629654
+[GPU1] 600 time 1.24574e-05 0.00645425
+[GPU4] 600 time 1.23835e-05 0.00660925
+[GPU3] 600 time 1.19996e-05 0.00671666
+[GPU5] 600 time 1.35183e-05 0.00681249
+[GPU7] 600 time 1.38903e-05 0.00689759
+[GPU6] 600 time 1.25742e-05 0.00692344
+[GPU0] 700 time 1.20878e-05 0.00622795
+[GPU2] 700 time 1.21355e-05 0.00655154
+[GPU3] 700 time 1.2424e-05 0.00658517
+[GPU1] 700 time 1.19305e-05 0.0067609
+[GPU7] 700 time 1.86539e-05 0.00671327
+[GPU6] 700 time 1.24836e-05 0.00674236
+[GPU5] 700 time 1.26219e-05 0.00690657
+[GPU4] 700 time 1.26696e-05 0.00695243
+[GPU0] 800 time 1.18065e-05 0.00670791
+[GPU1] 800 time 1.24431e-05 0.00664157
+[GPU5] 800 time 1.22976e-05 0.00688311
+[GPU7] 800 time 1.21593e-05 0.00705108
+[GPU3] 800 time 1.22809e-05 0.00693127
+[GPU6] 800 time 1.22666e-05 0.00704773
+[GPU2] 800 time 1.57142e-05 0.00697635
+[GPU4] 800 time 1.43075e-05 0.00723166
+[GPU1] 900 time 1.22142e-05 0.00622856
+[GPU3] 900 time 1.46794e-05 0.00635036
+[GPU0] 900 time 1.21522e-05 0.00645806
+[GPU2] 900 time 1.25909e-05 0.00646468
+[GPU7] 900 time 1.20807e-05 0.00657084
+[GPU5] 900 time 1.22762e-05 0.00662549
+[GPU6] 900 time 1.24669e-05 0.00685696
+[GPU4] 900 time 1.20425e-05 0.00697969
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 108, cpu 0 {link #0 : g1 0}, {link #1 : g2 0}, {link #2 : g3 0}, {link #3 : g4 0}, {link #4 : g5 0}, {link #5 : g6 0}, {link #6 : g7 0},
+1 : local 108, cpu 0 {link #0 : g2 0}, {link #1 : g3 0}, {link #2 : g4 0}, {link #3 : g5 0}, {link #4 : g6 0}, {link #5 : g7 0}, {link #6 : g0 0},
+2 : local 108, cpu 0 {link #0 : g3 0}, {link #1 : g4 0}, {link #2 : g5 0}, {link #3 : g6 0}, {link #4 : g7 0}, {link #5 : g0 0}, {link #6 : g1 0},
+3 : local 108, cpu 0 {link #0 : g4 0}, {link #1 : g5 0}, {link #2 : g6 0}, {link #3 : g7 0}, {link #4 : g0 0}, {link #5 : g1 0}, {link #6 : g2 0},
+4 : local 108, cpu 0 {link #0 : g5 0}, {link #1 : g6 0}, {link #2 : g7 0}, {link #3 : g0 0}, {link #4 : g1 0}, {link #5 : g2 0}, {link #6 : g3 0},
+5 : local 108, cpu 0 {link #0 : g6 0}, {link #1 : g7 0}, {link #2 : g0 0}, {link #3 : g1 0}, {link #4 : g2 0}, {link #5 : g3 0}, {link #6 : g4 0},
+6 : local 108, cpu 0 {link #0 : g7 0}, {link #1 : g0 0}, {link #2 : g1 0}, {link #3 : g2 0}, {link #4 : g3 0}, {link #5 : g4 0}, {link #6 : g5 0},
+7 : local 108, cpu 0 {link #0 : g0 0}, {link #1 : g1 0}, {link #2 : g2 0}, {link #3 : g3 0}, {link #4 : g4 0}, {link #5 : g5 0}, {link #6 : g6 0},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 108, cpu 0 {link #0 : g1 0}, {link #1 : g2 0}, {link #2 : g3 0}, {link #3 : g4 0}, {link #4 : g5 0}, {link #5 : g6 0}, {link #6 : g7 0},
+1 : local 108, cpu 0 {link #0 : g2 0}, {link #1 : g3 0}, {link #2 : g4 0}, {link #3 : g5 0}, {link #4 : g6 0}, {link #5 : g7 0}, {link #6 : g0 0},
+2 : local 108, cpu 0 {link #0 : g3 0}, {link #1 : g4 0}, {link #2 : g5 0}, {link #3 : g6 0}, {link #4 : g7 0}, {link #5 : g0 0}, {link #6 : g1 0},
+3 : local 108, cpu 0 {link #0 : g4 0}, {link #1 : g5 0}, {link #2 : g6 0}, {link #3 : g7 0}, {link #4 : g0 0}, {link #5 : g1 0}, {link #6 : g2 0},
+4 : local 108, cpu 0 {link #0 : g5 0}, {link #1 : g6 0}, {link #2 : g7 0}, {link #3 : g0 0}, {link #4 : g1 0}, {link #5 : g2 0}, {link #6 : g3 0},
+5 : local 108, cpu 0 {link #0 : g6 0}, {link #1 : g7 0}, {link #2 : g0 0}, {link #3 : g1 0}, {link #4 : g2 0}, {link #5 : g3 0}, {link #6 : g4 0},
+6 : local 108, cpu 0 {link #0 : g7 0}, {link #1 : g0 0}, {link #2 : g1 0}, {link #3 : g2 0}, {link #4 : g3 0}, {link #5 : g4 0}, {link #6 : g5 0},
+7 : local 108, cpu 0 {link #0 : g0 0}, {link #1 : g1 0}, {link #2 : g2 0}, {link #3 : g3 0}, {link #4 : g4 0}, {link #5 : g5 0}, {link #6 : g6 0},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 108, cpu 0 {link #0 : g1 0}, {link #1 : g2 0}, {link #2 : g3 0}, {link #3 : g4 0}, {link #4 : g5 0}, {link #5 : g6 0}, {link #6 : g7 0},
+1 : local 108, cpu 0 {link #0 : g2 0}, {link #1 : g3 0}, {link #2 : g4 0}, {link #3 : g5 0}, {link #4 : g6 0}, {link #5 : g7 0}, {link #6 : g0 0},
+2 : local 108, cpu 0 {link #0 : g3 0}, {link #1 : g4 0}, {link #2 : g5 0}, {link #3 : g6 0}, {link #4 : g7 0}, {link #5 : g0 0}, {link #6 : g1 0},
+3 : local 108, cpu 0 {link #0 : g4 0}, {link #1 : g5 0}, {link #2 : g6 0}, {link #3 : g7 0}, {link #4 : g0 0}, {link #5 : g1 0}, {link #6 : g2 0},
+4 : local 108, cpu 0 {link #0 : g5 0}, {link #1 : g6 0}, {link #2 : g7 0}, {link #3 : g0 0}, {link #4 : g1 0}, {link #5 : g2 0}, {link #6 : g3 0},
+5 : local 108, cpu 0 {link #0 : g6 0}, {link #1 : g7 0}, {link #2 : g0 0}, {link #3 : g1 0}, {link #4 : g2 0}, {link #5 : g3 0}, {link #6 : g4 0},
+6 : local 108, cpu 0 {link #0 : g7 0}, {link #1 : g0 0}, {link #2 : g1 0}, {link #3 : g2 0}, {link #4 : g3 0}, {link #5 : g4 0}, {link #6 : g5 0},
+7 : local 108, cpu 0 {link #0 : g0 0}, {link #1 : g1 0}, {link #2 : g2 0}, {link #3 : g3 0}, {link #4 : g4 0}, {link #5 : g5 0}, {link #6 : g6 0},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 108, cpu 0 {link #0 : g1 0}, {link #1 : g2 0}, {link #2 : g3 0}, {link #3 : g4 0}, {link #4 : g5 0}, {link #5 : g6 0}, {link #6 : g7 0},
+1 : local 108, cpu 0 {link #0 : g2 0}, {link #1 : g3 0}, {link #2 : g4 0}, {link #3 : g5 0}, {link #4 : g6 0}, {link #5 : g7 0}, {link #6 : g0 0},
+2 : local 108, cpu 0 {link #0 : g3 0}, {link #1 : g4 0}, {link #2 : g5 0}, {link #3 : g6 0}, {link #4 : g7 0}, {link #5 : g0 0}, {link #6 : g1 0},
+3 : local 108, cpu 0 {link #0 : g4 0}, {link #1 : g5 0}, {link #2 : g6 0}, {link #3 : g7 0}, {link #4 : g0 0}, {link #5 : g1 0}, {link #6 : g2 0},
+4 : local 108, cpu 0 {link #0 : g5 0}, {link #1 : g6 0}, {link #2 : g7 0}, {link #3 : g0 0}, {link #4 : g1 0}, {link #5 : g2 0}, {link #6 : g3 0},
+5 : local 108, cpu 0 {link #0 : g6 0}, {link #1 : g7 0}, {link #2 : g0 0}, {link #3 : g1 0}, {link #4 : g2 0}, {link #5 : g3 0}, {link #6 : g4 0},
+6 : local 108, cpu 0 {link #0 : g7 0}, {link #1 : g0 0}, {link #2 : g1 0}, {link #3 : g2 0}, {link #4 : g3 0}, {link #5 : g4 0}, {link #6 : g5 0},
+7 : local 108, cpu 0 {link #0 : g0 0}, {link #1 : g1 0}, {link #2 : g2 0}, {link #3 : g3 0}, {link #4 : g4 0}, {link #5 : g5 0}, {link #6 : g6 0},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 108, cpu 0 {link #0 : g1 0}, {link #1 : g2 0}, {link #2 : g3 0}, {link #3 : g4 0}, {link #4 : g5 0}, {link #5 : g6 0}, {link #6 : g7 0},
+1 : local 108, cpu 0 {link #0 : g2 0}, {link #1 : g3 0}, {link #2 : g4 0}, {link #3 : g5 0}, {link #4 : g6 0}, {link #5 : g7 0}, {link #6 : g0 0},
+2 : local 108, cpu 0 {link #0 : g3 0}, {link #1 : g4 0}, {link #2 : g5 0}, {link #3 : g6 0}, {link #4 : g7 0}, {link #5 : g0 0}, {link #6 : g1 0},
+3 : local 108, cpu 0 {link #0 : g4 0}, {link #1 : g5 0}, {link #2 : g6 0}, {link #3 : g7 0}, {link #4 : g0 0}, {link #5 : g1 0}, {link #6 : g2 0},
+4 : local 108, cpu 0 {link #0 : g5 0}, {link #1 : g6 0}, {link #2 : g7 0}, {link #3 : g0 0}, {link #4 : g1 0}, {link #5 : g2 0}, {link #6 : g3 0},
+5 : local 108, cpu 0 {link #0 : g6 0}, {link #1 : g7 0}, {link #2 : g0 0}, {link #3 : g1 0}, {link #4 : g2 0}, {link #5 : g3 0}, {link #6 : g4 0},
+6 : local 108, cpu 0 {link #0 : g7 0}, {link #1 : g0 0}, {link #2 : g1 0}, {link #3 : g2 0}, {link #4 : g3 0}, {link #5 : g4 0}, {link #6 : g5 0},
+7 : local 108, cpu 0 {link #0 : g0 0}, {link #1 : g1 0}, {link #2 : g2 0}, {link #3 : g3 0}, {link #4 : g4 0}, {link #5 : g5 0}, {link #6 : g6 0},
+0 : local 108, cpu 0 {link #0 : g1 0}, {link #1 : g2 0}, {link #2 : g3 0}, {link #3 : g4 0}, {link #4 : g5 0}, {link #5 : g6 0}, {link #6 : g7 0},
+1 : local 108, cpu 0 {link #0 : g2 0}, {link #1 : g3 0}, {link #2 : g4 0}, {link #3 : g5 0}, {link #4 : g6 0}, {link #5 : g7 0}, {link #6 : g0 0},
+2 : local 108, cpu 0 {link #0 : g3 0}, {link #1 : g4 0}, {link #2 : g5 0}, {link #3 : g6 0}, {link #4 : g7 0}, {link #5 : g0 0}, {link #6 : g1 0},
+3 : local 108, cpu 0 {link #0 : g4 0}, {link #1 : g5 0}, {link #2 : g6 0}, {link #3 : g7 0}, {link #4 : g0 0}, {link #5 : g1 0}, {link #6 : g2 0},
+4 : local 108, cpu 0 {link #0 : g5 0}, {link #1 : g6 0}, {link #2 : g7 0}, {link #3 : g0 0}, {link #4 : g1 0}, {link #5 : g2 0}, {link #6 : g3 0},
+5 : local 108, cpu 0 {link #0 : g6 0}, {link #1 : g7 0}, {link #2 : g0 0}, {link #3 : g1 0}, {link #4 : g2 0}, {link #5 : g3 0}, {link #6 : g4 0},
+6 : local 108, cpu 0 {link #0 : g7 0}, {link #1 : g0 0}, {link #2 : g1 0}, {link #3 : g2 0}, {link #4 : g3 0}, {link #5 : g4 0}, {link #6 : g5 0},
+7 : local 108, cpu 0 {link #0 : g0 0}, {link #1 : g1 0}, {link #2 : g2 0}, {link #3 : g3 0}, {link #4 : g4 0}, {link #5 : g5 0}, {link #6 : g6 0},
+0 : local 108, cpu 0 {link #0 : g1 0}, {link #1 : g2 0}, {link #2 : g3 0}, {link #3 : g4 0}, {link #4 : g5 0}, {link #5 : g6 0}, {link #6 : g7 0},
+1 : local 108, cpu 0 {link #0 : g2 0}, {link #1 : g3 0}, {link #2 : g4 0}, {link #3 : g5 0}, {link #4 : g6 0}, {link #5 : g7 0}, {link #6 : g0 0},
+2 : local 108, cpu 0 {link #0 : g3 0}, {link #1 : g4 0}, {link #2 : g5 0}, {link #3 : g6 0}, {link #4 : g7 0}, {link #5 : g0 0}, {link #6 : g1 0},
+3 : local 108, cpu 0 {link #0 : g4 0}, {link #1 : g5 0}, {link #2 : g6 0}, {link #3 : g7 0}, {link #4 : g0 0}, {link #5 : g1 0}, {link #6 : g2 0},
+4 : local 108, cpu 0 {link #0 : g5 0}, {link #1 : g6 0}, {link #2 : g7 0}, {link #3 : g0 0}, {link #4 : g1 0}, {link #5 : g2 0}, {link #6 : g3 0},
+5 : local 108, cpu 0 {link #0 : g6 0}, {link #1 : g7 0}, {link #2 : g0 0}, {link #3 : g1 0}, {link #4 : g2 0}, {link #5 : g3 0}, {link #6 : g4 0},
+6 : local 108, cpu 0 {link #0 : g7 0}, {link #1 : g0 0}, {link #2 : g1 0}, {link #3 : g2 0}, {link #4 : g3 0}, {link #5 : g4 0}, {link #6 : g5 0},
+7 : local 108, cpu 0 {link #0 : g0 0}, {link #1 : g1 0}, {link #2 : g2 0}, {link #3 : g3 0}, {link #4 : g4 0}, {link #5 : g5 0}, {link #6 : g6 0},
+0 :  {link #0 : 1}, {link #1 : 2}, {link #2 : 3}, {link #3 : 4}, {link #4 : 5}, {link #5 : 6}, {link #6 : 7},
+1 :  {link #0 : 2}, {link #1 : 3}, {link #2 : 4}, {link #3 : 5}, {link #4 : 6}, {link #5 : 7}, {link #6 : 0},
+2 :  {link #0 : 3}, {link #1 : 4}, {link #2 : 5}, {link #3 : 6}, {link #4 : 7}, {link #5 : 0}, {link #6 : 1},
+3 :  {link #0 : 4}, {link #1 : 5}, {link #2 : 6}, {link #3 : 7}, {link #4 : 0}, {link #5 : 1}, {link #6 : 2},
+4 :  {link #0 : 5}, {link #1 : 6}, {link #2 : 7}, {link #3 : 0}, {link #4 : 1}, {link #5 : 2}, {link #6 : 3},
+5 :  {link #0 : 6}, {link #1 : 7}, {link #2 : 0}, {link #3 : 1}, {link #4 : 2}, {link #5 : 3}, {link #6 : 4},
+6 :  {link #0 : 7}, {link #1 : 0}, {link #2 : 1}, {link #3 : 2}, {link #4 : 3}, {link #5 : 4}, {link #6 : 5},
+7 :  {link #0 : 0}, {link #1 : 1}, {link #2 : 2}, {link #3 : 3}, {link #4 : 4}, {link #5 : 5}, {link #6 : 6},
+0 : local 108, cpu 0 {link #0 : g1 0}, {link #1 : g2 0}, {link #2 : g3 0}, {link #3 : g4 0}, {link #4 : g5 0}, {link #5 : g6 0}, {link #6 : g7 0},
+1 : local 108, cpu 0 {link #0 : g2 0}, {link #1 : g3 0}, {link #2 : g4 0}, {link #3 : g5 0}, {link #4 : g6 0}, {link #5 : g7 0}, {link #6 : g0 0},
+2 : local 108, cpu 0 {link #0 : g3 0}, {link #1 : g4 0}, {link #2 : g5 0}, {link #3 : g6 0}, {link #4 : g7 0}, {link #5 : g0 0}, {link #6 : g1 0},
+3 : local 108, cpu 0 {link #0 : g4 0}, {link #1 : g5 0}, {link #2 : g6 0}, {link #3 : g7 0}, {link #4 : g0 0}, {link #5 : g1 0}, {link #6 : g2 0},
+4 : local 108, cpu 0 {link #0 : g5 0}, {link #1 : g6 0}, {link #2 : g7 0}, {link #3 : g0 0}, {link #4 : g1 0}, {link #5 : g2 0}, {link #6 : g3 0},
+5 : local 108, cpu 0 {link #0 : g6 0}, {link #1 : g7 0}, {link #2 : g0 0}, {link #3 : g1 0}, {link #4 : g2 0}, {link #5 : g3 0}, {link #6 : g4 0},
+6 : local 108, cpu 0 {link #0 : g7 0}, {link #1 : g0 0}, {link #2 : g1 0}, {link #3 : g2 0}, {link #4 : g3 0}, {link #5 : g4 0}, {link #6 : g5 0},
+7 : local 108, cpu 0 {link #0 : g0 0}, {link #1 : g1 0}, {link #2 : g2 0}, {link #3 : g3 0}, {link #4 : g4 0}, {link #5 : g5 0}, {link #6 : g6 0},
+coll_cache:optimal_rep_storage=0
+coll_cache:optimal_part_storage=0.96
+coll_cache:optimal_cpu_storage=0.04
+coll_cache:optimal_local_storage=0.12
+coll_cache:optimal_remote_storage=0.84
+coll_cache:optimal_local_rate=0.125
+coll_cache:optimal_remote_rate=0.875
+coll_cache:optimal_cpu_rate=0
+z=4133.86,4133.86,4133.86,4133.86,4133.86,4133.86,4133.86,4133.86,
+[GPU2] 1000 time 1.24931e-05 0.317493
+[GPU7] 1000 time 1.25527e-05 0.317465
+[GPU0] 1000 time 1.2157e-05 0.317367
+[GPU1] 1000 time 1.24907e-05 0.317484
+[GPU5] 1000 time 1.20735e-05 0.317491
+[GPU3] 1000 time 1.23668e-05 0.317492
+[GPU4] 1000 time 1.21045e-05 0.317453
+[GPU6] 1000 time 1.50156e-05 0.317478
+[GPU0] 1100 time 9.78947e-06 0.00187672
+[GPU1] 1100 time 1.00875e-05 0.00185714
+[GPU2] 1100 time 1.0376e-05 0.00186486
+[GPU4] 1100 time 1.01542e-05 0.00189171
+[GPU3] 1100 time 1.09196e-05 0.00189706
+[GPU5] 1100 time 1.02711e-05 0.00194054
+[GPU7] 1100 time 1.06335e-05 0.00193794
+[GPU6] 1100 time 1.10292e-05 0.00193962
+[GPU0] 1200 time 9.4533e-06 0.00182816
+[GPU3] 1200 time 1.03068e-05 0.00185895
+[GPU1] 1200 time 1.00756e-05 0.00184587
+[GPU2] 1200 time 1.07384e-05 0.00187286
+[GPU5] 1200 time 9.72509e-06 0.00192486
+[GPU4] 1200 time 1.00493e-05 0.00187956
+[GPU7] 1200 time 1.04523e-05 0.00192369
+[GPU6] 1200 time 1.00875e-05 0.00190704
+[GPU4] 1300 time 9.78708e-06 0.00187648
+[GPU5] 1300 time 9.95159e-06 0.00188061
+[GPU3] 1300 time 1.01352e-05 0.00187205
+[GPU1] 1300 time 1.00136e-05 0.00188079
+[GPU0] 1300 time 1.25694e-05 0.00191008
+[GPU2] 1300 time 1.11604e-05 0.00189006
+[GPU6] 1300 time 1.03092e-05 0.00189222
+[GPU7] 1300 time 1.14989e-05 0.00194936
+[GPU0] 1400 time 1.06788e-05 0.00187004
+[GPU4] 1400 time 9.87768e-06 0.00188124
+[GPU5] 1400 time 1.02043e-05 0.00189149
+[GPU1] 1400 time 1.00732e-05 0.00190053
+[GPU7] 1400 time 1.16563e-05 0.00193382
+[GPU3] 1400 time 1.19233e-05 0.00188985
+[GPU2] 1400 time 1.10412e-05 0.00193899
+[GPU6] 1400 time 1.17111e-05 0.00191821
+[GPU3] 1500 time 9.85861e-06 0.00185854
+[GPU2] 1500 time 1.14298e-05 0.00186113
+[GPU0] 1500 time 9.70602e-06 0.00188824
+[GPU5] 1500 time 1.12581e-05 0.001909
+[GPU4] 1500 time 1.03068e-05 0.00192383
+[GPU6] 1500 time 1.02353e-05 0.00188714
+[GPU1] 1500 time 1.02997e-05 0.00192076
+[GPU7] 1500 time 1.2877e-05 0.00195755
+[GPU3] 1600 time 1.15609e-05 0.00185005
+[GPU5] 1600 time 1.03021e-05 0.00187019
+[GPU7] 1600 time 1.03688e-05 0.00187252
+[GPU0] 1600 time 1.07217e-05 0.00184945
+[GPU4] 1600 time 1.01066e-05 0.00188891
+[GPU1] 1600 time 9.90391e-06 0.00189223
+[GPU2] 1600 time 1.0457e-05 0.00190943
+[GPU6] 1600 time 1.06788e-05 0.00193244
+[GPU3] 1700 time 1.57142e-05 0.00181388
+[GPU0] 1700 time 1.0078e-05 0.00185067
+[GPU2] 1700 time 1.03855e-05 0.0018582
+[GPU7] 1700 time 9.55343e-06 0.00191503
+[GPU1] 1700 time 1.06692e-05 0.00191461
+[GPU4] 1700 time 1.07431e-05 0.00194427
+[GPU5] 1700 time 1.05643e-05 0.00193846
+[GPU6] 1700 time 1.07813e-05 0.00193582
+[GPU3] 1800 time 1.52159e-05 0.00180913
+[GPU2] 1800 time 1.07527e-05 0.00184843
+[GPU0] 1800 time 9.72748e-06 0.00184187
+[GPU7] 1800 time 9.81808e-06 0.00189561
+[GPU5] 1800 time 1.00803e-05 0.00187448
+[GPU4] 1800 time 1.01423e-05 0.00192457
+[GPU1] 1800 time 1.23119e-05 0.00192339
+[GPU6] 1800 time 1.17469e-05 0.00192631
+[GPU0] 1900 time 9.44138e-06 0.00183228
+[GPU3] 1900 time 1.19019e-05 0.00184414
+[GPU2] 1900 time 1.08552e-05 0.00185155
+[GPU4] 1900 time 9.80616e-06 0.00191095
+[GPU6] 1900 time 1.08957e-05 0.00189256
+[GPU1] 1900 time 1.02949e-05 0.0018855
+[GPU5] 1900 time 1.086e-05 0.00188525
+[GPU7] 1900 time 9.57966e-06 0.00193671
+[GPU0] 2000 time 9.39131e-06 0.00184855
+[GPU1] 2000 time 9.96351e-06 0.00187031
+[GPU2] 2000 time 9.98735e-06 0.00187393
+[GPU7] 2000 time 9.74178e-06 0.00190469
+[GPU4] 2000 time 1.01972e-05 0.00190757
+[GPU3] 2000 time 1.36185e-05 0.0018818
+[GPU6] 2000 time 1.04594e-05 0.00194856
+[GPU5] 2000 time 1.31345e-05 0.00194839
+[GPU0] 2100 time 9.36985e-06 0.00184938
+[GPU1] 2100 time 1.41287e-05 0.00185993
+[GPU7] 2100 time 9.66549e-06 0.00190204
+[GPU2] 2100 time 1.10626e-05 0.00185064
+[GPU4] 2100 time 1.04737e-05 0.00191807
+[GPU3] 2100 time 1.36209e-05 0.00188517
+[GPU6] 2100 time 1.12247e-05 0.00194489
+[GPU5] 2100 time 1.17111e-05 0.00195367
+[GPU0] 2200 time 9.27925e-06 0.00184146
+[GPU2] 2200 time 1.07002e-05 0.00186421
+[GPU3] 2200 time 1.23167e-05 0.00187228
+[GPU6] 2200 time 1.08504e-05 0.00194685
+[GPU5] 2200 time 1.1096e-05 0.00190163
+[GPU1] 2200 time 1.04475e-05 0.00189163
+[GPU4] 2200 time 1.05143e-05 0.00195826
+[GPU7] 2200 time 9.53674e-06 0.00194545
+[GPU0] 2300 time 9.43184e-06 0.00185677
+[GPU5] 2300 time 1.03593e-05 0.00186646
+[GPU2] 2300 time 1.05047e-05 0.00188293
+[GPU7] 2300 time 9.47237e-06 0.00192992
+[GPU3] 2300 time 1.06788e-05 0.00191668
+[GPU1] 2300 time 1.019e-05 0.00192705
+[GPU4] 2300 time 1.2176e-05 0.00193711
+[GPU6] 2300 time 1.01638e-05 0.00198468
+[GPU3] 2400 time 1.0078e-05 0.00179361
+[GPU7] 2400 time 9.7847e-06 0.00183207
+[GPU0] 2400 time 9.47714e-06 0.00184996
+[GPU4] 2400 time 1.10769e-05 0.00187273
+[GPU5] 2400 time 1.00899e-05 0.00190121
+[GPU1] 2400 time 1.03021e-05 0.00192467
+[GPU6] 2400 time 9.92298e-06 0.0019293
+[GPU2] 2400 time 1.04642e-05 0.0019226
+[GPU3] 2500 time 9.81092e-06 0.00179081
+[GPU0] 2500 time 9.41992e-06 0.00183211
+[GPU7] 2500 time 9.65834e-06 0.00187555
+[GPU4] 2500 time 1.01876e-05 0.00186271
+[GPU2] 2500 time 1.06168e-05 0.00189202
+[GPU1] 2500 time 9.82285e-06 0.00187568
+[GPU5] 2500 time 1.01566e-05 0.00194271
+[GPU6] 2500 time 1.08671e-05 0.0019704
+[GPU3] 2600 time 1.00374e-05 0.00178166
+[GPU0] 2600 time 1.01304e-05 0.00184022
+[GPU2] 2600 time 1.04237e-05 0.00185803
+[GPU1] 2600 time 1.02139e-05 0.00192451
+[GPU7] 2600 time 1.0159e-05 0.00195659
+[GPU4] 2600 time 1.09124e-05 0.00194614
+[GPU6] 2600 time 1.25694e-05 0.00195781
+[GPU5] 2600 time 1.11628e-05 0.00196579
+[GPU3] 2700 time 1.02878e-05 0.00178457
+[GPU0] 2700 time 1.06835e-05 0.00185414
+[GPU1] 2700 time 9.82523e-06 0.00186085
+[GPU2] 2700 time 1.24288e-05 0.00186279
+[GPU7] 2700 time 9.9349e-06 0.00190667
+[GPU4] 2700 time 1.06764e-05 0.00191642
+[GPU5] 2700 time 1.14894e-05 0.00192485
+[GPU6] 2700 time 1.24788e-05 0.00194688
+[GPU3] 2800 time 9.92775e-06 0.00177529
+[GPU0] 2800 time 1.00827e-05 0.00184335
+[GPU1] 2800 time 1.01542e-05 0.00185287
+[GPU5] 2800 time 1.07336e-05 0.00189061
+[GPU2] 2800 time 1.12963e-05 0.00188714
+[GPU4] 2800 time 1.05739e-05 0.00190455
+[GPU6] 2800 time 1.10793e-05 0.00190168
+[GPU7] 2800 time 1.19638e-05 0.001917
+[GPU3] 2900 time 1.06359e-05 0.00178609
+[GPU2] 2900 time 9.72748e-06 0.00180509
+[GPU0] 2900 time 9.51052e-06 0.00183262
+[GPU5] 2900 time 1.02711e-05 0.00184826
+[GPU1] 2900 time 1.11294e-05 0.00186668
+[GPU7] 2900 time 9.74417e-06 0.0019005
+[GPU4] 2900 time 1.02592e-05 0.00191166
+[GPU6] 2900 time 1.03855e-05 0.00190973
+[GPU3] 3000 time 1.01709e-05 0.00175286
+[GPU2] 3000 time 1.03617e-05 0.00181811
+[GPU0] 3000 time 9.60827e-06 0.00180189
+[GPU6] 3000 time 1.00136e-05 0.00187201
+[GPU7] 3000 time 9.85622e-06 0.00186504
+[GPU1] 3000 time 1.01185e-05 0.00182127
+[GPU5] 3000 time 1.03092e-05 0.00183505
+[GPU4] 3000 time 1.05596e-05 0.00193847
+[GPU3] 3100 time 9.94682e-06 0.00171628
+[GPU6] 3100 time 9.77039e-06 0.00183633
+[GPU4] 3100 time 1.11485e-05 0.00184554
+[GPU2] 3100 time 1.30177e-05 0.00184435
+[GPU0] 3100 time 1.10626e-05 0.00181067
+[GPU1] 3100 time 9.98259e-06 0.00178684
+[GPU5] 3100 time 1.01924e-05 0.00181608
+[GPU7] 3100 time 1.02663e-05 0.00185877
+[GPU3] 3200 time 9.85861e-06 0.00172526
+[GPU4] 3200 time 1.05429e-05 0.00179772
+[GPU1] 3200 time 9.66787e-06 0.00180087
+[GPU2] 3200 time 1.0035e-05 0.00178379
+[GPU5] 3200 time 1.10054e-05 0.001817
+[GPU6] 3200 time 1.37305e-05 0.00187563
+[GPU7] 3200 time 1.09982e-05 0.00190967
+[GPU0] 3200 time 1.4987e-05 0.00188809
+[GPU3] 3300 time 9.98497e-06 0.00177517
+[GPU2] 3300 time 1.02758e-05 0.00179664
+[GPU4] 3300 time 1.127e-05 0.00183909
+[GPU0] 3300 time 1.25313e-05 0.00184722
+[GPU5] 3300 time 1.0221e-05 0.0018766
+[GPU1] 3300 time 1.01662e-05 0.00188317
+[GPU7] 3300 time 9.79662e-06 0.00189004
+[GPU6] 3300 time 1.25599e-05 0.00187479
+[GPU3] 3400 time 9.90868e-06 0.00178073
+[GPU0] 3400 time 9.38416e-06 0.0018368
+[GPU1] 3400 time 9.86814e-06 0.0018336
+[GPU7] 3400 time 9.77039e-06 0.00188214
+[GPU5] 3400 time 9.86814e-06 0.00189587
+[GPU2] 3400 time 1.05453e-05 0.0018824
+[GPU4] 3400 time 1.04332e-05 0.00190973
+[GPU6] 3400 time 1.06096e-05 0.00193169
+[GPU3] 3500 time 9.80377e-06 0.0017621
+[GPU0] 3500 time 9.43422e-06 0.00183192
+[GPU1] 3500 time 9.67741e-06 0.00183168
+[GPU4] 3500 time 1.0016e-05 0.00183652
+[GPU2] 3500 time 9.88722e-06 0.00183158
+[GPU6] 3500 time 9.93729e-06 0.00189291
+[GPU7] 3500 time 9.76563e-06 0.00189169
+[GPU5] 3500 time 9.91821e-06 0.00186834
+[GPU3] 3600 time 1.18423e-05 0.00183186
+[GPU7] 3600 time 9.64642e-06 0.00188435
+[GPU0] 3600 time 9.49383e-06 0.00186404
+[GPU6] 3600 time 9.85861e-06 0.00190336
+[GPU5] 3600 time 9.83e-06 0.00189261
+[GPU1] 3600 time 1.03211e-05 0.00188423
+[GPU4] 3600 time 9.90868e-06 0.00196437
+[GPU2] 3600 time 1.1127e-05 0.00196623
+[GPU3] 3700 time 1.01089e-05 0.001859
+[GPU5] 3700 time 9.77755e-06 0.00188293
+[GPU0] 3700 time 1.00255e-05 0.00187189
+[GPU4] 3700 time 1.15085e-05 0.00193024
+[GPU1] 3700 time 3.6025e-05 0.00193203
+[GPU2] 3700 time 1.23429e-05 0.00198514
+[GPU7] 3700 time 1.31273e-05 0.00195271
+[GPU6] 3700 time 1.27649e-05 0.00200193
+[GPU7] 3800 time 9.75847e-06 0.0018561
+[GPU3] 3800 time 1.04904e-05 0.00183829
+[GPU0] 3800 time 1.00112e-05 0.0018576
+[GPU4] 3800 time 9.87768e-06 0.00187521
+[GPU5] 3800 time 9.72033e-06 0.00186551
+[GPU6] 3800 time 1.05047e-05 0.00189572
+[GPU1] 3800 time 1.03235e-05 0.00190984
+[GPU2] 3800 time 1.0252e-05 0.00197656
+[GPU3] 3900 time 1.01972e-05 0.00180812
+[GPU6] 3900 time 9.84907e-06 0.00180761
+[GPU1] 3900 time 9.65595e-06 0.00183942
+[GPU0] 3900 time 9.92775e-06 0.00186329
+[GPU7] 3900 time 9.60588e-06 0.00187538
+[GPU2] 3900 time 9.52721e-06 0.00186184
+[GPU4] 3900 time 1.04451e-05 0.00191085
+[GPU5] 3900 time 9.7084e-06 0.00193027
+[GPU1] 4000 time 1.00183e-05 0.0018475
+[GPU7] 4000 time 9.66311e-06 0.00185574
+[GPU3] 4000 time 1.03283e-05 0.00181029
+[GPU2] 4000 time 9.69172e-06 0.00185492
+[GPU6] 4000 time 9.83715e-06 0.00184531
+[GPU0] 4000 time 1.01447e-05 0.00185802
+[GPU4] 4000 time 1.07121e-05 0.00189446
+[GPU5] 4000 time 1.20473e-05 0.00197788
+test_result:init:feat_nbytes=451980591104
+test_result:init:cache_nbytes=54689650176
+[CUDA] worker0 cuda mem usage: 71.50 GB
+    [Step(average) Profiler Level 1 E2 S7999]
+        L1  sample           0.000000 | send           0.000000
+        L1  recv             0.000000 | copy           0.000000 | convert time 0.000000 | train  0.001873
+        L1  feature nbytes  104.00 MB | label nbytes 0.00 Bytes
+        L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
+        L1  miss nbytes    0.00 Bytes | remote nbytes 0.00 Bytes
+        L1  num nodes               0 | num samples           0
+        L1  seq duration     0.000000 | refresh duration   0.000000
+    [Step(average) Profiler Level 2 E2 S7999]
+        L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.000698
+        L2  last layer sample time 0.000000 | size 0.000000
+    [Step(average) Profiler Level 3 E2 S7999]
+        L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
+        L3  walk sample coo  0.000000 | walk topk total    0.000000 | walk topk step1     0.000000 | walk topk step2   0.000000
+        L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
+        L3  walk topk step6  0.000000 | walk topk step7    0.000000
+        L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
+        L3  cache get_index  0.000151 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000000 | cache combine cache 0.000545 | cache combine remote 0.000000
+        L3  label extract  0.000000
+    [Profiler Level Percentiles E2 S7999]
+        p50.00_tail_logl2featcopy=0.000707
+        p90.00_tail_logl2featcopy=0.000728
+        p95.00_tail_logl2featcopy=0.000734
+        p99.00_tail_logl2featcopy=0.000749
+        p99.90_tail_logl2featcopy=0.001761
