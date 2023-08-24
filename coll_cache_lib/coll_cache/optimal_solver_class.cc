@@ -1400,7 +1400,7 @@ void IntuitiveSolver::Solve(std::vector<int> device_to_stream,
   for (int block_id = 1; block_id <= num_device; block_id++) {
     block_density_tensor->Ptr<double>()[block_id] = partition_size *(double)100 / (double)num_node;
   }
-  block_density_tensor->Ptr<double>()[1] = 100 - (partition_rb(partition_size) / (double)num_node) * 100;
+  block_density_tensor->Ptr<double>()[num_device + 1] = 100 - (partition_rb(partition_size) / (double)num_node) * 100;
 }
 
 void PartitionSolver::Solve(std::vector<int> device_to_stream,
