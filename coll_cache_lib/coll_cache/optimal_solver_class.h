@@ -178,7 +178,7 @@ protected:
 
   struct full_slot {
     volatile size_t remmaped_slot = 0xffffffffffffffff;
-    tbb::atomic<uint32_t> size{0};
+    std::atomic<uint32_t> size{0};
     size_t orig_seq_slot;
   };
   struct full_slot_single_thread {

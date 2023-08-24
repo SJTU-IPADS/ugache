@@ -787,6 +787,9 @@ class CacheEntryManager {
             if (node_list_of_src[dev_id] == nullptr) {
               node_list_of_src[dev_id] = Tensor::Empty(kI32, {per_src_size[dev_id]}, CPU(CPU_CLIB_MALLOC_DEVICE), "");
             }
+            if (global_cur_len + local_cur_len > per_src_size[dev_id]) {
+              CHECK(false) << "estimated per src array is too small on src " << dev_id << " dst " << local_location_id << ", expected: " << per_src_size[dev_id] << ", actual found " << global_cur_len + local_cur_len;
+            }
             memcpy(node_list_of_src[dev_id]->Ptr<IdType>() + global_cur_len, local_arr, local_cur_len * sizeof(IdType));
             global_cur_len += local_cur_len;
             local_cur_len = 0;

@@ -1052,8 +1052,9 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
         if (weight == 0) continue;
         remote_time += a_list[block_id][dst_dev][src_link].ref() * link_time[dst_dev][src_link] * weight;
       }
-      if (RunConfig::concurrent_link_impl == kMPSPhase ||
-          RunConfig::concurrent_link_impl == kSMMaskPhase) {
+      if (true) {
+      // if (RunConfig::concurrent_link_impl == kMPSPhase ||
+      //     RunConfig::concurrent_link_impl == kSMMaskPhase) {
         model.addConstr(remote_time <= z);
         total_time += remote_time * RunConfig::coll_cache_link_desc.link_sm[dst_dev][src_link];
       } else {
@@ -1061,8 +1062,9 @@ void OptimalAsymmLinkSolver::Solve(std::vector<int> device_to_stream, std::vecto
       }
       // model.addConstr(remote_time + local_cpu_time <= z);
     }
-    if (RunConfig::concurrent_link_impl == kMPSPhase ||
-        RunConfig::concurrent_link_impl == kSMMaskPhase) {
+    if (true) {
+    // if (RunConfig::concurrent_link_impl == kMPSPhase ||
+    //     RunConfig::concurrent_link_impl == kSMMaskPhase) {
       model.addConstr(local_time <= z);
       // local sm + cpu sm is always total sm
       int total_sm = RunConfig::coll_cache_link_desc.local_sm[dst_dev] + RunConfig::coll_cache_link_desc.cpu_sm[dst_dev];
@@ -1703,8 +1705,9 @@ void CollFineGrainSolver::Solve(std::vector<int> device_to_stream, std::vector<P
       }
       // model.addConstr(remote_time + local_cpu_time <= z);
     }
-    if (RunConfig::concurrent_link_impl == kMPSPhase ||
-        RunConfig::concurrent_link_impl == kSMMaskPhase) {
+    if (true) {
+    // if (RunConfig::concurrent_link_impl == kMPSPhase ||
+    //     RunConfig::concurrent_link_impl == kSMMaskPhase) {
       model.addConstr(local_time <= z);
       // local sm + cpu sm is always total sm
       int total_sm = RunConfig::coll_cache_link_desc.local_sm[dst_dev] + RunConfig::coll_cache_link_desc.cpu_sm[dst_dev];
