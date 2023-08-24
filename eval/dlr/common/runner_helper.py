@@ -210,7 +210,9 @@ class RunConfig:
     self.coll_hash_impl = ""
     self.coll_skip_hash = ""
 
+    self.skip_model = None
     self.coll_intuitive_min_freq = ""
+
   def get_mock_sparse_name(self):
     if self.mock_embedding:
       return '_'.join(['mock', f'{self.max_vocabulary_size}', f'{self.embed_vec_size}'])
@@ -343,6 +345,9 @@ class RunConfig:
     
     cmd_line += f' --coll_cache_policy {str(self.coll_cache_policy)}'
     cmd_line += f' --empty-feat {self.empty_feat}'
+
+    if self.skip_model:
+      cmd_line += f' --skip_model '
 
     if durable_log:
       std_out_log = self.get_log_fname() + '.log'

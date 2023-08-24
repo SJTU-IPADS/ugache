@@ -140,6 +140,7 @@ class RunConfig:
     self.coll_cache_scale = 0
     self.coll_hash_impl = ""
     self.coll_skip_hash = ""
+    self.skip_model = None
     self.coll_intuitive_min_freq = ""
     self.coll_min_freq = ""
 
@@ -214,6 +215,8 @@ class RunConfig:
       cmd_line += ' --use_nccl'
     if self.use_amp:
       cmd_line += ' --amp'
+    if self.skip_model:
+      cmd_line += ' --skip_model'
       
     # output redirection
     if durable_log:

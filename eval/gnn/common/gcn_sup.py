@@ -127,6 +127,7 @@ def wg_params(parser):
         help="whether use amp for training, default True",
     )
     parser.add_option("--use_collcache", action="store_true", dest="use_collcache", default=False, help="use collcache lib")
+    parser.add_option("--skip_model", action="store_true", dest="skip_model", default=False, help="skip model training")
     parser.add_option("--cache_percentage", type="float", dest="cache_percentage", default=0.25, help="cache percent of collcache")
     parser.add_option("--cache_policy", type="str", dest="cache_policy", default="coll_cache_asymm_link", help="cache policy of collcache")
     parser.add_option("--omp_thread_num", type="int", dest="omp_thread_num", default=40, help="omp thread num of collcache")
@@ -417,7 +418,10 @@ def main(worker_id, run_config):
             extract_end_time = time.time()
 
             # train
-            if run_config["use_amp"]:
+            if run_config['skip_model']:
+                global_barrier.wait()
+                loss = torch.zeros([1])
+            elif run_config["use_amp"]:
                 with autocast(enabled=run_config["use_amp"]):
                     batch_pred = model(sub_graphs, target_gid_cnt, x_feat)
                     loss = loss_fcn(batch_pred, batch_label)

@@ -31,6 +31,7 @@ def parse_args(default_run_config):
 
     argparser.add_argument('--sok_use_hashtable', dest='sok_use_hashtable', action='store_true')
     argparser.add_argument('--random_request', dest='random_request', action='store_true')
+    argparser.add_argument('--skip_model', dest='skip_model', action='store_true')
     argparser.add_argument('--alpha', type=float, default=None)
     argparser.add_argument('--max_vocabulary_size', type=int, default=100000000)
 
@@ -59,6 +60,11 @@ def get_run_config():
     return run_config
 
 def prepare_model(args):
+    if args['skip_model']:
+        from model_zoo import EmbOnlyHPS
+        model = EmbOnlyHPS(args["max_vocabulary_size"] // args["gpu_num"], args["embed_vec_size"], args["slot_num"], args["dense_dim"], 
+            tf_key_type = args["tf_key_type"], tf_vector_type = args["tf_vector_type"])
+        return model
     if args["model"] == "dcn":
         # from model_zoo import DCNHPS
         # model = DCNHPS(args["embed_vec_size"], args["slot_num"], args["dense_dim"])
@@ -205,6 +211,17 @@ def inference_with_saved_model(args):
     for i in range(args["iter_num"]):
         t0 = tf.timestamp()
         t1 = tf.timestamp()
+        if args['skip_model']:
+            _whole_infer_step(ret_list[i])
+            t2 = tf.timestamp()
+            ds_time += t1 - t0
+            md_time += t2 - t1
+            if (i + 1) % 100 == 0:
+                print("[GPU{}] {} time {:.6} {:.6}".format(worker_id, i + 1, ds_time / 100, md_time / 100), flush=True)
+                ds_time = 0
+                md_time = 0
+                barrier.wait()
+            continue
         output = _whole_infer_step(ret_list[i])[0].numpy()
         t2 = tf.timestamp()
         ds_time += t1 - t0

@@ -190,6 +190,44 @@ class DLRMHPS(tf.keras.models.Model):
         model = tf.keras.models.Model(inputs=inputs, outputs=self.call(inputs))
         return model.summary()
 
+class EmbOnlyHPS(tf.keras.models.Model):
+    def __init__(self,
+                 max_vocabulary_size_per_gpu,
+                 embed_vec_size,
+                 slot_num,
+                 dense_dim,
+                 tf_key_type,
+                 tf_vector_type,
+                 **kwargs):
+        super(EmbOnlyHPS, self).__init__(**kwargs)
+        
+        self.max_vocabulary_size_per_gpu = max_vocabulary_size_per_gpu
+        self.embed_vec_size = embed_vec_size
+        self.slot_num = slot_num
+        self.dense_dim = dense_dim
+        self.tf_key_type = tf_key_type
+        self.tf_vector_type = tf_vector_type
+
+ 
+        self.lookup_layer = hps.LookupLayer(model_name = "dlrm", 
+                                            table_id = 0,
+                                            emb_vec_size = self.embed_vec_size,
+                                            emb_vec_dtype = self.tf_vector_type)
+
+    def call(self, inputs, training=False):
+        input_cat = inputs[0]
+
+        embedding_vector = self.lookup_layer(input_cat)
+        zeros = tf.zeros(input_cat.shape[0])
+
+        return hps.hps_lib.nop_dep(dense=zeros, emb = embedding_vector)
+
+    def summary(self):
+        inputs = [tf.keras.Input(shape=(self.slot_num, ), sparse=False, dtype=self.tf_key_type), 
+                  tf.keras.Input(shape=(self.dense_dim, ), dtype=tf.float32)]
+        model = tf.keras.models.Model(inputs=inputs, outputs=self.call(inputs))
+        return model.summary()
+
 class DLRMSOK(tf.keras.models.Model):
     def __init__(self,
                  combiner,
