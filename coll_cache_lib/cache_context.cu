@@ -712,11 +712,13 @@ void ExtractSession::GetMissCacheIndex(
     LOG(DEBUG) << "hashtable get idx " << t_hash.Passed();
   }
 
-  Timer t1;
-  LOG(DEBUG) << "CollCacheManager: GetMissCacheIndex - sorting according to group...";
-  IdxStore_T idx_alter;
-  idx_alter.prepare_mem(idx_store_alter_handle->ptr<uint8_t>(), num_nodes);
-  common::cuda::CubSortDispatcher(idx.keys_for_sort(), idx_alter.keys_for_sort(), idx.vals_for_sort(), idx_alter.vals_for_sort(), num_nodes, _cache_ctx->_trainer_ctx, _cache_ctx->_gpu_mem_allocator, false, stream);
+  if (GetEnv("COLL_SKIP_GET_IDX_SORT") != "1") {
+    Timer t1;
+    LOG(DEBUG) << "CollCacheManager: GetMissCacheIndex - sorting according to group...";
+    IdxStore_T idx_alter;
+    idx_alter.prepare_mem(idx_store_alter_handle->ptr<uint8_t>(), num_nodes);
+    common::cuda::CubSortDispatcher(idx.keys_for_sort(), idx_alter.keys_for_sort(), idx.vals_for_sort(), idx_alter.vals_for_sort(), num_nodes, _cache_ctx->_trainer_ctx, _cache_ctx->_gpu_mem_allocator, false, stream);
+  }
 
   {
     std::memset(_group_offset, 0, sizeof(IdType) * (_cache_ctx->_num_location + 1));

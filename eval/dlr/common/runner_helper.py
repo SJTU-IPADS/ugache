@@ -210,6 +210,7 @@ class RunConfig:
     self.coll_hash_impl = ""
     self.coll_skip_hash = ""
 
+    self.coll_intuitive_min_freq = ""
   def get_mock_sparse_name(self):
     if self.mock_embedding:
       return '_'.join(['mock', f'{self.max_vocabulary_size}', f'{self.embed_vec_size}'])
@@ -239,6 +240,8 @@ class RunConfig:
       std_out_fname += f'_hash_impl_{self.coll_hash_impl}'
     if self.coll_skip_hash != "":
       std_out_fname += f'_skip_hash_{self.coll_skip_hash}'
+    if self.coll_intuitive_min_freq != "" and self.coll_cache_policy == CachePolicy.coll_cache_intuitive:
+      std_out_fname += f'_min_freq_{self.coll_intuitive_min_freq}'
     return std_out_fname
 
   def get_conf_fname(self):
@@ -301,6 +304,8 @@ class RunConfig:
     if self.coll_skip_hash != "":
       cmd_line += f' COLL_SKIP_HASH={self.coll_skip_hash} '
 
+    if self.coll_intuitive_min_freq != "":
+      cmd_line += f'COLL_INTUITIVE_MIN_FREQ={self.coll_intuitive_min_freq} '
     cmd_line += f'python ../common/inference.py'
     cmd_line += f' --gpu_num {self.gpu_num} '
     

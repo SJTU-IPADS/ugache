@@ -140,6 +140,8 @@ class RunConfig:
     self.coll_cache_scale = 0
     self.coll_hash_impl = ""
     self.coll_skip_hash = ""
+    self.coll_intuitive_min_freq = ""
+    self.coll_min_freq = ""
 
     self.use_amp                = False
     self.use_nccl               = False
@@ -169,6 +171,10 @@ class RunConfig:
 
     if self.num_feat_dim_hack != None:
       cmd_line += f'SAMGRAPH_FAKE_FEAT_DIM={self.num_feat_dim_hack} '
+    if self.coll_intuitive_min_freq != '':
+      cmd_line += f'COLL_INTUITIVE_MIN_FREQ={self.coll_intuitive_min_freq} '
+    if self.coll_min_freq != '':
+      cmd_line += f'COLL_MIN_FREQ={self.coll_min_freq} '
     if self.custom_env != '':
       cmd_line += f'{self.custom_env} '
 
@@ -248,6 +254,10 @@ class RunConfig:
       std_out_log += f'_hash_impl_{self.coll_hash_impl}'
     if self.coll_skip_hash != "":
       std_out_log += f'_skip_hash_{self.coll_skip_hash}'
+    if self.coll_intuitive_min_freq != "" and self.cache_policy == CachePolicy.coll_intuitive:
+      std_out_log += f'_min_freq_{self.coll_intuitive_min_freq}'
+    if self.coll_min_freq != "" and self.cache_policy == CachePolicy.coll_cache_asymm_link:
+      std_out_log += f'_min_freq_{self.coll_min_freq}'
     return std_out_log
 
   def beauty(self):

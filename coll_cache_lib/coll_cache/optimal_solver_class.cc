@@ -1299,10 +1299,15 @@ void IntuitiveSolver::Solve(std::vector<int> device_to_stream,
 
   IdType partition_size = partition_size_min;
 
+  double min_freq = 0;
+  if (GetEnv("COLL_INTUITIVE_MIN_FREQ") != "") {
+    min_freq = std::stod(GetEnv("COLL_INTUITIVE_MIN_FREQ"));
+  }
+
   if (mu < 1) {
     // the best choice is to replicate as much as possible. no partition
     partition_size = partition_size_min;
-  } else if (freq_array[partition_lb(partition_size_max)] < freq_array[partition_rb(partition_size_max)] * mu) {
+  } else if (freq_array[partition_lb(partition_size_max)] < std::max<double>(min_freq, freq_array[partition_rb(partition_size_max)]) * mu) {
     // we have to choose largest partition
     // build the mapping
     partition_size = partition_size_max;
@@ -1310,7 +1315,7 @@ void IntuitiveSolver::Solve(std::vector<int> device_to_stream,
     // now we need to iterate from min to max to find the mu
     while (partition_size_max - partition_size_min > 1) {
       partition_size = (partition_size_min + partition_size_max) / 2;
-      if (freq_array[partition_lb(partition_size)] < freq_array[partition_rb(partition_size)] * mu) {
+      if (freq_array[partition_lb(partition_size)] < std::max<double>(min_freq, freq_array[partition_rb(partition_size)]) * mu) {
         // go left
         partition_size_min = partition_size;
       } else {
