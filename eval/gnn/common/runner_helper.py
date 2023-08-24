@@ -141,6 +141,7 @@ class RunConfig:
     self.coll_hash_impl = ""
     self.coll_skip_hash = ""
     self.skip_model = None
+    self.nsys_prof_metric = False
     self.coll_intuitive_min_freq = ""
     self.coll_min_freq = ""
 
@@ -178,6 +179,9 @@ class RunConfig:
       cmd_line += f'COLL_MIN_FREQ={self.coll_min_freq} '
     if self.custom_env != '':
       cmd_line += f'{self.custom_env} '
+
+    if self.nsys_prof_metric:
+      cmd_line += f' nsys profile --trace-fork-before-exec=true -t cuda --gpu-metrics-device=all --gpu-metrics-set=ga100 -o {self.get_log_fname()}.nsys-rep '
 
     if self.model == Model.sage:
       if self.unsupervised:

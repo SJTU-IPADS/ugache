@@ -211,6 +211,7 @@ class RunConfig:
     self.coll_skip_hash = ""
 
     self.skip_model = None
+    self.nsys_prof_metric = False
     self.coll_intuitive_min_freq = ""
 
   def get_mock_sparse_name(self):
@@ -308,6 +309,8 @@ class RunConfig:
 
     if self.coll_intuitive_min_freq != "":
       cmd_line += f'COLL_INTUITIVE_MIN_FREQ={self.coll_intuitive_min_freq} '
+    if self.nsys_prof_metric:
+      cmd_line += f' nsys profile --trace-fork-before-exec=true -t cuda --gpu-metrics-device=all --gpu-metrics-set=ga100 -o {self.get_log_fname()}.nsys-rep '
     cmd_line += f'python ../common/inference.py'
     cmd_line += f' --gpu_num {self.gpu_num} '
     
