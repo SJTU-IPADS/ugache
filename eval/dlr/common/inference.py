@@ -216,6 +216,12 @@ def inference_with_saved_model(args):
             t2 = tf.timestamp()
             ds_time += t1 - t0
             md_time += t2 - t1
+            # profile
+            if i >= args["coll_cache_enable_iter"]:
+                if args["coll_cache_policy"] == "sok":
+                    sok.SetStepProfileValue(profile_type=sok.kLogL1TrainTime, value=(t2 - t1))
+                else:
+                    hps.SetStepProfileValue(profile_type=hps.kLogL1TrainTime, value=(t2 - t1))
             if (i + 1) % 100 == 0:
                 print("[GPU{}] {} time {:.6} {:.6}".format(worker_id, i + 1, ds_time / 100, md_time / 100), flush=True)
                 ds_time = 0

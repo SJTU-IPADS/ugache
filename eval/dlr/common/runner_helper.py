@@ -84,6 +84,8 @@ class RandomDataset:
     self.short_name = short_name
     self.vocabulary = vocabulary
     self.slot_num = slot_num
+    self.log_name = short_name
+    self.datfile_name = short_name
   def short(self):
     return self.short_name
   def __str__(self):
@@ -310,7 +312,7 @@ class RunConfig:
     if self.coll_intuitive_min_freq != "":
       cmd_line += f'COLL_INTUITIVE_MIN_FREQ={self.coll_intuitive_min_freq} '
     if self.nsys_prof_metric:
-      cmd_line += f' nsys profile --trace-fork-before-exec=true -t cuda --gpu-metrics-device=all --gpu-metrics-set=ga100 -o {self.get_log_fname()}.nsys-rep '
+      cmd_line += f' nsys profile --trace-fork-before-exec=true -t cuda --gpu-metrics-device=all --gpu-metrics-set=ga100 -o {self.get_log_fname()}.nsys-rep --force-overwrite true '
     cmd_line += f'python ../common/inference.py'
     cmd_line += f' --gpu_num {self.gpu_num} '
     

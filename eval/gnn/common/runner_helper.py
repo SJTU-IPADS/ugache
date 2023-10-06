@@ -181,7 +181,7 @@ class RunConfig:
       cmd_line += f'{self.custom_env} '
 
     if self.nsys_prof_metric:
-      cmd_line += f' nsys profile --trace-fork-before-exec=true -t cuda --gpu-metrics-device=all --gpu-metrics-set=ga100 -o {self.get_log_fname()}.nsys-rep '
+      cmd_line += f' nsys profile --trace-fork-before-exec=true -t cuda --gpu-metrics-device=all --gpu-metrics-set=ga100 -o {self.get_log_fname()}.nsys-rep --force-overwrite true '
 
     if self.model == Model.sage:
       if self.unsupervised:
@@ -344,6 +344,13 @@ def run_in_list(conf_list : list, mock=False, durable_log=True, callback = None)
 class ConfigList:
   def __init__(self):
     self.conf_list = [RunConfig()]
+
+  def sort(self, key_func):
+    self.conf_list.sort(key=key_func)
+  def sort_by_ds(self):
+    def key_func(conf: RunConfig):
+      return conf.dataset.short()
+    self.sort(key_func=key_func)
 
   def select(self, key, val_indicator):
     '''
