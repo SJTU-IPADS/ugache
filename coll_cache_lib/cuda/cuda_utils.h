@@ -46,6 +46,8 @@ struct BlockPrefixCallbackOp {
 
 template<typename T>
 void ArrangeArray(T* array, size_t array_len, T begin = 0, T step = 1, StreamHandle = nullptr);
+template<typename T, typename IdxT>
+void SelectArrayByIdx(const T* array, const IdxT* idx_array, T* output_array, size_t idx_len, StreamHandle = nullptr);
 
 // always with replacement
 template<typename T>

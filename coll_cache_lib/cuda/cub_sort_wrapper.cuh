@@ -135,6 +135,53 @@ void CubSelectBySideNe(Context gpu_ctx,
   Device::Get(CPU())->FreeWorkspace(CPU(), d_num_selected_out);
 }
 
+template<typename T, typename SelectOp>
+void CubSelectIndex(Context gpu_ctx,
+    const size_t num_input,
+    T* d_out, size_t & num_selected_out,
+    SelectOp select_op,
+    std::function<MemHandle(size_t)> & allocator,
+    StreamHandle stream = nullptr) {
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+  auto device = Device::Get(gpu_ctx);
+
+  cub::CountingInputIterator<T> counter(0);
+
+  size_t * d_num_selected_out = Device::Get(CPU())->AllocArray<size_t>(CPU(), 1);
+
+  size_t workspace_bytes;
+  void * workspace = nullptr;
+  cub::DeviceSelect::If(workspace, workspace_bytes, counter, d_out, d_num_selected_out, num_input, select_op, cu_stream);
+  auto workspace_mem_handle = allocator(workspace_bytes);
+  workspace = workspace_mem_handle->ptr();
+  cub::DeviceSelect::If(workspace, workspace_bytes, counter, d_out, d_num_selected_out, num_input, select_op, cu_stream);
+  CUDA_CALL(cudaStreamSynchronize(cu_stream));
+  num_selected_out = *d_num_selected_out;
+  Device::Get(CPU())->FreeWorkspace(CPU(), d_num_selected_out);
+}
+template<typename T, typename SelectOp>
+void CubSelect(Context gpu_ctx,
+    const T * d_in, const size_t num_input,
+    T* d_out, size_t & num_selected_out,
+    SelectOp select_op,
+    std::function<MemHandle(size_t)> & allocator,
+    StreamHandle stream = nullptr) {
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+  auto device = Device::Get(gpu_ctx);
+
+  size_t * d_num_selected_out = Device::Get(CPU())->AllocArray<size_t>(CPU(), 1);
+
+  size_t workspace_bytes;
+  void * workspace = nullptr;
+  cub::DeviceSelect::If(workspace, workspace_bytes, d_in, d_out, d_num_selected_out, num_input, select_op, cu_stream);
+  auto workspace_mem_handle = allocator(workspace_bytes);
+  workspace = workspace_mem_handle->ptr();
+  cub::DeviceSelect::If(workspace, workspace_bytes, d_in, d_out, d_num_selected_out, num_input, select_op, cu_stream);
+  device->StreamSync(gpu_ctx, stream);
+  num_selected_out = *d_num_selected_out;
+  Device::Get(CPU())->FreeWorkspace(CPU(), d_num_selected_out);
+}
+
 template<typename T>
 struct EqConverter {
   T compare;

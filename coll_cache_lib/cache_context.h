@@ -423,6 +423,7 @@ class ExtractSession {
   MemHandle output_src_index_handle, output_dst_index_handle;
   MemHandle output_src_index_alter_handle, output_dst_index_alter_handle;
   MemHandle output_sorted_nodes_handle;
+  MemHandle no_local_nodes_handle = nullptr;
   MemHandle workspace_handle;
   IdType * _group_offset = nullptr;
   std::vector<StreamHandle> _concurrent_stream_array;
@@ -478,7 +479,7 @@ class ExtractSession {
   template<typename IdxStore_T = IdxStore>
   void GetMissCacheIndex(
     IdxStore_T & idx,
-    const IdType* nodes, const size_t num_nodes, 
+    const IdType* nodes, size_t & num_nodes, 
     StreamHandle stream);
   template<typename IdxStore_T = IdxStore>
   void SortIndexByLoc(IdxStore_T & idx, const size_t num_nodes, StreamHandle stream);
@@ -506,7 +507,7 @@ class ExtractSession {
   void CombineFused(const IdxStore_T idx_store, const IdType * group_offset, void* output, StreamHandle stream);
 
  public:
-  void ExtractFeat(const IdType* nodes, const size_t num_nodes, void* output, StreamHandle stream, uint64_t task_key);
+  void ExtractFeat(const IdType* nodes, size_t num_nodes, void* output, StreamHandle stream, uint64_t task_key);
   inline constexpr bool IsLegacy() { return false; }
 };
 

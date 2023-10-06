@@ -33,6 +33,13 @@ __global__ void arrange_array(T* array, size_t array_len, T begin, T step) {
   }
 }
 
+template <typename T, typename IdxT, size_t BLOCK_SIZE=Constant::kCudaBlockSize, size_t TILE_SIZE=Constant::kCudaTileSize>
+__global__ void select_array_by_idx(const T* array, const IdxT* idx_array, T* output_array, size_t idx_len) {
+  SAM_1D_GRID_FOR(i, idx_len) {
+    output_array[i] = array[idx_array[i]];
+  }
+}
+
 }
 
 template <typename T>
@@ -42,14 +49,21 @@ void ArrangeArray(T* array, size_t array_len, T begin, T step, StreamHandle stre
   auto cu_stream = static_cast<cudaStream_t>(stream);
   arrange_array<<<grid, block, 0, cu_stream>>>(array, array_len, begin, step);
 }
+template<typename T, typename IdxT>
+void SelectArrayByIdx(const T* array, const IdxT* idx_array, T* output_array, size_t idx_len, StreamHandle stream) {
+  if (idx_len == 0) return;
+  SAM_1D_GRID_INIT(idx_len);
+  auto cu_stream = static_cast<cudaStream_t>(stream);
+  select_array_by_idx<<<grid, block, 0, cu_stream>>>(array, idx_array, output_array, idx_len);
+}
 
 template void ArrangeArray<int>(int*, size_t, int, int, StreamHandle);
 template void ArrangeArray<Id64Type>(Id64Type*, size_t, Id64Type, Id64Type, StreamHandle);
 template void ArrangeArray<IdType>(IdType*, size_t, IdType, IdType, StreamHandle);
 template void ArrangeArray<float>(float*, size_t, float, float, StreamHandle);
-
 template void ArrangeArray<uint8_t>(uint8_t*, size_t, uint8_t, uint8_t, StreamHandle);
 
+template void SelectArrayByIdx<IdType, IdType>(const IdType* array, const IdType* idx_array, IdType* output_array, size_t idx_len, StreamHandle stream);
 
 namespace {
 __device__ IdType _UpperBound(const IdType *A, int64_t n, IdType x) {

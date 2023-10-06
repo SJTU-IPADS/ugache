@@ -687,9 +687,21 @@ void CheckCudaEqual(const void * a, const void* b, const size_t nbytes, StreamHa
 }
 
 template<typename IdxStore_T>
+struct CubSelectOpLocIsNot {
+  IdxStore_T idx_store;
+  int loc;
+  CUB_RUNTIME_FUNCTION __forceinline__
+  CubSelectOpLocIsNot(IdxStore_T idx_store, int loc) : idx_store(idx_store), loc(loc) {}
+  __host__ __device__  __forceinline__
+  bool operator()(const IdType & idx) const {
+    return idx_store.src_loc(idx) != loc;
+  }
+};
+
+template<typename IdxStore_T>
 void ExtractSession::GetMissCacheIndex(
     IdxStore_T & idx,
-    const IdType* nodes, const size_t num_nodes, 
+    const IdType* nodes, size_t & num_nodes, 
     StreamHandle stream) {
   auto cu_stream = static_cast<cudaStream_t>(stream);
   auto device = Device::Get(_cache_ctx->_trainer_ctx);
@@ -697,6 +709,7 @@ void ExtractSession::GetMissCacheIndex(
   if (idx_store_handle == nullptr || idx_store_handle->nbytes() < idx.required_mem(num_nodes)) {
     idx_store_handle       = _cache_ctx->_gpu_mem_allocator(idx.required_mem(num_nodes));
     idx_store_alter_handle = _cache_ctx->_gpu_mem_allocator(idx.required_mem(num_nodes));
+    no_local_nodes_handle  = _cache_ctx->_gpu_mem_allocator(num_nodes * sizeof(IdType) * 2);
   }
   idx.prepare_mem(idx_store_handle->ptr<uint8_t>(), num_nodes);
 
@@ -710,6 +723,21 @@ void ExtractSession::GetMissCacheIndex(
     _cache_ctx->_new_hash_table->LookupSrcDst(nodes, num_nodes, idx, _cpu_location_id, stream);
     device->StreamSync(_cache_ctx->_trainer_ctx, stream);
     LOG(DEBUG) << "hashtable get idx " << t_hash.Passed();
+  }
+
+  if (GetEnv("COLL_SKIP_LOCAL") == "1") {
+    // common::cuda::CubSelec
+    size_t num_non_local_nodes;
+    CubSelectOpLocIsNot<IdxStore_T> select_op(idx, _local_location_id);
+    IdType* non_local_idx = no_local_nodes_handle->ptr<IdType>();
+    IdType* non_local_nodes = non_local_idx + num_nodes;
+    common::cuda::CubSelectIndex(_cache_ctx->_trainer_ctx, num_nodes, non_local_idx, num_non_local_nodes, select_op, _cache_ctx->_gpu_mem_allocator, stream);
+    common::cuda::SelectArrayByIdx(nodes, non_local_idx, non_local_nodes, num_non_local_nodes, stream);
+
+    _cache_ctx->_new_hash_table->LookupSrcDst(non_local_nodes, num_non_local_nodes, idx, _cpu_location_id, stream);
+    device->StreamSync(_cache_ctx->_trainer_ctx, stream);
+    // LOG(ERROR) << "remove local nodes, reducing num from " << num_nodes << " to " << num_non_local_nodes;
+    num_nodes = num_non_local_nodes;
   }
 
   if (GetEnv("COLL_SKIP_GET_IDX_SORT") != "1") {
@@ -1168,7 +1196,7 @@ void ExtractSession::CombineCliq(const IdType* key_list, const size_t num_node, 
   device->StreamSync(_trainer_ctx, stream);
 }
 
-void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
+void ExtractSession::ExtractFeat(const IdType* nodes, size_t num_nodes,
                   void* output, StreamHandle stream, uint64_t task_key) {
   if (_cache_ctx->IsDirectMapping()) {
     CHECK(_cache_ctx->_num_location == 1);
@@ -1391,6 +1419,9 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
         accu_each_src_nkey[location_id] += group_offset[location_id+1] - group_offset[location_id];
       };
       // launch cpu extraction
+      if (GetEnv("COLL_EXTRACT_SYNC_REPLICA") == "1") {
+        _cache_ctx->_barrier->Wait();
+      }
       this->_extract_ctx[_cache_ctx->_cpu_location_id]->v2_forward_one_step([&combine_times, call_combine, loc_id = _cache_ctx->_cpu_location_id](cudaStream_t cu_s){
         Timer t_cpu;
         call_combine(loc_id, reinterpret_cast<StreamHandle>(cu_s));
@@ -1429,6 +1460,9 @@ void ExtractSession::ExtractFeat(const IdType* nodes, const size_t num_nodes,
       combine_times[2] -= combine_times[1];
 
       _cpu_syncer->on_wait_job_done();
+      if (GetEnv("COLL_EXTRACT_SYNC_REPLICA") == "1") {
+        _cache_ctx->_barrier->Wait();
+      }
     } else if (RunConfig::concurrent_link_impl == kMPSForLandC) {
       auto call_combine = [idx_store, group_offset, this, output, num_nodes](int location_id, IdType num_sm, StreamHandle stream){
         // LOG(ERROR) << "combine from " << location_id << " with sm=" << num_sm;
