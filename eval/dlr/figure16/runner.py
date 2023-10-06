@@ -30,7 +30,7 @@ cfg_list_collector = (ConfigList()
   .override('dataset', [Dataset.criteo_tb])
   .override('coll_cache_policy', [CachePolicy.coll_cache_asymm_link])
   .override('coll_cache_no_group', [''])
-  .override('coll_cache_concurrent_link', ['MPSPhase'])
+  .override('coll_cache_concurrent_link', ['SMMaskPhase'])
   .override('log_level', ['info'])
 )
 

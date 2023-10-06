@@ -46,8 +46,8 @@ cfg_list_collector.hyper_override(
   ['use_collcache', 'cache_policy', "coll_cache_concurrent_link", "coll_hash_impl"], 
   [
     [True, CachePolicy.rep,  "",         ""],
-    [True, CachePolicy.coll_cache_asymm_link,  "",         ""],
-    [False, CachePolicy.coll_cache_asymm_link, "",         ""]
+    [True, CachePolicy.coll_cache_asymm_link,  "SMMaskPhase",         ""],
+    [False, CachePolicy.coll_cache_asymm_link, "",         ""],
 ])
 cfg_list_collector.override('coll_cache_scale', [
   16,
