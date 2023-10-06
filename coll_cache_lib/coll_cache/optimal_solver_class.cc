@@ -1520,29 +1520,41 @@ void PartRepSolver::Solve(std::vector<int> device_to_stream,
 }
 
 void CollFineGrainSolver::Solve(std::vector<int> device_to_stream, std::vector<PerT> device_to_cache_percent, std::string mode, double T_local, double T_cpu) {
+  {
+    // special care for block_freq_array, block_density_array, nid_to_block
+    IdType num_node = stream_freq_list->Shape().at(1);
+    IdType num_block = num_node;
+    IdType num_slot = 1;
+    if (GetEnv("COLL_FINE_SOLVE_1_SLOT") != "") {
+      num_slot = std::stoi(GetEnv("COLL_FINE_SOLVE_1_SLOT"));
+      CHECK(num_block % num_slot == 0);
+      num_block /= num_slot;
+    }
+    block_placement = Tensor::CreateShm(_shm_name_place, kU8, {num_block}, "coll_cache_block_placement");
+    block_density_tensor = Tensor::CreateShm(_shm_name_dens, kF64, {static_cast<unsigned long>(num_block)}, "");
+    LOG(ERROR) << " fine solver has " << num_block << " blocks and " << num_slot << "slots";
+    for (int block_id = 0; block_id < num_block; block_id++) {
+      for (IdType slot_id = 0; slot_id < num_slot; slot_id ++) {
+        IdType offset = block_id;
+        IdType nid = slot_id * num_block + offset;
+        nid_to_block->Ptr<uint32_t>()[nid] = block_id;
+      }
+      block_density_tensor->Ptr<double>()[block_id] = (double)100 / (double)num_node * num_slot;
+    }
+  }
+  
   CHECK(mode == "BIN");
-  // CHECK(block_density_tensor->Defined());
-  // double*            block_density_array = block_density_tensor->Ptr<double>();
-  // LOG(ERROR) << stream_freq_list->Shape().size() << ""
+  CHECK(block_density_tensor->Defined());
+  double*            block_density_array = block_density_tensor->Ptr<double>();
   TensorView<IdType> block_freq_array(stream_freq_list);
   PerT      cache_percent  = device_to_cache_percent.at(0);
   uint32_t num_device     = device_to_stream.size();
   IdType   num_stream     = stream_freq_list->Shape().at(0);
-  const IdType num_node = stream_freq_list->Shape().at(1);
-  uint32_t num_block      = num_node;
+  uint32_t num_block      = block_density_tensor->Shape().at(0);
   uint32_t num_link       = link_src[0].size(); // we simply assume all dst device have same num link
   LOG(WARNING) << "constructing coll fine grain solver, device=" << num_device << ", stream=" << num_stream;
 
-  block_placement = Tensor::CreateShm(_shm_name_place, kU8, {num_node}, "coll_cache_block_placement");
-  block_density_tensor = Tensor::CreateShm(_shm_name_dens, kF64, {static_cast<unsigned long>(num_block)}, "");
-  for (int block_id = 0; block_id < num_block; block_id++) {
-    auto node_id = stream_id_list->Ptr<IdType>()[block_id];
-    nid_to_block->Ptr<uint32_t>()[node_id] = block_id;
-    block_density_tensor->Ptr<double>()[block_id] = (double)100 / (double)num_node;
-  }
-
   std::cerr << num_block << " blocks, " << num_device << " devices\n";
-  LOG(ERROR) << "proxy env is " << GetEnv("HTTP_PROXY");
 
   GRBEnv env = GRBEnv(true);
   env.set("LogFile", "cppsolver.log");
@@ -1671,20 +1683,19 @@ void CollFineGrainSolver::Solve(std::vector<int> device_to_stream, std::vector<P
   auto constraint_capacity = [&](GRBModel & model, uint32_t src_dev) {
     GRBLinExpr expr;
     FOR_LOOP(block_id, num_block) {
-      expr += x_list[block_id][src_dev].ref();
+      expr += x_list[block_id][src_dev].ref() * block_density_array[block_id];
     }
-    model.addConstr(expr <= cache_percent /(double)100 * num_node);
+    model.addConstr(expr <= cache_percent);
   };
   auto constraint_time = [&](GRBModel & model, uint32_t dst_dev) {
     uint32_t stream_id = device_to_stream[dst_dev];
-    CHECK_EQ(stream_id, 0);
     double sum_weight = 0;
     // GRBLinExpr &local_cpu_time = local_cpu_time_list[dst_dev];
     GRBLinExpr &cpu_time = cpu_time_list[dst_dev];
     GRBLinExpr &local_time = local_time_list[dst_dev];
     FOR_LOOP(block_id, num_block) {
       // stream_freq_list is at <stream,nid> order
-      double weight = block_freq_array[0][block_id].ref() * (double)100 / num_node;
+      double weight = block_density_array[block_id] * block_freq_array[0][block_id].ref();
       if (weight == 0) continue;
       sum_weight += weight;
       cpu_time += c_list[block_id].ref() * T_cpu * weight;
@@ -1697,12 +1708,13 @@ void CollFineGrainSolver::Solve(std::vector<int> device_to_stream, std::vector<P
     FOR_LOOP(src_link, num_link) {
       GRBLinExpr &remote_time = remote_time_list[dst_dev][src_link];
       FOR_LOOP(block_id, num_block) {
-        double weight = block_freq_array[0][block_id].ref() * (double)100 / num_node;
+        double weight = block_density_array[block_id] * block_freq_array[0][block_id].ref();
         if (weight == 0) continue;
         remote_time += a_list[block_id][dst_dev][src_link].ref() * link_time[dst_dev][src_link] * weight;
       }
-      if (RunConfig::concurrent_link_impl == kMPSPhase ||
-          RunConfig::concurrent_link_impl == kSMMaskPhase) {
+      if (true) {
+      // if (RunConfig::concurrent_link_impl == kMPSPhase ||
+      //     RunConfig::concurrent_link_impl == kSMMaskPhase) {
         model.addConstr(remote_time <= z);
         total_time += remote_time * RunConfig::coll_cache_link_desc.link_sm[dst_dev][src_link];
       } else {
