@@ -7,6 +7,7 @@
 #include "run_config.h"
 #include "timer.h"
 #include <thread>
+#include <map>
 
 namespace coll_cache_lib {
 
@@ -290,6 +291,23 @@ void CollCache::build_v2(int replica_id, IdType *ranking_nodes_list_ptr,
     // one-time call for each process
     RunConfig::LoadConfigFromEnv();
   }
+  if (GetEnv("COLL_COUNT_FREQ_ONLY") != "") {
+    if (replica_id == 0) {
+      std::map<int32_t, IdType> pdf;
+      for (IdType rank = 0; rank < num_node; rank++) {
+        IdType freq = ranking_nodes_freq_list_ptr[rank];
+        if (pdf.find(-freq) == pdf.end()) {
+          pdf[-freq] = 0;
+        }
+        pdf[-freq]++;
+      }
+      for (auto iter : pdf) {
+        std::cout << -iter.first << "\t" << iter.second << "\n";
+      }
+    }
+    this->_replica_barrier->Wait();
+    exit(0);
+  }
   // if (replica_id == 0) {
   //   std::ofstream f("/tmp/coll.rank");
   //   f.write((char*)ranking_nodes_list_ptr, sizeof(IdType) * num_node);
@@ -417,6 +435,24 @@ void CollCache::build_v2(int replica_id, ContFreqBuf* freq_rank, IdType num_node
   if (RunConfig::cross_process || replica_id == 0) {
     // one-time call for each process
     RunConfig::LoadConfigFromEnv();
+  }
+  if (GetEnv("COLL_COUNT_FREQ_ONLY") != "") {
+    if (replica_id == 0) {
+      std::map<int32_t, IdType> pdf;
+      for (auto iter : freq_rank->mapping) {
+        IdType freq = freq_rank->buf[iter.second].cnt;
+        if (pdf.find(-freq) == pdf.end()) {
+          pdf[-freq] = 0;
+        }
+        pdf[-freq]++;
+      }
+      pdf[0] = num_node - freq_rank->mapping.size();
+      for (auto iter : pdf) {
+        std::cout << -iter.first << "\t" << iter.second << "\n";
+      }
+    }
+    this->_replica_barrier->Wait();
+    exit(0);
   }
   if (RunConfig::coll_cache_scale_nb != 0) {
     LOG(ERROR) << "before scale, dtype is " << dtype << ", dim is " << dim;
