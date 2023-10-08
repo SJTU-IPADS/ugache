@@ -17,12 +17,11 @@
 #pragma once
 #include "coll_cache_lib/atomic_barrier.h"
 #include "coll_cache_lib/facade.h"
-#include "hps/embedding_cache.hpp"
 #include "hps/hier_parameter_server.hpp"
 #include "hps/lookup_session.hpp"
 #include "tensorflow/core/framework/op_kernel.h"
 
-namespace HierarchicalParameterServer {
+namespace coll_cache_lib {
 
 using namespace HugeCTR;
 
@@ -65,10 +64,6 @@ class LookupManager final {
       coll_parameter_server_->add_epoch_profile_value(global_replica_id, step, type, value);
     }
   }
-  inline double report_cache_intersect() { return parameter_server_->report_cache_intersect(); }
-  inline std::vector<double> report_access_overlap() {
-    return parameter_server_->report_access_overlap();
-  }
 
   void refresh(const int32_t global_replica_id, cudaStream_t stream = nullptr, bool foreground = false);
  private:
@@ -76,7 +71,6 @@ class LookupManager final {
 
   LookupManager();
   bool initialized_;
-  std::shared_ptr<HierParameterServerBase> parameter_server_;
   std::map<std::string, std::map<size_t, std::shared_ptr<LookupSessionBase>>> lookup_session_map_;
   std::map<std::string, std::map<size_t, std::vector<std::shared_ptr<void>>>> h_values_map_;
 
@@ -94,4 +88,4 @@ class LookupManager final {
   sem_t record_send, record_done; size_t cur_num_key; const void* cur_key_ptr;
 };
 
-}  // namespace HierarchicalParameterServer
+}  // namespace coll_cache_lib

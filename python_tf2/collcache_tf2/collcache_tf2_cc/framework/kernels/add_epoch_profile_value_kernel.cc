@@ -52,7 +52,7 @@ class AddEpochProfileValue : public OpKernel {
       auto device_ctx = ctx->op_device_context();
       OP_REQUIRES(ctx, device_ctx == nullptr, errors::Aborted("should have no device context."));
 
-      HierarchicalParameterServer::Facade::instance()->add_epoch_profile_value(global_replica_id,
+      coll_cache_lib::Facade::instance()->add_epoch_profile_value(global_replica_id,
                                                                                profile_type, value);
     } catch (const std::exception& error) {
       ctx->SetStatus(errors::Aborted(error.what()));

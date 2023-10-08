@@ -16,35 +16,36 @@
 
 #pragma once
 #include <common.hpp>
-#include <data_readers/data_reader.hpp>
-#include <device_map.hpp>
-#include <embedding.hpp>
-#include <exchange_wgrad.hpp>
+// #include <data_readers/data_reader.hpp>
+// #include <device_map.hpp>
+// #include <embedding.hpp>
+// #include <exchange_wgrad.hpp>
 #include <fstream>
 #include <functional>
-#include <gpu_learning_rate_scheduler.hpp>
-#include <gpu_resource.hpp>
+// #include <gpu_learning_rate_scheduler.hpp>
+// #include <gpu_resource.hpp>
 #include <hps/inference_utils.hpp>
-#include <io/hadoop_filesystem.hpp>
-#include <learning_rate_scheduler.hpp>
-#include <metrics.hpp>
-#include <network.hpp>
+// #include <io/hadoop_filesystem.hpp>
+// #include <learning_rate_scheduler.hpp>
+// #include <metrics.hpp>
+// #include <network.hpp>
 #include <nlohmann/json.hpp>
 
-namespace HugeCTR {
+namespace coll_cache_lib {
 
 // inline to avoid build error: multiple definition
 inline nlohmann::json read_json_file(const std::string& filename) {
   nlohmann::json config;
   std::ifstream file_stream(filename);
   if (!file_stream.is_open()) {
-    HCTR_OWN_THROW(Error_t::FileCannotOpen, "file_stream.is_open() failed: " + filename);
+    LOG(FATAL) << "file_stream.is_open() failed: " + filename;
   }
   file_stream >> config;
   file_stream.close();
   return config;
 }
 
+#ifdef DEAD_CODE
 struct Solver {
   std::string model_name;
   unsigned long long seed; /**< seed of data simulator */
@@ -136,22 +137,24 @@ std::unique_ptr<LearningRateScheduler> get_learning_rate_scheduler(
 
 GpuLearningRateSchedulers get_gpu_learning_rate_schedulers(
     const nlohmann::json& config, const std::shared_ptr<ResourceManager>& resource_manager);
+#endif
 
 #define HAS_KEY_(j_in, key_in)                                               \
   do {                                                                       \
     const nlohmann::json& j__ = (j_in);                                      \
     const std::string& key__ = (key_in);                                     \
     if (j__.find(key__) == j__.end())                                        \
-      HCTR_OWN_THROW(Error_t::WrongInput, "[Parser] No Such Key: " + key__); \
+      LOG(FATAL) << "[Parser] No Such Key: " + key__; \
   } while (0)
 
 #define CK_SIZE_(j_in, j_size)                                             \
   do {                                                                     \
     const nlohmann::json& j__ = (j_in);                                    \
     if (j__.size() != (j_size))                                            \
-      HCTR_OWN_THROW(Error_t::WrongInput, "[Parser] Array size is wrong"); \
+      LOG(FATAL) << "[Parser] Array size is wrong"; \
   } while (0)
 
+#ifdef DEAD_CODE
 #define FIND_AND_ASSIGN_INT_KEY(out, json)      \
   do {                                          \
     out = 0;                                    \
@@ -280,6 +283,8 @@ static const std::map<std::string, hybrid_embedding::HybridEmbeddingType>
     HYBRID_EMBEDDING_TYPE_MAP = {
         {"Distributed", hybrid_embedding::HybridEmbeddingType::Distributed}};
 
+#endif
+
 inline bool has_key_(const nlohmann::json& j_in, const std::string& key_in) {
   if (j_in.find(key_in) == j_in.end()) {
     return false;
@@ -309,7 +314,7 @@ inline T get_value_from_json_soft(const nlohmann::json& json, const std::string 
     CK_SIZE_(value, 1);
     return value.get<T>();
   } else {
-    HCTR_LOG_S(INFO, ROOT) << key << " is not specified using default: " << default_value
+    LOG(INFO) << key << " is not specified using default: " << default_value
                            << std::endl;
     return default_value;
   }
@@ -323,12 +328,13 @@ inline std::string get_value_from_json_soft(const nlohmann::json& json, const st
     CK_SIZE_(value, 1);
     return value.get<std::string>();
   } else {
-    HCTR_LOG_S(INFO, ROOT) << key << " is not specified using default: " << default_value
+    LOG(INFO) << key << " is not specified using default: " << default_value
                            << std::endl;
     return default_value;
   }
 }
 
+#ifdef DEAD_CODE
 OptParams get_optimizer_param(const nlohmann::json& j_optimizer);
 
 inline void analyze_tensor(std::map<std::string, unsigned int>& tensor_usage,
@@ -432,13 +438,14 @@ struct create_datareader {
                   const std::vector<long long>& slot_size_array, const bool repeat_dataset);
 };
 
+#endif
 inline int get_max_feature_num_per_sample_from_nnz_per_slot(const nlohmann::json& j) {
   int max_feature_num_per_sample = 0;
   auto slot_num = get_value_from_json<int>(j, "slot_num");
   auto nnz_per_slot = get_json(j, "nnz_per_slot");
   if (nnz_per_slot.is_array()) {
     if (nnz_per_slot.size() != static_cast<size_t>(slot_num)) {
-      HCTR_OWN_THROW(Error_t::WrongInput, "nnz_per_slot.size() != slot_num");
+      LOG(FATAL) << "nnz_per_slot.size() != slot_num";
     }
     for (int slot_id = 0; slot_id < slot_num; ++slot_id) {
       max_feature_num_per_sample += nnz_per_slot[slot_id].get<int>();
@@ -456,7 +463,7 @@ inline int get_max_nnz_from_nnz_per_slot(const nlohmann::json& j) {
   auto nnz_per_slot = get_json(j, "nnz_per_slot");
   if (nnz_per_slot.is_array()) {
     if (nnz_per_slot.size() != static_cast<size_t>(slot_num)) {
-      HCTR_OWN_THROW(Error_t::WrongInput, "nnz_per_slot.size() != slot_num");
+      LOG(FATAL) << "nnz_per_slot.size() != slot_num";
     }
     max_nnz = *std::max_element(nnz_per_slot.begin(), nnz_per_slot.end());
   } else {

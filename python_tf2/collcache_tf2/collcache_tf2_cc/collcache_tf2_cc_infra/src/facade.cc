@@ -22,7 +22,7 @@
 #include "coll_cache_lib/timer.h"
 #include "hps/inference_utils.hpp"
 
-namespace HierarchicalParameterServer {
+namespace coll_cache_lib {
 
 Facade::Facade() : lookup_manager_(LookupManager::Create()) {}
 
@@ -97,4 +97,4 @@ void Facade::report_cache() {
     this->profiler_->LogHPSAdd(cache_ratios);
   }
 }
-}  // namespace HierarchicalParameterServer
+}  // namespace coll_cache_lib

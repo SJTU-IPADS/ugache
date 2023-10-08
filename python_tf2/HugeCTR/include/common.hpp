@@ -22,8 +22,9 @@
 #include <nvml.h>
 
 #include <algorithm>
-#include <base/debug/logger.hpp>
-#include <config.hpp>
+// #include <base/debug/logger.hpp>
+// #include <config.hpp>
+#include "coll_cache_lib/logging.h"
 #include <ctime>
 #include <exception>
 #include <initializer_list>
@@ -57,7 +58,7 @@
 
 #define PYTORCH_INIT
 
-namespace HugeCTR {
+namespace coll_cache_lib {
 
 #define HUGECTR_VERSION_MAJOR 4
 #define HUGECTR_VERSION_MINOR 0
@@ -87,24 +88,24 @@ struct NameID {
   unsigned int id;
 };
 
-/**
- * An internal exception, as a child of std::runtime_error, to carry the error code.
- */
-class internal_runtime_error : public std::runtime_error {
- private:
-  const Error_t err_;
+// /**
+//  * An internal exception, as a child of std::runtime_error, to carry the error code.
+//  */
+// class internal_runtime_error : public std::runtime_error {
+//  private:
+//   const Error_t err_;
 
- public:
-  /**
-   * Get the error code from exception.
-   * @return error
-   **/
-  Error_t get_error() const { return err_; }
-  /**
-   * Ctor
-   */
-  internal_runtime_error(Error_t err, std::string str) : runtime_error(str), err_(err) {}
-};
+//  public:
+//   /**
+//    * Get the error code from exception.
+//    * @return error
+//    **/
+//   Error_t get_error() const { return err_; }
+//   /**
+//    * Ctor
+//    */
+//   internal_runtime_error(Error_t err, std::string str) : runtime_error(str), err_(err) {}
+// };
 
 enum class LrPolicy_t { fixed };
 
@@ -251,28 +252,28 @@ typedef struct DataSetHeader_ {
   } while (0)
 #endif
 
-template <typename T>
-inline void hctr_print_func(Logger::DeferredEntry& log, T const& t) {
-  log << t << ", ";
-}
+// template <typename T>
+// inline void hctr_print_func(Logger::DeferredEntry& log, T const& t) {
+//   log << t << ", ";
+// }
 
-// Set precision for double type
-template <>
-inline void hctr_print_func<double>(Logger::DeferredEntry& log, double const& t) {
-  std::ostringstream os;
-  os << std::fixed << std::setprecision(2) << t << ", ";
-  log << os.str();
-}
+// // Set precision for double type
+// template <>
+// inline void hctr_print_func<double>(Logger::DeferredEntry& log, double const& t) {
+//   std::ostringstream os;
+//   os << std::fixed << std::setprecision(2) << t << ", ";
+//   log << os.str();
+// }
 
-template <typename... Args>
-inline void HCTR_LOG_ARGS(const Args&... args) {
-  if (Logger::get().get_rank() == 0) {
-    auto log = HCTR_LOG_S(DEBUG, ROOT);
-    log << '[';
-    (hctr_print_func(log, args), ...);
-    log << ']' << std::endl;
-  }
-}
+// template <typename... Args>
+// inline void HCTR_LOG_ARGS(const Args&... args) {
+//   if (Logger::get().get_rank() == 0) {
+//     auto log = HCTR_LOG_S(DEBUG, ROOT);
+//     log << '[';
+//     (hctr_print_func(log, args), ...);
+//     log << ']' << std::endl;
+//   }
+// }
 
 struct DataReaderSparseParam {
   std::string top_name;
@@ -293,7 +294,7 @@ struct DataReaderSparseParam {
         slot_num(slot_num_),
         type(DataReaderSparse_t::Distributed) {
     if (static_cast<size_t>(slot_num_) != nnz_per_slot_.size()) {
-      HCTR_OWN_THROW(Error_t::WrongInput, "slot num != nnz_per_slot.size().");
+      LOG(FATAL) << "slot num != nnz_per_slot.size().";
     }
     max_feature_num = std::accumulate(nnz_per_slot.begin(), nnz_per_slot.end(), 0);
     max_nnz = *std::max_element(nnz_per_slot.begin(), nnz_per_slot.end());
@@ -316,4 +317,4 @@ struct DenseLayerSwitchs {
   DenseLayerSwitchs(bool fuse_wb_ = false) : fuse_wb(fuse_wb_) {}
 };
 
-}  // namespace HugeCTR
+}  // namespace coll_cache_lib

@@ -16,7 +16,7 @@
 #pragma once
 #include <hps/lookup_session_base.hpp>
 
-namespace HugeCTR {
+namespace coll_cache_lib {
 
 class LookupSession : public LookupSessionBase {
  public:
@@ -28,9 +28,6 @@ class LookupSession : public LookupSessionBase {
 
   virtual void lookup(const void* h_keys, float* d_vectors, size_t num_keys,
                       size_t table_id) override;
-  virtual void lookup(const std::vector<const void*>& h_keys_per_table,
-                      const std::vector<float*>& d_vectors_per_table,
-                      const std::vector<size_t>& num_keys_per_table) override;
   virtual const InferenceParams get_inference_params() const override { return inference_params_; }
 
  private:
@@ -39,4 +36,4 @@ class LookupSession : public LookupSessionBase {
   InferenceParams inference_params_;
 };
 
-}  // namespace HugeCTR
+}  // namespace coll_cache_lib

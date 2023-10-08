@@ -65,9 +65,9 @@ class Shutdown : public OpKernel {
       std::stringstream ss;
       ss << "[CUDA] worker" << std::getenv("HPS_WORKER_ID") << " cuda mem usage: " << ToReadableSize(total  - free) << "\n";
       std::cout << ss.str();
-      HierarchicalParameterServer::Facade::instance()->report_cache();
+      coll_cache_lib::Facade::instance()->report_cache();
       if (std::string(std::getenv("HPS_WORKER_ID")) == "0") {
-        HierarchicalParameterServer::Facade::instance()->report_avg();
+        coll_cache_lib::Facade::instance()->report_avg();
       }
     } catch (const std::exception& error) {
       ctx->SetStatus(errors::Aborted(error.what()));

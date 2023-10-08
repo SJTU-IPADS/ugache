@@ -25,7 +25,7 @@ __forceinline__ __device__ uint32_t atomicAdd(uint32_t* address, int val) {
   return (uint32_t)atomicAdd((unsigned int*)address, (unsigned int)val);
 }
 
-namespace HugeCTR {
+namespace coll_cache_lib {
 
 // Kernels to combine the value buffer
 __global__ void merge_emb_vec(float* d_output_emb_vec, const float* d_missing_emb_vec,
@@ -241,4 +241,4 @@ void MathUtil<T>::Min(const uint32_t* d_src1, const uint32_t* d_src2, uint32_t* 
 template class MathUtil<unsigned int>;
 template class MathUtil<long long>;
 
-}  // namespace HugeCTR
+}  // namespace coll_cache_lib

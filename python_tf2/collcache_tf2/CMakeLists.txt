@@ -14,39 +14,11 @@
 #
 
 cmake_minimum_required(VERSION 3.17)
-project(HierarchicalParameterServer LANGUAGES CXX CUDA)
-
-message(STATUS "Building Hierarchical Parameter Server from source.")
+project(CollCacheTF LANGUAGES CXX CUDA)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CUDA_STANDARD 17)
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmakes)
-
-option(CLANGFORMAT "Setup clangformat target" OFF)
-if(CLANGFORMAT)
-  include(ClangFormat)
-  file(GLOB_RECURSE HUGECTR_SRC
-    ${PROJECT_SOURCE_DIR}/../HugeCTR/src/hps/*.cpp
-    ${PROJECT_SOURCE_DIR}/../HugeCTR/src/hps/*.cc
-    ${PROJECT_SOURCE_DIR}/../HugeCTR/src/hps/*.cu
-    ${PROJECT_SOURCE_DIR}/../HugeCTR/include/hps/*.hpp
-    ${PROJECT_SOURCE_DIR}/../HugeCTR/include/hps/*.h
-    ${PROJECT_SOURCE_DIR}/../HugeCTR/include/hps/*.cuh
-    ${PROJECT_SOURCE_DIR}/hps_cc/framework/kernels/*.cpp
-    ${PROJECT_SOURCE_DIR}/hps_cc/framework/kernels/*.cc
-    ${PROJECT_SOURCE_DIR}/hps_cc/framework/kernels/*.cu
-    ${PROJECT_SOURCE_DIR}/hps_cc/framework/ops/*.cpp
-    ${PROJECT_SOURCE_DIR}/hps_cc/framework/ops/*.cc
-    ${PROJECT_SOURCE_DIR}/hps_cc/hps_cc_infra/src/*.cpp
-    ${PROJECT_SOURCE_DIR}/hps_cc/hps_cc_infra/src/*.cc
-    ${PROJECT_SOURCE_DIR}/hps_cc/hps_cc_infra/src/*.cu
-    ${PROJECT_SOURCE_DIR}/hps_cc/hps_cc_infra/include/*.hpp
-    ${PROJECT_SOURCE_DIR}/hps_cc/hps_cc_infra/include/*.h
-    ${PROJECT_SOURCE_DIR}/hps_cc/hps_cc_infra/include/*.cuh
-  )
-  set(clangformat_srcs ${HUGECTR_SRC})
-  clangformat_setup("${clangformat_srcs}")
-endif()
 
 find_package(CUDA REQUIRED)
 find_package(TensorFlow REQUIRED)
@@ -105,8 +77,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # setting install folder
 if(SKBUILD)
     # if we're building with skbuild, then we shouldn't be installing to /usr/local/lib
-    # install the libraries alongside the python source in hierarchical_parameter_server/lib instead
-    install(DIRECTORY ${CMAKE_BINARY_DIR}/lib DESTINATION hierarchical_parameter_server)
+    # install the libraries alongside the python source in collcache_tf2_lib/lib instead
+    install(DIRECTORY ${CMAKE_BINARY_DIR}/lib DESTINATION collcache_tf2_lib)
 else()
     install(DIRECTORY ${CMAKE_BINARY_DIR}/lib DESTINATION /usr/local)
 endif()
@@ -114,21 +86,12 @@ endif()
 # headers
 include_directories(
     ${PROJECT_SOURCE_DIR}/../third_party/collcachelib
-    ${PROJECT_SOURCE_DIR}/hps_cc/hps_cc_infra/include/
-    ${PROJECT_SOURCE_DIR}/hps_cc/framework/kernels/
+    ${PROJECT_SOURCE_DIR}/collcache_tf2_cc/collcache_tf2_cc_infra/include/
+    ${PROJECT_SOURCE_DIR}/collcache_tf2_cc/framework/kernels/
     ${PROJECT_SOURCE_DIR}/../
-    ${PROJECT_SOURCE_DIR}/../HugeCTR/
-    ${PROJECT_SOURCE_DIR}/../HugeCTR/include
     ${PROJECT_SOURCE_DIR}/../third_party
     ${PROJECT_SOURCE_DIR}/../third_party/parallel-hashmap
     ${PROJECT_SOURCE_DIR}/../third_party/json/single_include
-    ${PROJECT_SOURCE_DIR}/../third_party/xxhash
-    ${PROJECT_SOURCE_DIR}/../gpu_cache/include
-    ${PROJECT_SOURCE_DIR}/../third_party/redis_pp/src
-    ${PROJECT_SOURCE_DIR}/../third_party/redis_pp/src/sw/redis++/no_tls
-    ${PROJECT_SOURCE_DIR}/../third_party/redis_pp/src/sw/redis++/cxx17
-    ${PROJECT_SOURCE_DIR}/../third_party/rocksdb/include
-    ${PROJECT_SOURCE_DIR}/../third_party/librdkafka/src
     ${CUDA_INCLUDE_DIRS}
 )
 
@@ -158,23 +121,22 @@ link_directories(
     ${PROJECT_SOURCE_DIR}/../third_party/collcachelib/build
 )
 
-# building HPS infra C++ code
-add_subdirectory(hps_cc/hps_cc_infra/src)
+add_subdirectory(collcache_tf2_cc/collcache_tf2_cc_infra/src)
 
 # code sources related to framework
 file(GLOB framework
-    ${PROJECT_SOURCE_DIR}/hps_cc/framework/kernels/*.cpp
-    ${PROJECT_SOURCE_DIR}/hps_cc/framework/kernels/*.cc
-    ${PROJECT_SOURCE_DIR}/hps_cc/framework/kernels/*.cu
-    ${PROJECT_SOURCE_DIR}/hps_cc/framework/ops/*.cpp
-    ${PROJECT_SOURCE_DIR}/hps_cc/framework/ops/*.cc
+    ${PROJECT_SOURCE_DIR}/collcache_tf2_cc/framework/kernels/*.cpp
+    ${PROJECT_SOURCE_DIR}/collcache_tf2_cc/framework/kernels/*.cc
+    ${PROJECT_SOURCE_DIR}/collcache_tf2_cc/framework/kernels/*.cu
+    ${PROJECT_SOURCE_DIR}/collcache_tf2_cc/framework/ops/*.cpp
+    ${PROJECT_SOURCE_DIR}/collcache_tf2_cc/framework/ops/*.cc
 )
 
 # build dynamic lib
-add_library(hierarchical_parameter_server SHARED ${framework})
+add_library(collcache_tf2_lib SHARED ${framework})
 
-target_link_libraries(hierarchical_parameter_server PUBLIC ${TF_LINK_FLAGS} coll_cache hps_cc_infra)
-target_compile_features(hierarchical_parameter_server PUBLIC cxx_std_17)
-set_target_properties(hierarchical_parameter_server PROPERTIES CUDA_RESOLVE_DEVICE_SYMBOLS ON)
-set_target_properties(hierarchical_parameter_server PROPERTIES CUDA_ARCHITECTURES OFF)
+target_link_libraries(collcache_tf2_lib PUBLIC ${TF_LINK_FLAGS} coll_cache collcache_tf2_cc_infra)
+target_compile_features(collcache_tf2_lib PUBLIC cxx_std_17)
+set_target_properties(collcache_tf2_lib PROPERTIES CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+set_target_properties(collcache_tf2_lib PROPERTIES CUDA_ARCHITECTURES OFF)
 

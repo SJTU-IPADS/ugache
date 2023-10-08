@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 #pragma once
-#include <hps/embedding_cache_base.hpp>
 #include <hps/inference_utils.hpp>
 #include <memory>
 
 #include "coll_cache_lib/freq_recorder.h"
 
-namespace HugeCTR {
+namespace coll_cache_lib {
+
+class EmbeddingCacheBase;
 
 class LookupSessionBase {
  public:
@@ -30,9 +31,6 @@ class LookupSessionBase {
   LookupSessionBase& operator=(LookupSessionBase const&) = delete;
 
   virtual void lookup(const void* h_keys, float* d_vectors, size_t num_keys, size_t table_id) = 0;
-  virtual void lookup(const std::vector<const void*>& h_keys_per_table,
-                      const std::vector<float*>& d_vectors_per_table,
-                      const std::vector<size_t>& num_keys_per_table) = 0;
   virtual const InferenceParams get_inference_params() const = 0;
 
   static std::shared_ptr<LookupSessionBase> create(
@@ -41,4 +39,4 @@ class LookupSessionBase {
   std::shared_ptr<coll_cache_lib::common::FreqRecorder> freq_recorder_;
 };
 
-}  // namespace HugeCTR
+}  // namespace coll_cache_lib

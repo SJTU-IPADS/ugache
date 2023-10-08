@@ -28,7 +28,7 @@
 #include <thread>
 #include <vector>
 
-namespace HugeCTR {
+namespace coll_cache_lib {
 
 enum INFER_TYPE { TRITON, OTHER };
 enum CACHE_SPACE_TYPE { WORKER, REFRESHER };
@@ -423,4 +423,4 @@ class MathUtil {
                   cudaStream_t stream);
 };
 
-}  // namespace HugeCTR
+}  // namespace coll_cache_lib

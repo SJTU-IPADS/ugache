@@ -23,7 +23,7 @@
 #include "lookup_manager.h"
 #include "tensorflow/core/framework/op_kernel.h"
 
-namespace HierarchicalParameterServer {
+namespace coll_cache_lib {
 
 using namespace HugeCTR;
 
@@ -74,4 +74,4 @@ class Facade final {
   }
 };
 
-}  // namespace HierarchicalParameterServer
+}  // namespace coll_cache_lib

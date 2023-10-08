@@ -20,7 +20,7 @@
 
 #include <cstdint>
 #include <filesystem>
-#include <hps/database_backend.hpp>
+// #include <hps/database_backend.hpp>
 #include <iostream>
 #include <map>
 #include <nlohmann/json.hpp>
@@ -29,7 +29,7 @@
 #include <thread>
 #include <vector>
 
-namespace HugeCTR {
+namespace coll_cache_lib {
 
 // This is a draft for a unified embedding format and needs to keep consistency with 3g embedding
 // or merlinkv
@@ -116,6 +116,12 @@ class RawModelLoader : public IModelLoader {
   ~RawModelLoader() { delete_table(); }
 };
 
+enum class DBTableDumpFormat_t {
+  Automatic = 0,  // Try to deduce the storage format from the provided path.
+  Raw,            // Use raw storage format.
+  SST             // Write data as an "Static Sorted Table" file.
+};
+
 template <typename TKey, typename TValue>
 class ModelLoader {
  public:
@@ -137,4 +143,4 @@ class ModelLoader {
   }
 };
 
-}  // namespace HugeCTR
+}  // namespace coll_cache_lib

@@ -18,9 +18,8 @@
 #include <hps/inference_utils.hpp>
 #include <parser.hpp>
 #include <unordered_set>
-#include <utils.hpp>
 
-namespace HugeCTR {
+namespace coll_cache_lib {
 
 std::ostream& operator<<(std::ostream& os, const DatabaseType_t value) {
   return os << hctr_enum_to_c_str(value);
@@ -207,9 +206,7 @@ InferenceParams::InferenceParams(
       slot_num(slot_num),
       non_trainable_params_file(non_trainable_params_file) {
   if (this->default_value_for_each_table.size() != this->sparse_model_files.size()) {
-    HCTR_LOG(
-        WARNING, ROOT,
-        "default_value_for_each_table.size() is not equal to the number of embedding tables\n");
+    LOG(WARNING) << "default_value_for_each_table.size() is not equal to the number of embedding tables\n";
     float default_value =
         this->default_value_for_each_table.size() ? this->default_value_for_each_table[0] : 0.f;
     this->default_value_for_each_table.resize(this->sparse_model_files.size());
@@ -228,9 +225,9 @@ parameter_server_config::parameter_server_config(const std::string& hps_json_con
 }
 
 void parameter_server_config::init(const std::string& hps_json_config_file) {
-  HCTR_PRINT(INFO,
+  LOG(INFO) << 
              "=====================================================HPS "
-             "Parse====================================================\n");
+             "Parse====================================================\n";
 
   // Initialize for each model
   // Open model config file and input model json config
@@ -314,7 +311,7 @@ void parameter_server_config::init(const std::string& hps_json_config_file) {
     }
   }
   // Volatile database parameters.
-  HugeCTR::VolatileDatabaseParams volatile_db_params;
+  coll_cache_lib::VolatileDatabaseParams volatile_db_params;
   if (hps_config.find("volatile_db") != hps_config.end()) {
     const nlohmann::json& volatile_db = get_json(hps_config, "volatile_db");
     auto& params = volatile_db_params;
@@ -373,8 +370,8 @@ void parameter_server_config::init(const std::string& hps_json_config_file) {
   this->update_source = update_source_params;
   // Search for all model configuration
   const nlohmann::json& models = get_json(hps_config, "models");
-  HCTR_CHECK_HINT(models.size() > 0,
-                  "No model configurations in JSON. Is the file formatted correctly?");
+  CHECK(models.size() > 0) <<
+                  "No model configurations in JSON. Is the file formatted correctly?";
   for (size_t j = 0; j < models.size(); j++) {
     const nlohmann::json& model = models[j];
     // [0] model_name -> std::string
@@ -537,9 +534,9 @@ parameter_server_config::parameter_server_config(
   if (emb_table_name.size() != inference_params_array.size() ||
       embedding_vec_size.size() != inference_params_array.size() ||
       max_feature_num_per_sample_per_emb_table.size() != inference_params_array.size()) {
-    HCTR_OWN_THROW(Error_t::WrongInput,
+    LOG(FATAL) <<
                    "Wrong input: The number of model names and inference_params_array "
-                   "are not consistent.");
+                   "are not consistent.";
   }
   for (size_t i = 0; i < inference_params_array.size(); i++) {
     const auto& inference_params = inference_params_array[i];
@@ -547,7 +544,7 @@ parameter_server_config::parameter_server_config(
         embedding_vec_size.find(inference_params.model_name) == embedding_vec_size.end() ||
         max_feature_num_per_sample_per_emb_table.find(inference_params.model_name) ==
             max_feature_num_per_sample_per_emb_table.end()) {
-      HCTR_OWN_THROW(Error_t::WrongInput, "Wrong input: The model_name does not exist in the map.");
+      LOG(FATAL) << "Wrong input: The model_name does not exist in the map.";
     }
     if (emb_table_name[inference_params.model_name].size() !=
             inference_params.default_value_for_each_table.size() ||
@@ -555,9 +552,9 @@ parameter_server_config::parameter_server_config(
             inference_params.default_value_for_each_table.size() ||
         max_feature_num_per_sample_per_emb_table[inference_params.model_name].size() !=
             inference_params.default_value_for_each_table.size()) {
-      HCTR_OWN_THROW(Error_t::WrongInput,
+      LOG(FATAL) <<
                      "Wrong input: The number of embedding tables are not consistent for model " +
-                         inference_params.model_name);
+                         inference_params.model_name;
     }
 
     // Initialize <model_name, id> map
@@ -592,9 +589,9 @@ parameter_server_config::parameter_server_config(
     const std::vector<std::string>& model_config_path_array,
     const std::vector<InferenceParams>& inference_params_array) {
   if (model_config_path_array.size() != inference_params_array.size()) {
-    HCTR_OWN_THROW(Error_t::WrongInput,
+    LOG(FATAL) <<
                    "Wrong input: The size of model_config_path_array and inference_params_array "
-                   "are not consistent.");
+                   "are not consistent.";
   }
   for (size_t i = 0; i < model_config_path_array.size(); i++) {
     const auto& model_config_path = model_config_path_array[i];
@@ -666,106 +663,106 @@ parameter_server_config::parameter_server_config(
   this->inference_params_array = inference_params_array;
 }
 
-HugeCTR::DatabaseType_t get_hps_database_type(const nlohmann::json& json, const std::string key) {
+coll_cache_lib::DatabaseType_t get_hps_database_type(const nlohmann::json& json, const std::string key) {
   if (json.find(key) == json.end()) {
-    return HugeCTR::DatabaseType_t::Disabled;
+    return coll_cache_lib::DatabaseType_t::Disabled;
   }
   std::string tmp = get_value_from_json<std::string>(json, key);
-  HugeCTR::DatabaseType_t enum_value;
+  coll_cache_lib::DatabaseType_t enum_value;
   std::unordered_set<const char*> names;
 
-  enum_value = HugeCTR::DatabaseType_t::Disabled;
+  enum_value = coll_cache_lib::DatabaseType_t::Disabled;
   names = {hctr_enum_to_c_str(enum_value), "disable", "none"};
   for (const char* name : names)
     if (tmp == name) {
       return enum_value;
     }
 
-  enum_value = HugeCTR::DatabaseType_t::HashMap;
+  enum_value = coll_cache_lib::DatabaseType_t::HashMap;
   names = {hctr_enum_to_c_str(enum_value), "hashmap", "hash", "map"};
   for (const char* name : names)
     if (tmp == name) {
       return enum_value;
     }
 
-  enum_value = HugeCTR::DatabaseType_t::ParallelHashMap;
+  enum_value = coll_cache_lib::DatabaseType_t::ParallelHashMap;
   names = {hctr_enum_to_c_str(enum_value), "parallel_hashmap", "parallel_hash", "parallel_map"};
   for (const char* name : names)
     if (tmp == name) {
       return enum_value;
     }
-  enum_value = HugeCTR::DatabaseType_t::DirectMap;
+  enum_value = coll_cache_lib::DatabaseType_t::DirectMap;
   names = {hctr_enum_to_c_str(enum_value), "direct", "direct_map"};
   for (const char* name : names)
     if (tmp == name) {
       return enum_value;
     }
 
-  enum_value = HugeCTR::DatabaseType_t::RedisCluster;
+  enum_value = coll_cache_lib::DatabaseType_t::RedisCluster;
   names = {hctr_enum_to_c_str(enum_value), "redis"};
   for (const char* name : names)
     if (tmp == name) {
       return enum_value;
     }
 
-  enum_value = HugeCTR::DatabaseType_t::RocksDB;
+  enum_value = coll_cache_lib::DatabaseType_t::RocksDB;
   names = {hctr_enum_to_c_str(enum_value), "rocksdb", "rocks"};
   for (const char* name : names)
     if (tmp == name) {
       return enum_value;
     }
-  return HugeCTR::DatabaseType_t::Disabled;
+  return coll_cache_lib::DatabaseType_t::Disabled;
 }
 
 UpdateSourceType_t get_hps_updatesource_type(const nlohmann::json& json, const std::string key) {
   if (json.find(key) == json.end()) {
-    return HugeCTR::UpdateSourceType_t::KafkaMessageQueue;
+    return coll_cache_lib::UpdateSourceType_t::KafkaMessageQueue;
   }
   std::string tmp = get_value_from_json<std::string>(json, key);
-  HugeCTR::UpdateSourceType_t enum_value;
+  coll_cache_lib::UpdateSourceType_t enum_value;
   std::unordered_set<const char*> names;
 
-  enum_value = HugeCTR::UpdateSourceType_t::Null;
+  enum_value = coll_cache_lib::UpdateSourceType_t::Null;
   names = {hctr_enum_to_c_str(enum_value), "none"};
   for (const char* name : names)
     if (tmp == name) {
       return enum_value;
     }
 
-  enum_value = HugeCTR::UpdateSourceType_t::KafkaMessageQueue;
+  enum_value = coll_cache_lib::UpdateSourceType_t::KafkaMessageQueue;
   names = {hctr_enum_to_c_str(enum_value), "kafka_mq", "kafka"};
   for (const char* name : names)
     if (tmp == name) {
       return enum_value;
     }
 
-  return HugeCTR::UpdateSourceType_t::KafkaMessageQueue;
+  return coll_cache_lib::UpdateSourceType_t::KafkaMessageQueue;
 }
 
 DatabaseOverflowPolicy_t get_hps_overflow_policy(const nlohmann::json& json,
                                                  const std::string key) {
   if (json.find(key) == json.end()) {
-    return HugeCTR::DatabaseOverflowPolicy_t::EvictOldest;
+    return coll_cache_lib::DatabaseOverflowPolicy_t::EvictOldest;
   }
   std::string tmp = get_value_from_json<std::string>(json, key);
-  HugeCTR::DatabaseOverflowPolicy_t enum_value;
+  coll_cache_lib::DatabaseOverflowPolicy_t enum_value;
   std::unordered_set<const char*> names;
 
-  enum_value = HugeCTR::DatabaseOverflowPolicy_t::EvictOldest;
+  enum_value = coll_cache_lib::DatabaseOverflowPolicy_t::EvictOldest;
   names = {hctr_enum_to_c_str(enum_value), "oldest"};
   for (const char* name : names)
     if (tmp == name) {
       return enum_value;
     }
 
-  enum_value = HugeCTR::DatabaseOverflowPolicy_t::EvictRandom;
+  enum_value = coll_cache_lib::DatabaseOverflowPolicy_t::EvictRandom;
   names = {hctr_enum_to_c_str(enum_value), "random"};
   for (const char* name : names)
     if (tmp == name) {
       return enum_value;
     }
 
-  return HugeCTR::DatabaseOverflowPolicy_t::EvictOldest;
+  return coll_cache_lib::DatabaseOverflowPolicy_t::EvictOldest;
 }
 
-}  // namespace HugeCTR
+}  // namespace coll_cache_lib

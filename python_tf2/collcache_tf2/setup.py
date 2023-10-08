@@ -19,34 +19,18 @@ import sys
 from setuptools import find_packages
 from skbuild import setup
 
-
-def _GetHPSVersion():
-    _version_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "hierarchical_parameter_server/core/"
-    )
-    sys.path.append(_version_path)
-    from _version import __version__
-
-    version = __version__
-    del __version__
-    sys.path.pop(-1)
-    return version
+# Package meta-data.
+NAME = 'collcache_tf'
+DESCRIPTION = 'A high-performance embedding cache'
+REQUIRES_PYTHON = '>=3.6.0'
+VERSION = '3.0.0'
 
 CONDA_PREFIX=os.getenv("CONDA_PREFIX")
 
 def get_cmake_args():
     gpu_capabilities = ["70", "75", "80"]
-    if os.getenv("HPS_COMPILE_GPU_SM"):
-        gpu_capabilities = os.getenv("HPS_COMPILE_GPU_SM")
-        gpu_capabilities = str(gpu_capabilities).strip().split(";")
 
     cmake_build_type = "Release"
-    if os.getenv("HPS_COMPILE_BUILD_TYPE"):
-        cmake_build_type = (
-            "Debug"
-            if os.getenv("HPS_COMPILE_BUILD_TYPE") in ["DEBUG", "debug", "Debug"]
-            else "Release"
-        )
 
     cmake_args = [
         "-DSM='{}'".format(";".join(gpu_capabilities)),
@@ -58,13 +42,13 @@ def get_cmake_args():
 
 
 setup(
-    name="merlin-hps",
-    version=_GetHPSVersion(),
-    author="NVIDIA",
-    author_email="hugectr-dev@exchange.nvidia.com",
-    url="https://github.com/NVIDIA-Merlin/HugeCTR/tree/master/hierarchical_parameter_server",
-    description="HierarchicalParameterServer (HPS)",
-    long_description="HierarchicalParameterServer (HPS)",
+    name=NAME,
+    version=VERSION,
+    # author="NVIDIA",
+    # author_email="hugectr-dev@exchange.nvidia.com",
+    # url="https://github.com/NVIDIA-Merlin/HugeCTR/tree/master/hierarchical_parameter_server",
+    description=DESCRIPTION,
+    long_description=DESCRIPTION,
     extras_require={"tensorflow": "tensorflow>=1.15"},
     license="Apache 2.0",
     platforms=["Linux"],
