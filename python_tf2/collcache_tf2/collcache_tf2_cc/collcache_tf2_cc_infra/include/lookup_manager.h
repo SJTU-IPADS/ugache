@@ -17,8 +17,8 @@
 #pragma once
 #include "coll_cache_lib/atomic_barrier.h"
 #include "coll_cache_lib/facade.h"
-#include "hps/hier_parameter_server.hpp"
-#include "hps/lookup_session.hpp"
+#include "hier_parameter_server.hpp"
+#include "lookup_session.hpp"
 #include "tensorflow/core/framework/op_kernel.h"
 
 namespace coll_cache_lib {

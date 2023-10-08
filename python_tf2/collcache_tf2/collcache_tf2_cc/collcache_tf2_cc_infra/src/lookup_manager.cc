@@ -22,8 +22,8 @@
 #include "coll_cache_lib/profiler.h"
 #include "coll_cache_lib/logging.h"
 #include "coll_cache_lib/timer.h"
-#include "hps/hier_parameter_server.hpp"
-#include "hps/inference_utils.hpp"
+#include "hier_parameter_server.hpp"
+#include "inference_utils.hpp"
 #include "tensorflow/core/framework/op_kernel.h"
 #include "tensorflow/core/platform/stream_executor.h"
 

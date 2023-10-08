@@ -20,7 +20,6 @@
 
 #include <cstdint>
 #include <filesystem>
-// #include <hps/database_backend.hpp>
 #include <iostream>
 #include <map>
 #include <nlohmann/json.hpp>

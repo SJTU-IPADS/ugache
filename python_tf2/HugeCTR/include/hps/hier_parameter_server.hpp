@@ -18,11 +18,7 @@
 #include <coll_cache_lib/facade.h>
 
 #include <common.hpp>
-// #include <hps/database_backend.hpp>
-// #include <hps/hier_parameter_server_base.hpp>
-#include <hps/inference_utils.hpp>
-// #include <hps/memory_pool.hpp>
-// #include <hps/message.hpp>
+#include <inference_utils.hpp>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -34,7 +30,7 @@
 #include "coll_cache_lib/atomic_barrier.h"
 #include "coll_cache_lib/common.h"
 #include "coll_cache_lib/run_config.h"
-#include "hps/modelloader.hpp"
+#include "modelloader.hpp"
 
 namespace coll_cache_lib {
 

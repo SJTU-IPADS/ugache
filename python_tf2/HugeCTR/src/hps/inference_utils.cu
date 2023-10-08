@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 #include <cub/cub.cuh>
-#include <hps/inference_utils.hpp>
+#include <inference_utils.hpp>
 
 #include "coll_cache_lib/common.h"
 #define WARP_SIZE 32

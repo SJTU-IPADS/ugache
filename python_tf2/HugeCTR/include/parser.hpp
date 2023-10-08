@@ -16,19 +16,9 @@
 
 #pragma once
 #include <common.hpp>
-// #include <data_readers/data_reader.hpp>
-// #include <device_map.hpp>
-// #include <embedding.hpp>
-// #include <exchange_wgrad.hpp>
 #include <fstream>
 #include <functional>
-// #include <gpu_learning_rate_scheduler.hpp>
-// #include <gpu_resource.hpp>
-#include <hps/inference_utils.hpp>
-// #include <io/hadoop_filesystem.hpp>
-// #include <learning_rate_scheduler.hpp>
-// #include <metrics.hpp>
-// #include <network.hpp>
+#include <inference_utils.hpp>
 #include <nlohmann/json.hpp>
 
 namespace coll_cache_lib {

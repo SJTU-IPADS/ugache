@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 #pragma once
-#include <hps/lookup_session_base.hpp>
+#include <lookup_session_base.hpp>
 
 namespace coll_cache_lib {
 

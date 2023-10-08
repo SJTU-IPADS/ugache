@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <hps/lookup_session.hpp>
+#include <lookup_session.hpp>
 
 #include "coll_cache_lib/freq_recorder.h"
 

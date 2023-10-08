@@ -20,7 +20,7 @@
 #include <vector>
 
 #include "coll_cache_lib/timer.h"
-#include "hps/inference_utils.hpp"
+#include "inference_utils.hpp"
 
 namespace coll_cache_lib {
 

@@ -19,8 +19,8 @@
 
 #include <common.hpp>
 #include <cstddef>
-#include <hps/inference_utils.hpp>
-#include <hps/modelloader.hpp>
+#include <inference_utils.hpp>
+#include <modelloader.hpp>
 #include <parser.hpp>
 #include <string>
 #include <unordered_set>

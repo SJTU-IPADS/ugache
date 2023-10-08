@@ -15,7 +15,7 @@
  */
 
 #include <common.hpp>
-#include <hps/inference_utils.hpp>
+#include <inference_utils.hpp>
 #include <parser.hpp>
 #include <unordered_set>
 

@@ -19,7 +19,7 @@
 
 #include "coll_cache_lib/profiler.h"
 #include "coll_cache_lib/run_config.h"
-#include "hps/inference_utils.hpp"
+#include "inference_utils.hpp"
 #include "lookup_manager.h"
 #include "tensorflow/core/framework/op_kernel.h"
 

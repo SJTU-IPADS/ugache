@@ -16,15 +16,12 @@
 
 #include <cmath>
 #include <filesystem>
-// #include <hps/direct_map_backend.hpp>
-// #include <hps/hash_map_backend.hpp>
-#include <hps/hier_parameter_server.hpp>
-#include <hps/inference_utils.hpp>
-#include <hps/modelloader.hpp>
+#include <hier_parameter_server.hpp>
+#include <inference_utils.hpp>
+#include <modelloader.hpp>
 #include <regex>
 #include <vector>
 
-// #include "base/debug/logger.hpp"
 #include "coll_cache_lib/atomic_barrier.h"
 #include "coll_cache_lib/common.h"
 #include "coll_cache_lib/device.h"

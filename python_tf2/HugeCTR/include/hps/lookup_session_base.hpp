@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 #pragma once
-#include <hps/inference_utils.hpp>
+#include <inference_utils.hpp>
 #include <memory>
 
 #include "coll_cache_lib/freq_recorder.h"
