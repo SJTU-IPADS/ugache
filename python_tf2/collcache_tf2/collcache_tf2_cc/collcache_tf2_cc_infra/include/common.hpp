@@ -24,7 +24,7 @@
 #include <algorithm>
 // #include <base/debug/logger.hpp>
 // #include <config.hpp>
-#include "coll_cache_lib/logging.h"
+// #include "logging.hpp"
 #include <ctime>
 #include <exception>
 #include <initializer_list>
@@ -275,42 +275,42 @@ typedef struct DataSetHeader_ {
 //   }
 // }
 
-struct DataReaderSparseParam {
-  std::string top_name;
-  std::vector<int> nnz_per_slot;
-  bool is_fixed_length;
-  int slot_num;
+// struct DataReaderSparseParam {
+//   std::string top_name;
+//   std::vector<int> nnz_per_slot;
+//   bool is_fixed_length;
+//   int slot_num;
 
-  DataReaderSparse_t type;
-  int max_feature_num;
-  int max_nnz;
+//   DataReaderSparse_t type;
+//   int max_feature_num;
+//   int max_nnz;
 
-  DataReaderSparseParam() {}
-  DataReaderSparseParam(const std::string& top_name_, const std::vector<int>& nnz_per_slot_,
-                        bool is_fixed_length_, int slot_num_)
-      : top_name(top_name_),
-        nnz_per_slot(nnz_per_slot_),
-        is_fixed_length(is_fixed_length_),
-        slot_num(slot_num_),
-        type(DataReaderSparse_t::Distributed) {
-    if (static_cast<size_t>(slot_num_) != nnz_per_slot_.size()) {
-      LOG(FATAL) << "slot num != nnz_per_slot.size().";
-    }
-    max_feature_num = std::accumulate(nnz_per_slot.begin(), nnz_per_slot.end(), 0);
-    max_nnz = *std::max_element(nnz_per_slot.begin(), nnz_per_slot.end());
-  }
+//   DataReaderSparseParam() {}
+//   DataReaderSparseParam(const std::string& top_name_, const std::vector<int>& nnz_per_slot_,
+//                         bool is_fixed_length_, int slot_num_)
+//       : top_name(top_name_),
+//         nnz_per_slot(nnz_per_slot_),
+//         is_fixed_length(is_fixed_length_),
+//         slot_num(slot_num_),
+//         type(DataReaderSparse_t::Distributed) {
+//     if (static_cast<size_t>(slot_num_) != nnz_per_slot_.size()) {
+//       COLL_LOG(FATAL) << "slot num != nnz_per_slot.size().";
+//     }
+//     max_feature_num = std::accumulate(nnz_per_slot.begin(), nnz_per_slot.end(), 0);
+//     max_nnz = *std::max_element(nnz_per_slot.begin(), nnz_per_slot.end());
+//   }
 
-  DataReaderSparseParam(const std::string& top_name_, const int nnz_per_slot_,
-                        bool is_fixed_length_, int slot_num_)
-      : top_name(top_name_),
-        nnz_per_slot(slot_num_, nnz_per_slot_),
-        is_fixed_length(is_fixed_length_),
-        slot_num(slot_num_),
-        type(DataReaderSparse_t::Distributed) {
-    max_feature_num = std::accumulate(nnz_per_slot.begin(), nnz_per_slot.end(), 0);
-    max_nnz = *std::max_element(nnz_per_slot.begin(), nnz_per_slot.end());
-  }
-};
+//   DataReaderSparseParam(const std::string& top_name_, const int nnz_per_slot_,
+//                         bool is_fixed_length_, int slot_num_)
+//       : top_name(top_name_),
+//         nnz_per_slot(slot_num_, nnz_per_slot_),
+//         is_fixed_length(is_fixed_length_),
+//         slot_num(slot_num_),
+//         type(DataReaderSparse_t::Distributed) {
+//     max_feature_num = std::accumulate(nnz_per_slot.begin(), nnz_per_slot.end(), 0);
+//     max_nnz = *std::max_element(nnz_per_slot.begin(), nnz_per_slot.end());
+//   }
+// };
 
 struct DenseLayerSwitchs {
   bool fuse_wb;

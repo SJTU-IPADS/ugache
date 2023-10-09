@@ -15,6 +15,7 @@
  */
 
 #pragma once
+#include "logging.hpp"
 #include <common.hpp>
 #include <fstream>
 #include <functional>
@@ -28,7 +29,7 @@ inline nlohmann::json read_json_file(const std::string& filename) {
   nlohmann::json config;
   std::ifstream file_stream(filename);
   if (!file_stream.is_open()) {
-    LOG(FATAL) << "file_stream.is_open() failed: " + filename;
+    COLL_LOG(FATAL) << "file_stream.is_open() failed: " + filename;
   }
   file_stream >> config;
   file_stream.close();
@@ -134,14 +135,14 @@ GpuLearningRateSchedulers get_gpu_learning_rate_schedulers(
     const nlohmann::json& j__ = (j_in);                                      \
     const std::string& key__ = (key_in);                                     \
     if (j__.find(key__) == j__.end())                                        \
-      LOG(FATAL) << "[Parser] No Such Key: " + key__; \
+      COLL_LOG(FATAL) << "[Parser] No Such Key: " + key__; \
   } while (0)
 
 #define CK_SIZE_(j_in, j_size)                                             \
   do {                                                                     \
     const nlohmann::json& j__ = (j_in);                                    \
     if (j__.size() != (j_size))                                            \
-      LOG(FATAL) << "[Parser] Array size is wrong"; \
+      COLL_LOG(FATAL) << "[Parser] Array size is wrong"; \
   } while (0)
 
 #ifdef DEAD_CODE
@@ -304,7 +305,7 @@ inline T get_value_from_json_soft(const nlohmann::json& json, const std::string 
     CK_SIZE_(value, 1);
     return value.get<T>();
   } else {
-    LOG(INFO) << key << " is not specified using default: " << default_value
+    COLL_LOG(INFO) << key << " is not specified using default: " << default_value
                            << std::endl;
     return default_value;
   }
@@ -318,7 +319,7 @@ inline std::string get_value_from_json_soft(const nlohmann::json& json, const st
     CK_SIZE_(value, 1);
     return value.get<std::string>();
   } else {
-    LOG(INFO) << key << " is not specified using default: " << default_value
+    COLL_LOG(INFO) << key << " is not specified using default: " << default_value
                            << std::endl;
     return default_value;
   }
@@ -435,7 +436,7 @@ inline int get_max_feature_num_per_sample_from_nnz_per_slot(const nlohmann::json
   auto nnz_per_slot = get_json(j, "nnz_per_slot");
   if (nnz_per_slot.is_array()) {
     if (nnz_per_slot.size() != static_cast<size_t>(slot_num)) {
-      LOG(FATAL) << "nnz_per_slot.size() != slot_num";
+      COLL_LOG(FATAL) << "nnz_per_slot.size() != slot_num";
     }
     for (int slot_id = 0; slot_id < slot_num; ++slot_id) {
       max_feature_num_per_sample += nnz_per_slot[slot_id].get<int>();
@@ -453,7 +454,7 @@ inline int get_max_nnz_from_nnz_per_slot(const nlohmann::json& j) {
   auto nnz_per_slot = get_json(j, "nnz_per_slot");
   if (nnz_per_slot.is_array()) {
     if (nnz_per_slot.size() != static_cast<size_t>(slot_num)) {
-      LOG(FATAL) << "nnz_per_slot.size() != slot_num";
+      COLL_LOG(FATAL) << "nnz_per_slot.size() != slot_num";
     }
     max_nnz = *std::max_element(nnz_per_slot.begin(), nnz_per_slot.end());
   } else {

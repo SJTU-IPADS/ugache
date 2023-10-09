@@ -38,10 +38,12 @@ void Facade::operator delete(void*) {
 void Facade::init(const int32_t global_replica_id, tensorflow::OpKernelContext* ctx,
                   const char* ps_config_file, int32_t global_batch_size,
                   int32_t num_replicas_in_sync) {
-  std::call_once(lookup_manager_init_once_flag_, [this, ps_config_file, global_batch_size,
+  std::call_once(lookup_manager_init_once_flag_, [this, ctx, ps_config_file, global_batch_size,
                                                   num_replicas_in_sync, global_replica_id]() {
     ps_config = new parameter_server_config{ps_config_file};
-    lookup_manager_->init(*ps_config, global_batch_size, num_replicas_in_sync);
+    lookup_manager_->tf_ctx_list.resize(num_replicas_in_sync);
+    lookup_manager_->tf_ctx_list[global_replica_id] = ctx;
+    lookup_manager_->init(*ps_config, global_batch_size, num_replicas_in_sync, global_replica_id);
     if (!ps_config->use_coll_cache) {
       coll_cache_lib::common::RunConfig::worker_id = global_replica_id;
       coll_cache_lib::common::RunConfig::num_device = num_replicas_in_sync;
@@ -90,11 +92,4 @@ void Facade::report_avg() {
   }
 }
 
-void Facade::report_cache() {
-  if (ps_config->hps_cache_statistic) {
-    std::vector<double> cache_ratios = this->lookup_manager_->report_access_overlap();
-    cache_ratios.emplace(cache_ratios.begin(), this->lookup_manager_->report_cache_intersect());
-    this->profiler_->LogHPSAdd(cache_ratios);
-  }
-}
 }  // namespace coll_cache_lib

@@ -16,15 +16,15 @@
 
 print("[INFO] %s is imported" % __name__)
 
-from hierarchical_parameter_server.core._version import __version__
-from hierarchical_parameter_server.core.initialize import Shutdown
-from hierarchical_parameter_server.core.initialize import NopDep
-from hierarchical_parameter_server.core.initialize import Init
-from hierarchical_parameter_server.core.initialize import wait_one_child
-from hierarchical_parameter_server.core.initialize import SetStepProfileValue
-from hierarchical_parameter_server.core.initialize import AddEpochProfileValue
-from hierarchical_parameter_server.core.lookup_layer import LookupLayer
-from hierarchical_parameter_server.core.sparse_lookup_layer import SparseLookupLayer
+from collcache_tf2.core._version import __version__
+from collcache_tf2.core.initialize import Shutdown
+from collcache_tf2.core.initialize import NopDep
+from collcache_tf2.core.initialize import Init
+from collcache_tf2.core.initialize import wait_one_child
+from collcache_tf2.core.initialize import SetStepProfileValue
+from collcache_tf2.core.initialize import AddEpochProfileValue
+from collcache_tf2.core.lookup_layer import LookupLayer
+from collcache_tf2.core.sparse_lookup_layer import SparseLookupLayer
 
 def _get_next_enum_val(next_val):
     res = next_val[0]

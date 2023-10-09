@@ -14,14 +14,14 @@
  limitations under the License.
 """
 
-from hierarchical_parameter_server import hps_lib
+from collcache_tf2 import collcache_tf2_lib
 import tensorflow.distribute as tf_dist
 from tensorflow import print as tf_print
 from tensorflow import function
 from tensorflow.python.framework import config
 from tensorflow.dtypes import int32, int64
 from tensorflow.python.ops import array_ops
-from hierarchical_parameter_server.core import lookup_ops
+from collcache_tf2.core import lookup_ops
 
 MirroredStrategy = tf_dist.MirroredStrategy
 try:
@@ -31,11 +31,11 @@ except AttributeError:
 import sys
 
 def Shutdown():
-    hps_lib.shutdown()
+    collcache_tf2_lib.shutdown()
 def NopDep(dense, emb):
-    return hps_lib.nop_dep(dense, emb)
+    return collcache_tf2_lib.nop_dep(dense, emb)
 def wait_one_child():
-    return hps_lib.wait_one_child()
+    return collcache_tf2_lib.wait_one_child()
 
 def Init(**kwargs):
     """
@@ -164,7 +164,7 @@ def Init(**kwargs):
         )
         global_id = replica_ctx.replica_id_in_sync_group
         visible_devices = _get_visible_devices()
-        status = hps_lib.init(
+        status = collcache_tf2_lib.init(
             global_id,
             replica_ctx.num_replicas_in_sync,
             visible_devices,
@@ -177,7 +177,7 @@ def Init(**kwargs):
         replica_ctx = tf_dist.get_replica_context()
         global_id = replica_ctx.replica_id_in_sync_group
         visible_devices = _get_visible_devices()
-        status = hps_lib.init(
+        status = collcache_tf2_lib.init(
             global_id,
             replica_ctx.num_replicas_in_sync,
             visible_devices,
@@ -189,7 +189,7 @@ def Init(**kwargs):
     def _horovod_init(**kwargs):
         local_rank = hvd.local_rank()
         visible_devices = _get_visible_devices()
-        status = hps_lib.init(
+        status = collcache_tf2_lib.init(
             local_rank,
             hvd.size(),
             visible_devices,
@@ -201,7 +201,7 @@ def Init(**kwargs):
     def _one_device_init(**kwargs):
         local_rank = 0
         visible_devices = _get_visible_devices()
-        status = hps_lib.init(
+        status = collcache_tf2_lib.init(
             local_rank,
             1,
             visible_devices,
@@ -224,7 +224,7 @@ def Init(**kwargs):
         else:
             raise RuntimeError("This strategy type is not supported yet.")
 
-        if not hps_lib.in_tensorflow2():
+        if not collcache_tf2_lib.in_tensorflow2():
             _run_fn = strategy.experimental_run_v2
         else:
             _run_fn = strategy.run
@@ -237,7 +237,7 @@ def Init(**kwargs):
     elif "horovod.tensorflow" in sys.modules:
         import horovod.tensorflow as hvd
 
-        if not hps_lib.in_tensorflow2():
+        if not collcache_tf2_lib.in_tensorflow2():
 
             @function
             def _init_wrapper(**kwargs):
@@ -251,10 +251,10 @@ def Init(**kwargs):
 
 def SetStepProfileValue(**kwargs):
     global_replica_id = lookup_ops.get_global_replica_id(lookup_ops._get_comm_tool())
-    hps_lib.set_step_profile_value(global_replica_id=global_replica_id, **kwargs)
-    # hps_lib.set_step_profile_value(**kwargs)
+    collcache_tf2_lib.set_step_profile_value(global_replica_id=global_replica_id, **kwargs)
+    # collcache_tf2_lib.set_step_profile_value(**kwargs)
 
 def AddEpochProfileValue(**kwargs):
     global_replica_id = lookup_ops.get_global_replica_id(lookup_ops._get_comm_tool())
-    hps_lib.add_epoch_profile_value(global_replica_id=global_replica_id, **kwargs)
-    # hps_lib.add_epoch_profile_value(**kwargs)
+    collcache_tf2_lib.add_epoch_profile_value(global_replica_id=global_replica_id, **kwargs)
+    # collcache_tf2_lib.add_epoch_profile_value(**kwargs)

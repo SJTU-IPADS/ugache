@@ -15,7 +15,7 @@
 """
 
 import tensorflow as tf
-from hierarchical_parameter_server.core import lookup_ops
+from collcache_tf2.core import lookup_ops
 from tensorflow.python.ops import array_ops
 
 

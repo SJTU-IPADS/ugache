@@ -34,7 +34,7 @@ def in_tensorflow2():
     return using_tf2
 
 
-lib_name = r"libhierarchical_parameter_server.so"
+lib_name = r"libcollcache_tf2_lib.so"
 install_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "lib"))
 paths = [r"/usr/local/lib", install_path]
 

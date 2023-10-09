@@ -15,6 +15,7 @@
  */
 
 #include <fcntl.h>
+#include <sys/stat.h>
 #include <sys/mman.h>
 
 #include <common.hpp>
@@ -31,7 +32,7 @@ std::shared_ptr<IModelLoader> IModelLoader::preserved_model_loader = nullptr;
 
 template <typename TKey, typename TValue>
 RawModelLoader<TKey, TValue>::RawModelLoader() : IModelLoader() {
-  LOG(DEBUG) << "Created raw model loader in local memory!" << std::endl;
+  COLL_LOG(DEBUG) << "Created raw model loader in local memory!" << std::endl;
   embedding_table_ = new UnifiedEmbeddingTable<TKey, TValue>();
 }
 
@@ -59,7 +60,7 @@ void RawModelLoader<TKey, TValue>::load(const std::string& table_name, const std
     size_t num_key_offset = path.find('_') + 1, dim_offset = path.find_last_of('_') + 1;
     size_t num_key = std::stoull(path.substr(num_key_offset)),
            dim = std::stoull(path.substr(dim_offset));
-    LOG(ERROR) << "using mock embedding with " << num_key << " * " << dim
+    COLL_LOG(ERROR) << "using mock embedding with " << num_key << " * " << dim
                              << " elements\n";
     embedding_table_->key_count = num_key;
     embedding_table_->keys.resize(num_key);
@@ -71,22 +72,22 @@ void RawModelLoader<TKey, TValue>::load(const std::string& table_name, const std
     }
     // std::string shm_name = std::string("HPS_VEC_FILE_SHM_") + getenv("USER");
     std::string shm_name = "SAMG_FEAT_SHM";
-    CHECK(getenv("HPS_WORKER_ID") != nullptr) << 
+    COLL_CHECK(getenv("HPS_WORKER_ID") != nullptr) << 
                     "Env HPS_WORKER_ID must be set before loading hps lib\n";
     int fd = shm_open(shm_name.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-    CHECK(fd != -1) << "shm open vec file shm failed\n";
+    COLL_CHECK(fd != -1) << "shm open vec file shm failed\n";
     size_t padded_size = (vec_file_size_in_byte + 0x01fffff) & ~0x01fffff;
     {
       struct stat st;
       fstat(fd, &st);
       if (st.st_size < padded_size) {
         int ret = ftruncate(fd, padded_size);
-        CHECK(ret != -1) << "ftruncate vec file shm failed";
+        COLL_CHECK(ret != -1) << "ftruncate vec file shm failed";
       }
     }
     embedding_table_->vectors_ptr = mmap(nullptr, padded_size,
                                          PROT_WRITE | PROT_READ, MAP_SHARED, fd, 0);
-    CHECK(embedding_table_->vectors_ptr != nullptr) << "mmap vec file shm failed\n";
+    COLL_CHECK(embedding_table_->vectors_ptr != nullptr) << "mmap vec file shm failed\n";
     embedding_table_->umap_len = vec_file_size_in_byte;
 
     return;
@@ -96,7 +97,7 @@ void RawModelLoader<TKey, TValue>::load(const std::string& table_name, const std
   std::ifstream vec_stream(vec_file);
   int vec_file_fd = open(vec_file.c_str(), O_RDONLY);
   if (!key_stream.is_open() || !vec_stream.is_open()) {
-    LOG(FATAL) << "Error: embeddings file not open for reading";
+    COLL_LOG(FATAL) << "Error: embeddings file not open for reading";
   }
 
   const size_t key_file_size_in_byte = std::filesystem::file_size(key_file);
@@ -128,25 +129,25 @@ void RawModelLoader<TKey, TValue>::load(const std::string& table_name, const std
   /** Impl 1*/
   // std::string shm_name = std::string("HPS_VEC_FILE_SHM_") + getenv("USER");
   std::string shm_name = "SAMG_FEAT_SHM";
-  CHECK(getenv("HPS_WORKER_ID") != nullptr) <<
+  COLL_CHECK(getenv("HPS_WORKER_ID") != nullptr) <<
                   "Env HPS_WORKER_ID must be set before loading hps lib\n";
   int fd = shm_open(shm_name.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-  CHECK(fd != -1) << "shm open vec file shm failed\n";
+  COLL_CHECK(fd != -1) << "shm open vec file shm failed\n";
   size_t padded_size = (vec_file_size_in_byte + 0x01fffff) & ~0x01fffff;
   {
     struct stat st;
     fstat(fd, &st);
     if (st.st_size < padded_size) {
       int ret = ftruncate(fd, padded_size);
-      CHECK(ret != -1) << "ftruncate vec file shm failed";
+      COLL_CHECK(ret != -1) << "ftruncate vec file shm failed";
     }
   }
   embedding_table_->vectors_ptr = mmap(nullptr, padded_size,
                                        PROT_WRITE | PROT_READ, MAP_SHARED, fd, 0);
-  CHECK(embedding_table_->vectors_ptr != nullptr) << "mmap vec file shm failed\n";
+  COLL_CHECK(embedding_table_->vectors_ptr != nullptr) << "mmap vec file shm failed\n";
   embedding_table_->umap_len = vec_file_size_in_byte;
   if (std::stoi(getenv("HPS_WORKER_ID")) == 0) {
-    LOG(ERROR) << "I'm worker 0, I should read the data " << vec_file_size_in_byte
+    COLL_LOG(ERROR) << "I'm worker 0, I should read the data " << vec_file_size_in_byte
                              << "\n";
     vec_stream.read(reinterpret_cast<char*>(embedding_table_->vectors_ptr), vec_file_size_in_byte);
   }
@@ -155,7 +156,7 @@ void RawModelLoader<TKey, TValue>::load(const std::string& table_name, const std
   // embedding_table_->vectors.resize((num_float_val_in_vec_file + 0x0fffff) & (~0x0fffff));
   // vec_stream.read(reinterpret_cast<char*>(embedding_table_->vectors.data()),
   // vec_file_size_in_byte);
-  LOG(ERROR) << "raw read done\n";
+  COLL_LOG(ERROR) << "raw read done\n";
 }
 
 template <typename TKey, typename TValue>

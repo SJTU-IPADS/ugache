@@ -21,7 +21,7 @@ from tensorflow.python.ops import array_ops
 from tensorflow.python.framework import dtypes
 from tensorflow.nn import embedding_lookup
 
-from hierarchical_parameter_server.core import lookup_ops
+from collcache_tf2.core import lookup_ops
 
 
 class SparseLookupLayer(tf.keras.layers.Layer):

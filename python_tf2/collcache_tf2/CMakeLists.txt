@@ -14,6 +14,7 @@
 #
 
 cmake_minimum_required(VERSION 3.17)
+set(CUDA_SEPARABLE_COMPILATION ON)
 project(CollCacheTF LANGUAGES CXX CUDA)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -78,28 +79,25 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 if(SKBUILD)
     # if we're building with skbuild, then we shouldn't be installing to /usr/local/lib
     # install the libraries alongside the python source in collcache_tf2_lib/lib instead
-    install(DIRECTORY ${CMAKE_BINARY_DIR}/lib DESTINATION collcache_tf2_lib)
+    install(DIRECTORY ${CMAKE_BINARY_DIR}/lib DESTINATION collcache_tf2)
 else()
     install(DIRECTORY ${CMAKE_BINARY_DIR}/lib DESTINATION /usr/local)
 endif()
 
 # headers
 include_directories(
-    ${PROJECT_SOURCE_DIR}/../third_party/collcachelib
     ${PROJECT_SOURCE_DIR}/collcache_tf2_cc/collcache_tf2_cc_infra/include/
     ${PROJECT_SOURCE_DIR}/collcache_tf2_cc/framework/kernels/
-    ${PROJECT_SOURCE_DIR}/../
-    ${PROJECT_SOURCE_DIR}/../third_party
-    ${PROJECT_SOURCE_DIR}/../third_party/parallel-hashmap
-    ${PROJECT_SOURCE_DIR}/../third_party/json/single_include
+    ${PROJECT_SOURCE_DIR}/../../
+    ${PROJECT_SOURCE_DIR}/../../3rdparty/json/single_include/
     ${CUDA_INCLUDE_DIRS}
 )
 
-configure_file(${PROJECT_SOURCE_DIR}/../HugeCTR/include/config.hpp.in ${PROJECT_SOURCE_DIR}/../HugeCTR/include/config.hpp)
-add_subdirectory(${PROJECT_SOURCE_DIR}/../third_party third_party)
+# configure_file(${PROJECT_SOURCE_DIR}/../HugeCTR/include/config.hpp.in ${PROJECT_SOURCE_DIR}/../HugeCTR/include/config.hpp)
+# add_subdirectory(${PROJECT_SOURCE_DIR}/../third_party third_party)
 # building HPS C++ source code
-add_subdirectory(${PROJECT_SOURCE_DIR}/../gpu_cache/src gpu_cache)
-add_subdirectory(${PROJECT_SOURCE_DIR}/../HugeCTR/src/hps hps)
+# add_subdirectory(${PROJECT_SOURCE_DIR}/../gpu_cache/src gpu_cache)
+# add_subdirectory(${PROJECT_SOURCE_DIR}/../HugeCTR/src/hps hps)
 
 # setting tensorflow compile flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TF_COMPILE_FLAGS}")
@@ -118,7 +116,7 @@ endif()
 # libs
 link_directories(
     ${TF_LINK_DIR}
-    ${PROJECT_SOURCE_DIR}/../third_party/collcachelib/build
+    ${PROJECT_SOURCE_DIR}/../../build
 )
 
 add_subdirectory(collcache_tf2_cc/collcache_tf2_cc_infra/src)
@@ -135,7 +133,7 @@ file(GLOB framework
 # build dynamic lib
 add_library(collcache_tf2_lib SHARED ${framework})
 
-target_link_libraries(collcache_tf2_lib PUBLIC ${TF_LINK_FLAGS} coll_cache collcache_tf2_cc_infra)
+target_link_libraries(collcache_tf2_lib PUBLIC ${TF_LINK_FLAGS} coll_cache collcache_tf2_cc_infra rt)
 target_compile_features(collcache_tf2_lib PUBLIC cxx_std_17)
 set_target_properties(collcache_tf2_lib PROPERTIES CUDA_RESOLVE_DEVICE_SYMBOLS ON)
 set_target_properties(collcache_tf2_lib PROPERTIES CUDA_ARCHITECTURES OFF)

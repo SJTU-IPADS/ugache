@@ -206,7 +206,7 @@ InferenceParams::InferenceParams(
       slot_num(slot_num),
       non_trainable_params_file(non_trainable_params_file) {
   if (this->default_value_for_each_table.size() != this->sparse_model_files.size()) {
-    LOG(WARNING) << "default_value_for_each_table.size() is not equal to the number of embedding tables\n";
+    COLL_LOG(WARNING) << "default_value_for_each_table.size() is not equal to the number of embedding tables\n";
     float default_value =
         this->default_value_for_each_table.size() ? this->default_value_for_each_table[0] : 0.f;
     this->default_value_for_each_table.resize(this->sparse_model_files.size());
@@ -225,7 +225,7 @@ parameter_server_config::parameter_server_config(const std::string& hps_json_con
 }
 
 void parameter_server_config::init(const std::string& hps_json_config_file) {
-  LOG(INFO) << 
+  COLL_LOG(INFO) << 
              "=====================================================HPS "
              "Parse====================================================\n";
 
@@ -370,7 +370,7 @@ void parameter_server_config::init(const std::string& hps_json_config_file) {
   this->update_source = update_source_params;
   // Search for all model configuration
   const nlohmann::json& models = get_json(hps_config, "models");
-  CHECK(models.size() > 0) <<
+  COLL_CHECK(models.size() > 0) <<
                   "No model configurations in JSON. Is the file formatted correctly?";
   for (size_t j = 0; j < models.size(); j++) {
     const nlohmann::json& model = models[j];
@@ -534,7 +534,7 @@ parameter_server_config::parameter_server_config(
   if (emb_table_name.size() != inference_params_array.size() ||
       embedding_vec_size.size() != inference_params_array.size() ||
       max_feature_num_per_sample_per_emb_table.size() != inference_params_array.size()) {
-    LOG(FATAL) <<
+    COLL_LOG(FATAL) <<
                    "Wrong input: The number of model names and inference_params_array "
                    "are not consistent.";
   }
@@ -544,7 +544,7 @@ parameter_server_config::parameter_server_config(
         embedding_vec_size.find(inference_params.model_name) == embedding_vec_size.end() ||
         max_feature_num_per_sample_per_emb_table.find(inference_params.model_name) ==
             max_feature_num_per_sample_per_emb_table.end()) {
-      LOG(FATAL) << "Wrong input: The model_name does not exist in the map.";
+      COLL_LOG(FATAL) << "Wrong input: The model_name does not exist in the map.";
     }
     if (emb_table_name[inference_params.model_name].size() !=
             inference_params.default_value_for_each_table.size() ||
@@ -552,7 +552,7 @@ parameter_server_config::parameter_server_config(
             inference_params.default_value_for_each_table.size() ||
         max_feature_num_per_sample_per_emb_table[inference_params.model_name].size() !=
             inference_params.default_value_for_each_table.size()) {
-      LOG(FATAL) <<
+      COLL_LOG(FATAL) <<
                      "Wrong input: The number of embedding tables are not consistent for model " +
                          inference_params.model_name;
     }
@@ -589,7 +589,7 @@ parameter_server_config::parameter_server_config(
     const std::vector<std::string>& model_config_path_array,
     const std::vector<InferenceParams>& inference_params_array) {
   if (model_config_path_array.size() != inference_params_array.size()) {
-    LOG(FATAL) <<
+    COLL_LOG(FATAL) <<
                    "Wrong input: The size of model_config_path_array and inference_params_array "
                    "are not consistent.";
   }

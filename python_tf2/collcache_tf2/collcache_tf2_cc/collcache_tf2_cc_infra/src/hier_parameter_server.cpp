@@ -26,7 +26,7 @@
 #include "coll_cache_lib/common.h"
 #include "coll_cache_lib/device.h"
 #include "coll_cache_lib/facade.h"
-#include "coll_cache_lib/logging.h"
+#include "logging.hpp"
 #include "coll_cache_lib/run_config.h"
 
 namespace coll_cache_lib {
@@ -35,40 +35,97 @@ namespace coll_cache_lib {
 
 CollCacheParameterServer::CollCacheParameterServer(const parameter_server_config& ps_config)
     : ps_config_(ps_config) {
-  LOG(INFO) << "====================================================HPS Coll "
+  COLL_LOG(INFO) << "====================================================HPS Coll "
                "Create====================================================\n";
   const std::vector<InferenceParams>& inference_params_array = ps_config_.inference_params_array;
   for (size_t i = 0; i < inference_params_array.size(); i++) {
     if (inference_params_array[i].volatile_db != inference_params_array[0].volatile_db ||
         inference_params_array[i].persistent_db != inference_params_array[0].persistent_db) {
-      LOG(FATAL) << 
+      COLL_LOG(FATAL) << 
           "Inconsistent database setup. coll_cache_lib paramter server does currently not support hybrid "
           "database deployment.";
     }
   }
   if (ps_config_.embedding_vec_size_.size() != inference_params_array.size() ||
       ps_config_.default_emb_vec_value_.size() != inference_params_array.size()) {
-    LOG(FATAL) << 
+    COLL_LOG(FATAL) << 
                    "Wrong input: The size of parameter server parameters are not correct.";
   }
 
   if (inference_params_array.size() != 1) {
-    LOG(FATAL) <<  "Coll cache only support single model for now";
+    COLL_LOG(FATAL) <<  "Coll cache only support single model for now";
   }
   auto& inference_params = inference_params_array[0];
   if (inference_params_array[0].sparse_model_files.size() != 1) {
-    LOG(FATAL) <<  "Coll cache only support single sparse file for now";
+    COLL_LOG(FATAL) <<  "Coll cache only support single sparse file for now";
   }
 
   // Connect to volatile database.
   // Create input file stream to read the embedding file
   if (ps_config_.embedding_vec_size_[inference_params.model_name].size() !=
       inference_params.sparse_model_files.size()) {
-    LOG(FATAL) << 
+    COLL_LOG(FATAL) << 
                    ("Wrong input: The number of embedding tables in network json file for model " +
                        inference_params.model_name +
                        " doesn't match the size of 'sparse_model_files' in configuration.");
   }
+
+  {
+    IModelLoader* rawreader = ModelLoader<uint32_t, float>::CreateLoader(DBTableDumpFormat_t::Raw);
+    IModelLoader::preserved_model_loader = std::shared_ptr<IModelLoader>(rawreader);
+    // Create input file stream to read the embedding file
+    for (size_t j = 0; j < inference_params.sparse_model_files.size(); j++) {
+      if (ps_config_.embedding_vec_size_[inference_params.model_name].size() !=
+          inference_params.sparse_model_files.size()) {
+        COLL_LOG(FATAL) <<
+                      "Wrong input: The number of embedding tables in network json file for model " +
+                          inference_params.model_name +
+                          " doesn't match the size of 'sparse_model_files' in configuration.";
+      }
+      // Get raw format model loader
+      rawreader->load(inference_params.embedding_table_names[j],
+                      inference_params.sparse_model_files[j]);
+      if (inference_params.use_multi_worker) {
+        CollCacheParameterServer::barrier();
+      }
+      // const std::string tag_name = make_tag_name(
+      //     inference_params.model_name, ps_config_.emb_table_name_[inference_params.model_name][j]);
+      size_t num_key = rawreader->getkeycount();
+      const size_t embedding_size = ps_config_.embedding_vec_size_[inference_params.model_name][j];
+      // Populate volatile database(s).
+      // if (volatile_db_) {
+      //   const size_t volatile_capacity = volatile_db_->capacity(tag_name);
+      //   const size_t volatile_cache_amount =
+      //       (num_key <= volatile_capacity)
+      //           ? num_key
+      //           : static_cast<size_t>(
+      //                 volatile_db_cache_rate_ * static_cast<double>(volatile_capacity) + 0.5);
+
+      //   if (dynamic_cast<DirectMapBackend<uint32_t>*>(volatile_db_.get()) &&
+      //       rawreader->is_mock == false) {
+      //     auto keys_ptr = (const uint32_t*)(rawreader->getkeys());
+      //     #pragma omp parallel for
+      //     for (uint32_t i = 0; i < volatile_cache_amount; i++) {
+      //       HCTR_CHECK_HINT(keys_ptr[i] == i, "direct backend requries continious source");
+      //     }
+      //   }
+      //   HCTR_CHECK(volatile_db_->insert(tag_name, volatile_cache_amount,
+      //                                   reinterpret_cast<const uint32_t*>(rawreader->getkeys()),
+      //                                   reinterpret_cast<const char*>(rawreader->getvectors()),
+      //                                   embedding_size * sizeof(float)));
+      //   volatile_db_->synchronize();
+      //   HCTR_LOG_S(INFO, WORLD) << "Table: " << tag_name << "; cached " << volatile_cache_amount
+      //                           << " / " << num_key << " embeddings in volatile database ("
+      //                           << volatile_db_->get_name()
+      //                           << "); load: " << volatile_db_->size(tag_name) << " / "
+      //                           << volatile_capacity << " (" << std::fixed << std::setprecision(2)
+      //                           << (static_cast<double>(volatile_db_->size(tag_name)) * 100.0 /
+      //                               static_cast<double>(volatile_capacity))
+      //                           << "%)." << std::endl;
+      // }
+    }
+  }
+
   // hps assumes disk key file is long-long
   raw_data_holder = IModelLoader::preserved_model_loader;
   // Get raw format model loader
@@ -93,13 +150,13 @@ CollCacheParameterServer::CollCacheParameterServer(const parameter_server_config
   coll_cache_lib::common::RunConfig::num_epoch = ps_config.epoch;
   coll_cache_lib::common::RunConfig::num_total_item = num_key;
 
-  LOG(ERROR)
+  COLL_LOG(ERROR)
       << "coll ps creation, with "
       << ps_config.inference_params_array[0].cross_worker_deployed_devices.size()
       << " devices, using policy " << coll_cache_lib::common::RunConfig::cache_policy << "\n";
   this->coll_cache_ptr_ = std::make_shared<coll_cache_lib::CollCache>(
       nullptr, coll_cache_lib::common::AnonymousBarrier::_global_instance);
-  LOG(ERROR) << "coll ps creation done\n";
+  COLL_LOG(ERROR) << "coll ps creation done\n";
 }
 
 #ifdef DEAD_CODE
@@ -139,16 +196,16 @@ void CollCacheParameterServer::init_per_replica(int global_replica_id,
   size_t dim = ps_config_.inference_params_array[0].embedding_vecsize_per_table[0];
   // hps may be used in hugectr or tensorflow, so we don't know how to allocate memory;
   size_t num_key = raw_data_holder->getkeycount();
-  CHECK(num_key == ps_config_.inference_params_array[0].max_vocabulary_size[0]) << 
+  COLL_CHECK(num_key == ps_config_.inference_params_array[0].max_vocabulary_size[0]) << 
                   "num key from file must equal with max vocabulary:" << num_key;
   auto stream = reinterpret_cast<coll_cache_lib::common::StreamHandle>(cu_stream);
-  LOG(ERROR) << "Calling build_v2\n";
+  COLL_LOG(ERROR) << "Calling build_v2\n";
 
   {
     int value;
     cudaDeviceGetAttribute(&value, cudaDevAttrCanUseHostPointerForRegisteredMem,
                            coll_cache_lib::common::RunConfig::device_id_list[global_replica_id]);
-    LOG(ERROR) << "cudaDevAttrCanUseHostPointerForRegisteredMem is " << value << "\n";
+    COLL_LOG(ERROR) << "cudaDevAttrCanUseHostPointerForRegisteredMem is " << value << "\n";
   }
 
   this->coll_cache_ptr_->build_v2(global_replica_id, freq_rank, num_key, gpu_mem_allocator, cpu_data,

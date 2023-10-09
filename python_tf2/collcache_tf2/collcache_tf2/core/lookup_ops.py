@@ -14,7 +14,7 @@
  limitations under the License.
 """
 # from hierarchical_parameter_server import Init
-from hierarchical_parameter_server import hps_lib
+from collcache_tf2 import collcache_tf2_lib
 import numpy as np
 import os
 import sys
@@ -36,7 +36,7 @@ def get_global_replica_id(comm_tool=None, var=None):
             else:
                 replica_id = (
                     distribute_lib.get_update_replica_id()
-                    if hps_lib.in_tensorflow2()
+                    if collcache_tf2_lib.in_tensorflow2()
                     else distribute_lib.get_update_device()
                 )
             if replica_id is None:
@@ -99,7 +99,7 @@ def lookup(
     # Lazy initialization of hps
     # status = Init(ps_config_file=ps_config_file, global_batch_size=global_batch_size)
     global_replica_id = get_global_replica_id(_get_comm_tool())
-    vector = hps_lib.lookup(
+    vector = collcache_tf2_lib.lookup(
         values=values,
         global_replica_id=global_replica_id,
         model_name=model_name,

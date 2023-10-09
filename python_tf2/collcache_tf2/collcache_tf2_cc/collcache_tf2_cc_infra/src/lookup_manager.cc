@@ -16,11 +16,10 @@
 
 #include "lookup_manager.h"
 
-#include "base/debug/logger.hpp"
 #include "coll_cache_lib/atomic_barrier.h"
 #include "coll_cache_lib/facade.h"
 #include "coll_cache_lib/profiler.h"
-#include "coll_cache_lib/logging.h"
+#include "logging.hpp"
 #include "coll_cache_lib/timer.h"
 #include "hier_parameter_server.hpp"
 #include "inference_utils.hpp"
@@ -43,12 +42,12 @@ std::shared_ptr<LookupManager> LookupManager::Create() {
 LookupManager::LookupManager() : initialized_{false} {}
 
 void LookupManager::init(parameter_server_config& ps_config, int32_t global_batch_size,
-                         int32_t num_replicas_in_sync) {
+                         const int32_t num_replicas_in_sync, const int32_t global_replica_id) {
   initialized_ = true;
-  HCTR_CHECK_HINT(global_batch_size > 0, "global_batch_size must be > 0.");
-  HCTR_CHECK_HINT(num_replicas_in_sync > 0, "num_replicas_in_sync must be > 0.");
-  HCTR_CHECK_HINT(global_batch_size % num_replicas_in_sync == 0,
-                  "global_batch_size must be divisible by num_replicas_in_sync.");
+  COLL_CHECK(global_batch_size > 0) << "global_batch_size must be > 0.";
+  COLL_CHECK(num_replicas_in_sync > 0) << "num_replicas_in_sync must be > 0.";
+  COLL_CHECK(global_batch_size % num_replicas_in_sync == 0) <<
+                  "global_batch_size must be divisible by num_replicas_in_sync.";
   size_t local_batch_size = global_batch_size / num_replicas_in_sync;
 
   for (auto& inference_params : ps_config.inference_params_array) {
@@ -60,22 +59,21 @@ void LookupManager::init(parameter_server_config& ps_config, int32_t global_batc
       return true;
     };
     // 32 bit key is supported
-    // HCTR_CHECK_HINT(inference_params.i64_input_key, "inference_params.i64_input_key must be
+    // COLL_CHECK(inference_params.i64_input_key) << "inference_params.i64_input_key must be
     // true.");
-    HCTR_CHECK_HINT(inference_params.cross_worker_deployed_devices.size() == num_replicas_in_sync,
+    COLL_CHECK(inference_params.cross_worker_deployed_devices.size() == num_replicas_in_sync) <<
                     "inference_params.cross_worker_deployed_devices.size() must be equal to "
-                    "num_replicas_in_sync.");
-    HCTR_CHECK_HINT(
-        check(inference_params.cross_worker_deployed_devices),
+                    "num_replicas_in_sync.";
+    COLL_CHECK(check(inference_params.cross_worker_deployed_devices)) <<
         "inference_params.cross_worker_deployed_devices should contain exactly from 0 to "
-        "num_replicas_in_sync-1.");
-    HCTR_CHECK_HINT(local_batch_size <= inference_params.max_batchsize,
+        "num_replicas_in_sync-1.";
+    COLL_CHECK(local_batch_size <= inference_params.max_batchsize) <<
                     "global_batch_size / num_replicas_in_sync must be <= max_batchsize configured "
-                    "in ps_config.json.");
+                    "in ps_config.json.";
   }
 
   // Create the HPS for all models on all the deployed devices
-  parameter_server_ = HierParameterServerBase::create(ps_config, ps_config.inference_params_array);
+  // parameter_server_ = HierParameterServerBase::create(ps_config, ps_config.inference_params_array);
   current_steps_for_each_replica_.resize(num_replicas_in_sync, 0);
 
   this->coll_freq_recorder_list.resize(num_replicas_in_sync);
@@ -85,7 +83,8 @@ void LookupManager::init(parameter_server_config& ps_config, int32_t global_batc
     std::map<size_t, std::shared_ptr<LookupSessionBase>> lookup_sessions;
     for (const auto& device_id : inference_params.deployed_devices) {
       inference_params.device_id = device_id;
-      auto lookup_session = LookupSessionBase::create(inference_params, embedding_cache);
+      auto lookup_session = LookupSessionBase::create(inference_params, nullptr);
+      lookup_sessions.emplace(device_id, lookup_session);
       coll_freq_recorder_list[device_id] = lookup_session->freq_recorder_;
     }
     lookup_session_map_.emplace(inference_params.model_name, lookup_sessions);
@@ -104,17 +103,16 @@ void LookupManager::init(parameter_server_config& ps_config, int32_t global_batc
     }
     h_values_map_.emplace(inference_params.model_name, h_values);
   }
-  this->tf_ctx_list.resize(num_replicas_in_sync);
   this->coll_refresh_thread.resize(num_replicas_in_sync);
   this->coll_record_thread.resize(num_replicas_in_sync);
   this->coll_refresh_ongoing = new std::atomic<bool>[num_replicas_in_sync];
-  for (decltype(num_replicas_in_sync) i = 0; i < num_replicas_in_sync; i++) {
+  for (int32_t i = 0; i < num_replicas_in_sync; i++) {
     this->coll_refresh_ongoing[i].store(false);
   }
   {
-    LOG(INFO) << "replica " << global_replica_id << " calling init pre replica\n";
-    init_per_replica(global_replica_id);
-    LOG(INFO) << "init per replica done\n";
+    COLL_LOG(INFO) << "replica " << global_replica_id << " calling init pre replica\n";
+    init_per_replica(global_replica_id, ps_config);
+    COLL_LOG(INFO) << "init per replica done\n";
   }
 }
 
@@ -152,7 +150,7 @@ void LookupManager::forward(const std::string& model_name, int32_t table_id,
         });
         // coll_refresh_thread[global_replica_id].join();
       } else {
-        HCTR_LOG_S(ERROR, WORLD) << "skip refresh due to refresh already ongoing";
+        COLL_LOG(ERROR) << "skip refresh due to refresh already ongoing";
       }
     }
     if (coll_parameter_server_->ref_ps_config().coll_cache_enable_refresh) {
@@ -164,9 +162,8 @@ void LookupManager::forward(const std::string& model_name, int32_t table_id,
   this->current_steps_for_each_replica_[global_replica_id]++;
 }
 
-void LookupManager::init_per_replica(const int32_t global_replica_id) {
+void LookupManager::init_per_replica(const int32_t global_replica_id, parameter_server_config& ps_config) {
   initialized_ = true;
-  const parameter_server_config ps_config = parameter_server_->ref_ps_config();
   const int32_t num_replicas_in_sync =
       ps_config.inference_params_array[0].cross_worker_deployed_devices.size();
 
@@ -175,18 +172,18 @@ void LookupManager::init_per_replica(const int32_t global_replica_id) {
   uint32_t *rank_ptr = nullptr, *freq_ptr = nullptr;
 
   std::call_once(this->atomic_creation_flag_, [&]() {
-    HCTR_CHECK_HINT(this->lookup_session_map_.size() == 1, "coll cache supports only 1 model");
+    COLL_CHECK(this->lookup_session_map_.size() == 1) << "coll cache supports only 1 model";
     coll_parameter_server_ = std::make_shared<CollCacheParameterServer>(ps_config);
     // this->_tensorflow_ctx_list.resize(num_replicas_in_sync);
   });
-  LOG(INFO) << "replica " << global_replica_id
+  COLL_LOG(INFO) << "replica " << global_replica_id
                           << " waits for coll ps creation barrier\n";
   coll_parameter_server_->barrier();
 
   CriticalExec(coll_cache_lib::common::AnonymousBarrier::_global_instance, 
     ps_config.inference_params_array[0].cross_worker_deployed_devices.size(),
     [this, global_replica_id](){
-      HCTR_LOG_S(ERROR, WORLD) << "replica " << global_replica_id << " preparing frequency\n";
+      COLL_LOG(ERROR) << "replica " << global_replica_id << " preparing frequency\n";
       this->coll_freq_recorder_list[global_replica_id]->LocalCombineToShared();
     }, global_replica_id);
   coll_cache_lib::common::ContFreqBuf* freq_rank = nullptr;
@@ -206,7 +203,7 @@ void LookupManager::init_per_replica(const int32_t global_replica_id) {
       [&ctx = tf_ctx_list[global_replica_id],
        global_replica_id](size_t nbytes) -> coll_cache_lib::MemHandle {
     if (nbytes == 0) {
-      HCTR_LOG_S(ERROR, WORLD) << "allocating 0 cuda memory?\n";
+      COLL_LOG(ERROR) << "allocating 0 cuda memory?\n";
     }
     auto handle = std::make_shared<HPSMemHandle>();
     TF_CHECK_OK(ctx->allocate_temp(tensorflow::DataType::DT_UINT8,
@@ -214,7 +211,7 @@ void LookupManager::init_per_replica(const int32_t global_replica_id) {
                                    &(handle->tensor_hold)));
     handle->nbytes_ = nbytes;
     if (nbytes >= 1 << 21) {
-      HCTR_LOG_S(ERROR, WORLD) << global_replica_id << " allocated " << nbytes << " at "
+      COLL_LOG(ERROR) << global_replica_id << " allocated " << nbytes << " at "
                                << handle->ptr() << "\n";
     }
     return handle;
@@ -223,9 +220,9 @@ void LookupManager::init_per_replica(const int32_t global_replica_id) {
   CollCacheParameterServer* ps_ptr =
       reinterpret_cast<CollCacheParameterServer*>(coll_parameter_server_.get());
 
-  CHECK(ps_config.inference_params_array.size() == 1);
+  COLL_CHECK(ps_config.inference_params_array.size() == 1);
 
-  LOG(INFO) << "replica " << global_replica_id << " calling init per replica\n";
+  COLL_LOG(INFO) << "replica " << global_replica_id << " calling init per replica\n";
   cudaStream_t stream;
   stream = *reinterpret_cast<const cudaStream_t*>(this->tf_ctx_list[global_replica_id]
                                                       ->op_device_context()
@@ -234,10 +231,10 @@ void LookupManager::init_per_replica(const int32_t global_replica_id) {
                                                       ->GpuStreamMemberHack());
   // stream = tensorflow::GetGpuStream(this->tf_ctx_list[global_replica_id]);
   ps_ptr->init_per_replica(global_replica_id, freq_rank, gpu_mem_allocator, stream);
-  LOG(INFO) << "replica " << global_replica_id
+  COLL_LOG(INFO) << "replica " << global_replica_id
                           << " calling init per replica done, doing barrier\n";
   coll_parameter_server_->barrier();
-  LOG(INFO) << "replica " << global_replica_id
+  COLL_LOG(INFO) << "replica " << global_replica_id
                           << " calling init per replica done, doing barrier done\n";
   sem_init(&record_send, 0, 0);
   sem_init(&record_done, 0, 0);
@@ -273,7 +270,7 @@ void LookupManager::refresh(const int32_t global_replica_id, cudaStream_t stream
   CriticalExec(coll_cache_lib::common::AnonymousBarrier::_refresh_instance, 
     coll_parameter_server_->ref_ps_config().inference_params_array[0].cross_worker_deployed_devices.size(),
     [this, global_replica_id](){
-      HCTR_LOG_S(ERROR, WORLD) << "replica " << global_replica_id << " preparing frequency\n";
+      COLL_LOG(ERROR) << "replica " << global_replica_id << " preparing frequency\n";
       this->coll_freq_recorder_list[global_replica_id]->LocalCombineToShared();
     }, global_replica_id);
   coll_cache_lib::common::ContFreqBuf* freq_rank = nullptr;

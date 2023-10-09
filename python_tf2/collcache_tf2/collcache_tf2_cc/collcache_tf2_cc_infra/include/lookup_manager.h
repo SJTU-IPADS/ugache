@@ -23,8 +23,6 @@
 
 namespace coll_cache_lib {
 
-using namespace HugeCTR;
-
 class LookupManager final {
   class HPSMemHandle : public coll_cache_lib::common::ExternelGPUMemoryHandler {
    public:
@@ -44,7 +42,7 @@ class LookupManager final {
 
   static std::shared_ptr<LookupManager> Create();
   void init(parameter_server_config& ps_config, const int32_t global_batch_size,
-            const int32_t num_replicas_in_sync);
+            const int32_t num_replicas_in_sync, const int32_t global_replica_id);
   void forward(const std::string& model_name, const int32_t table_id,
                const int32_t global_replica_id, const size_t num_keys, const size_t emb_vec_size,
                const void* values_ptr, void* emb_vector_ptr);
@@ -67,7 +65,7 @@ class LookupManager final {
 
   void refresh(const int32_t global_replica_id, cudaStream_t stream = nullptr, bool foreground = false);
  private:
-  void init_per_replica(const int32_t global_replica_id);
+  void init_per_replica(const int32_t global_replica_id, parameter_server_config& ps_config);
 
   LookupManager();
   bool initialized_;
@@ -77,7 +75,7 @@ class LookupManager final {
   // for coll cache
   std::vector<size_t> current_steps_for_each_replica_;
   std::once_flag atomic_creation_flag_;
-  std::shared_ptr<CollCacheParameterServer> coll_parameter_server_;
+  std::shared_ptr<CollCacheParameterServer> coll_parameter_server_ = nullptr;
 
  public:
   std::vector<tensorflow::OpKernelContext*> tf_ctx_list;
