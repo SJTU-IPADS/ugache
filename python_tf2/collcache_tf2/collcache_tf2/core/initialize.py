@@ -37,6 +37,95 @@ def NopDep(dense, emb):
 def wait_one_child():
     return collcache_tf2_lib.wait_one_child()
 
+
+class _Utils:
+    def _get_visible_devices():
+        gpus = config.get_visible_devices("GPU")
+        assert len(gpus) > 0
+        visible_devices = []
+        for i in range(len(gpus)):
+            visible_devices.append(int(gpus[i].name.split(":")[-1]))
+        return array_ops.constant(visible_devices, dtype=int32)
+
+    def _single_worker_init(func, **kwargs):
+        "func(global_id, num_replica, visible_devices)->status"
+        replica_ctx = tf_dist.get_replica_context()
+        replica_ctx.merge_call(
+            lambda strategy: tf_print("You are using the plugin with MirroredStrategy.")
+        )
+        global_id = replica_ctx.replica_id_in_sync_group
+        status = func(global_id, replica_ctx.num_replicas_in_sync, **kwargs)
+        return status
+
+    def _multi_worker_init(func, **kwargs):
+        "func(global_id, num_replica, visible_devices)"
+        replica_ctx = tf_dist.get_replica_context()
+        global_id = replica_ctx.replica_id_in_sync_group
+        status = func(global_id, replica_ctx.num_replicas_in_sync, **kwargs)
+        return status
+
+    def _horovod_init(func, **kwargs):
+        "func(global_id, num_replica, visible_devices)"
+        local_rank = hvd.local_rank()
+        status = func(local_rank, hvd.size(), **kwargs)
+        return status
+
+    def _one_device_init(func, **kwargs):
+        "func(global_id, num_replica, visible_devices)"
+        local_rank = 0
+        status = func(local_rank, 1, **kwargs)
+        return status
+
+def Config(**kwargs):
+    def func(global_id, num_replica, **kwargs):
+        status = collcache_tf2_lib.config(
+            global_id,
+            num_replica,
+            ps_config_file=kwargs["ps_config_file"],
+        )
+        return status
+
+    if tf_dist.has_strategy():
+        strategy = tf_dist.get_strategy()
+
+        @function
+        def _init_wrapper(strategy_run_fn, init_fn, **kwargs):
+            return strategy_run_fn(_init_fn, kwargs=kwargs)
+
+        if isinstance(strategy, MirroredStrategy):
+            def _init_fn(**kwargs):
+                return _Utils._single_worker_init(func, **kwargs)
+        elif isinstance(strategy, MultiWorkerMirroredStrategy):
+            def _init_fn(**kwargs):
+                return _Utils._multi_worker_init(func, **kwargs)
+        else:
+            raise RuntimeError("This strategy type is not supported yet.")
+
+        if not collcache_tf2_lib.in_tensorflow2():
+            _run_fn = strategy.experimental_run_v2
+        else:
+            _run_fn = strategy.run
+
+        _init_results = _init_wrapper(_run_fn, _init_fn, **kwargs)
+        if hasattr(_init_results, "values"):
+            _init_results = _init_results.values
+        return _init_results
+
+    elif "horovod.tensorflow" in sys.modules:
+        import horovod.tensorflow as hvd
+
+        if not collcache_tf2_lib.in_tensorflow2():
+
+            @function
+            def _init_wrapper(**kwargs):
+                return _Utils._horovod_init(func, **kwargs)
+
+            return _init_wrapper(**kwargs)
+        else:
+            return _Utils._horovod_init(func, **kwargs)
+    else:
+        return _Utils._one_device_init(func, **kwargs)
+
 def Init(**kwargs):
     """
     Abbreviated as ``hps.Init(**kwargs)``.
@@ -149,62 +238,11 @@ def Init(**kwargs):
             And its contents will be 'OK'.
     """
 
-    def _get_visible_devices():
-        gpus = config.get_visible_devices("GPU")
-        assert len(gpus) > 0
-        visible_devices = []
-        for i in range(len(gpus)):
-            visible_devices.append(int(gpus[i].name.split(":")[-1]))
-        return array_ops.constant(visible_devices, dtype=int32)
-
-    def _single_worker_init(**kwargs):
-        replica_ctx = tf_dist.get_replica_context()
-        replica_ctx.merge_call(
-            lambda strategy: tf_print("You are using the plugin with MirroredStrategy.")
-        )
-        global_id = replica_ctx.replica_id_in_sync_group
-        visible_devices = _get_visible_devices()
+    def func(global_id, num_replica, **kwargs):
         status = collcache_tf2_lib.init(
             global_id,
-            replica_ctx.num_replicas_in_sync,
-            visible_devices,
-            global_batch_size=kwargs["global_batch_size"],
-            ps_config_file=kwargs["ps_config_file"],
-        )
-        return status
-
-    def _multi_worker_init(**kwargs):
-        replica_ctx = tf_dist.get_replica_context()
-        global_id = replica_ctx.replica_id_in_sync_group
-        visible_devices = _get_visible_devices()
-        status = collcache_tf2_lib.init(
-            global_id,
-            replica_ctx.num_replicas_in_sync,
-            visible_devices,
-            global_batch_size=kwargs["global_batch_size"],
-            ps_config_file=kwargs["ps_config_file"],
-        )
-        return status
-
-    def _horovod_init(**kwargs):
-        local_rank = hvd.local_rank()
-        visible_devices = _get_visible_devices()
-        status = collcache_tf2_lib.init(
-            local_rank,
-            hvd.size(),
-            visible_devices,
-            global_batch_size=kwargs["global_batch_size"],
-            ps_config_file=kwargs["ps_config_file"],
-        )
-        return status
-
-    def _one_device_init(**kwargs):
-        local_rank = 0
-        visible_devices = _get_visible_devices()
-        status = collcache_tf2_lib.init(
-            local_rank,
-            1,
-            visible_devices,
+            num_replica,
+            _Utils._get_visible_devices(),
             global_batch_size=kwargs["global_batch_size"],
             ps_config_file=kwargs["ps_config_file"],
         )
@@ -218,9 +256,11 @@ def Init(**kwargs):
             return run_fn(init_fn, kwargs=kwargs)
 
         if isinstance(strategy, MirroredStrategy):
-            _init_fn = _single_worker_init
+            def _init_fn(**kwargs):
+                return _Utils._single_worker_init(func, **kwargs)
         elif isinstance(strategy, MultiWorkerMirroredStrategy):
-            _init_fn = _multi_worker_init
+            def _init_fn(**kwargs):
+                return _Utils._multi_worker_init(func, **kwargs)
         else:
             raise RuntimeError("This strategy type is not supported yet.")
 
@@ -241,13 +281,13 @@ def Init(**kwargs):
 
             @function
             def _init_wrapper(**kwargs):
-                return _horovod_init(**kwargs)
+                return _Utils._horovod_init(func, **kwargs)
 
             return _init_wrapper(**kwargs)
         else:
-            return _horovod_init(**kwargs)
+            return _Utils._horovod_init(func, **kwargs)
     else:
-        return _one_device_init(**kwargs)
+        return _Utils._one_device_init(func, **kwargs)
 
 def SetStepProfileValue(**kwargs):
     global_replica_id = lookup_ops.get_global_replica_id(lookup_ops._get_comm_tool())

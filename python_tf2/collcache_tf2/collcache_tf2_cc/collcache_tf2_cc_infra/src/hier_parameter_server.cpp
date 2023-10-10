@@ -33,11 +33,11 @@ namespace coll_cache_lib {
 
 // using namespace coll_cache_lib::common;
 
-CollCacheParameterServer::CollCacheParameterServer(const parameter_server_config& ps_config)
+CollCacheParameterServer::CollCacheParameterServer(std::shared_ptr<parameter_server_config> ps_config)
     : ps_config_(ps_config) {
   COLL_LOG(INFO) << "====================================================HPS Coll "
                "Create====================================================\n";
-  const std::vector<InferenceParams>& inference_params_array = ps_config_.inference_params_array;
+  const std::vector<InferenceParams>& inference_params_array = ps_config_->inference_params_array;
   for (size_t i = 0; i < inference_params_array.size(); i++) {
     if (inference_params_array[i].volatile_db != inference_params_array[0].volatile_db ||
         inference_params_array[i].persistent_db != inference_params_array[0].persistent_db) {
@@ -46,8 +46,8 @@ CollCacheParameterServer::CollCacheParameterServer(const parameter_server_config
           "database deployment.";
     }
   }
-  if (ps_config_.embedding_vec_size_.size() != inference_params_array.size() ||
-      ps_config_.default_emb_vec_value_.size() != inference_params_array.size()) {
+  if (ps_config_->embedding_vec_size_.size() != inference_params_array.size() ||
+      ps_config_->default_emb_vec_value_.size() != inference_params_array.size()) {
     COLL_LOG(FATAL) << 
                    "Wrong input: The size of parameter server parameters are not correct.";
   }
@@ -62,7 +62,7 @@ CollCacheParameterServer::CollCacheParameterServer(const parameter_server_config
 
   // Connect to volatile database.
   // Create input file stream to read the embedding file
-  if (ps_config_.embedding_vec_size_[inference_params.model_name].size() !=
+  if (ps_config_->embedding_vec_size_[inference_params.model_name].size() !=
       inference_params.sparse_model_files.size()) {
     COLL_LOG(FATAL) << 
                    ("Wrong input: The number of embedding tables in network json file for model " +
@@ -75,7 +75,7 @@ CollCacheParameterServer::CollCacheParameterServer(const parameter_server_config
     IModelLoader::preserved_model_loader = std::shared_ptr<IModelLoader>(rawreader);
     // Create input file stream to read the embedding file
     for (size_t j = 0; j < inference_params.sparse_model_files.size(); j++) {
-      if (ps_config_.embedding_vec_size_[inference_params.model_name].size() !=
+      if (ps_config_->embedding_vec_size_[inference_params.model_name].size() !=
           inference_params.sparse_model_files.size()) {
         COLL_LOG(FATAL) <<
                       "Wrong input: The number of embedding tables in network json file for model " +
@@ -89,9 +89,9 @@ CollCacheParameterServer::CollCacheParameterServer(const parameter_server_config
         CollCacheParameterServer::barrier();
       }
       // const std::string tag_name = make_tag_name(
-      //     inference_params.model_name, ps_config_.emb_table_name_[inference_params.model_name][j]);
+      //     inference_params.model_name, ps_config_->emb_table_name_[inference_params.model_name][j]);
       size_t num_key = rawreader->getkeycount();
-      const size_t embedding_size = ps_config_.embedding_vec_size_[inference_params.model_name][j];
+      const size_t embedding_size = ps_config_->embedding_vec_size_[inference_params.model_name][j];
       // Populate volatile database(s).
       // if (volatile_db_) {
       //   const size_t volatile_capacity = volatile_db_->capacity(tag_name);
@@ -130,7 +130,7 @@ CollCacheParameterServer::CollCacheParameterServer(const parameter_server_config
   raw_data_holder = IModelLoader::preserved_model_loader;
   // Get raw format model loader
   size_t num_key = raw_data_holder->getkeycount();
-  // const size_t embedding_size = ps_config_.embedding_vec_size_[inference_params.model_name][0];
+  // const size_t embedding_size = ps_config_->embedding_vec_size_[inference_params.model_name][0];
   // Populate volatile database(s).
   // auto val_ptr = reinterpret_cast<const char*>(raw_data_holder->getvectors());
 
@@ -138,21 +138,21 @@ CollCacheParameterServer::CollCacheParameterServer(const parameter_server_config
   // coll_cache_lib::common::RunConfig::cache_policy = coll_cache_lib::common::kRepCache;
   // coll_cache_lib::common::RunConfig::cache_policy = coll_cache_lib::common::kCliquePart;
   coll_cache_lib::common::RunConfig::cache_policy =
-      (coll_cache_lib::common::CachePolicy)ps_config_.coll_cache_policy;
+      (coll_cache_lib::common::CachePolicy)ps_config_->coll_cache_policy;
   coll_cache_lib::common::RunConfig::cross_process = false;
   coll_cache_lib::common::RunConfig::device_id_list =
       inference_params.cross_worker_deployed_devices;
   coll_cache_lib::common::RunConfig::num_device =
       inference_params.cross_worker_deployed_devices.size();
-  coll_cache_lib::common::RunConfig::cross_process = ps_config_.use_multi_worker;
+  coll_cache_lib::common::RunConfig::cross_process = ps_config_->use_multi_worker;
   coll_cache_lib::common::RunConfig::num_global_step_per_epoch =
-      ps_config.iteration_per_epoch * coll_cache_lib::common::RunConfig::num_device;
-  coll_cache_lib::common::RunConfig::num_epoch = ps_config.epoch;
+      ps_config_->iteration_per_epoch * coll_cache_lib::common::RunConfig::num_device;
+  coll_cache_lib::common::RunConfig::num_epoch = ps_config_->epoch;
   coll_cache_lib::common::RunConfig::num_total_item = num_key;
 
   COLL_LOG(ERROR)
       << "coll ps creation, with "
-      << ps_config.inference_params_array[0].cross_worker_deployed_devices.size()
+      << ps_config_->inference_params_array[0].cross_worker_deployed_devices.size()
       << " devices, using policy " << coll_cache_lib::common::RunConfig::cache_policy << "\n";
   this->coll_cache_ptr_ = std::make_shared<coll_cache_lib::CollCache>(
       nullptr, coll_cache_lib::common::AnonymousBarrier::_global_instance);
@@ -166,11 +166,11 @@ void CollCacheParameterServer::init_per_replica(int global_replica_id,
                                                 std::function<MemHandle(size_t)> gpu_mem_allocator,
                                                 cudaStream_t cu_stream) {
   void* cpu_data = raw_data_holder->getvectors();
-  double cache_percentage = ps_config_.inference_params_array[0].cache_size_percentage;
-  size_t dim = ps_config_.inference_params_array[0].embedding_vecsize_per_table[0];
+  double cache_percentage = ps_config_->inference_params_array[0].cache_size_percentage;
+  size_t dim = ps_config_->inference_params_array[0].embedding_vecsize_per_table[0];
   // hps may be used in hugectr or tensorflow, so we don't know how to allocate memory;
   size_t num_key = raw_data_holder->getkeycount();
-  HCTR_CHECK_HINT(num_key == ps_config_.inference_params_array[0].max_vocabulary_size[0],
+  HCTR_CHECK_HINT(num_key == ps_config_->inference_params_array[0].max_vocabulary_size[0],
                   "num key from file must equal with max vocabulary: %d", num_key);
   auto stream = reinterpret_cast<coll_cache_lib::common::StreamHandle>(cu_stream);
   HCTR_LOG(ERROR, WORLD, "Calling build_v2\n");
@@ -192,11 +192,11 @@ void CollCacheParameterServer::init_per_replica(int global_replica_id,
                                                 std::function<MemHandle(size_t)> gpu_mem_allocator,
                                                 cudaStream_t cu_stream) {
   void* cpu_data = raw_data_holder->getvectors();
-  double cache_percentage = ps_config_.inference_params_array[0].cache_size_percentage;
-  size_t dim = ps_config_.inference_params_array[0].embedding_vecsize_per_table[0];
+  double cache_percentage = ps_config_->inference_params_array[0].cache_size_percentage;
+  size_t dim = ps_config_->inference_params_array[0].embedding_vecsize_per_table[0];
   // hps may be used in hugectr or tensorflow, so we don't know how to allocate memory;
   size_t num_key = raw_data_holder->getkeycount();
-  COLL_CHECK(num_key == ps_config_.inference_params_array[0].max_vocabulary_size[0]) << 
+  COLL_CHECK(num_key == ps_config_->inference_params_array[0].max_vocabulary_size[0]) << 
                   "num key from file must equal with max vocabulary:" << num_key;
   auto stream = reinterpret_cast<coll_cache_lib::common::StreamHandle>(cu_stream);
   COLL_LOG(ERROR) << "Calling build_v2\n";

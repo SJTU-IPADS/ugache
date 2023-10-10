@@ -35,15 +35,21 @@ void Facade::operator delete(void*) {
   throw std::domain_error("This pointer cannot be manually deleted.");
 }
 
+void Facade::config(const int32_t global_replica_id, tensorflow::OpKernelContext* ctx,
+                  const char* ps_config_file, int32_t num_replicas_in_sync) {
+  ps_config = std::make_shared<parameter_server_config>(ps_config_file);
+  CHECK(ps_config->inference_params_array.size() == 1) << "only single inference parameter is supported";
+  lookup_manager_->config(ps_config, num_replicas_in_sync, global_replica_id);
+}
 void Facade::init(const int32_t global_replica_id, tensorflow::OpKernelContext* ctx,
                   const char* ps_config_file, int32_t global_batch_size,
                   int32_t num_replicas_in_sync) {
-  std::call_once(lookup_manager_init_once_flag_, [this, ctx, ps_config_file, global_batch_size,
+  std::call_once(lookup_manager_init_once_flag_, [this, ctx, global_batch_size,
                                                   num_replicas_in_sync, global_replica_id]() {
-    ps_config = new parameter_server_config{ps_config_file};
+    // ps_config = new parameter_server_config{ps_config_file};
     lookup_manager_->tf_ctx_list.resize(num_replicas_in_sync);
     lookup_manager_->tf_ctx_list[global_replica_id] = ctx;
-    lookup_manager_->init(*ps_config, global_batch_size, num_replicas_in_sync, global_replica_id);
+    lookup_manager_->init(ps_config, global_batch_size, num_replicas_in_sync, global_replica_id);
     if (!ps_config->use_coll_cache) {
       coll_cache_lib::common::RunConfig::worker_id = global_replica_id;
       coll_cache_lib::common::RunConfig::num_device = num_replicas_in_sync;
@@ -73,23 +79,19 @@ void Facade::forward(const char* model_name, int32_t table_id, int32_t global_re
   // ctx may change during different step, so we must keep refreshing it
   lookup_manager_->tf_ctx_list[global_replica_id] = ctx;
 
-  coll_cache_lib::common::Timer t;
   lookup_manager_->forward(std::string(model_name), table_id, global_replica_id, num_keys,
                            emb_vec_size, values_ptr, emb_vector_ptr);
-  if (!ps_config->use_coll_cache)
-    this->set_step_profile_value(global_replica_id, coll_cache_lib::common::kLogL2CacheCopyTime,
-                                 t.Passed());
+}
+
+void Facade::record_hotness(const char* model_name, int32_t table_id, int32_t global_replica_id,
+                     const tensorflow::Tensor* values_tensor, tensorflow::OpKernelContext* ctx) {
+  size_t num_keys = static_cast<size_t>(values_tensor->NumElements());
+  const void* values_ptr = values_tensor->data();
+  lookup_manager_->record_hotness(model_name, table_id, global_replica_id, num_keys, values_ptr);
 }
 
 void Facade::report_avg() {
-  if (ps_config->use_coll_cache)
-    this->lookup_manager_->report_avg();
-  else {
-    this->profiler_->ReportStepAverage(
-        coll_cache_lib::common::RunConfig::num_epoch - 1,
-        coll_cache_lib::common::RunConfig::num_global_step_per_epoch - 1);
-    std::cout.flush();
-  }
+  this->lookup_manager_->report_avg();
 }
 
 }  // namespace coll_cache_lib

@@ -41,11 +41,16 @@ class LookupManager final {
   LookupManager& operator=(const LookupManager&) = delete;
 
   static std::shared_ptr<LookupManager> Create();
-  void init(parameter_server_config& ps_config, const int32_t global_batch_size,
+  void config(std::shared_ptr<parameter_server_config> ps_config,
+            const int32_t num_replicas_in_sync, const int32_t global_replica_id);
+  void init(std::shared_ptr<parameter_server_config> ps_config, const int32_t global_batch_size,
             const int32_t num_replicas_in_sync, const int32_t global_replica_id);
   void forward(const std::string& model_name, const int32_t table_id,
                const int32_t global_replica_id, const size_t num_keys, const size_t emb_vec_size,
                const void* values_ptr, void* emb_vector_ptr);
+  void record_hotness(const std::string& model_name, const int32_t table_id,
+                      const int32_t global_replica_id, const size_t num_keys,
+                      const void* values_ptr);
   void report_avg();
   // for profiler
   inline void set_step_profile_value(const int global_replica_id, const uint64_t type,
@@ -65,11 +70,11 @@ class LookupManager final {
 
   void refresh(const int32_t global_replica_id, cudaStream_t stream = nullptr, bool foreground = false);
  private:
-  void init_per_replica(const int32_t global_replica_id, parameter_server_config& ps_config);
+  void init_per_replica(const int32_t global_replica_id);
 
   LookupManager();
   bool initialized_;
-  std::map<std::string, std::map<size_t, std::shared_ptr<LookupSessionBase>>> lookup_session_map_;
+  std::shared_ptr<parameter_server_config> ps_config;
   std::map<std::string, std::map<size_t, std::vector<std::shared_ptr<void>>>> h_values_map_;
 
   // for coll cache

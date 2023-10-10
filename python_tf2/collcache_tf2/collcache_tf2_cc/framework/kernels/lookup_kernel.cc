@@ -73,4 +73,44 @@ class Lookup : public OpKernel {
 REGISTER_KERNEL_BUILDER(Name("Lookup").Device(DEVICE_GPU).HostMemory("global_replica_id"),
                         Lookup<GPUDevice>);
 
+template <typename Device>
+class RecordHotness : public OpKernel {
+ public:
+  explicit RecordHotness(OpKernelConstruction *ctx) : OpKernel(ctx) {
+    OP_REQUIRES_OK(ctx, ctx->GetAttr("model_name", &model_name_));
+    OP_REQUIRES_OK(ctx, ctx->GetAttr("table_id", &table_id_));
+  }
+
+  void Compute(OpKernelContext *ctx) override {
+    // Tensor const *status_tensor = nullptr;
+    // OP_REQUIRES_OK(ctx, ctx->input("init_status", &status_tensor));
+    // std::string init_status = status_tensor->flat<tstring>()(0);
+    // OP_REQUIRES(ctx, init_status == "OK",
+    //             errors::Aborted("hierarchical parameter server is not initialized."));
+
+    Tensor const *values_tensor = nullptr;
+    OP_REQUIRES_OK(ctx, ctx->input("values", &values_tensor));
+
+    Tensor const *global_replica_id_tensor = nullptr;
+    OP_REQUIRES_OK(ctx, ctx->input("global_replica_id", &global_replica_id_tensor));
+    const int32_t global_replica_id_value = global_replica_id_tensor->scalar<int32_t>()();
+
+    // do freq record
+    try {
+      coll_cache_lib::Facade::instance()->record_hotness(
+          model_name_.c_str(), table_id_, global_replica_id_value, values_tensor, ctx);
+    } catch (std::exception const &error) {
+      ctx->SetStatus(errors::Aborted(error.what()));
+      return;
+    }
+  }
+
+ private:
+  std::string model_name_;
+  tensorflow::int32 table_id_;
+};
+
+REGISTER_KERNEL_BUILDER(Name("RecordHotness").Device(DEVICE_GPU).HostMemory("global_replica_id"),
+                        RecordHotness<GPUDevice>);
+
 }  // namespace tensorflow

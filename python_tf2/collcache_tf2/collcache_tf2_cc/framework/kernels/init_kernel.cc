@@ -82,4 +82,43 @@ REGISTER_KERNEL_BUILDER(Name("Init")
                             .HostMemory("status"),
                         Init<GPUDevice>);
 
+template <typename Device>
+class Config : public OpKernel {
+ public:
+  explicit Config(OpKernelConstruction* ctx) : OpKernel(ctx) {
+    OP_REQUIRES_OK(ctx, ctx->GetAttr("ps_config_file", &ps_config_file_));
+  }
+
+  void Compute(OpKernelContext* ctx) override {
+    const Tensor* global_replica_id_tensor = nullptr;
+    OP_REQUIRES_OK(ctx, ctx->input("global_replica_id", &global_replica_id_tensor));
+    const Tensor* num_replicas_in_sync_tensor = nullptr;
+    OP_REQUIRES_OK(ctx, ctx->input("num_replicas_in_sync", &num_replicas_in_sync_tensor));
+
+    try {
+      int32_t global_replica_id = global_replica_id_tensor->scalar<int32_t>()(0);
+      int32_t num_replicas_in_sync = num_replicas_in_sync_tensor->scalar<int32_t>()(0);
+      coll_cache_lib::Facade::instance()->config(
+          global_replica_id, ctx, ps_config_file_.c_str(), num_replicas_in_sync);
+    } catch (const std::exception& error) {
+      ctx->SetStatus(errors::Aborted(error.what()));
+      return;
+    }
+
+    Tensor* status_tensor = nullptr;
+    OP_REQUIRES_OK(ctx, ctx->allocate_output(0, {}, &status_tensor));
+    status_tensor->flat<tstring>()(0) = "OK";
+  }
+
+ private:
+  std::string ps_config_file_;
+};
+
+REGISTER_KERNEL_BUILDER(Name("Config")
+                            .Device(DEVICE_GPU)
+                            .HostMemory("global_replica_id")
+                            .HostMemory("num_replicas_in_sync")
+                            .HostMemory("status"),
+                        Config<GPUDevice>);
+
 }  // namespace tensorflow

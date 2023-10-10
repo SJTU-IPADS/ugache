@@ -44,3 +44,22 @@ REGISTER_OP("Init")
       TF_RETURN_IF_ERROR(ctx->WithRank(ctx->input(2), 1, &visible_devices_shape));
       return Status::OK();
     });
+
+REGISTER_OP("Config")
+    .Input("global_replica_id: int32")
+    .Input("num_replicas_in_sync: int32")
+    .Attr("ps_config_file: string")
+    .Output("status: string")
+    .SetShapeFn([](InferenceContext* ctx) {
+      ShapeHandle input_shape_0 = ctx->input(0);
+      DimensionHandle input_num_elem_0 = ctx->NumElements(input_shape_0);
+      if (1 != ctx->Value(input_num_elem_0))
+        return errors::InvalidArgument("global_replica_id must be a scalar.");
+
+      ShapeHandle input_shape_1 = ctx->input(1);
+      DimensionHandle input_num_elem_1 = ctx->NumElements(input_shape_1);
+      if (1 != ctx->Value(input_num_elem_1))
+        return errors::InvalidArgument("num_replicas_in_sync must be a scalar.");
+
+      return Status::OK();
+    });

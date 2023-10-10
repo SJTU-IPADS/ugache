@@ -109,3 +109,16 @@ def lookup(
         # init_status=status,
     )
     return vector
+
+def record_hotness(
+    values, model_name="dlrm", table_id=0,
+):
+    """
+    """
+    global_replica_id = get_global_replica_id(_get_comm_tool())
+    return collcache_tf2_lib.record_hotness(
+        values=values,
+        global_replica_id=global_replica_id,
+        model_name=model_name,
+        table_id=table_id,
+    )

@@ -43,11 +43,15 @@ class Facade final {
   void init(const int32_t global_replica_id, tensorflow::OpKernelContext* ctx,
             const char* ps_config_file, const int32_t global_batch_size,
             const int32_t num_replicas_in_sync);
+  void config(const int32_t global_replica_id, tensorflow::OpKernelContext* ctx,
+              const char* ps_config_file, const int32_t num_replicas_in_sync);
   void forward(const char* model_name, const int32_t table_id, const int32_t global_replica_id,
                const tensorflow::Tensor* values_tensor, tensorflow::Tensor* emb_vector_tensor,
                tensorflow::OpKernelContext* ctx);
+  void record_hotness(const char* model_name, const int32_t table_id, const int32_t global_replica_id,
+                      const tensorflow::Tensor* values_tensor, tensorflow::OpKernelContext* ctx);
   void report_avg();
-  parameter_server_config* ps_config;
+  std::shared_ptr<parameter_server_config> ps_config;
   std::shared_ptr<coll_cache_lib::common::Profiler> profiler_;
   std::vector<size_t> current_steps_for_each_replica_;
 

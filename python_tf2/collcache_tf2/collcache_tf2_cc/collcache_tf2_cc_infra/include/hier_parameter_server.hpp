@@ -42,7 +42,7 @@ class CollCacheParameterServer {
   using LogEpochItem = coll_cache_lib::common::LogEpochItem;
   using LogStepItem = coll_cache_lib::common::LogStepItem;
   virtual ~CollCacheParameterServer() = default;
-  CollCacheParameterServer(const parameter_server_config& ps_config);
+  CollCacheParameterServer(std::shared_ptr<parameter_server_config> ps_config);
   CollCacheParameterServer(CollCacheParameterServer const&) = delete;
   CollCacheParameterServer& operator=(CollCacheParameterServer const&) = delete;
   void init_per_replica(int global_replica_id, coll_cache_lib::common::ContFreqBuf* freq_rank,
@@ -66,8 +66,6 @@ class CollCacheParameterServer {
     this->coll_cache_ptr_->refresh(global_replica_id, freq_rank, stream, foreground);
   }
 
-  inline parameter_server_config& ref_ps_config() { return ps_config_; }
-
   void report_avg();
   static void barrier();
 
@@ -76,7 +74,7 @@ class CollCacheParameterServer {
   std::shared_ptr<IModelLoader> raw_data_holder;
   coll_cache_lib::common::DataType dtype = coll_cache_lib::common::kF32;
 
-  parameter_server_config ps_config_;
+  std::shared_ptr<parameter_server_config> ps_config_;
 };
 
 }  // namespace coll_cache_lib
