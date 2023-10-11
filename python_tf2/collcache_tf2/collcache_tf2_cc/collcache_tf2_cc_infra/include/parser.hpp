@@ -16,13 +16,13 @@
 
 #pragma once
 #include "logging.hpp"
-#include <common.hpp>
 #include <fstream>
 #include <functional>
 #include <inference_utils.hpp>
 #include <nlohmann/json.hpp>
 
 namespace coll_cache_lib {
+enum class DataReaderType_t { Norm, Raw, Parquet, RawAsync };
 
 // inline to avoid build error: multiple definition
 inline nlohmann::json read_json_file(const std::string& filename) {

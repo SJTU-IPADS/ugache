@@ -18,7 +18,6 @@
 #include "coll_cache_lib/atomic_barrier.h"
 #include "coll_cache_lib/facade.h"
 #include "hier_parameter_server.hpp"
-#include "lookup_session.hpp"
 #include "tensorflow/core/framework/op_kernel.h"
 
 namespace coll_cache_lib {

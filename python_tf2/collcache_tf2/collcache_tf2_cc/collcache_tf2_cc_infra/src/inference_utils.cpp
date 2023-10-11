@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-#include <common.hpp>
 #include <inference_utils.hpp>
 #include <parser.hpp>
 #include <unordered_set>

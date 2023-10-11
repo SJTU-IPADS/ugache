@@ -17,7 +17,6 @@
 #pragma once
 #include <coll_cache_lib/facade.h>
 
-#include <common.hpp>
 #include <inference_utils.hpp>
 #include <iostream>
 #include <memory>

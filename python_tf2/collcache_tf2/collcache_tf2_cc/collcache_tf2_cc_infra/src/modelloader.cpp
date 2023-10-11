@@ -18,7 +18,6 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
-#include <common.hpp>
 #include <cstddef>
 #include <inference_utils.hpp>
 #include <modelloader.hpp>
