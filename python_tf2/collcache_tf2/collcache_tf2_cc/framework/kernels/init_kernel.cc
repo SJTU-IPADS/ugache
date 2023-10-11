@@ -17,7 +17,7 @@
 #include <exception>
 
 #include "config.h"
-#include "facade.h"
+#include "lookup_manager.h"
 #include "tensorflow/core/framework/op_kernel.h"
 
 namespace tensorflow {
@@ -56,7 +56,7 @@ class Init : public OpKernel {
 
       auto device_ctx = ctx->op_device_context();
       OP_REQUIRES(ctx, device_ctx != nullptr, errors::Aborted("No valid device context."));
-      coll_cache_lib::Facade::instance()->init(
+      coll_cache_lib::LookupManager::instance()->init(
           global_replica_id, ctx, ps_config_file_.c_str(), global_batch_size_,
           num_replicas_in_sync);
     } catch (const std::exception& error) {
@@ -98,7 +98,7 @@ class Config : public OpKernel {
     try {
       int32_t global_replica_id = global_replica_id_tensor->scalar<int32_t>()(0);
       int32_t num_replicas_in_sync = num_replicas_in_sync_tensor->scalar<int32_t>()(0);
-      coll_cache_lib::Facade::instance()->config(
+      coll_cache_lib::LookupManager::instance()->config(
           global_replica_id, ctx, ps_config_file_.c_str(), num_replicas_in_sync);
     } catch (const std::exception& error) {
       ctx->SetStatus(errors::Aborted(error.what()));

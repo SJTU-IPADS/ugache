@@ -39,18 +39,20 @@ class LookupManager final {
   LookupManager(const LookupManager&) = delete;
   LookupManager& operator=(const LookupManager&) = delete;
 
-  static std::shared_ptr<LookupManager> Create();
-  void config(std::shared_ptr<parameter_server_config> ps_config,
-            const int32_t num_replicas_in_sync, const int32_t global_replica_id);
-  void init(std::shared_ptr<parameter_server_config> ps_config, const int32_t global_batch_size,
-            const int32_t num_replicas_in_sync, const int32_t global_replica_id);
-  void forward(const std::string& model_name, const int32_t table_id,
-               const int32_t global_replica_id, const size_t num_keys, const size_t emb_vec_size,
-               const void* values_ptr, void* emb_vector_ptr);
-  void record_hotness(const std::string& model_name, const int32_t table_id,
-                      const int32_t global_replica_id, const size_t num_keys,
-                      const void* values_ptr);
-  void report_avg();
+  static LookupManager* instance();
+  void operator delete(void*);
+  void init(const int32_t global_replica_id, tensorflow::OpKernelContext* ctx,
+            const char* ps_config_file, const int32_t global_batch_size,
+            const int32_t num_replicas_in_sync);
+  void config(const int32_t global_replica_id, tensorflow::OpKernelContext* ctx,
+              const char* ps_config_file, const int32_t num_replicas_in_sync);
+  void forward(const char* model_name, const int32_t table_id, const int32_t global_replica_id,
+               const tensorflow::Tensor* values_tensor, tensorflow::Tensor* emb_vector_tensor,
+               tensorflow::OpKernelContext* ctx);
+  void record_hotness(const char* model_name, const int32_t table_id, const int32_t global_replica_id,
+                      const tensorflow::Tensor* values_tensor, tensorflow::OpKernelContext* ctx);
+
+  inline void report_avg() { coll_parameter_server_->report_avg(); }
   // for profiler
   inline void set_step_profile_value(const int global_replica_id, const uint64_t type,
                                      const double value) {

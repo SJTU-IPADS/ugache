@@ -18,7 +18,7 @@
 #include <exception>
 
 #include "config.h"
-#include "facade.h"
+#include "lookup_manager.h"
 #include "tensorflow/core/framework/op_kernel.h"
 
 namespace tensorflow {
@@ -52,7 +52,7 @@ class AddEpochProfileValue : public OpKernel {
       auto device_ctx = ctx->op_device_context();
       OP_REQUIRES(ctx, device_ctx == nullptr, errors::Aborted("should have no device context."));
 
-      coll_cache_lib::Facade::instance()->add_epoch_profile_value(global_replica_id,
+      coll_cache_lib::LookupManager::instance()->add_epoch_profile_value(global_replica_id,
                                                                                profile_type, value);
     } catch (const std::exception& error) {
       ctx->SetStatus(errors::Aborted(error.what()));

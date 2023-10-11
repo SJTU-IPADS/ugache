@@ -15,7 +15,7 @@
  */
 
 #include "config.h"
-#include "facade.h"
+#include "lookup_manager.h"
 #include "tensorflow/core/framework/op_kernel.h"
 
 namespace tensorflow {
@@ -55,7 +55,7 @@ class Lookup : public OpKernel {
 
     // do forward propagation
     try {
-      coll_cache_lib::Facade::instance()->forward(
+      coll_cache_lib::LookupManager::instance()->forward(
           model_name_.c_str(), table_id_, global_replica_id_value, values_tensor, emb_vector_tensor,
           ctx);
     } catch (std::exception const &error) {
@@ -97,7 +97,7 @@ class RecordHotness : public OpKernel {
 
     // do freq record
     try {
-      coll_cache_lib::Facade::instance()->record_hotness(
+      coll_cache_lib::LookupManager::instance()->record_hotness(
           model_name_.c_str(), table_id_, global_replica_id_value, values_tensor, ctx);
     } catch (std::exception const &error) {
       ctx->SetStatus(errors::Aborted(error.what()));

@@ -19,7 +19,7 @@
 #include <exception>
 
 #include "config.h"
-#include "facade.h"
+#include "lookup_manager.h"
 #include "tensorflow/core/framework/op_kernel.h"
 
 namespace tensorflow {
@@ -66,7 +66,7 @@ class Shutdown : public OpKernel {
       ss << "[CUDA] worker" << std::getenv("HPS_WORKER_ID") << " cuda mem usage: " << ToReadableSize(total  - free) << "\n";
       std::cout << ss.str();
       if (std::string(std::getenv("HPS_WORKER_ID")) == "0") {
-        coll_cache_lib::Facade::instance()->report_avg();
+        coll_cache_lib::LookupManager::instance()->report_avg();
       }
     } catch (const std::exception& error) {
       ctx->SetStatus(errors::Aborted(error.what()));

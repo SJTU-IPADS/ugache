@@ -15,7 +15,6 @@
  */
 
 #include "config.h"
-#include "facade.h"
 #include "tensorflow/core/framework/op_kernel.h"
 
 namespace tensorflow {

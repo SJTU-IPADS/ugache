@@ -35,16 +35,22 @@ void CriticalExec(coll_cache_lib::common::BarHandle barrier, int syncer, std::fu
   }
 }
 
-std::shared_ptr<LookupManager> LookupManager::Create() {
-  return std::shared_ptr<LookupManager>(new LookupManager());
-}
-
 LookupManager::LookupManager() : initialized_{false} {}
 
-void LookupManager::config(std::shared_ptr<parameter_server_config> ps_config,
-                         const int32_t num_replicas_in_sync, const int32_t global_replica_id) {
+LookupManager* LookupManager::instance() {
+  static LookupManager instance;
+  return &instance;
+}
+void LookupManager::operator delete(void*) {
+  throw std::domain_error("This pointer cannot be manually deleted.");
+}
+
+void LookupManager::config(const int32_t global_replica_id, tensorflow::OpKernelContext* ctx,
+                  const char* ps_config_file, int32_t num_replicas_in_sync) {
+  //
+  ps_config = std::make_shared<parameter_server_config>(ps_config_file);
+  CHECK(ps_config->inference_params_array.size() == 1) << "only single inference parameter is supported";
   COLL_CHECK(num_replicas_in_sync > 0) << "num_replicas_in_sync must be > 0.";
-  this->ps_config = ps_config;
   for (auto& inference_params : ps_config->inference_params_array) {
     sort(inference_params.deployed_devices.begin(), inference_params.deployed_devices.end());
     auto check = [](const std::vector<int>& vec) {
@@ -83,10 +89,12 @@ void LookupManager::config(std::shared_ptr<parameter_server_config> ps_config,
     h_values_map_.emplace(inference_params.model_name, h_values);
   }
 }
-void LookupManager::init(std::shared_ptr<parameter_server_config> ps_config, int32_t global_batch_size,
-                         const int32_t num_replicas_in_sync, const int32_t global_replica_id) {
+void LookupManager::init(const int32_t global_replica_id, tensorflow::OpKernelContext* ctx,
+                  const char* ps_config_file, int32_t global_batch_size,
+                  int32_t num_replicas_in_sync) {
   initialized_ = true;
-  this->ps_config = ps_config;
+  tf_ctx_list.resize(num_replicas_in_sync);
+  tf_ctx_list[global_replica_id] = ctx;
   COLL_CHECK(global_batch_size > 0) << "global_batch_size must be > 0.";
   COLL_CHECK(num_replicas_in_sync > 0) << "num_replicas_in_sync must be > 0.";
   COLL_CHECK(global_batch_size % num_replicas_in_sync == 0) <<
@@ -132,9 +140,11 @@ void LookupManager::init(std::shared_ptr<parameter_server_config> ps_config, int
   }
 }
 
-void LookupManager::record_hotness(const std::string& model_name, int32_t table_id,
-                            int32_t global_replica_id, size_t num_keys,
-                            const void* values_ptr) {
+void LookupManager::record_hotness(const char* model_name, int32_t table_id, int32_t global_replica_id,
+                     const tensorflow::Tensor* values_tensor, tensorflow::OpKernelContext* ctx) {
+  //
+  size_t num_keys = static_cast<size_t>(values_tensor->NumElements());
+  const void* values_ptr = values_tensor->data();
   size_t per_key_size = ps_config->inference_params_array[0].i64_input_key ? 8 : 4;
   void* h_values = h_values_map_.begin()->second.find(global_replica_id)->second.begin()->get();
   cudaMemcpy(h_values, values_ptr, num_keys * per_key_size, cudaMemcpyDeviceToHost);
@@ -144,50 +154,61 @@ void LookupManager::record_hotness(const std::string& model_name, int32_t table_
     coll_freq_recorder_list[global_replica_id]->Record((const coll_cache_lib::common::IdType*)(h_values), num_keys);
   }
 }
-void LookupManager::forward(const std::string& model_name, int32_t table_id,
-                            int32_t global_replica_id, size_t num_keys, size_t emb_vec_size,
-                            const void* values_ptr, void* emb_vector_ptr) {
-  if (coll_parameter_server_) {
-    cudaStream_t stream =
-        *reinterpret_cast<const cudaStream_t*>(this->tf_ctx_list[global_replica_id]
-                                                   ->op_device_context()
-                                                   ->stream()
-                                                   ->implementation()
-                                                   ->GpuStreamMemberHack());
-    // HCTR_LOG_S(ERROR, WORLD) << "cp taks time " << t_cp << ",record taks time " << record <<
-    // "\n";
-    if (ps_config->coll_cache_enable_refresh) {
-      cur_key_ptr = values_ptr; cur_num_key = num_keys; sem_post(&record_send);
-    }
+void LookupManager::forward(const char* model_name, int32_t table_id, int32_t global_replica_id,
+                     const tensorflow::Tensor* values_tensor, tensorflow::Tensor* emb_vector_tensor,
+                     tensorflow::OpKernelContext* ctx) {
+  // 
+  size_t num_keys = static_cast<size_t>(values_tensor->NumElements());
+  size_t emb_vec_size = static_cast<size_t>(emb_vector_tensor->shape().dim_sizes().back());
+  const void* values_ptr = values_tensor->data();
+  if (ps_config->inference_params_array[0].i64_input_key) {
+    CHECK(values_tensor->dtype() == tensorflow::DT_INT64 ||
+          values_tensor->dtype() == tensorflow::DT_UINT64);
+  } else {
+    CHECK(values_tensor->dtype() == tensorflow::DT_INT32 ||
+          values_tensor->dtype() == tensorflow::DT_UINT32);
+  }
+  void* emb_vector_ptr = emb_vector_tensor->data();
+  // ctx may change during different step, so we must keep refreshing it
+  tf_ctx_list[global_replica_id] = ctx;
+  cudaStream_t stream =
+      *reinterpret_cast<const cudaStream_t*>(this->tf_ctx_list[global_replica_id]
+                                                  ->op_device_context()
+                                                  ->stream()
+                                                  ->implementation()
+                                                  ->GpuStreamMemberHack());
+  // HCTR_LOG_S(ERROR, WORLD) << "cp taks time " << t_cp << ",record taks time " << record <<
+  // "\n";
+  if (ps_config->coll_cache_enable_refresh) {
+    cur_key_ptr = values_ptr; cur_num_key = num_keys; sem_post(&record_send);
+  }
 
-    coll_parameter_server_->lookup(global_replica_id, values_ptr, num_keys, emb_vector_ptr,
-                                   model_name, table_id, stream,
-                                   this->current_steps_for_each_replica_[global_replica_id]);
-    if (ps_config->coll_cache_enable_refresh &&
-        this->current_steps_for_each_replica_[global_replica_id] ==
-            ps_config->coll_cache_refresh_iter) {
-      if (coll_refresh_ongoing[global_replica_id].load() == false) {
-        coll_refresh_ongoing[global_replica_id].store(true);
-        if (coll_refresh_thread[global_replica_id].joinable()) {
-          coll_refresh_thread[global_replica_id].join();
-        }
-        coll_refresh_thread[global_replica_id] = std::thread([this, global_replica_id, stream]() {
-          refresh(global_replica_id, stream, false /*foreground*/);
-          // refresh(global_replica_id, stream, true);
-          coll_refresh_ongoing[global_replica_id].store(false);
-        });
-        // coll_refresh_thread[global_replica_id].join();
-      } else {
-        COLL_LOG(ERROR) << "skip refresh due to refresh already ongoing";
+  coll_parameter_server_->lookup(global_replica_id, values_ptr, num_keys, emb_vector_ptr,
+                                  model_name, table_id, stream,
+                                  this->current_steps_for_each_replica_[global_replica_id]);
+  if (ps_config->coll_cache_enable_refresh &&
+      this->current_steps_for_each_replica_[global_replica_id] ==
+          ps_config->coll_cache_refresh_iter) {
+    if (coll_refresh_ongoing[global_replica_id].load() == false) {
+      coll_refresh_ongoing[global_replica_id].store(true);
+      if (coll_refresh_thread[global_replica_id].joinable()) {
+        coll_refresh_thread[global_replica_id].join();
       }
+      coll_refresh_thread[global_replica_id] = std::thread([this, global_replica_id, stream]() {
+        refresh(global_replica_id, stream, false /*foreground*/);
+        // refresh(global_replica_id, stream, true);
+        coll_refresh_ongoing[global_replica_id].store(false);
+      });
+      // coll_refresh_thread[global_replica_id].join();
+    } else {
+      COLL_LOG(ERROR) << "skip refresh due to refresh already ongoing";
     }
-    if (ps_config->coll_cache_enable_refresh) {
-      sem_wait(&record_done);
-    }
-    this->current_steps_for_each_replica_[global_replica_id]++;
-    return;
+  }
+  if (ps_config->coll_cache_enable_refresh) {
+    sem_wait(&record_done);
   }
   this->current_steps_for_each_replica_[global_replica_id]++;
+  return;
 }
 
 void LookupManager::init_per_replica(const int32_t global_replica_id) {
@@ -310,9 +331,4 @@ void LookupManager::refresh(const int32_t global_replica_id, cudaStream_t stream
   coll_parameter_server_->refresh(global_replica_id, freq_rank, stream, foreground);
 }
 
-void LookupManager::report_avg() {
-  if (coll_parameter_server_) {
-    coll_parameter_server_->report_avg();
-  }
-}
 }  // namespace coll_cache_lib
