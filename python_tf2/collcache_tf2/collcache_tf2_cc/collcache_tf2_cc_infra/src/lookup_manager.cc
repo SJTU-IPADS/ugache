@@ -135,11 +135,8 @@ void LookupManager::init(std::shared_ptr<parameter_server_config> ps_config, int
 void LookupManager::record_hotness(const std::string& model_name, int32_t table_id,
                             int32_t global_replica_id, size_t num_keys,
                             const void* values_ptr) {
-  LOG(ERROR) << global_replica_id << " recording " << num_keys << " hotness";
   size_t per_key_size = ps_config->inference_params_array[0].i64_input_key ? 8 : 4;
   void* h_values = h_values_map_.begin()->second.find(global_replica_id)->second.begin()->get();
-  std::cout << h_values << "\n";
-  std::cout << *(int*)h_values << "\n";
   cudaMemcpy(h_values, values_ptr, num_keys * per_key_size, cudaMemcpyDeviceToHost);
   if (ps_config->inference_params_array[0].i64_input_key) {
     coll_freq_recorder_list[global_replica_id]->Record((const coll_cache_lib::common::Id64Type*)(h_values), num_keys);

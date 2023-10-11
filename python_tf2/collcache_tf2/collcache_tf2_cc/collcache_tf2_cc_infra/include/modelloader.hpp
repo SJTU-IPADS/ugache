@@ -62,7 +62,7 @@ class IModelLoader {
    * @param table_name The destination table into which to insert the data.
    * @param path File system path under which the embedding file should be parsed.
    */
-  virtual void load(const std::string& table_name, const std::string& path) = 0;
+  virtual void load(const std::string& path) = 0;
   /**
    * free the UnifiedEmbeddingTable(data member) of an inherited class.
    *
@@ -106,7 +106,7 @@ class RawModelLoader : public IModelLoader {
 
  public:
   RawModelLoader();
-  virtual void load(const std::string& table_name, const std::string& path);
+  virtual void load(const std::string& path);
   virtual void delete_table();
   virtual void* getkeys();
   virtual void* getvectors();

@@ -50,15 +50,6 @@ void Facade::init(const int32_t global_replica_id, tensorflow::OpKernelContext* 
     lookup_manager_->tf_ctx_list.resize(num_replicas_in_sync);
     lookup_manager_->tf_ctx_list[global_replica_id] = ctx;
     lookup_manager_->init(ps_config, global_batch_size, num_replicas_in_sync, global_replica_id);
-    if (!ps_config->use_coll_cache) {
-      coll_cache_lib::common::RunConfig::worker_id = global_replica_id;
-      coll_cache_lib::common::RunConfig::num_device = num_replicas_in_sync;
-      coll_cache_lib::common::RunConfig::num_global_step_per_epoch =
-          ps_config->iteration_per_epoch * coll_cache_lib::common::RunConfig::num_device;
-      coll_cache_lib::common::RunConfig::num_epoch = ps_config->epoch;
-      profiler_ = std::make_shared<coll_cache_lib::common::Profiler>();
-      current_steps_for_each_replica_.resize(coll_cache_lib::common::RunConfig::num_device, 0);
-    }
   });
 }
 

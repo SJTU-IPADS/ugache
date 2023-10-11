@@ -38,16 +38,7 @@ CollCacheParameterServer::CollCacheParameterServer(std::shared_ptr<parameter_ser
   COLL_LOG(INFO) << "====================================================HPS Coll "
                "Create====================================================\n";
   const std::vector<InferenceParams>& inference_params_array = ps_config_->inference_params_array;
-  for (size_t i = 0; i < inference_params_array.size(); i++) {
-    if (inference_params_array[i].volatile_db != inference_params_array[0].volatile_db ||
-        inference_params_array[i].persistent_db != inference_params_array[0].persistent_db) {
-      COLL_LOG(FATAL) << 
-          "Inconsistent database setup. coll_cache_lib paramter server does currently not support hybrid "
-          "database deployment.";
-    }
-  }
-  if (ps_config_->embedding_vec_size_.size() != inference_params_array.size() ||
-      ps_config_->default_emb_vec_value_.size() != inference_params_array.size()) {
+  if (ps_config_->embedding_vec_size_.size() != inference_params_array.size()) {
     COLL_LOG(FATAL) << 
                    "Wrong input: The size of parameter server parameters are not correct.";
   }
@@ -83,8 +74,7 @@ CollCacheParameterServer::CollCacheParameterServer(std::shared_ptr<parameter_ser
                           " doesn't match the size of 'sparse_model_files' in configuration.";
       }
       // Get raw format model loader
-      rawreader->load(inference_params.embedding_table_names[j],
-                      inference_params.sparse_model_files[j]);
+      rawreader->load(inference_params.sparse_model_files[j]);
       if (inference_params.use_multi_worker) {
         CollCacheParameterServer::barrier();
       }
@@ -92,37 +82,6 @@ CollCacheParameterServer::CollCacheParameterServer(std::shared_ptr<parameter_ser
       //     inference_params.model_name, ps_config_->emb_table_name_[inference_params.model_name][j]);
       size_t num_key = rawreader->getkeycount();
       const size_t embedding_size = ps_config_->embedding_vec_size_[inference_params.model_name][j];
-      // Populate volatile database(s).
-      // if (volatile_db_) {
-      //   const size_t volatile_capacity = volatile_db_->capacity(tag_name);
-      //   const size_t volatile_cache_amount =
-      //       (num_key <= volatile_capacity)
-      //           ? num_key
-      //           : static_cast<size_t>(
-      //                 volatile_db_cache_rate_ * static_cast<double>(volatile_capacity) + 0.5);
-
-      //   if (dynamic_cast<DirectMapBackend<uint32_t>*>(volatile_db_.get()) &&
-      //       rawreader->is_mock == false) {
-      //     auto keys_ptr = (const uint32_t*)(rawreader->getkeys());
-      //     #pragma omp parallel for
-      //     for (uint32_t i = 0; i < volatile_cache_amount; i++) {
-      //       HCTR_CHECK_HINT(keys_ptr[i] == i, "direct backend requries continious source");
-      //     }
-      //   }
-      //   HCTR_CHECK(volatile_db_->insert(tag_name, volatile_cache_amount,
-      //                                   reinterpret_cast<const uint32_t*>(rawreader->getkeys()),
-      //                                   reinterpret_cast<const char*>(rawreader->getvectors()),
-      //                                   embedding_size * sizeof(float)));
-      //   volatile_db_->synchronize();
-      //   HCTR_LOG_S(INFO, WORLD) << "Table: " << tag_name << "; cached " << volatile_cache_amount
-      //                           << " / " << num_key << " embeddings in volatile database ("
-      //                           << volatile_db_->get_name()
-      //                           << "); load: " << volatile_db_->size(tag_name) << " / "
-      //                           << volatile_capacity << " (" << std::fixed << std::setprecision(2)
-      //                           << (static_cast<double>(volatile_db_->size(tag_name)) * 100.0 /
-      //                               static_cast<double>(volatile_capacity))
-      //                           << "%)." << std::endl;
-      // }
     }
   }
 

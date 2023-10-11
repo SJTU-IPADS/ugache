@@ -49,7 +49,7 @@ std::string GetEnv(std::string key) {
 }  // namespace
 
 template <typename TKey, typename TValue>
-void RawModelLoader<TKey, TValue>::load(const std::string& table_name, const std::string& path) {
+void RawModelLoader<TKey, TValue>::load(const std::string& path) {
   const std::string emb_file_prefix = path + "/";
   const std::string key_file = emb_file_prefix + "key";
   const std::string vec_file = emb_file_prefix + "emb_vector";
