@@ -48,7 +48,7 @@ void LookupManager::operator delete(void*) {
 void LookupManager::config(const int32_t global_replica_id, tensorflow::OpKernelContext* ctx,
                   const char* ps_config_file, int32_t num_replicas_in_sync) {
   //
-  ps_config = std::make_shared<parameter_server_config>(ps_config_file);
+  ps_config = std::make_shared<parameter_server_config>(ps_config_file, global_replica_id);
   CHECK(ps_config->inference_params_array.size() == 1) << "only single inference parameter is supported";
   COLL_CHECK(num_replicas_in_sync > 0) << "num_replicas_in_sync must be > 0.";
   for (auto& inference_params : ps_config->inference_params_array) {

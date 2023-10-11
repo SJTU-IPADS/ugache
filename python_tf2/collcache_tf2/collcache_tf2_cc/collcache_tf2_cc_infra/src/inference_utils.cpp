@@ -43,15 +43,15 @@ InferenceParams::InferenceParams(
   max_vocabulary_size.resize(embedding_vecsize_per_table.size());
 }
 
-parameter_server_config::parameter_server_config(const char* hps_json_config_file) {
-  init(std::string(hps_json_config_file));
+parameter_server_config::parameter_server_config(const char* hps_json_config_file, const int32_t global_replica_id) {
+  init(std::string(hps_json_config_file), global_replica_id);
 }
 
-parameter_server_config::parameter_server_config(const std::string& hps_json_config_file) {
-  init(hps_json_config_file);
+parameter_server_config::parameter_server_config(const std::string& hps_json_config_file, const int32_t global_replica_id) {
+  init(hps_json_config_file, global_replica_id);
 }
 
-void parameter_server_config::init(const std::string& hps_json_config_file) {
+void parameter_server_config::init(const std::string& hps_json_config_file, const int32_t global_replica_id) {
   COLL_LOG(INFO) << 
              "=====================================================HPS "
              "Parse====================================================\n";
@@ -111,7 +111,7 @@ void parameter_server_config::init(const std::string& hps_json_config_file) {
     }
     params.cross_worker_deployed_devices = params.deployed_devices;
     if (use_multi_worker) {
-      params.deployed_devices = {params.deployed_devices[std::stoi(getenv("HPS_WORKER_ID"))]};
+      params.deployed_devices = {params.deployed_devices[global_replica_id]};
     }
     params.device_id = params.deployed_devices.back();
     // [13] maxnum_catfeature_query_per_table_per_sample -> std::vector<int>
@@ -155,84 +155,6 @@ void parameter_server_config::init(const std::string& hps_json_config_file) {
     max_feature_num_per_sample_per_emb_table_[params.model_name] =
         params.maxnum_catfeature_query_per_table_per_sample;
   }
-}
-
-parameter_server_config::parameter_server_config(
-    std::map<std::string, std::vector<size_t>> embedding_vec_size,
-    std::map<std::string, std::vector<size_t>> max_feature_num_per_sample_per_emb_table,
-    const std::vector<InferenceParams>& inference_params_array) {
-  if (embedding_vec_size.size() != inference_params_array.size() ||
-      max_feature_num_per_sample_per_emb_table.size() != inference_params_array.size()) {
-    COLL_LOG(FATAL) <<
-                   "Wrong input: The number of model names and inference_params_array "
-                   "are not consistent.";
-  }
-  for (size_t i = 0; i < inference_params_array.size(); i++) {
-    const auto& inference_params = inference_params_array[i];
-    if (embedding_vec_size.find(inference_params.model_name) == embedding_vec_size.end() ||
-        max_feature_num_per_sample_per_emb_table.find(inference_params.model_name) ==
-            max_feature_num_per_sample_per_emb_table.end()) {
-      COLL_LOG(FATAL) << "Wrong input: The model_name does not exist in the map.";
-    }
-
-    // Read inference config
-    embedding_vec_size_[inference_params.model_name] =
-        embedding_vec_size[inference_params.model_name];
-    max_feature_num_per_sample_per_emb_table_[inference_params.model_name] =
-        max_feature_num_per_sample_per_emb_table[inference_params.model_name];
-  }  // end for
-  this->inference_params_array = inference_params_array;
-}
-
-parameter_server_config::parameter_server_config(
-    const std::vector<std::string>& model_config_path_array,
-    const std::vector<InferenceParams>& inference_params_array) {
-  if (model_config_path_array.size() != inference_params_array.size()) {
-    COLL_LOG(FATAL) <<
-                   "Wrong input: The size of model_config_path_array and inference_params_array "
-                   "are not consistent.";
-  }
-  for (size_t i = 0; i < model_config_path_array.size(); i++) {
-    const auto& model_config_path = model_config_path_array[i];
-    const auto& inference_params = inference_params_array[i];
-
-    // Initialize for each model
-    // Open model config file and input model json config
-    nlohmann::json model_config(read_json_file(model_config_path));
-
-    // Read embedding layer config
-    std::vector<size_t> embedding_vec_size;
-    std::vector<size_t> max_feature_num_per_sample_per_emb_table;
-
-    // Search for all embedding layers
-    const nlohmann::json& layers = get_json(model_config, "layers");
-    for (size_t j = 0; j < layers.size(); j++) {
-      const nlohmann::json& layer = layers[j];
-      std::string layer_type = get_value_from_json<std::string>(layer, "type");
-      if (layer_type.compare("Data") == 0) {
-        const nlohmann::json& sparse_inputs = get_json(layer, "sparse");
-        for (size_t k = 0; k < sparse_inputs.size(); k++) {
-          max_feature_num_per_sample_per_emb_table.push_back(
-              get_max_feature_num_per_sample_from_nnz_per_slot(sparse_inputs[k]));
-        }
-      } else if (layer_type.compare("DistributedSlotSparseEmbeddingHash") == 0) {
-        const nlohmann::json& embedding_hparam = get_json(layer, "sparse_embedding_hparam");
-        embedding_vec_size.emplace_back(
-            get_value_from_json<size_t>(embedding_hparam, "embedding_vec_size"));
-      } else if (layer_type.compare("LocalizedSlotSparseEmbeddingHash") == 0 ||
-                 layer_type.compare("LocalizedSlotSparseEmbeddingOneHot") == 0) {
-        const nlohmann::json& embedding_hparam = get_json(layer, "sparse_embedding_hparam");
-        embedding_vec_size.emplace_back(
-            get_value_from_json<size_t>(embedding_hparam, "embedding_vec_size"));
-      } else {
-        break;
-      }
-    }
-    embedding_vec_size_[inference_params.model_name] = embedding_vec_size;
-    max_feature_num_per_sample_per_emb_table_[inference_params.model_name] =
-        max_feature_num_per_sample_per_emb_table;
-  }  // end for
-  this->inference_params_array = inference_params_array;
 }
 
 }  // namespace coll_cache_lib

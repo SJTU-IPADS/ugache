@@ -75,15 +75,8 @@ struct parameter_server_config {
       inference_params_array;  //// model configuration of all models deployed on HPS, e.g.,
                                ///{dcn_inferenceParamesStruct}
 
-  // Database backend.
-  parameter_server_config(
-      std::map<std::string, std::vector<size_t>> embedding_vec_size,
-      std::map<std::string, std::vector<size_t>> max_feature_num_per_sample_per_emb_table,
-      const std::vector<InferenceParams>& inference_params_array);
-  parameter_server_config(const std::vector<std::string>& model_config_path_array,
-                          const std::vector<InferenceParams>& inference_params_array);
-  parameter_server_config(const std::string& hps_json_config_file);
-  parameter_server_config(const char* hps_json_config_file);
-  void init(const std::string& hps_json_config_file);
+  parameter_server_config(const std::string& hps_json_config_file, const int32_t global_replica_id);
+  parameter_server_config(const char* hps_json_config_file, const int32_t global_replica_id);
+  void init(const std::string& hps_json_config_file, const int32_t global_replica_id);
 };
 }  // namespace coll_cache_lib

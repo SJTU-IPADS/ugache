@@ -31,6 +31,7 @@ def get_cmake_args():
     gpu_capabilities = ["70", "75", "80"]
 
     cmake_build_type = "Release"
+    # cmake_build_type = "Debug"
 
     cmake_args = [
         "-DSM='{}'".format(";".join(gpu_capabilities)),

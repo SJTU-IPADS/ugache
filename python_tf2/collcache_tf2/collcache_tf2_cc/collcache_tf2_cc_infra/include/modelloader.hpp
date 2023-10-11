@@ -34,7 +34,7 @@ namespace coll_cache_lib {
 // or merlinkv
 template <typename TypeHashKey, typename TypeHashValue>
 struct UnifiedEmbeddingTable {
-  std::vector<TypeHashKey> keys;
+  // std::vector<TypeHashKey> keys;
   /** Impl 1*/
   void* vectors_ptr;
   size_t umap_len = 0;
@@ -55,39 +55,10 @@ class IModelLoader {
   bool is_mock = false;
   static std::shared_ptr<IModelLoader> preserved_model_loader;
   ~IModelLoader() = default;
-  /**
-   * Load the contents of the model file with difference format into a into a
-   * UnifiedEmbeddingTable(data member) of an inherited class.
-   *
-   * @param table_name The destination table into which to insert the data.
-   * @param path File system path under which the embedding file should be parsed.
-   */
-  virtual void load(const std::string& path) = 0;
-  /**
-   * free the UnifiedEmbeddingTable(data member) of an inherited class.
-   *
-   */
+  virtual void master_load(const std::string& path) = 0;
+  virtual void slave_load(const std::string& path) = 0;
   virtual void delete_table() = 0;
-  /**
-   * Return the pointer of the embedding key from UnifiedEmbeddingTable.
-   *
-   */
-  virtual void* getkeys() = 0;
-  /**
-   * Return the pointer of the embedding vectors from UnifiedEmbeddingTable.
-   *
-   */
   virtual void* getvectors() = 0;
-  /**
-   * Return the pointer of the meta info from UnifiedEmbeddingTable, such as scaler for
-   * dequantization, timesample for each key
-   *
-   */
-  virtual void* getmetas() = 0;
-  /**
-   * Return the number of embedding keys of current table
-   *
-   */
   virtual size_t getkeycount() = 0;
   IModelLoader() = default;
 };
@@ -106,39 +77,19 @@ class RawModelLoader : public IModelLoader {
 
  public:
   RawModelLoader();
-  virtual void load(const std::string& path);
+  virtual void master_load(const std::string& path);
+  virtual void slave_load(const std::string& path);
   virtual void delete_table();
-  virtual void* getkeys();
   virtual void* getvectors();
-  virtual void* getmetas();
   virtual size_t getkeycount();
   ~RawModelLoader() { delete_table(); }
-};
-
-enum class DBTableDumpFormat_t {
-  Automatic = 0,  // Try to deduce the storage format from the provided path.
-  Raw,            // Use raw storage format.
-  SST             // Write data as an "Static Sorted Table" file.
 };
 
 template <typename TKey, typename TValue>
 class ModelLoader {
  public:
-  static IModelLoader* CreateLoader(DBTableDumpFormat_t type) {
-    switch (type) {
-      case DBTableDumpFormat_t::Raw:
-        return new RawModelLoader<TKey, TValue>();
-        break;
-      // TBD: The load_dump logic implemented in the data backend can be encapsulated as another
-      // model reader for sst/bin files, So as to facilitate the reuse by components, such as
-      // embedding cache
-      case DBTableDumpFormat_t::SST:
-        return nullptr;
-        break;
-      default:
-        return NULL;
-        break;
-    }
+  static IModelLoader* CreateLoader() {
+    return new RawModelLoader<TKey, TValue>();
   }
 };
 
