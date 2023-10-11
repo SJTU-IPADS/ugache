@@ -54,94 +54,15 @@ void RawModelLoader<TKey, TValue>::master_load(const std::string& path) {
   const std::string key_file = emb_file_prefix + "key";
   const std::string vec_file = emb_file_prefix + "emb_vector";
 
-  if (path.find("mock_") == 0) {
-    this->is_mock = true;
-    size_t num_key_offset = path.find('_') + 1, dim_offset = path.find_last_of('_') + 1;
-    size_t num_key = std::stoull(path.substr(num_key_offset)),
-           dim = std::stoull(path.substr(dim_offset));
-    COLL_LOG(ERROR) << "using mock embedding with " << num_key << " * " << dim
-                             << " elements\n";
-    embedding_table_->key_count = num_key;
-
-    size_t vec_file_size_in_byte = sizeof(float) * num_key * dim;
-    if (GetEnv("SAMGRAPH_EMPTY_FEAT") != "") {
-      size_t empty_feat_num_key = 1 << std::stoull(GetEnv("SAMGRAPH_EMPTY_FEAT"));
-      vec_file_size_in_byte = sizeof(float) * empty_feat_num_key * dim;
-    }
-    // std::string shm_name = std::string("HPS_VEC_FILE_SHM_") + getenv("USER");
-    std::string shm_name = "SAMG_FEAT_SHM";
-    int fd = shm_open(shm_name.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-    COLL_CHECK(fd != -1) << "shm open vec file shm failed\n";
-    size_t padded_size = (vec_file_size_in_byte + 0x01fffff) & ~0x01fffff;
-    {
-      struct stat st;
-      fstat(fd, &st);
-      if (st.st_size < padded_size) {
-        int ret = ftruncate(fd, padded_size);
-        COLL_CHECK(ret != -1) << "ftruncate vec file shm failed";
-      }
-    }
-    embedding_table_->vectors_ptr = mmap(nullptr, padded_size,
-                                         PROT_WRITE | PROT_READ, MAP_SHARED, fd, 0);
-    COLL_CHECK(embedding_table_->vectors_ptr != nullptr) << "mmap vec file shm failed\n";
-    embedding_table_->umap_len = vec_file_size_in_byte;
-    return;
-  }
-
-  std::ifstream key_stream(key_file);
-  std::ifstream vec_stream(vec_file);
-  int vec_file_fd = open(vec_file.c_str(), O_RDONLY);
-  if (!key_stream.is_open() || !vec_stream.is_open()) {
-    COLL_LOG(FATAL) << "Error: embeddings file not open for reading";
-  }
-
-  const size_t key_file_size_in_byte = std::filesystem::file_size(key_file);
-  const size_t vec_file_size_in_byte = std::filesystem::file_size(vec_file);
-
-  const size_t key_size_in_byte = sizeof(long long);
-  const size_t num_key = key_file_size_in_byte / key_size_in_byte;
-  embedding_table_->key_count = num_key;
-
-  const size_t num_float_val_in_vec_file = vec_file_size_in_byte / sizeof(float);
-
-  /** Impl 1*/
-  // std::string shm_name = std::string("HPS_VEC_FILE_SHM_") + getenv("USER");
-  std::string shm_name = "SAMG_FEAT_SHM";
-  int fd = shm_open(shm_name.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-  COLL_CHECK(fd != -1) << "shm open vec file shm failed\n";
-  size_t padded_size = (vec_file_size_in_byte + 0x01fffff) & ~0x01fffff;
-  {
-    struct stat st;
-    fstat(fd, &st);
-    if (st.st_size < padded_size) {
-      int ret = ftruncate(fd, padded_size);
-      COLL_CHECK(ret != -1) << "ftruncate vec file shm failed";
-    }
-  }
-  embedding_table_->vectors_ptr = mmap(nullptr, padded_size,
-                                       PROT_WRITE | PROT_READ, MAP_SHARED, fd, 0);
-  COLL_CHECK(embedding_table_->vectors_ptr != nullptr) << "mmap vec file shm failed\n";
-  embedding_table_->umap_len = padded_size;
-  COLL_LOG(ERROR) << "I'm worker 0, I should read the data " << vec_file_size_in_byte
-                            << "\n";
-  vec_stream.read(reinterpret_cast<char*>(embedding_table_->vectors_ptr), vec_file_size_in_byte);
-  COLL_LOG(ERROR) << "raw read done\n";
-}
-template <typename TKey, typename TValue>
-void RawModelLoader<TKey, TValue>::slave_load(const std::string& path) {
-  const std::string emb_file_prefix = path + "/";
-  const std::string key_file = emb_file_prefix + "key";
-  const std::string vec_file = emb_file_prefix + "emb_vector";
+  size_t vec_file_size_in_byte = 0;
   size_t padded_size = 0;
-  int fd;
-  size_t vec_file_size_in_byte;
-  size_t num_key;
+  size_t num_key = 0;
   if (path.find("mock_") == 0) {
     this->is_mock = true;
-    size_t num_key_offset = path.find('_') + 1, 
+    size_t num_key_offset = path.find('_') + 1,
            dim_offset     = path.find_last_of('_') + 1;
     size_t dim            = std::stoull(path.substr(dim_offset));
-    num_key               = std::stoull(path.substr(num_key_offset));
+           num_key        = std::stoull(path.substr(num_key_offset));
     COLL_LOG(ERROR) << "using mock embedding with " << num_key << " * " << dim
                              << " elements\n";
 
@@ -151,11 +72,6 @@ void RawModelLoader<TKey, TValue>::slave_load(const std::string& path) {
       vec_file_size_in_byte = sizeof(float) * empty_feat_num_key * dim;
     }
   } else {
-    std::ifstream vec_stream(vec_file);
-    if (!vec_stream.is_open()) {
-      COLL_LOG(FATAL) << "Error: embeddings file not open for reading";
-    }
-
     const size_t key_file_size_in_byte = std::filesystem::file_size(key_file);
     vec_file_size_in_byte = std::filesystem::file_size(vec_file);
 
@@ -165,7 +81,64 @@ void RawModelLoader<TKey, TValue>::slave_load(const std::string& path) {
 
   embedding_table_->key_count = num_key;
   std::string shm_name = "SAMG_FEAT_SHM";
-  fd = shm_open(shm_name.c_str(), O_RDONLY, 0);
+  int fd = shm_open(shm_name.c_str(), O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+  COLL_CHECK(fd != -1) << "shm open vec file shm failed\n";
+  padded_size = (vec_file_size_in_byte + 0x01fffff) & ~0x01fffff;
+  {
+    struct stat st;
+    fstat(fd, &st);
+    if (st.st_size < padded_size) {
+      int ret = ftruncate(fd, padded_size);
+      COLL_CHECK(ret != -1) << "ftruncate vec file shm failed";
+    }
+  }
+  embedding_table_->vectors_ptr = mmap(nullptr, padded_size, PROT_WRITE | PROT_READ, MAP_SHARED, fd, 0);
+  COLL_CHECK(embedding_table_->vectors_ptr != nullptr) << "mmap vec file shm failed\n";
+  embedding_table_->umap_len = padded_size;
+
+  if (path.find("mock_") == 0) {
+  } else {
+    COLL_LOG(ERROR) << "I'm worker 0, I should read the data " << vec_file_size_in_byte << "\n";
+    std::ifstream vec_stream(vec_file);
+    COLL_CHECK(vec_stream.is_open()) << "Error: embeddings file not open for reading";
+    vec_stream.read(reinterpret_cast<char*>(embedding_table_->vectors_ptr), vec_file_size_in_byte);
+  }
+  COLL_LOG(ERROR) << "raw read done\n";
+}
+template <typename TKey, typename TValue>
+void RawModelLoader<TKey, TValue>::slave_load(const std::string& path) {
+  const std::string emb_file_prefix = path + "/";
+  const std::string key_file = emb_file_prefix + "key";
+  const std::string vec_file = emb_file_prefix + "emb_vector";
+
+  size_t padded_size = 0;
+  size_t vec_file_size_in_byte;
+  size_t num_key;
+  if (path.find("mock_") == 0) {
+    this->is_mock = true;
+    size_t num_key_offset = path.find('_') + 1,
+           dim_offset     = path.find_last_of('_') + 1;
+    size_t dim            = std::stoull(path.substr(dim_offset));
+           num_key        = std::stoull(path.substr(num_key_offset));
+    COLL_LOG(ERROR) << "using mock embedding with " << num_key << " * " << dim
+                             << " elements\n";
+
+    vec_file_size_in_byte = sizeof(float) * num_key * dim;
+    if (GetEnv("SAMGRAPH_EMPTY_FEAT") != "") {
+      size_t empty_feat_num_key = 1 << std::stoull(GetEnv("SAMGRAPH_EMPTY_FEAT"));
+      vec_file_size_in_byte = sizeof(float) * empty_feat_num_key * dim;
+    }
+  } else {
+    const size_t key_file_size_in_byte = std::filesystem::file_size(key_file);
+    vec_file_size_in_byte = std::filesystem::file_size(vec_file);
+
+    const size_t key_size_in_byte = sizeof(long long);
+    num_key = key_file_size_in_byte / key_size_in_byte;
+  }
+
+  embedding_table_->key_count = num_key;
+  std::string shm_name = "SAMG_FEAT_SHM";
+  int fd = shm_open(shm_name.c_str(), O_RDONLY, 0);
   COLL_CHECK(fd != -1) << "shm open vec file shm failed\n";
   padded_size = (vec_file_size_in_byte + 0x01fffff) & ~0x01fffff;
   {
@@ -178,8 +151,9 @@ void RawModelLoader<TKey, TValue>::slave_load(const std::string& path) {
   }
   embedding_table_->vectors_ptr = mmap(nullptr, padded_size, PROT_READ, MAP_SHARED, fd, 0);
   COLL_CHECK(embedding_table_->vectors_ptr != nullptr) << "mmap vec file shm failed\n";
-  COLL_LOG(ERROR) << "raw read done\n";
   embedding_table_->umap_len = padded_size;
+
+  COLL_LOG(ERROR) << "raw read done\n";
 }
 
 template <typename TKey, typename TValue>

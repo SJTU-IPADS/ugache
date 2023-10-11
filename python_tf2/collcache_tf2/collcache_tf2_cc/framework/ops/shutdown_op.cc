@@ -22,6 +22,6 @@
 using namespace tensorflow;
 using namespace tensorflow::shape_inference;
 
-REGISTER_OP("Shutdown").Output("status: string").SetShapeFn([](InferenceContext* ctx) {
+REGISTER_OP("Report").Output("status: string").SetShapeFn([](InferenceContext* ctx) {
   return Status::OK();
 });

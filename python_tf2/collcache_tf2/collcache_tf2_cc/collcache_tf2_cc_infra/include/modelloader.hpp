@@ -30,26 +30,14 @@
 
 namespace coll_cache_lib {
 
-// This is a draft for a unified embedding format and needs to keep consistency with 3g embedding
-// or merlinkv
 template <typename TypeHashKey, typename TypeHashValue>
 struct UnifiedEmbeddingTable {
-  // std::vector<TypeHashKey> keys;
-  /** Impl 1*/
   void* vectors_ptr;
   size_t umap_len = 0;
-  /** Impl 2*/
-  // std::vector<TypeHashValue> vectors;
   std::vector<TypeHashValue> meta;
   size_t key_count = 0;
 };
 
-/**
- * Base interface for model loader. It is only used to encapsulate the logic of reading model files
- * in different formats, and does not keep any data members Implementations that inherit from this
- * should override all public members.
- *
- */
 class IModelLoader {
  public:
   bool is_mock = false;
@@ -63,13 +51,6 @@ class IModelLoader {
   IModelLoader() = default;
 };
 
-/**
- * Implementations of read/parse embedding from legacy foramt model file, which is general format
- * for hugectr model file.
- *
- * @tparam TKey The data-type that is used for keys in this database.
- * @tparam TKey The data-type that is used for keys in this database.
- */
 template <typename TKey, typename TValue>
 class RawModelLoader : public IModelLoader {
  private:

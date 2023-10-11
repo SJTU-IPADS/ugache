@@ -54,7 +54,6 @@ def get_global_replica_id(comm_tool=None, var=None):
         return hvd.local_rank()
 
     def _OneDevice():
-        return int(os.environ["HPS_WORKER_ID"])
         return 0
 
     if comm_tool is None:

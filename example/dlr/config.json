@@ -1,0 +1,39 @@
+{
+  "models": [
+      {
+          "embedding_table_names": [
+              "sparse_embedding0"
+          ],
+          "i64_input_key": false,
+          "gpucache": true,
+          "model": "dlrm",
+          "sparse_files": [
+              "mock_800000000_128"
+          ],
+          "embedding_vecsize_per_table": [
+              128
+          ],
+          "maxnum_catfeature_query_per_table_per_sample": [
+              100
+          ],
+          "deployed_device_list": [
+              0,
+              1,
+              2,
+              3
+          ],
+          "max_batch_size": 8192,
+          "gpucacheper": 0.02,
+          "max_vocabulary_size": [
+              800000000
+          ]
+      }
+  ],
+  "use_multi_worker": true,
+  "coll_cache_refresh_iter": 1000,
+  "coll_cache_enable_refresh": false,
+  "iteration_per_epoch": 1000,
+  "epoch": 3,
+  "coll_cache_policy": 13,
+  "hps_cache_statistic": false
+}

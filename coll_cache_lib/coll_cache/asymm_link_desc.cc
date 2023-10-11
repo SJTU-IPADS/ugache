@@ -369,7 +369,7 @@ ConcurrentLinkImpl AutoDecideConcurrentExtractImpl() {
     case kCollFineGrain:
     case kCollCacheIntuitive:
     case kCollCache:
-      return kMPSPhase;
+      return kSMMaskPhase;
     case kRepCache:
     case kCliquePart:
       return kDirectNoGroup;

@@ -80,8 +80,7 @@ inline T get_value_from_json_soft(const nlohmann::json& json, const std::string 
     CK_SIZE_(value, 1);
     return value.get<T>();
   } else {
-    COLL_LOG(INFO) << key << " is not specified using default: " << default_value
-                           << std::endl;
+    COLL_LOG(INFO) << key << " is not specified using default: " << default_value;
     return default_value;
   }
 }
@@ -94,43 +93,9 @@ inline std::string get_value_from_json_soft(const nlohmann::json& json, const st
     CK_SIZE_(value, 1);
     return value.get<std::string>();
   } else {
-    COLL_LOG(INFO) << key << " is not specified using default: " << default_value
-                           << std::endl;
+    COLL_LOG(INFO) << key << " is not specified using default: " << default_value;
     return default_value;
   }
-}
-
-inline int get_max_feature_num_per_sample_from_nnz_per_slot(const nlohmann::json& j) {
-  int max_feature_num_per_sample = 0;
-  auto slot_num = get_value_from_json<int>(j, "slot_num");
-  auto nnz_per_slot = get_json(j, "nnz_per_slot");
-  if (nnz_per_slot.is_array()) {
-    if (nnz_per_slot.size() != static_cast<size_t>(slot_num)) {
-      COLL_LOG(FATAL) << "nnz_per_slot.size() != slot_num";
-    }
-    for (int slot_id = 0; slot_id < slot_num; ++slot_id) {
-      max_feature_num_per_sample += nnz_per_slot[slot_id].get<int>();
-    }
-  } else {
-    int max_nnz = nnz_per_slot.get<int>();
-    max_feature_num_per_sample += max_nnz * slot_num;
-  }
-  return max_feature_num_per_sample;
-}
-
-inline int get_max_nnz_from_nnz_per_slot(const nlohmann::json& j) {
-  int max_nnz = 0;
-  auto slot_num = get_value_from_json<int>(j, "slot_num");
-  auto nnz_per_slot = get_json(j, "nnz_per_slot");
-  if (nnz_per_slot.is_array()) {
-    if (nnz_per_slot.size() != static_cast<size_t>(slot_num)) {
-      COLL_LOG(FATAL) << "nnz_per_slot.size() != slot_num";
-    }
-    max_nnz = *std::max_element(nnz_per_slot.begin(), nnz_per_slot.end());
-  } else {
-    max_nnz = nnz_per_slot.get<int>();
-  }
-  return max_nnz;
 }
 
 }  // namespace HugeCTR

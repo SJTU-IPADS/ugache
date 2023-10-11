@@ -55,7 +55,7 @@ hps_ops = load_library.load_op_library(lib_file)
 hps_clib = ctypes.CDLL(lib_file, mode=ctypes.RTLD_GLOBAL)
 lookup = hps_ops.lookup
 init = hps_ops.init
-shutdown = hps_ops.shutdown
+report = hps_ops.report
 nop_dep = hps_ops.nop_dep
 config = hps_ops.config
 record_hotness = hps_ops.record_hotness

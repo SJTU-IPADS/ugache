@@ -17,7 +17,7 @@
 print("[INFO] %s is imported" % __name__)
 
 from collcache_tf2.core._version import __version__
-from collcache_tf2.core.initialize import Shutdown
+from collcache_tf2.core.initialize import Report
 from collcache_tf2.core.initialize import NopDep
 from collcache_tf2.core.initialize import Init
 from collcache_tf2.core.initialize import Config

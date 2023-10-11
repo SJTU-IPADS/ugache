@@ -30,8 +30,8 @@ except AttributeError:
     MultiWorkerMirroredStrategy = tf_dist.experimental.MultiWorkerMirroredStrategy
 import sys
 
-def Shutdown():
-    collcache_tf2_lib.shutdown()
+def Report():
+    collcache_tf2_lib.report()
 def NopDep(dense, emb):
     return collcache_tf2_lib.nop_dep(dense, emb)
 def wait_one_child():

@@ -55,19 +55,17 @@ std::string ToReadableSize(size_t nbytes) {
 };
 
 template <typename Device>
-class Shutdown : public OpKernel {
+class Report : public OpKernel {
  public:
-  explicit Shutdown(OpKernelConstruction* ctx) : OpKernel(ctx) {}
+  explicit Report(OpKernelConstruction* ctx) : OpKernel(ctx) {}
   void Compute(OpKernelContext* ctx) override {
     try {
       size_t free, total;
       cudaMemGetInfo(&free, &total);
       std::stringstream ss;
-      ss << "[CUDA] worker" << std::getenv("HPS_WORKER_ID") << " cuda mem usage: " << ToReadableSize(total  - free) << "\n";
+      ss << "[CUDA] worker" << "" << " cuda mem usage: " << ToReadableSize(total  - free) << "\n";
       std::cout << ss.str();
-      if (std::string(std::getenv("HPS_WORKER_ID")) == "0") {
-        coll_cache_lib::LookupManager::instance()->report_avg();
-      }
+      coll_cache_lib::LookupManager::instance()->report_avg();
     } catch (const std::exception& error) {
       ctx->SetStatus(errors::Aborted(error.what()));
       return;
@@ -79,8 +77,8 @@ class Shutdown : public OpKernel {
   }
 };
 
-REGISTER_KERNEL_BUILDER(Name("Shutdown").Device(DEVICE_GPU).HostMemory("status"),
-                        Shutdown<GPUDevice>);
+REGISTER_KERNEL_BUILDER(Name("Report").Device(DEVICE_GPU).HostMemory("status"),
+                        Report<GPUDevice>);
 
 extern "C" {
 
