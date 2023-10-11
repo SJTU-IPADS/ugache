@@ -258,7 +258,7 @@ double Profiler::GetLogEpochValue(uint64_t epoch, LogEpochItem item) {
 void Profiler::ReportInit() {
   std::string env_level = GetEnv(Constant::kEnvProfileLevel);
 
-  int level = 0;
+  int level = 3;
   if (env_level == "1") {
     level = 1;
   } else if (env_level == "2") {
@@ -563,7 +563,7 @@ void Profiler::OutputStep(uint64_t key, std::string type, std::ostream &out, dou
   std::string env_level = GetEnv(Constant::kEnvProfileLevel);
   char output_buffer[1024];
 
-  int level = 0;
+  int level = 3;
   if (env_level == "1") {
     level = 1;
   } else if (env_level == "2") {
