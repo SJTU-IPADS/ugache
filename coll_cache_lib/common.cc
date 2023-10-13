@@ -666,15 +666,27 @@ std::ostream& operator<<(std::ostream& os, const CachePolicy policy) {
   return os;
 }
 
-AnonymousBarrier::AnonymousBarrier(int worker) {
+// AnonymousBarrier::AnonymousBarrier(int worker) {
+//   auto mmap_ctx = MMAP(MMAP_RW_DEVICE);
+//   auto dev = Device::Get(mmap_ctx);
+//   this->_barrier_buffer = dev->AllocDataSpace(mmap_ctx, sizeof(AtomicBarrier));
+//   new (this->_barrier_buffer) AtomicBarrier(worker);
+// }
+// void AnonymousBarrier::Wait() { (reinterpret_cast<AtomicBarrier*>(this->_barrier_buffer))->Wait(); }
+
+AnonymousBarrier::AnonymousBarrier() {
   auto mmap_ctx = MMAP(MMAP_RW_DEVICE);
   auto dev = Device::Get(mmap_ctx);
-  this->_barrier_buffer = dev->AllocDataSpace(mmap_ctx, sizeof(AtomicBarrier));
-  new (this->_barrier_buffer) AtomicBarrier(worker);
+  this->_barrier_buffer = dev->AllocDataSpace(mmap_ctx, sizeof(AtomicNewBarrier));
+  new (this->_barrier_buffer) AtomicNewBarrier;
 }
-void AnonymousBarrier::Wait() { (reinterpret_cast<AtomicBarrier*>(this->_barrier_buffer))->Wait(); }
-std::shared_ptr<AnonymousBarrier> AnonymousBarrier::_global_instance = std::make_shared<AnonymousBarrier>(std::stoi(GetEnvStrong("COLL_NUM_REPLICA")));
-std::shared_ptr<AnonymousBarrier> AnonymousBarrier::_refresh_instance = std::make_shared<AnonymousBarrier>(std::stoi(GetEnvStrong("COLL_NUM_REPLICA")));
+void AnonymousBarrier::Wait() { (reinterpret_cast<AtomicNewBarrier*>(this->_barrier_buffer))->Wait(worker); }
+void AnonymousBarrier::SetWorker(int worker) { this->worker = worker; }
+
+// std::shared_ptr<AnonymousBarrier> AnonymousBarrier::_global_instance = std::make_shared<AnonymousBarrier>(std::stoi(GetEnvStrong("COLL_NUM_REPLICA")));
+// std::shared_ptr<AnonymousBarrier> AnonymousBarrier::_refresh_instance = std::make_shared<AnonymousBarrier>(std::stoi(GetEnvStrong("COLL_NUM_REPLICA")));
+std::shared_ptr<AnonymousBarrier> AnonymousBarrier::_global_instance  = std::make_shared<AnonymousBarrier>();
+std::shared_ptr<AnonymousBarrier> AnonymousBarrier::_refresh_instance = std::make_shared<AnonymousBarrier>();
 EagerGPUMemoryHandler::EagerGPUMemoryHandler() {}
 EagerGPUMemoryHandler::~EagerGPUMemoryHandler() {
   CUDA_CALL(cudaSetDevice(dev_id_));

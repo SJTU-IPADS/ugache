@@ -213,7 +213,8 @@ FreqRecorder::FreqRecorder(size_t num_nodes, int local_id)
   _cpu_device_holder = cpu::CPUDevice::Global();
   sem_init(&local_freq_buf_sem, 0, 1);
   {
-    GlobalBuxMaxLen = BufMaxLen * std::stoi(GetEnvStrong("COLL_NUM_REPLICA"));
+    // GlobalBuxMaxLen = BufMaxLen * std::stoi(GetEnvStrong("COLL_NUM_REPLICA"));
+    GlobalBuxMaxLen = BufMaxLen * RunConfig::num_device;
     size_t nbytes = GlobalBuxMaxLen * sizeof(FreqEntry) + sizeof(DupFreqBuf);
     int fd = cpu::MmapCPUDevice::CreateShm(nbytes, FreqRecorderShmV2 + "_v2");
     global_dup_freq_buf = new (cpu::MmapCPUDevice::MapFd(MMAP(MMAP_RW_DEVICE), nbytes, fd)) DupFreqBuf;

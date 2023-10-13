@@ -167,10 +167,20 @@ class ExternalBarrierHandler {
 };
 using BarHandle = std::shared_ptr<ExternalBarrierHandler>;
 
+// class AnonymousBarrier : public ExternalBarrierHandler {
+//  public:
+//   void* _barrier_buffer;
+//   AnonymousBarrier(int worker);
+//   void Wait() override;
+//   static std::shared_ptr<AnonymousBarrier> _global_instance;
+//   static std::shared_ptr<AnonymousBarrier> _refresh_instance;
+// };
 class AnonymousBarrier : public ExternalBarrierHandler {
  public:
   void* _barrier_buffer;
-  AnonymousBarrier(int worker);
+  int worker;
+  AnonymousBarrier();
+  void SetWorker(int worker);
   void Wait() override;
   static std::shared_ptr<AnonymousBarrier> _global_instance;
   static std::shared_ptr<AnonymousBarrier> _refresh_instance;

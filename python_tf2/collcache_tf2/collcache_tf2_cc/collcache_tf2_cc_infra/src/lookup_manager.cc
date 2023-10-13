@@ -69,6 +69,7 @@ void LookupManager::config(const int32_t global_replica_id, tensorflow::OpKernel
 
   this->coll_freq_recorder_list.resize(num_replicas_in_sync);
   for (auto& inference_params : ps_config->inference_params_array) {
+    coll_cache_lib::common::RunConfig::num_device = inference_params.cross_worker_deployed_devices.size();
     coll_freq_recorder_list[global_replica_id] = std::make_shared<coll_cache_lib::common::FreqRecorder>(
           inference_params.max_vocabulary_size[0], inference_params.device_id);
   }

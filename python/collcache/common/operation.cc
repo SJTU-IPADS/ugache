@@ -97,6 +97,7 @@ void coll_cache_config_from_map(std::unordered_map<std::string, std::string>& co
   CRC::is_configured = true;
 
   _profiler = std::make_shared<Profiler>();
+  AnonymousBarrier::_global_instance->SetWorker(CRC::num_device);
   _coll_cache = std::make_shared<CollCache>(nullptr, AnonymousBarrier::_global_instance);
   _coll_cache->_profiler = _profiler;
 }

@@ -31,7 +31,7 @@ def get_default_common_config(**kwargs):
     default_common_config["optimizer"] = "plugin_adam"
     default_common_config["np_key_type"] = np.int32
     default_common_config["np_vector_type"] = np.float32
-    default_common_config["tf_key_type"] = tf.int32
+    default_common_config["tf_key_type"] = tf.uint32
     default_common_config["tf_vector_type"] = tf.float32
     default_common_config["ps_config_file"] = ""
     default_common_config["cache_percent"] = 0

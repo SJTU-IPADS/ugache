@@ -168,7 +168,7 @@ AsymmLinkDesc build_from_file(std::string fname, int num_total_sm, int num_train
   auto sum_fn = [](std::vector<int> arr){ return std::accumulate(arr.begin(), arr.end(), 0); };
   AsymmLinkDesc desc;
   size_t num_gpu = std::stoi(getline());
-  CHECK(num_gpu == std::stoi(GetEnvStrong("COLL_NUM_REPLICA")));
+  // CHECK(num_gpu == std::stoi(GetEnvStrong("COLL_NUM_REPLICA")));
   double local_bw = std::stod(getline());
   double cpu_bw   = std::stod(getline());
   RunConfig::coll_cache_hyperparam_T_local = 1;

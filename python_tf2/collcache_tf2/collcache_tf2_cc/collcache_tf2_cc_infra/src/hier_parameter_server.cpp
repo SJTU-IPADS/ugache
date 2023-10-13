@@ -72,6 +72,7 @@ CollCacheParameterServer::CollCacheParameterServer(std::shared_ptr<parameter_ser
       << "coll ps creation, with "
       << ps_config_->inference_params_array[0].cross_worker_deployed_devices.size()
       << " devices, using policy " << coll_cache_lib::common::RunConfig::cache_policy << "\n";
+  coll_cache_lib::common::AnonymousBarrier::_global_instance->SetWorker(coll_cache_lib::common::RunConfig::num_device);
   this->coll_cache_ptr_ = std::make_shared<coll_cache_lib::CollCache>(
       nullptr, coll_cache_lib::common::AnonymousBarrier::_global_instance);
   COLL_LOG(ERROR) << "coll ps creation done\n";
