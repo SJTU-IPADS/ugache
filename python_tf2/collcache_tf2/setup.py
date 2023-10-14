@@ -25,8 +25,6 @@ DESCRIPTION = 'A high-performance embedding cache'
 REQUIRES_PYTHON = '>=3.6.0'
 VERSION = '3.0.0'
 
-CONDA_PREFIX=os.getenv("CONDA_PREFIX")
-
 def get_cmake_args():
     gpu_capabilities = ["70", "75", "80"]
 
@@ -36,7 +34,6 @@ def get_cmake_args():
     cmake_args = [
         "-DSM='{}'".format(";".join(gpu_capabilities)),
         "-DCMAKE_BUILD_TYPE={}".format(cmake_build_type),
-        f"-DCMAKE_PREFIX_PATH={CONDA_PREFIX}",
         "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
     ]
     return cmake_args

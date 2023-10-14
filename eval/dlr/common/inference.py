@@ -21,8 +21,6 @@ import multiprocessing
 from common_config import *
 import json
 
-from model_zoo.hps import DLRM
-
 from ds_generator import generate_random_samples as generate_random_samples
 
 def parse_args(default_run_config):
@@ -91,14 +89,7 @@ def prepare_model(args):
 def worker_func(args, worker_id):
     strategy = tf.distribute.MultiWorkerMirroredStrategy()
     with strategy.scope():
-        if args["coll_cache_policy"] == "sok":
-            sok.Init(global_batch_size = args["global_batch_size"])
-        elif args["coll_cache_policy"] == "hps":
-            hps.Init(global_batch_size = args["global_batch_size"],
-                ps_config_file = args["ps_config_file"])
-        else:
-            collcache_tf2.Init(global_batch_size = args["global_batch_size"],
-                ps_config_file = args["ps_config_file"])
+        init()
         barrier.wait()
         model = prepare_model(args)
     barrier.wait()
@@ -168,6 +159,19 @@ def worker_func(args, worker_id):
       os.environ["HTTP_PROXY"] = proxy
     else:
       print("no proxy in env")
+
+    if args["coll_cache_policy"] not in ['hps', 'sok']:
+        def _record_hotness(sparse_keys):
+            return collcache_tf2.record_hotness(sparse_keys)
+        dataset_iter = iter(dataset)
+        for i in range(args["coll_cache_enable_iter"]):
+            sparse_keys, _, _ = next(dataset_iter)
+            _ = strategy.run(_record_hotness, args=(sparse_keys, ))
+        with strategy.scope():
+            collcache_tf2.Init(global_batch_size = args["global_batch_size"],
+                ps_config_file = args["ps_config_file"])
+        
+
     for i in range(args["iter_num"]):
         t0 = tf.timestamp()
         t1 = tf.timestamp()
@@ -180,10 +184,7 @@ def worker_func(args, worker_id):
         md_time += t2 - t1
         # profile
         if i >= args["coll_cache_enable_iter"]:
-            if args["coll_cache_policy"] == "sok":
-                sok.SetStepProfileValue(profile_type=sok.kLogL1TrainTime, value=(t2 - t1))
-            else:
-                hps.SetStepProfileValue(profile_type=hps.kLogL1TrainTime, value=(t2 - t1))
+            SetStepProfileValue(profile_type=kLogL1TrainTime, value=(t2 - t1))
         if (i + 1) % 100 == 0:
             print("[GPU{}] {} time {:.6} {:.6}".format(worker_id, i + 1, ds_time / 100, md_time / 100), flush=True)
             ds_time = 0
@@ -232,8 +233,7 @@ else:
     SetStepProfileValue = collcache_tf2.SetStepProfileValue
     kLogL1TrainTime = collcache_tf2.kLogL1TrainTime
     def init():
-        collcache_tf2.Init(global_batch_size = args["global_batch_size"],
-            ps_config_file = args["ps_config_file"])
+        collcache_tf2.Config(global_batch_size = args["global_batch_size"], ps_config_file = args["ps_config_file"])
 for i in range(args["gpu_num"]):
     proc_list[i] = multiprocessing.Process(target=proc_func, args=(i,))
     proc_list[i].start()
