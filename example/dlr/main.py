@@ -246,8 +246,6 @@ def worker_func(args, worker_id):
 
 if __name__ == "__main__":
     args = get_run_config()
-    # set required env before importing collcache module
-    os.environ['COLL_NUM_REPLICA'] = str(args["gpu_num"])
     import collcache_tf2
     proc_list = [None for _ in range(args["gpu_num"])]
     barrier = multiprocessing.Barrier(args["gpu_num"])
