@@ -8,7 +8,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import dgl.multiprocessing as mp
 from torch.nn.parallel import DistributedDataParallel
-# import fastgraph
 import fastgraphloader
 import time
 import numpy as np
@@ -80,8 +79,7 @@ def get_run_config():
     run_config['num_fanout'] = run_config['num_layer'] = len(run_config['fanout'])
     run_config['num_worker'] = len(run_config['devices'])
 
-    dataset = fg.dataset(run_config['dataset'], run_config['root_path'])
-    num_train_set = dataset.train_set.shape[0]
+    dataset = fastgraphloader.dataset(run_config['dataset'], run_config['root_path'])
 
     run_config['prefetch_factor'] = 2
 
