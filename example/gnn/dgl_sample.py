@@ -52,7 +52,7 @@ def parse_args(default_run_config):
     argparser.add_argument('--batch-size', type=int,default=default_run_config['batch_size'])
     argparser.add_argument('--lr', type=float, default=default_run_config['lr'])
     argparser.add_argument('--dropout', type=float,default=default_run_config['dropout'])
-    argparser.add_argument('--cache_percentage', type=float,default=default_run_config['dropout'])
+    argparser.add_argument('--cache_percentage', type=float,default=default_run_config['cache_percentage'])
 
     return vars(argparser.parse_args())
 
