@@ -59,7 +59,7 @@ class Dataset(Enum):
     return self.human_name
   def short(self):
     return self.short_name
-  products         = 'products',        'PR',  None
+  products         = 'ogbn-products',   'PR',  0.9123344
   papers100M_undir = 'ogbn-papers100M', 'PA',  52.95751381
   friendster       = 'com-friendster',  'CF',  62.5690136
   mag240m_homo     = 'mag240m-homo',    'MAG', 349.27439547

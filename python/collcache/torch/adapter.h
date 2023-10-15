@@ -78,7 +78,8 @@ void coll_torch_init(int replica_id, size_t key_space_size, int dev_id, void *cp
 //   return tensor;
 // }
 ::torch::Tensor coll_torch_lookup_key_t_val_ret(int replica_id,
-                                                ::torch::Tensor key);
+                                                ::torch::Tensor key,
+                                                bool pad_to_8);
 
 ::torch::Tensor coll_torch_test(int replica_id, ::torch::Tensor key);
 

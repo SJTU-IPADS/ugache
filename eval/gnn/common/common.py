@@ -62,6 +62,7 @@ def print_run_config(run_config):
             print('config:{:}={:}'.format(k, v))
 
 num_class_dict = {
+    'ogbn-products'   : 47,
     'papers100M'      : 172,
     'ogbn-papers100M' : 172,
     'uk-2006-05'      : 150,
@@ -70,6 +71,7 @@ num_class_dict = {
 }
 
 feat_dtype_dict = {
+    'ogbn-products'   : torch.float32,
     'papers100M'      : torch.float32,
     'ogbn-papers100M' : torch.float32,
     'uk-2006-05'      : torch.float32,

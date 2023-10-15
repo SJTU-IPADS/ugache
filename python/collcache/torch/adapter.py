@@ -41,8 +41,8 @@ coll_cache_record_init = _basics.coll_cache_record_init
 def coll_torch_test(local_id, keys):
   batch_feat = c_lib.coll_torch_test(local_id, keys)
   return batch_feat
-def coll_torch_lookup_key_t_val_ret(local_id, keys):
-  batch_feat = c_lib.coll_torch_lookup_key_t_val_ret(local_id, keys)
+def coll_torch_lookup_key_t_val_ret(local_id, keys, pad_to_8 = True):
+  batch_feat = c_lib.coll_torch_lookup_key_t_val_ret(local_id, keys, pad_to_8)
   return batch_feat
 
 def coll_torch_record(local_id, keys):

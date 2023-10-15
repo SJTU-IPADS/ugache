@@ -100,7 +100,7 @@ def write_split_feat_label_wholegraph():
     torch.save(train_edge_idx_list, f"{WHOLEGRAPH_OUTPUT_DATA_DIR}/global_train_edge_idx_rand")
 
 def soft_link_graph_topo_gnnlab():
-    indptr = np.memmap(f"{WHOLEGRAPH_OUTPUT_DATA_DIR}/homograph_csr_row_ptr", dtype='uint32', mode='r')
+    indptr = np.memmap(f"{WHOLEGRAPH_OUTPUT_DATA_DIR}/homograph_csr_row_ptr", dtype='uint64', mode='r')
     indptr.astype('uint32').tofile(f'{GNNLAB_OUTPUT_DATA_DIR}/indptr.bin')
     os.system(f'ln -s {os.path.relpath(WHOLEGRAPH_OUTPUT_DATA_DIR, GNNLAB_OUTPUT_DATA_DIR)}/homograph_csr_col_idx {GNNLAB_OUTPUT_DATA_DIR}/indices.bin')
 

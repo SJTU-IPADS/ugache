@@ -21,55 +21,52 @@ import pandas as pd
 from scipy.sparse import coo_matrix, csr_matrix
 import pickle, json, torch
 
-DOWNLOAD_URL = 'http://snap.stanford.edu/ogb/data/nodeproppred/papers100M-bin.zip'
+DOWNLOAD_URL = 'http://snap.stanford.edu/ogb/data/nodeproppred/products.zip'
 
 RAW_DATA_DIR = '/datasets_gnn/data-raw'
-PAPERS_RAW_DATA_DIR = f'{RAW_DATA_DIR}/papers100M-bin'
+PRODUCTS_RAW_DATA_DIR = f'{RAW_DATA_DIR}/products'
 
-GNNLAB_OUTPUT_DATA_DIR = '/datasets_gnn/gnnlab/papers100M-undir'
-WHOLEGRAPH_OUTPUT_DATA_DIR = '/datasets_gnn/wholegraph/ogbn_papers100M/converted'
+GNNLAB_OUTPUT_DATA_DIR = '/datasets_gnn/gnnlab/products-undir'
+WHOLEGRAPH_OUTPUT_DATA_DIR = '/datasets_gnn/wholegraph/ogbn_products/converted'
 
 def download_data():
     print('Download data...')
-    if not os.path.exists(f'{RAW_DATA_DIR}/papers100M-bin.zip'):
+    if not os.path.exists(f'{RAW_DATA_DIR}/products.zip'):
         print('Start downloading...')
-        assert(os.system(f'wget {DOWNLOAD_URL} -O {RAW_DATA_DIR}/papers100M-bin.zip') == 0)
+        assert(os.system(f'wget {DOWNLOAD_URL} -O {RAW_DATA_DIR}/products.zip') == 0)
     else:
         print('Already downloaded.')
 
     print('Unzip data...')
-    if not os.path.exists(f'{PAPERS_RAW_DATA_DIR}/unzipped'):
+    if not os.path.exists(f'{PRODUCTS_RAW_DATA_DIR}/unzipped'):
         print('Start unziping...')
-        assert(os.system(f'cd {RAW_DATA_DIR}; unzip {RAW_DATA_DIR}/papers100M-bin.zip') == 0)
-        assert(os.system(f'touch {PAPERS_RAW_DATA_DIR}/unzipped') == 0)
+        assert(os.system(f'cd {RAW_DATA_DIR}; unzip {RAW_DATA_DIR}/products.zip') == 0)
+        assert(os.system(f'touch {PRODUCTS_RAW_DATA_DIR}/unzipped') == 0)
     else:
         print('Already unzipped...')
 
 def write_split_feat_label_gnnlab():
     print('Reading split raw data...')
-    train_idx = pd.read_csv(f'{PAPERS_RAW_DATA_DIR}/split/time/train.csv.gz', compression='gzip', header=None).values.T[0]
-    valid_idx = pd.read_csv(f'{PAPERS_RAW_DATA_DIR}/split/time/valid.csv.gz', compression='gzip', header=None).values.T[0]
-    test_idx  = pd.read_csv(f'{PAPERS_RAW_DATA_DIR}/split/time/test.csv.gz',  compression='gzip', header=None).values.T[0]
+    
+    train_idx = pd.read_csv(f'{PRODUCTS_RAW_DATA_DIR}/split/sales_ranking/train.csv.gz', compression='gzip', header=None).values.T[0]
+    valid_idx = pd.read_csv(f'{PRODUCTS_RAW_DATA_DIR}/split/sales_ranking/valid.csv.gz', compression='gzip', header=None).values.T[0]
+    test_idx  = pd.read_csv(f'{PRODUCTS_RAW_DATA_DIR}/split/sales_ranking/test.csv.gz',  compression='gzip', header=None).values.T[0]
 
-    # file0 = np.load(f'{PAPERS_RAW_DATA_DIR}/raw/data.npz')
-    file1 = np.load(f'{PAPERS_RAW_DATA_DIR}/raw/node-label.npz')
-
-    # features = file0['node_feat']
-    label = file1['node_label']
+    # feature = pd.read_csv(f'{PRODUCTS_RAW_DATA_DIR}/raw/node-feat.csv.gz',  compression='gzip', header=None).values
+    label   = pd.read_csv(f'{PRODUCTS_RAW_DATA_DIR}/raw/node-label.csv.gz', compression='gzip', header=None).values.T[0]
 
     print('Writing split files for gnnlab...')
     train_idx.astype('uint32').tofile(f'{GNNLAB_OUTPUT_DATA_DIR}/train_set.bin')
     valid_idx.astype('uint32').tofile(f'{GNNLAB_OUTPUT_DATA_DIR}/valid_set.bin')
     test_idx.astype('uint32').tofile(f'{GNNLAB_OUTPUT_DATA_DIR}/test_set.bin')
-    # features.astype('float32').tofile(f'{GNNLAB_OUTPUT_DATA_DIR}/feat.bin')
+    # feature.astype('float32').tofile(f'{GNNLAB_OUTPUT_DATA_DIR}/feat.bin')
     label.astype('uint64').tofile(f'{GNNLAB_OUTPUT_DATA_DIR}/label.bin')
 
 def write_split_feat_label_wholegraph():
     print('Reading split raw data...')
-    train_idx = pd.read_csv(f'{PAPERS_RAW_DATA_DIR}/split/time/train.csv.gz', compression='gzip', header=None).values.T[0]
+    train_idx = pd.read_csv(f'{PRODUCTS_RAW_DATA_DIR}/split/sales_ranking/train.csv.gz', compression='gzip', header=None).values.T[0]
 
-    file1 = np.load(f'{PAPERS_RAW_DATA_DIR}/raw/node-label.npz')
-    label = file1['node_label']
+    label = pd.read_csv(f'{PRODUCTS_RAW_DATA_DIR}/raw/node-label.csv.gz', compression='gzip', header=None).values.T[0]
 
     data_and_label = {
         "train_idx"   : None,
@@ -82,13 +79,13 @@ def write_split_feat_label_wholegraph():
 
     data_and_label['train_idx'] = train_idx.astype('int32')
     data_and_label['train_label'] = label.astype('float32')[data_and_label['train_idx']]
-    output_fname = f"{WHOLEGRAPH_OUTPUT_DATA_DIR}/ogbn_papers100M_data_and_label.pkl"
+    output_fname = f"{WHOLEGRAPH_OUTPUT_DATA_DIR}/ogbn_products_data_and_label.pkl"
 
     print('Writing split files for wholegraph...')
     with open(output_fname, "wb") as f:
         pickle.dump(data_and_label, f)
-    os.system(f'touch {WHOLEGRAPH_OUTPUT_DATA_DIR}/ogbn_papers100M_edge_index_paper_cites_paper_part_0_of_1')
-    os.system(f'touch {WHOLEGRAPH_OUTPUT_DATA_DIR}/ogbn_papers100M_node_feat_paper_part_0_of_1')
+    os.system(f'touch {WHOLEGRAPH_OUTPUT_DATA_DIR}/ogbn_products_edge_index_nt_et_nt_part_0_of_1')
+    os.system(f'touch {WHOLEGRAPH_OUTPUT_DATA_DIR}/ogbn_products_node_feat_nt_part_0_of_1')
 
     train_edge_idx_list = (torch.randperm(3228124712, dtype=torch.int64, device="cpu"))
     torch.save(train_edge_idx_list, f"{WHOLEGRAPH_OUTPUT_DATA_DIR}/global_train_edge_idx_rand")
@@ -100,16 +97,15 @@ def soft_link_graph_topo_gnnlab():
 
 def gen_undir_graph_wholegraph_cpu():
     print('Reading raw graph topo...')
-    file0 = np.load(f'{PAPERS_RAW_DATA_DIR}/raw/data.npz', mmap_mode='r')
-    num_nodes = file0['num_nodes_list'][0]
+    edges = pd.read_csv(f'{PRODUCTS_RAW_DATA_DIR}/raw/edge.csv.gz', compression='gzip', header=None).values.T
+    num_nodes = 2449029
 
-    edge_index = file0['edge_index']
-    src = edge_index[0]
-    dst = edge_index[1]
+    src = edges[0]
+    dst = edges[1]
     data = np.zeros(src.shape)
     coo = coo_matrix((data, (dst, src)), shape=(num_nodes, num_nodes), dtype=np.uint32)
     csr = coo.tocsr()
-    del coo, src, dst, edge_index
+    del coo, src, dst, edges
 
     indptr = csr.indptr
     indices = csr.indices
@@ -132,40 +128,40 @@ def gen_undir_graph_wholegraph_cpu():
 def write_gnnlab_meta():
     print('Writing meta file...')
     with open(f'{GNNLAB_OUTPUT_DATA_DIR}/meta.txt', 'w') as f:
-        f.write('{}\t{}\n'.format('NUM_NODE', 111059956))
-        f.write('{}\t{}\n'.format('NUM_EDGE', 3228124712))
-        f.write('{}\t{}\n'.format('FEAT_DIM', 128))
-        f.write('{}\t{}\n'.format('NUM_CLASS', 172))
-        f.write('{}\t{}\n'.format('NUM_TRAIN_SET', 1207179))
-        f.write('{}\t{}\n'.format('NUM_VALID_SET', 125265))
-        f.write('{}\t{}\n'.format('NUM_TEST_SET', 214338))
+        f.write('{}\t{}\n'.format('NUM_NODE', 2449029))
+        f.write('{}\t{}\n'.format('NUM_EDGE', 123718152))
+        f.write('{}\t{}\n'.format('FEAT_DIM', 100))
+        f.write('{}\t{}\n'.format('NUM_CLASS', 47))
+        f.write('{}\t{}\n'.format('NUM_TRAIN_SET', 196615))
+        f.write('{}\t{}\n'.format('NUM_VALID_SET', 39323))
+        f.write('{}\t{}\n'.format('NUM_TEST_SET', 2213091))
 def write_wholegraph_meta():
     print('Writing meta file...')
     meta = {
         "nodes": [{
-            "name": "paper",
+            "name": "nt",
             "has_emb": True,
-            "emb_file_prefix": "ogbn_papers100M_node_feat_paper",
-            "num_nodes": 111059956,
-            "emb_dim": 128,
+            "emb_file_prefix": "ogbn_products_node_feat_nt",
+            "num_nodes": 2449029,
+            "emb_dim": 100,
             "dtype": "float32"
         }],
         "edges": [{
-            "src": "paper",
-            "dst": "paper",
-            "rel": "cites",
+            "src": "nt",
+            "dst": "nt",
+            "rel": "et",
             "has_emb": False,
-            "edge_list_prefix": "ogbn_papers100M_edge_index_paper_cites_paper",
-            "num_edges": 3228124712,
+            "edge_list_prefix": "ogbn_products_edge_index_nt_et_nt",
+            "num_edges": 123718152,
             "dtype": "int32",
             "directed": True
         }]
     }
-    with open(f'{WHOLEGRAPH_OUTPUT_DATA_DIR}/ogbn_papers100M_meta.json', 'w') as f:
+    with open(f'{WHOLEGRAPH_OUTPUT_DATA_DIR}/ogbn_products_meta.json', 'w') as f:
         json.dump(meta, f)
 
 if __name__ == '__main__':
-    assert(os.system(f'mkdir -p {PAPERS_RAW_DATA_DIR}') == 0)
+    assert(os.system(f'mkdir -p {PRODUCTS_RAW_DATA_DIR}') == 0)
     assert(os.system(f'mkdir -p {GNNLAB_OUTPUT_DATA_DIR}') == 0)
     assert(os.system(f'mkdir -p {WHOLEGRAPH_OUTPUT_DATA_DIR}') == 0)
 

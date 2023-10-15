@@ -202,9 +202,13 @@ void coll_torch_init_t(int replica_id, int dev_id, ::torch::Tensor emb, double c
   return tensor;
 }
 ::torch::Tensor coll_torch_lookup_key_t_val_ret(int replica_id,
-                                                ::torch::Tensor key) {
+                                                ::torch::Tensor key,
+                                                bool pad_to_8) {
   auto device = "cuda:" + std::to_string(common::RunConfig::device_id_list[replica_id]);
-  auto padded_len = common::RoundUp<long>(key.size(0), 8);
+  auto padded_len = key.size(0);
+  if (pad_to_8) {
+    padded_len = common::RoundUp<long>(key.size(0), 8);
+  }
 
   if (padded_len > common::max_num_keys) {
     std::cerr << "Warning, found a larger batch, re allocating emb output now" << padded_len << common::max_num_keys << "\n";
