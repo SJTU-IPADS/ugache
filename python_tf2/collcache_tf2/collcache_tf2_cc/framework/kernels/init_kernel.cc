@@ -74,7 +74,7 @@ class Init : public OpKernel {
   std::string ps_config_file_;
 };
 
-REGISTER_KERNEL_BUILDER(Name("Init")
+REGISTER_KERNEL_BUILDER(Name("InitColl")
                             .Device(DEVICE_GPU)
                             .HostMemory("global_replica_id")
                             .HostMemory("num_replicas_in_sync")
@@ -114,7 +114,7 @@ class Config : public OpKernel {
   std::string ps_config_file_;
 };
 
-REGISTER_KERNEL_BUILDER(Name("Config")
+REGISTER_KERNEL_BUILDER(Name("ConfigColl")
                             .Device(DEVICE_GPU)
                             .HostMemory("global_replica_id")
                             .HostMemory("num_replicas_in_sync")

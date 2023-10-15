@@ -37,7 +37,6 @@ def in_tensorflow2():
 lib_name = r"libcollcache_tf2_lib.so"
 install_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "lib"))
 paths = [r"/usr/local/lib", install_path]
-print(paths)
 
 lib_file = None
 for path in paths:
@@ -52,18 +51,14 @@ for path in paths:
 
 if lib_file is None:
     raise FileNotFoundError("Could not find %s" % lib_name)
-print(lib_file)
 ops = load_library.load_op_library(lib_file)
 clib = ctypes.CDLL(lib_file, mode=ctypes.RTLD_GLOBAL)
-print(dir(ops))
-print(dir(ops.lookup))
-lookup = ops.lookup
-init = ops.init
-report = ops.report
-nop_dep = ops.nop_dep
-config = ops.config
-record_hotness = ops.record_hotness
-set_step_profile_value=ops.set_step_profile_value
-add_epoch_profile_value=ops.add_epoch_profile_value
+lookup = ops.lookup_coll
+init = ops.init_coll
+report = ops.report_coll
+nop_dep = ops.nop_dep_coll
+config = ops.config_coll
+record_hotness = ops.record_hotness_coll
+set_step_profile_value=ops.set_step_profile_value_coll
 wait_one_child=clib.wait_one_child
 wait_one_child.restype = ctypes.c_int

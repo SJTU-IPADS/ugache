@@ -22,7 +22,7 @@
 using namespace tensorflow;
 using namespace tensorflow::shape_inference;
 
-REGISTER_OP("Init")
+REGISTER_OP("InitColl")
     .Input("global_replica_id: int32")
     .Input("num_replicas_in_sync: int32")
     .Input("visible_devices: int32")
@@ -45,7 +45,7 @@ REGISTER_OP("Init")
       return Status::OK();
     });
 
-REGISTER_OP("Config")
+REGISTER_OP("ConfigColl")
     .Input("global_replica_id: int32")
     .Input("num_replicas_in_sync: int32")
     .Attr("ps_config_file: string")

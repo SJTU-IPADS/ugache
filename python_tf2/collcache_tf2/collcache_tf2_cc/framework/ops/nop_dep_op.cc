@@ -22,7 +22,7 @@
 using namespace tensorflow;
 using namespace tensorflow::shape_inference;
 
-REGISTER_OP("NopDep")
+REGISTER_OP("NopDepColl")
     .Input("dense: dense_dtype")
     .Input("emb: emb_dtype")
     .Output("oo: dense_dtype")

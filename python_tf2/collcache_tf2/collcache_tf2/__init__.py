@@ -23,7 +23,6 @@ from collcache_tf2.core.initialize import Init
 from collcache_tf2.core.initialize import Config
 from collcache_tf2.core.initialize import wait_one_child
 from collcache_tf2.core.initialize import SetStepProfileValue
-from collcache_tf2.core.initialize import AddEpochProfileValue
 from collcache_tf2.core.lookup_ops import record_hotness
 from collcache_tf2.core.lookup_layer import LookupLayer
 from collcache_tf2.core.sparse_lookup_layer import SparseLookupLayer

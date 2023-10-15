@@ -77,7 +77,7 @@ class Report : public OpKernel {
   }
 };
 
-REGISTER_KERNEL_BUILDER(Name("Report").Device(DEVICE_GPU).HostMemory("status"),
+REGISTER_KERNEL_BUILDER(Name("ReportColl").Device(DEVICE_GPU).HostMemory("status"),
                         Report<GPUDevice>);
 
 extern "C" {

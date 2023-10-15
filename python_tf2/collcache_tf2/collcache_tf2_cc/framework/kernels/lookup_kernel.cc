@@ -70,7 +70,7 @@ class Lookup : public OpKernel {
   tensorflow::int32 emb_vec_size_;
 };
 
-REGISTER_KERNEL_BUILDER(Name("Lookup").Device(DEVICE_GPU).HostMemory("global_replica_id"),
+REGISTER_KERNEL_BUILDER(Name("LookupColl").Device(DEVICE_GPU).HostMemory("global_replica_id"),
                         Lookup<GPUDevice>);
 
 template <typename Device>
@@ -110,7 +110,7 @@ class RecordHotness : public OpKernel {
   tensorflow::int32 table_id_;
 };
 
-REGISTER_KERNEL_BUILDER(Name("RecordHotness").Device(DEVICE_GPU).HostMemory("global_replica_id"),
+REGISTER_KERNEL_BUILDER(Name("RecordHotnessColl").Device(DEVICE_GPU).HostMemory("global_replica_id"),
                         RecordHotness<GPUDevice>);
 
 }  // namespace tensorflow

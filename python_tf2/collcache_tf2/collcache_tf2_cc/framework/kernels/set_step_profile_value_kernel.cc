@@ -62,7 +62,7 @@ class SetStepProfileValue : public OpKernel {
   }
 };
 
-REGISTER_KERNEL_BUILDER(Name("SetStepProfileValue")
+REGISTER_KERNEL_BUILDER(Name("SetStepProfileValueColl")
                             .Device(DEVICE_CPU)
                             .HostMemory("global_replica_id")
                             .HostMemory("profile_type")

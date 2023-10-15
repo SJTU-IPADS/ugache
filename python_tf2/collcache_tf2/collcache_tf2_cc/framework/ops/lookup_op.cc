@@ -22,7 +22,7 @@
 using namespace tensorflow;
 using namespace tensorflow::shape_inference;
 
-REGISTER_OP("Lookup")
+REGISTER_OP("LookupColl")
     .Input("values: value_dtype")
     .Input("global_replica_id: int32")
     .Output("emb_vector: dtype")
@@ -49,7 +49,7 @@ REGISTER_OP("Lookup")
       return Status::OK();
     });
 
-REGISTER_OP("RecordHotness")
+REGISTER_OP("RecordHotnessColl")
     .Input("values: value_dtype")
     .Input("global_replica_id: int32")
     .Attr("value_dtype: {int64,int32,uint64,uint32}")

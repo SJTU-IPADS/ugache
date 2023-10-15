@@ -293,8 +293,3 @@ def SetStepProfileValue(**kwargs):
     global_replica_id = lookup_ops.get_global_replica_id(lookup_ops._get_comm_tool())
     collcache_tf2_lib.set_step_profile_value(global_replica_id=global_replica_id, **kwargs)
     # collcache_tf2_lib.set_step_profile_value(**kwargs)
-
-def AddEpochProfileValue(**kwargs):
-    global_replica_id = lookup_ops.get_global_replica_id(lookup_ops._get_comm_tool())
-    collcache_tf2_lib.add_epoch_profile_value(global_replica_id=global_replica_id, **kwargs)
-    # collcache_tf2_lib.add_epoch_profile_value(**kwargs)

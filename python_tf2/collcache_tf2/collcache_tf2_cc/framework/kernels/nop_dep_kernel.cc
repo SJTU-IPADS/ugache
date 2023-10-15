@@ -47,7 +47,7 @@ class NopDep : public OpKernel {
  private:
 };
 
-REGISTER_KERNEL_BUILDER(Name("NopDep").Device(DEVICE_GPU),
+REGISTER_KERNEL_BUILDER(Name("NopDepColl").Device(DEVICE_GPU),
                         NopDep<GPUDevice>);
 
 }  // namespace tensorflow

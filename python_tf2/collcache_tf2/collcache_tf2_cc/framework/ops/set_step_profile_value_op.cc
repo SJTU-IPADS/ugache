@@ -22,7 +22,7 @@
 using namespace tensorflow;
 using namespace tensorflow::shape_inference;
 
-REGISTER_OP("SetStepProfileValue")
+REGISTER_OP("SetStepProfileValueColl")
     .Input("global_replica_id: int32")
     .Input("profile_type: int64")
     .Input("value: double")

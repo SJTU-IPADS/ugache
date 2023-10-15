@@ -65,10 +65,11 @@ def prepare_model(args):
     assert(args["model"] in ['dlrm', 'dcn'])
     kwargs = {}
     if args["coll_cache_policy"] == "sok":
-        kwargs={
-            'max_vocabulary_size_per_gpu' : int(args["max_vocabulary_size"] * args['cache_percent']) if args['sok_use_hashtable'] else args["max_vocabulary_size"] // args["gpu_num"],
-            'use_hashtable' : args['sok_use_hashtable']
-        }
+        kwargs['use_hashtable'] = args['sok_use_hashtable']
+        if args['sok_use_hashtable']:
+            kwargs['max_vocabulary_size_per_gpu'] = int(args["max_vocabulary_size"] * args['cache_percent'])
+        else:
+            kwargs['max_vocabulary_size_per_gpu'] = args["max_vocabulary_size"] // args["gpu_num"]
     if args["model"] == "dcn":
         if args["coll_cache_policy"] == "sok":
             from model_zoo.sok import DCN as Model
@@ -89,7 +90,7 @@ def prepare_model(args):
 def worker_func(args, worker_id):
     strategy = tf.distribute.MultiWorkerMirroredStrategy()
     with strategy.scope():
-        init()
+        init_emb_lib()
         barrier.wait()
         model = prepare_model(args)
     barrier.wait()
@@ -149,7 +150,6 @@ def worker_func(args, worker_id):
         ret_list.append(ret)
     barrier.wait()
 
-    ds_time = 0
     md_time = 0
     global proxy
     if proxy:
@@ -166,30 +166,29 @@ def worker_func(args, worker_id):
         dataset_iter = iter(dataset)
         for i in range(args["coll_cache_enable_iter"]):
             sparse_keys, _, _ = next(dataset_iter)
-            _ = strategy.run(_record_hotness, args=(sparse_keys, ))
+            # _ = strategy.run(_record_hotness, args=(sparse_keys, ))
+            _ = strategy.run(collcache_tf2.record_hotness, args=(sparse_keys, ))
         with strategy.scope():
             collcache_tf2.Init(global_batch_size = args["global_batch_size"],
                 ps_config_file = args["ps_config_file"])
-        
 
     for i in range(args["iter_num"]):
-        t0 = tf.timestamp()
         t1 = tf.timestamp()
         if args['skip_model']:
             _whole_infer_step(ret_list[i])
         else:
             _ = _whole_infer_step(ret_list[i])[0].numpy()
         t2 = tf.timestamp()
-        ds_time += t1 - t0
         md_time += t2 - t1
         # profile
         if i >= args["coll_cache_enable_iter"]:
             SetStepProfileValue(profile_type=kLogL1TrainTime, value=(t2 - t1))
         if (i + 1) % 100 == 0:
-            print("[GPU{}] {} time {:.6} {:.6}".format(worker_id, i + 1, ds_time / 100, md_time / 100), flush=True)
-            ds_time = 0
+            print("[GPU{}] {} time {:.6}".format(worker_id, i + 1, md_time / 100), flush=True)
             md_time = 0
             barrier.wait()
+    if worker_id == 0:
+        Report()
 
 def proc_func(id):
     print(f"worker {id} at process {os.getpid()}")
@@ -205,7 +204,6 @@ def proc_func(id):
     from tensorflow.keras import mixed_precision
     mixed_precision.set_global_policy('mixed_float16')
     _ = worker_func(args, id)
-    Shutdown()
 
 print(os.environ, flush=True)
 args = get_run_config()
@@ -214,35 +212,29 @@ barrier = multiprocessing.Barrier(args["gpu_num"])
 
 if args["coll_cache_policy"] == "sok":
     import sparse_operation_kit as sok
-    Shutdown = sok.Shutdown
-    SetStepProfileValue = sok.SetStepProfileValue
-    kLogL1TrainTime = sok.kLogL1TrainTime
-    def init():
+    from sparse_operation_kit import Report, SetStepProfileValue, kLogL1TrainTime, wait_one_child
+    def init_emb_lib():
         sok.Init(global_batch_size = args["global_batch_size"])
 elif args["coll_cache_policy"] == "hps":
     import hierarchical_parameter_server as hps
-    Shutdown = hps.Report
-    SetStepProfileValue = hps.SetStepProfileValue
-    kLogL1TrainTime = hps.kLogL1TrainTime
-    def init():
-        hps.Init(global_batch_size = args["global_batch_size"],
-            ps_config_file = args["ps_config_file"])
+    from hierarchical_parameter_server import Report, SetStepProfileValue, kLogL1TrainTime, wait_one_child
+    def init_emb_lib():
+        hps.Init(global_batch_size = args["global_batch_size"], ps_config_file = args["ps_config_file"])
 else:
     import collcache_tf2
-    Shutdown = collcache_tf2.Report
-    SetStepProfileValue = collcache_tf2.SetStepProfileValue
-    kLogL1TrainTime = collcache_tf2.kLogL1TrainTime
-    def init():
+    from collcache_tf2 import Report, SetStepProfileValue, kLogL1TrainTime, wait_one_child
+    def init_emb_lib():
         collcache_tf2.Config(global_batch_size = args["global_batch_size"], ps_config_file = args["ps_config_file"])
+
 for i in range(args["gpu_num"]):
     proc_list[i] = multiprocessing.Process(target=proc_func, args=(i,))
     proc_list[i].start()
-# from collcache_tf2 import wait_one_child
-# ret_code = wait_one_child()
-# if ret_code != 0:
-#     for i in range(args["gpu_num"]):
-#         proc_list[i].kill()
+
+ret_code = wait_one_child()
+if ret_code != 0:
+    for i in range(args["gpu_num"]):
+        proc_list[i].kill()
 for i in range(args["gpu_num"]):
     proc_list[i].join()
 import sys
-# sys.exit(ret_code)
+sys.exit(ret_code)
