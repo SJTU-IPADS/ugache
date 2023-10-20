@@ -61,7 +61,7 @@ add_library(coll_cache
 )
 target_link_libraries(coll_cache
   PUBLIC
-  gurobi95
+  gurobi100
   gurobi_c++
   tbb
   cuda
