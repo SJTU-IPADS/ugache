@@ -121,7 +121,7 @@ def get_run_config():
     argparser.add_argument('--embed_vec_size',            type=int,   default=128)
     argparser.add_argument('--global_batch_size',         type=int,   default=32768)
     argparser.add_argument('--ps_config_file',            type=str,   default="./config.json")
-    argparser.add_argument('--max_vocabulary_size',       type=int,   default=800000000)
+    argparser.add_argument('--max_vocabulary_size',       type=int,   default=1000000)
     argparser.add_argument('--coll_hotness_profile_iter', type=int,   default=1000)
     argparser.add_argument('--alpha',                     type=float, default=1.2)
 
