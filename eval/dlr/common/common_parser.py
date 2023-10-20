@@ -225,7 +225,7 @@ class BenchInstance:
     content = file.readlines()
     for lno, line in enumerate(content):
       if line.endswith('refresh done\n'): 
-        m = re.match(r'^\[GPU[0-9]\] ([0-9]+) time ([0-9e\-\.]+) ([0-9\.]+)', content[lno - 1])
+        m = re.match(r'^\[GPU[0-9]\] ([0-9]+) time ([0-9\.]+)', content[lno - 1])
         if m: self.vals['refresh_stop'] = m.group(1)
         break
 
@@ -431,14 +431,15 @@ class BenchInstance:
 
   def prepare_python_eval(self, cfg):
     # 35700 time 1.06001e-05 0.00170291
-    python_eval_pattern = r'^\[GPU0\] ([0-9]+) time ([0-9e\-\.]+) ([0-9\.]+)'
+    python_eval_pattern = r'^\[GPU0\] ([0-9]+) time ([0-9\.]+)'
     line_list = grep_from(cfg.get_log_fname() + '.log', python_eval_pattern)
     for i in range(0, len(line_list)):
       line = line_list[i]
       m = re.match(python_eval_pattern, line)
       key = m.group(1) + '_iter'
-      val = float(m.group(3))
+      val = float(m.group(2))
       self.vals[key] = val
+    print(len(line_list))
 
   def to_formated_str(self):
     pass
