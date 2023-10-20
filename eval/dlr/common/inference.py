@@ -164,7 +164,7 @@ def worker_func(args, worker_id):
         def _record_hotness(sparse_keys):
             return collcache_tf2.record_hotness(sparse_keys)
         dataset_iter = iter(dataset)
-        for i in range(args["coll_cache_enable_iter"]):
+        for i in range(args["coll_cache_profile_iter"]):
             sparse_keys, _, _ = next(dataset_iter)
             # _ = strategy.run(_record_hotness, args=(sparse_keys, ))
             _ = strategy.run(collcache_tf2.record_hotness, args=(sparse_keys, ))
@@ -181,8 +181,7 @@ def worker_func(args, worker_id):
         t2 = tf.timestamp()
         md_time += t2 - t1
         # profile
-        if i >= args["coll_cache_enable_iter"]:
-            SetStepProfileValue(profile_type=kLogL1TrainTime, value=(t2 - t1))
+        SetStepProfileValue(profile_type=kLogL1TrainTime, value=(t2 - t1))
         if (i + 1) % 100 == 0:
             print("[GPU{}] {} time {:.6}".format(worker_id, i + 1, md_time / 100), flush=True)
             md_time = 0

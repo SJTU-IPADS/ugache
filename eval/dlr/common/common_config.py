@@ -22,7 +22,7 @@ def get_default_common_config(**kwargs):
     default_common_config["dense_dim"] = 13                            # the dimension of dense features
     default_common_config["global_batch_size"] = 65536                 # the globally batchsize for all GPUs
     default_common_config["iteration_per_epoch"] = 1000
-    default_common_config["coll_cache_enable_iter"] = 1000
+    default_common_config["coll_cache_profile_iter"] = 1000
     default_common_config["coll_cache_refresh_iter"] = 2147483648
     default_common_config["coll_cache_enable_refresh"] = False
     default_common_config["coll_cache_policy"] = "coll_asymm"
@@ -61,8 +61,8 @@ def add_common_arguments(argparser, run_config):
                             default=run_config['iteration_per_epoch'])   
     argparser.add_argument('--cache_percent', type=float,
                             default=run_config['cache_percent'])                        
-    argparser.add_argument('--coll_cache_enable_iter', type=int,
-                            default=run_config['coll_cache_enable_iter'])                        
+    argparser.add_argument('--coll_cache_profile_iter', type=int,
+                            default=run_config['coll_cache_profile_iter'])                        
     argparser.add_argument('--coll_cache_refresh_iter', type=int,
                             default=run_config['coll_cache_refresh_iter'])
     argparser.add_argument('--coll_cache_enable_refresh', action='store_true',

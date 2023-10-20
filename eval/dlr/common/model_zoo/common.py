@@ -12,7 +12,6 @@ class MLP(tf.keras.layers.Layer):
         super(MLP, self).__init__(**kwargs)
         self.layers = []
         index = 0
-        print(arch)
         for units in arch[:-1]:
             self.layers.append(tf.keras.layers.Dense(units, activation=activation, name="{}_{}".format(kwargs['name'], index)))
             index+=1

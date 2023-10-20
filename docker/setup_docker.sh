@@ -1,5 +1,5 @@
 pip install ninja numba
-git clone --branch sosp23ae https://github.com/SJTU-IPADS/ugache-artifacts.git /ugache
+git clone https://github.com/SJTU-IPADS/ugache.git /ugache
 
 wget https://packages.gurobi.com/10.0/gurobi10.0.3_linux64.tar.gz && \
   tar xf gurobi10.0.3_linux64.tar.gz && \

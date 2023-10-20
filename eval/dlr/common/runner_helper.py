@@ -193,7 +193,7 @@ class RunConfig:
     self.random_request         = False
     self.alpha                  = 0.2
     self.max_vocabulary_size    = None
-    self.coll_cache_enable_iter = 1000
+    self.coll_cache_profile_iter = 1000
     self.coll_cache_refresh_iter = 1000
     self.coll_cache_refresh_seq_bucket_sz = 0
     self.coll_cache_enable_refresh = False
@@ -285,7 +285,7 @@ class RunConfig:
     return msg + '.'
 
   def form_cmd(self, durable_log=True):
-    assert((self.epoch * self.iteration_per_epoch + self.coll_cache_enable_iter) == self.iter_num)
+    assert((self.epoch * self.iteration_per_epoch) == self.iter_num)
     cmd_line = f'{self.custom_env} '
     cmd_line += f'HUGECTR_LOG_LEVEL=0 '
     cmd_line += f'TF_CPP_MIN_LOG_LEVEL=2 '
@@ -343,7 +343,7 @@ class RunConfig:
         cmd_line += f' --sok_use_hashtable '
 
     cmd_line += f' --iteration_per_epoch {self.iteration_per_epoch}'
-    cmd_line += f' --coll_cache_enable_iter {self.coll_cache_enable_iter}'
+    cmd_line += f' --coll_cache_profile_iter {self.coll_cache_profile_iter}'
     cmd_line += f' --coll_cache_refresh_iter {self.coll_cache_refresh_iter}'
     if self.coll_cache_enable_refresh:
       cmd_line += f' --coll_cache_enable_refresh '
@@ -365,9 +365,9 @@ class RunConfig:
 
   # some members are lazy initialized
   def handle_mock_params(self):
-    # if self.system == System.hps: self.coll_cache_enable_iter = 0
-    if self.coll_cache_policy in [CachePolicy.hps, CachePolicy.sok]: self.coll_cache_enable_iter = 0
-    self.iter_num = self.epoch * self.iteration_per_epoch + self.coll_cache_enable_iter
+    # if self.system == System.hps: self.coll_cache_profile_iter = 0
+    if self.coll_cache_policy in [CachePolicy.hps, CachePolicy.sok]: self.coll_cache_profile_iter = 0
+    self.iter_num = self.epoch * self.iteration_per_epoch
     self.max_vocabulary_size = self.dataset.vocabulary
     self.slot_num = self.dataset.slot_num
 
@@ -408,7 +408,7 @@ class RunConfig:
     conf['models'][0]['max_vocabulary_size'] = [self.max_vocabulary_size]
     if self.coll_cache_policy == CachePolicy.hps: conf['use_coll_cache'] = False
     else: conf['use_coll_cache'] = True
-    conf['coll_cache_enable_iter'] = self.coll_cache_enable_iter
+    conf['coll_cache_profile_iter'] = self.coll_cache_profile_iter
     conf['coll_cache_refresh_iter'] = self.coll_cache_refresh_iter
     conf['coll_cache_enable_refresh'] = self.coll_cache_enable_refresh
     conf['iteration_per_epoch'] = self.iteration_per_epoch
