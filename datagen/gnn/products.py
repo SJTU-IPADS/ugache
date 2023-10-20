@@ -87,7 +87,7 @@ def write_split_feat_label_wholegraph():
     os.system(f'touch {WHOLEGRAPH_OUTPUT_DATA_DIR}/ogbn_products_edge_index_nt_et_nt_part_0_of_1')
     os.system(f'touch {WHOLEGRAPH_OUTPUT_DATA_DIR}/ogbn_products_node_feat_nt_part_0_of_1')
 
-    train_edge_idx_list = (torch.randperm(3228124712, dtype=torch.int64, device="cpu"))
+    train_edge_idx_list = (torch.randperm(123718152, dtype=torch.int64, device="cpu"))
     torch.save(train_edge_idx_list, f"{WHOLEGRAPH_OUTPUT_DATA_DIR}/global_train_edge_idx_rand")
 
 def soft_link_graph_topo_gnnlab():

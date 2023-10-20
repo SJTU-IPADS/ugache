@@ -272,7 +272,7 @@ class Dataset(Enum):
   def short(self):
     return self.short_name
   reddit           = None, None, None
-  products         = 'products',        'PR',  None
+  products         = 'products-undir',        'PR',  0.9123344
   papers100M       = None, None, None
   friendster       = 'com-friendster',  'CF',  62.5690136
   papers100M_300   = None, None, None
