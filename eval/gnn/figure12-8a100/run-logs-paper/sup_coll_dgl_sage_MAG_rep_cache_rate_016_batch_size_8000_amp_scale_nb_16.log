@@ -136,7 +136,7 @@ coll_cache:optimal_remote_storage=0
 coll_cache:optimal_local_rate=1
 coll_cache:optimal_remote_rate=0
 coll_cache:optimal_cpu_rate=0
-z=117.257
+z=117.273
 test_result:init:feat_nbytes=375030526464
 test_result:init:cache_nbytes=60379914240
 test_result:init:feat_nbytes=375030526464
@@ -154,15 +154,16 @@ test_result:init:cache_nbytes=60379914240
 test_result:init:feat_nbytes=375030526464
 test_result:init:cache_nbytes=60379914240
     [Step(average) Profiler Level 1 E3 S135]
-        L1  sample           0.001714 | send           0.000000
-        L1  recv             0.000000 | copy           0.006550 | convert time 0.000000 | train  0.012099
+        L1  sample           0.001718 | send           0.000000
+        L1  recv             0.000000 | copy           0.006742 | convert time 0.000000 | train  0.011688
         L1  feature nbytes    1.51 GB | label nbytes 0.00 Bytes
         L1  id nbytes      0.00 Bytes | graph nbytes 0.00 Bytes
         L1  miss nbytes    0.00 Bytes | remote nbytes 0.00 Bytes
         L1  num nodes               0 | num samples           0
+        L1  seq duration     0.000000 | refresh duration   0.000000
     [Step(average) Profiler Level 2 E3 S135]
         L2  shuffle     0.000000 | core sample  0.000000 | id remap        0.000000
-        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.006550
+        L2  graph copy  0.000000 | id copy      0.000000 | cache feat copy 0.006742
         L2  last layer sample time 0.000000 | size 0.000000
     [Step(average) Profiler Level 3 E3 S135]
         L3  khop sample coo  0.000000 | khop sort coo      0.000000 | khop count edge     0.000000 | khop compact edge 0.000000
@@ -170,53 +171,39 @@ test_result:init:cache_nbytes=60379914240
         L3  walk topk step3  0.000000 | walk topk step4    0.000000 | walk topk step5     0.000000
         L3  walk topk step6  0.000000 | walk topk step7    0.000000
         L3  remap unique     0.000000 | remap populate     0.000000 | remap mapnode       0.000000 | remap mapedge     0.000000
-        L3  cache get_index  0.000358 | cache copy_index   0.000000 | cache extract_miss  0.000000
-        L3  cache copy_miss  0.000000 | cache combine_miss 0.000000 | cache combine cache 0.006168 | cache combine remote 0.000000
+        L3  cache get_index  0.000354 | cache copy_index   0.000000 | cache extract_miss  0.000000
+        L3  cache copy_miss  0.000000 | cache combine_miss 0.000000 | cache combine cache 0.006364 | cache combine remote 0.000000
         L3  label extract  0.000000
     [Profiler Level Percentiles E3 S135]
-        p50.00_tail_logl2featcopy=0.006581
-        p90.00_tail_logl2featcopy=0.006696
-        p95.00_tail_logl2featcopy=0.006732
-        p99.00_tail_logl2featcopy=0.018084
-        p99.90_tail_logl2featcopy=0.018245
-[CUDA] cuda: usage: 68.04 GB
-Rank=7, Graph loaded.
-!!!!Train_dataloader(with 17 items) enumerate latency: 0.19689607620239258
-!!!!Train_data_list(with 17 items) enumerate latency: 3.337860107421875e-06, transfer latency: 0.14737510681152344
-presamping
-presamping takes 0.9029579162597656
-Rank=1, Graph loaded.
-!!!!Train_dataloader(with 17 items) enumerate latency: 0.18681120872497559
-!!!!Train_data_list(with 17 items) enumerate latency: 2.86102294921875e-06, transfer latency: 0.13883185386657715
-presamping
-presamping takes 0.8754596710205078
-Rank=6, Graph loaded.
-!!!!Train_dataloader(with 17 items) enumerate latency: 0.19039368629455566
-!!!!Train_data_list(with 17 items) enumerate latency: 3.337860107421875e-06, transfer latency: 0.14642596244812012
-presamping
-presamping takes 0.8310127258300781
-Rank=2, Graph loaded.
-!!!!Train_dataloader(with 17 items) enumerate latency: 0.19453001022338867
-!!!!Train_data_list(with 17 items) enumerate latency: 3.5762786865234375e-06, transfer latency: 0.14445018768310547
-presamping
-presamping takes 0.8812777996063232
+        p50.00_tail_logl2featcopy=0.006763
+        p90.00_tail_logl2featcopy=0.006896
+        p95.00_tail_logl2featcopy=0.006919
+        p99.00_tail_logl2featcopy=0.018963
+        p99.90_tail_logl2featcopy=0.019571
+[CUDA] cuda: usage: 68.56 GB
 Rank=4, Graph loaded.
-!!!!Train_dataloader(with 17 items) enumerate latency: 0.18084216117858887
-!!!!Train_data_list(with 17 items) enumerate latency: 2.6226043701171875e-06, transfer latency: 0.13451766967773438
+!!!!Train_dataloader(with 17 items) enumerate latency: 0.18612241744995117
+!!!!Train_data_list(with 17 items) enumerate latency: 3.5762786865234375e-06, transfer latency: 0.13828039169311523
 presamping
-presamping takes 0.7827110290527344
-Rank=5, Graph loaded.
-!!!!Train_dataloader(with 17 items) enumerate latency: 0.17024612426757812
-!!!!Train_data_list(with 17 items) enumerate latency: 2.6226043701171875e-06, transfer latency: 0.1273510456085205
+presamping takes 1.0336298942565918
+Rank=7, Graph loaded.
+!!!!Train_dataloader(with 17 items) enumerate latency: 0.17562413215637207
+!!!!Train_data_list(with 17 items) enumerate latency: 2.6226043701171875e-06, transfer latency: 0.1333320140838623
 presamping
-presamping takes 0.8456716537475586
-Rank=3, Graph loaded.
-!!!!Train_dataloader(with 17 items) enumerate latency: 0.20928502082824707
-!!!!Train_data_list(with 17 items) enumerate latency: 3.337860107421875e-06, transfer latency: 0.15537261962890625
+presamping takes 0.7776834964752197
+Rank=6, Graph loaded.
+!!!!Train_dataloader(with 17 items) enumerate latency: 0.19242262840270996
+!!!!Train_data_list(with 17 items) enumerate latency: 2.86102294921875e-06, transfer latency: 0.13836884498596191
 presamping
-presamping takes 0.8626148700714111
-config:eval_tsp="2023-04-13 06:07:27"
+presamping takes 0.8731997013092041
+Rank=2, Graph loaded.
+!!!!Train_dataloader(with 17 items) enumerate latency: 0.1740865707397461
+!!!!Train_data_list(with 17 items) enumerate latency: 2.1457672119140625e-06, transfer latency: 0.12797808647155762
+presamping
+presamping takes 0.7879376411437988
+config:eval_tsp="2023-05-16 14:08:15"
 config:num_worker=8
+config:num_intra_size=8
 config:root_dir=/nvme/songxiaoniu/graph-learning/wholegraph
 config:graph_name=mag240m-homo
 config:epochs=4
@@ -237,23 +224,23 @@ config:use_amp=True
 config:use_collcache=True
 config:cache_percentage=0.16
 config:cache_policy=rep
-config:omp_thread_num=40
+config:omp_thread_num=56
 config:unsupervised=False
 config:classnum=153
-config:global_barrier=<multiprocessing.synchronize.Barrier object at 0x7feabc7492e0>
+config:global_barrier=<multiprocessing.synchronize.Barrier object at 0x7f29b0f61370>
 config:worker_id=0
 creating_intra_node_communicator root=0, local_size=8, world_size=8
 Rank=0, Graph loaded.
-!!!!Train_dataloader(with 17 items) enumerate latency: 0.18547964096069336
-!!!!Train_data_list(with 17 items) enumerate latency: 2.86102294921875e-06, transfer latency: 0.13884758949279785
+!!!!Train_dataloader(with 17 items) enumerate latency: 0.20659756660461426
+!!!!Train_data_list(with 17 items) enumerate latency: 3.814697265625e-06, transfer latency: 0.151353120803833
 epoch=4 total_steps=68
 presamping
-presamping takes 0.865018367767334
+presamping takes 0.8664278984069824
 start training...
-[Epoch 0], time=1.9845023155212402, loss=4.986552715301514
-[Epoch 1], time=0.34705018997192383, loss=4.942437171936035
-[Epoch 2], time=0.34731268882751465, loss=4.9009881019592285
-[Epoch 3], time=0.3465118408203125, loss=4.862132549285889
+[Epoch 0], time=2.1112961769104004, loss=nan
+[Epoch 1], time=0.34338808059692383, loss=nan
+[Epoch 2], time=0.3445746898651123, loss=nan
+[Epoch 3], time=0.3425710201263428, loss=nan
 |===========================================================================|
 |                  PyTorch CUDA memory summary, device ID 0                 |
 |---------------------------------------------------------------------------|
@@ -261,44 +248,59 @@ start training...
 |===========================================================================|
 |        Metric         | Cur Usage  | Peak Usage | Tot Alloc  | Tot Freed  |
 |---------------------------------------------------------------------------|
-| Allocated memory      |   95319 KB |  780557 KB |  154546 MB |  154453 MB |
-|       from large pool |   83804 KB |  769232 KB |  153058 MB |  152976 MB |
-|       from small pool |   11515 KB |   13849 KB |    1488 MB |    1476 MB |
+| Allocated memory      |   90670 KB |  778242 KB |  154310 MB |  154222 MB |
+|       from large pool |   83119 KB |  770891 KB |  153053 MB |  152972 MB |
+|       from small pool |    7551 KB |    9831 KB |    1257 MB |    1249 MB |
 |---------------------------------------------------------------------------|
-| Active memory         |   95319 KB |  780557 KB |  154546 MB |  154453 MB |
-|       from large pool |   83804 KB |  769232 KB |  153058 MB |  152976 MB |
-|       from small pool |   11515 KB |   13849 KB |    1488 MB |    1476 MB |
+| Active memory         |   90670 KB |  778242 KB |  154310 MB |  154222 MB |
+|       from large pool |   83119 KB |  770891 KB |  153053 MB |  152972 MB |
+|       from small pool |    7551 KB |    9831 KB |    1257 MB |    1249 MB |
 |---------------------------------------------------------------------------|
-| GPU reserved memory   |    2372 MB |    2372 MB |    2372 MB |       0 B  |
-|       from large pool |    2352 MB |    2352 MB |    2352 MB |       0 B  |
-|       from small pool |      20 MB |      20 MB |      20 MB |       0 B  |
+| GPU reserved memory   |    2896 MB |    2896 MB |    2896 MB |       0 B  |
+|       from large pool |    2884 MB |    2884 MB |    2884 MB |       0 B  |
+|       from small pool |      12 MB |      12 MB |      12 MB |       0 B  |
 |---------------------------------------------------------------------------|
-| Non-releasable memory |  555945 KB |    1074 MB |  144080 MB |  143537 MB |
-|       from large pool |  551076 KB |    1070 MB |  142463 MB |  141925 MB |
-|       from small pool |    4869 KB |       7 MB |    1617 MB |    1612 MB |
+| Non-releasable memory |   42449 KB |    1017 MB |  143831 MB |  143790 MB |
+|       from large pool |   39760 KB |    1014 MB |  142485 MB |  142446 MB |
+|       from small pool |    2689 KB |       5 MB |    1346 MB |    1343 MB |
 |---------------------------------------------------------------------------|
-| Allocations           |      59    |      76    |   11448    |   11389    |
-|       from large pool |      15    |      27    |    4473    |    4458    |
-|       from small pool |      44    |      51    |    6975    |    6931    |
+| Allocations           |      44    |      61    |   10683    |   10639    |
+|       from large pool |      13    |      25    |    4471    |    4458    |
+|       from small pool |      31    |      38    |    6212    |    6181    |
 |---------------------------------------------------------------------------|
-| Active allocs         |      59    |      76    |   11448    |   11389    |
-|       from large pool |      15    |      27    |    4473    |    4458    |
-|       from small pool |      44    |      51    |    6975    |    6931    |
+| Active allocs         |      44    |      61    |   10683    |   10639    |
+|       from large pool |      13    |      25    |    4471    |    4458    |
+|       from small pool |      31    |      38    |    6212    |    6181    |
 |---------------------------------------------------------------------------|
-| GPU reserved segments |      26    |      26    |      26    |       0    |
-|       from large pool |      16    |      16    |      16    |       0    |
-|       from small pool |      10    |      10    |      10    |       0    |
+| GPU reserved segments |      23    |      23    |      23    |       0    |
+|       from large pool |      17    |      17    |      17    |       0    |
+|       from small pool |       6    |       6    |       6    |       0    |
 |---------------------------------------------------------------------------|
-| Non-releasable allocs |      29    |      39    |    4493    |    4464    |
-|       from large pool |       6    |      18    |    2364    |    2358    |
-|       from small pool |      23    |      28    |    2129    |    2106    |
+| Non-releasable allocs |      20    |      33    |    4358    |    4338    |
+|       from large pool |       7    |      17    |    2698    |    2691    |
+|       from small pool |      13    |      20    |    1660    |    1647    |
 |---------------------------------------------------------------------------|
 | Oversize allocations  |       0    |       0    |       0    |       0    |
 |---------------------------------------------------------------------------|
 | Oversize GPU segments |       0    |       0    |       0    |       0    |
 |===========================================================================|
 
-[TRAIN_TIME] train time is 3.029127 seconds
-[EPOCH_TIME] 0.757282 seconds, maybe large due to not enough epoch skipped.
-[EPOCH_TIME] 0.347081 seconds
+[TRAIN_TIME] train time is 3.144714 seconds
+[EPOCH_TIME] 0.786178 seconds, maybe large due to not enough epoch skipped.
+[EPOCH_TIME] 0.343763 seconds
+Rank=1, Graph loaded.
+!!!!Train_dataloader(with 17 items) enumerate latency: 0.20650053024291992
+!!!!Train_data_list(with 17 items) enumerate latency: 3.337860107421875e-06, transfer latency: 0.15249347686767578
+presamping
+presamping takes 0.8396100997924805
+Rank=5, Graph loaded.
+!!!!Train_dataloader(with 17 items) enumerate latency: 0.18656396865844727
+!!!!Train_data_list(with 17 items) enumerate latency: 2.6226043701171875e-06, transfer latency: 0.1388087272644043
+presamping
+presamping takes 1.1434199810028076
+Rank=3, Graph loaded.
+!!!!Train_dataloader(with 17 items) enumerate latency: 0.19576096534729004
+!!!!Train_data_list(with 17 items) enumerate latency: 3.0994415283203125e-06, transfer latency: 0.13857173919677734
+presamping
+presamping takes 0.8015515804290771
 
