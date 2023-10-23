@@ -79,19 +79,14 @@ tree /ugache/eval -L 2
 └── gnn
     ├── figure11-4v100
     ├── figure11-8a100
-    ├── figure11-8a100-fix-cache-rate
     ├── figure11-8v100
     ├── figure12-4v100
     ├── figure12-8a100
-    ├── figure12-8a100-fix-cache-rate
     ├── figure12-8v100
     ├── figure13
     ├── figure14
     └── figure15
 ```
-> The additional `gnn/figure11-8a100-fix-cache-rate` and `gnn/figure12-8a100-fix-cache-rate` are for the purpose of fixing misconfigured cache rate.
-> On server C, GNNLab, Rep_U, and UGache should be able to cache all embeddings of Papers100M and Com-Friendster, since the GPU has 80GB of memory.
-> We accidentally used a smaller cache rate during submission.
 
 ### Rreproducing all experiments
 We provide a one-click script to reproduce the results on multi-gpu server.
@@ -143,8 +138,3 @@ We recommand the `eps-preview` extension in vscode to quickly preview eps figure
 
 We also provide original log files used in our paper submission in `run-logs-paper` folder.
 You may run `make plot-paper` to directly plot figures using these log files to quickly reproduce the figures in paper without running all tests.
-
-### Miscellaneous
-
-The method UGache uses to dedicate different cores to run different kernel may not work on all driver version.
-Note that manually run a configuration requires launching [NVIDIA-MPS service](https://docs.nvidia.com/deploy/mps/index.html#topic_5_1) separately.
