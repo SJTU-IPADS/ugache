@@ -1,4 +1,4 @@
-# UGache [SOSP'23]
+# UGache
 
 UGache is a fast mulit-GPU embedding cache that fully leverages fast interconnects (i.e. NVLink) between GPUs.
 UGache uses a factored embedding extraction mechanism to improve the utilization of interconnets' bandwidth.
@@ -6,7 +6,9 @@ Furthermore, UGache proposes a MILP-based method to build a cache policy to bala
 
 ## Paper
 
-UGACHE: A Unified GPU Cache for Embedding-based Deep Learning, SOSP'23， *Xiaoniu Song, Yiwen Zhang, Rong Chen, Haibo Chen*
+[UGACHE: A Unified GPU Cache for Embedding-based Deep Learning](https://dl.acm.org/doi/10.1145/3600006.3613169) \
+*Xiaoniu Song,Yiwen Zhang,Rong Chen,Haibo Chen* \
+Proceedings of the 29th Symposium on Operating Systems Principles (SOSP'23)
 
 ## Project Structure
 
@@ -106,3 +108,6 @@ Please refer to [readme](example/README.md)
 ## Reproduce Evaluation Results
 
 Please refer to [readme](eval/README.md)
+
+## Contact
+Contact xiaoniu.sxn [at] sjtu.edu.cn for assistance.
