@@ -138,3 +138,8 @@ We recommand the `eps-preview` extension in vscode to quickly preview eps figure
 
 We also provide original log files used in our paper submission in `run-logs-paper` folder.
 You may run `make plot-paper` to directly plot figures using these log files to quickly reproduce the figures in paper without running all tests.
+
+### Miscellaneous
+
+The method UGache uses to dedicate different cores to run different kernel may not work on all driver version.
+Note that manually run a configuration requires launching [NVIDIA-MPS service](https://docs.nvidia.com/deploy/mps/index.html#topic_5_1) separately.
